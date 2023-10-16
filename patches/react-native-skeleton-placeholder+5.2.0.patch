@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-skeleton-placeholder/lib/SkeletonPlaceholder.js b/node_modules/react-native-skeleton-placeholder/lib/SkeletonPlaceholder.js
+index 314a93a..9fdd651 100644
+--- a/node_modules/react-native-skeleton-placeholder/lib/SkeletonPlaceholder.js
++++ b/node_modules/react-native-skeleton-placeholder/lib/SkeletonPlaceholder.js
+@@ -33,7 +33,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
+     return (mod && mod.__esModule) ? mod : { "default": mod };
+ };
+ Object.defineProperty(exports, "__esModule", { value: true });
+-const masked_view_1 = __importDefault(require("@react-native-community/masked-view"));
++const masked_view_1 = __importDefault(require("@react-native-masked-view/masked-view"));
+ const React = __importStar(require("react"));
+ const react_native_1 = require("react-native");
+ const react_native_linear_gradient_1 = __importDefault(require("react-native-linear-gradient"));

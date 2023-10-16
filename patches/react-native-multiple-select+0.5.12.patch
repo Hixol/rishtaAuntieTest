@@ -1,0 +1,131 @@
+diff --git a/node_modules/react-native-multiple-select/lib/react-native-multi-select.js b/node_modules/react-native-multiple-select/lib/react-native-multi-select.js
+index 9b7a0d7..6088259 100644
+--- a/node_modules/react-native-multiple-select/lib/react-native-multi-select.js
++++ b/node_modules/react-native-multiple-select/lib/react-native-multi-select.js
+@@ -6,7 +6,8 @@ import {
+   TouchableWithoutFeedback,
+   TouchableOpacity,
+   FlatList,
+-  UIManager
++  UIManager,
++  Animated
+ } from 'react-native';
+ import {ViewPropTypes, TextPropTypes} from 'deprecated-react-native-prop-types';
+ import PropTypes from 'prop-types';
+@@ -17,6 +18,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+ 
+ import styles, { colorPack } from './styles';
+ import nodeTypes from './helpers/nodeTypes';
++import FlatListIndicator from "../../../src/components/ScrollIndicator";
++import { android, ios } from "../../../src/utility/size";
+ 
+ // set UIManager LayoutAnimationEnabledExperimental
+ if (UIManager.setLayoutAnimationEnabledExperimental) {
+@@ -131,10 +134,17 @@ export default class MultiSelect extends Component {
+     super(props);
+     this.state = {
+       selector: false,
+-      searchTerm: ''
++      searchTerm: '',
++      indicator: new Animated.Value(0),
++      wholeHeight: 1,
++      visibleHeight: 0
+     };
+   }
+ 
++  componentDidMount(){
++    this._toggleSelector()
++  }
++
+   shouldComponentUpdate() {
+     // console.log('Component Updating: ', nextProps.selectedItems);
+     return true;
+@@ -287,7 +297,7 @@ export default class MultiSelect extends Component {
+   };
+ 
+   _submitSelection = () => {
+-    this._toggleSelector();
++    // this._toggleSelector();
+     // reset searchTerm
+     this._clearSearchTerm();
+   };
+@@ -362,11 +372,15 @@ export default class MultiSelect extends Component {
+     } else if (!isSelected && itemFontFamily) {
+       fontFamily.fontFamily = itemFontFamily;
+     }
++    const fontWeight = isSelected
++      ? { fontWeight: "bold" }
++      : { fontWeight: "normal" };
+     const color = isSelected
+       ? { color: selectedItemTextColor }
+       : { color: itemTextColor };
+     return {
+       ...fontFamily,
++      ...fontWeight,
+       ...color,
+       fontSize: itemFontSize
+     };
+@@ -400,13 +414,15 @@ export default class MultiSelect extends Component {
+               {item[displayKey]}
+             </Text>
+             {this._itemSelected(item) ? (
++              <View style={{width: 20, height: 20, borderRadius: 20/2, justifyContent: "center", alignItems: "center", backgroundColor: "#d903684d"}}>
+               <Icon
+                 name="check"
+                 style={{
+-                  fontSize: 20,
++                  fontSize: 17,
+                   color: selectedItemIconColor
+                 }}
+               />
++              </View>
+             ) : null}
+           </View>
+         </View>
+@@ -504,17 +520,45 @@ export default class MultiSelect extends Component {
+         item => !selectedItems.includes(item[uniqueKey])
+       );
+     }
++    const indicatorSize = this.state.wholeHeight > this.state.visibleHeight ?
++            this.state.visibleHeight * this.state.visibleHeight / this.state.wholeHeight :
++            this.state.visibleHeight
++
++    const difference = this.state.visibleHeight > indicatorSize ? this.state.visibleHeight - indicatorSize : 1;
++
+     if (renderItems.length) {
+       itemList = (
+-        <FlatList
++        <>
++        <Animated.FlatList
++          showsVerticalScrollIndicator={false}
++          onContentSizeChange={(width, height) => {
++            this.setState({ wholeHeight: height })
++          }}
++          onLayout={({nativeEvent}) => {
++            if(nativeEvent.layout.height > 345){
++              this.setState({ visibleHeight: nativeEvent.layout.height })}}
++            }
++          onScroll={Animated.event(
++            [{ nativeEvent: { contentOffset: { y: this.state.indicator } } }],
++            { useNativeDriver: true },
++          )}
++          scrollEventThrottle={8}
+           data={renderItems}
+           extraData={selectedItems}
+           keyExtractor={(item, index) => index.toString()}
+           listKey={item => item[uniqueKey]}
+           renderItem={rowData => this._getRow(rowData.item)}
++          contentContainerStyle={{ paddingBottom: ios ? this.state.visibleHeight * 0.5 : android && this.state.visibleHeight > 450 && this.state.visibleHeight < 620 ? this.state.visibleHeight / 2 - 70 : this.state.visibleHeight > 600 && this.state.visibleHeight < 650 ? this.state.visibleHeight / 2 - 100 : android && this.state.visibleHeight > 425 && this.state.visibleHeight < 430 ? this.state.visibleHeight / 2 : this.state.visibleHeight / 2 - 140 }}
+           {...flatListProps}
+           nestedScrollEnabled
+         />
++        {this.state.wholeHeight < 400 ? null : 
++        <FlatListIndicator 
++          difference={difference} 
++          indicator={this.state.indicator} 
++          visibleHeight={this.state.visibleHeight} 
++          wholeHeight={this.state.wholeHeight} />}
++        </>
+       );
+       searchTermMatch = renderItems.filter(item => item.name === searchTerm)
+         .length;
