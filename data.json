@@ -1,0 +1,235 @@
+{
+  "questionArray": [
+    {
+      "id": "1",
+      "question": [
+        "Hi, I’m Rishta Auntie, let’s set up your profile!",
+        "What is your first name?"
+      ],
+      "isAnswered": false,
+      "type": "text"
+    },
+    {
+      "id": "2",
+      "question": ["What is your last name?"],
+      "isAnswered": false,
+      "type": "text"
+    },
+    {
+      "id": "3",
+      "question": ["Enter your birthday"],
+      "isAnswered": false,
+      "type": "birthday"
+    },
+    {
+      "id": "4",
+      "question": ["Are you a male or a female?"],
+      "isAnswered": false,
+      "type": "gender"
+    },
+    {
+      "id": "5",
+      "question": ["What is your height?"],
+      "isAnswered": false,
+      "type": "slider"
+    },
+    {
+      "id": "6",
+      "question": ["What is your family origin?"],
+      "isAnswered": false,
+      "type": "family"
+    },
+    {
+      "id": "7",
+      "question": ["What is your community?"],
+      "isAnswered": false,
+      "type": "community"
+    },
+    {
+      "id": "8",
+      "question": ["What is your Language(s)?"],
+      "isAnswered": false,
+      "type": "language"
+    },
+    {
+      "id": "9",
+      "question": ["What is your highest completed education level?"],
+      "isAnswered": false,
+      "type": "education"
+    },
+    {
+      "id": "11",
+      "question": ["What is your Occupation?"],
+      "isAnswered": false,
+      "type": "text"
+    },
+    {
+      "id": "12",
+      "question": [
+        "You can verify this with Linkedin later on, in edit my profile.",
+        "As well as ID verification"
+      ],
+      "isAnswered": false,
+      "type": "button"
+    },
+    {
+      "id": "13",
+      "question": ["What is your religion?"],
+      "isAnswered": false,
+      "type": "religion"
+    },
+    {
+      "id": "14",
+      "question": ["What is your denomination?"],
+      "isAnswered": false,
+      "type": "denomination"
+    },
+    {
+      "id": "15",
+      "question": ["What is your practicing level?"],
+      "isAnswered": false,
+      "type": "religious"
+    },
+    {
+      "id": "16",
+      "question": ["How often do you pray?"],
+      "isAnswered": false,
+      "type": "pray"
+    },
+    {
+      "id": "18",
+      "question": ["Do you drink?"],
+      "isAnswered": false,
+      "type": "drink"
+    },
+    {
+      "id": "19",
+      "question": ["Do you smoke?"],
+      "isAnswered": false,
+      "type": "smoke"
+    },
+    {
+      "id": "20",
+      "question": ["What are your diet choices?"],
+      "isAnswered": false,
+      "type": "diet"
+    },
+    {
+      "id": "21",
+      "question": ["What is your Ideal marrige time?"],
+      "isAnswered": false,
+      "type": "ideal"
+    },
+    {
+      "id": "22",
+      "question": ["What is your marital history?"],
+      "isAnswered": false,
+      "type": "martial"
+    },
+    {
+      "id": "23",
+      "question": ["Do you have kids?"],
+      "isAnswered": false,
+      "type": "options"
+    },
+    {
+      "id": "24",
+      "question": ["Are you willing to relocate?"],
+      "isAnswered": false,
+      "type": "options"
+    },
+    {
+      "id": "25",
+      "question": ["Do you want kids?"],
+      "isAnswered": false,
+      "type": "options"
+    },
+    {
+      "id": "26",
+      "question": ["Write something witty to introduce yourself"],
+      "isAnswered": false,
+      "type": "txt"
+    },
+    {
+      "id": "27",
+      "question": ["What are your vibes?"],
+      "isAnswered": false,
+      "type": "vibes"
+    },
+    {
+      "id": "28",
+      "question": [
+        "Help rishta auntie stir up some conversation by answering 3 questions"
+      ],
+      "isAnswered": false,
+      "type": "questions"
+    },
+    {
+      "id": "p_28",
+      "question": ["Choose questions from prompts pool!"],
+      "isAnswered": false,
+      "type": "pool"
+    },
+    {
+      "id": "29",
+      "question": [
+        "Rishta Auntie has a new discover page, designed to help introduce you to potential matches with videos!",
+        "Please upload a video intro, it can be repurposed from your social media profiles"
+      ],
+      "isAnswered": false,
+      "type": "uploadOne"
+    },
+    {
+      "id": "30",
+      "question": [
+        "But be advised, repurposing a social media video may have a watermark with your @ showing",
+        "So it is recommended that you record a video introduction here in the app, or you may skip for now and add later in Edit My Profile"
+      ],
+      "isAnswered": false,
+      "type": "uploadTwo"
+    },
+    {
+      "id": "31",
+      "question": [
+        "Thank you for uploading a video for the new Rishta Auntie discover page!",
+        "Select photos for your Rishta Auntie profile",
+        "Make sure they are well lit, you aren’t wearing sunglasses and solo shots only, you don’t want to be mistaken as the least good looking friend 😂"
+      ],
+      "isAnswered": false,
+      "type": "uploadThree"
+    },
+    {
+      "id": "32",
+      "question": [
+        "Time to verify your profile!",
+        "To help prevent fake accounts we need to verify you're real. Please take a selfie.",
+        "This will NOT be shown publicly. Only used for verification"
+ 
+      ],
+      "isAnswered": false,
+      "type": "verification"
+    },
+    {
+      "id": "33",
+      "question": [
+        "We are reviewing your profile",
+        "You're all set beta.",
+        "You will get a notification once we verify your profile.",
+        "Your profile has been set up!",
+        "Would you like to take a brief questionnaire now or later?"
+      ],
+      "isAnswered": false,
+      "type": "review"
+    },
+    {
+      "id": "34",
+      "question": [
+        "Time for the Rishta Auntie personality quiz!",
+        "This will help me learn more about you and give suggestions about potential matches.",
+        "Let's begin!"
+      ],
+      "isAnswered": false,
+      "type": "quiz"
+    }
+  ]
+}
