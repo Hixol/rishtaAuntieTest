@@ -33,6 +33,7 @@ export const useHelper = (props) => {
 
   useEffect(() => {
     handleKeyboardEvents(offset);
+    handleKeyboardSpace(offset);
   }, [offset]);
 
   useEffect(() => {
@@ -68,8 +69,10 @@ export const useHelper = (props) => {
           (userDevice.includes("X") || userDevice.includes("x")) &&
           !userDevice.includes("Pro")
         ) {
+          console.log("1");
           setKeyboardSpace(e.endCoordinates.height);
         } else {
+          console.log("2");
           setKeyboardSpace(e.endCoordinates.height - offset);
         }
       }
