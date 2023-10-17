@@ -1,54 +1,41 @@
-import {useFocusEffect} from '@react-navigation/native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
-  Alert,
   Text,
   TouchableOpacity,
   StyleSheet,
   Keyboard,
-  TouchableWithoutFeedback,
   ScrollView,
-  ActivityIndicator,
   TextInput,
   Animated,
-  Dimensions,
   Platform,
-} from 'react-native';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useHelper } from "../../hooks/useHelper";
+import { alerts } from "../../utility/regex";
+import { useSelector } from "react-redux";
+import { RulerPicker } from "react-native-ruler-picker";
+import { android, ios, windowWidth, windowHeight } from "../../utility/size";
 
-import colors from '../../utility/colors';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import FastImage from 'react-native-fast-image';
-import BottomButton from '../../components/buttons/BottomButton';
+import colors from "../../utility/colors";
+import FastImage from "react-native-fast-image";
+import BottomButton from "../../components/buttons/BottomButton";
+import SliderView from "../../components/Modal/Slider";
+import NewOnBoardingDesign from "../../components/NewOnBoardingDesign";
+import OnBoardingSearch from "../../components/OnBoardingSearch";
+import DropDownView from "../../components/Modal/DropDown";
 
-import {OnBoardingServices, UserService} from '../../services';
-import {useHelper} from '../../hooks/useHelper';
-
-import SliderView from '../../components/Modal/Slider';
-import NewOnBoardingDesign from '../../components/NewOnBoardingDesign';
-import OnBoardingSearch from '../../components/OnBoardingSearch';
-import {alerts, measureUnits} from '../../utility/regex';
-import {useDispatch, useSelector} from 'react-redux';
-import {RulerPicker} from 'react-native-ruler-picker';
-import SettingHeader from '../../components/containers/settingHeader';
-import ProfileServices from '../../services/ProfileServices';
-import DropDownView from '../../components/Modal/DropDown';
-import {android, ios} from '../../utility/size';
-
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
 let filtered = [];
-const EditScreenSetting = props => {
-  const {allVibes, allPrompts, allProfileValues, promptsPool} = useSelector(
-    store => store.NewOnBoardingReducer,
+const EditScreenSetting = (props) => {
+  const { allVibes, allPrompts, allProfileValues, promptsPool } = useSelector(
+    (store) => store.NewOnBoardingReducer
   );
-  const {updateUser, updateUserPreference} = useHelper();
+  const { updateUser, updateUserPreference } = useHelper();
   const proMem = userData?.UserSetting?.isSubscribed;
-  const {userData, token} = useSelector(store => store.userReducer);
-  const {edit, type, index, ask, line, preferenceEdit} = props?.route?.params;
-  const [tagline, setTagline] = useState('');
+  const { userData, token } = useSelector((store) => store.userReducer);
+  const { edit, type, index, ask, line, preferenceEdit } = props?.route?.params;
+  const [tagline, setTagline] = useState("");
   const [selctedVibe, setSelectedVibe] = useState([]);
-  const [selectedReligion, setSelectedReligion] = useState(null);
   const [selectedDenomination, setSelectedDenomination] = useState(null);
   const [selectedPray, setSelectedPray] = useState(null);
   const [selectedMH, setSelectedMH] = useState(null);
@@ -57,10 +44,10 @@ const EditScreenSetting = props => {
   const [selectedRelocate, setSelectedRelocate] = useState(null);
   const [distance, setDistance] = useState(null);
   let [distanceSlider, setDistanceSlider] = useState(
-    userData?.UserPreference?.distance === 'range' &&
+    userData?.UserPreference?.distance === "range" &&
       userData?.UserPreference?.distance !== null
       ? parseInt(userData?.UserPreference?.distance)
-      : parseInt(userData?.UserPreference?.distance),
+      : parseInt(userData?.UserPreference?.distance)
   );
   const [selectedDrink, setSelectedDrink] = useState(null);
   const [selectedSmoke, setSelectedSmoke] = useState([]);
@@ -70,12 +57,11 @@ const EditScreenSetting = props => {
   const [selectedCommunity, setSelectedCommunity] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState([]);
   const [selectedEL, setSelectedEL] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
-  const [occupation, setOccupation] = useState('');
+  const [searchValue, setSearchValue] = useState("");
+  const [occupation, setOccupation] = useState("");
   const [selectedHeight, setSelectedHeight] = useState(null);
 
-  const distanceList = ['unlimited', 'nationwide', 'range'];
+  const distanceList = ["unlimited", "nationwide", "range"];
   const [heightSlider, setHeightSlider] = useState(
     (userData?.UserPreference?.heightFrom === null &&
       userData?.UserPreference?.heightTo === null) ||
@@ -85,7 +71,7 @@ const EditScreenSetting = props => {
       : [
           userData?.UserPreference?.heightFrom,
           userData?.UserPreference?.heightTo,
-        ],
+        ]
   );
   let [age, setAge] = useState(
     (userData?.UserPreference?.ageFrom === null &&
@@ -93,78 +79,78 @@ const EditScreenSetting = props => {
       (userData?.UserPreference?.ageFrom === undefined &&
         userData?.UserPreference?.ageTo === undefined)
       ? [null]
-      : [userData?.UserPreference?.ageFrom, userData?.UserPreference?.ageTo],
+      : [userData?.UserPreference?.ageFrom, userData?.UserPreference?.ageTo]
   );
   const [elArray, setElArray] = useState([
-    {name: 'High School'},
-    {name: 'Bachelors'},
-    {name: 'Doctorate'},
-    {name: 'Masters'},
+    { name: "High School" },
+    { name: "Bachelors" },
+    { name: "Doctorate" },
+    { name: "Masters" },
   ]);
   const [plArray, setPlArray] = useState([
-    {index: 0, stepLabel: 'Rarely Religious'},
-    {index: 1, stepLabel: 'Somewhat Religious'},
-    {index: 2, stepLabel: 'Religious'},
-    {index: 3, stepLabel: 'Strongly Religious'},
+    { index: 0, stepLabel: "Rarely Religious" },
+    { index: 1, stepLabel: "Somewhat Religious" },
+    { index: 2, stepLabel: "Religious" },
+    { index: 3, stepLabel: "Strongly Religious" },
   ]);
   const [prayArray, setPrayArray] = useState([
-    {name: "Don't pray"},
-    {name: 'Sometimes'},
-    {name: 'Often'},
-    {name: 'Regularly'},
+    { name: `Don't pray` },
+    { name: "Sometimes" },
+    { name: "Often" },
+    { name: "Regularly" },
   ]);
   const [drinkArray, setDrinkArray] = useState([
     {
-      name: 'I Drink',
-      icon: require('../../assets/iconimages/yes-drink.png'),
+      name: "I Drink",
+      icon: require("../../assets/iconimages/yes-drink.png"),
     },
     {
-      name: 'Sometimes, Socially',
-      icon: require('../../assets/iconimages/socially-drink.png'),
+      name: "Sometimes, Socially",
+      icon: require("../../assets/iconimages/socially-drink.png"),
     },
     {
       name: `I Don’t Drink`,
-      icon: require('../../assets/iconimages/no-drinks.png'),
+      icon: require("../../assets/iconimages/no-drinks.png"),
     },
   ]);
   const [smokeArray, setSmokeArray] = useState([
     {
-      name: 'Hookah',
-      icon: require('../../assets/iconimages/hookahicon.png'),
+      name: "Hookah",
+      icon: require("../../assets/iconimages/hookahicon.png"),
     },
     {
-      name: 'Cigarette',
-      icon: require('../../assets/iconimages/cigaretteicon.png'),
+      name: "Cigarette",
+      icon: require("../../assets/iconimages/cigaretteicon.png"),
     },
     {
       name: `Weed`,
-      icon: require('../../assets/iconimages/weedicon.png'),
+      icon: require("../../assets/iconimages/weedicon.png"),
     },
     {
       name: `None`,
-      icon: require('../../assets/iconimages/smileyicon.png'),
+      icon: require("../../assets/iconimages/smileyicon.png"),
     },
   ]);
   const [dietArray, setDietArray] = useState([
     {
-      name: 'Halal',
-      icon: require('../../assets/iconimages/halalicon.png'),
+      name: "Halal",
+      icon: require("../../assets/iconimages/halalicon.png"),
     },
     {
-      name: 'Vegan',
-      icon: require('../../assets/iconimages/veganicon.png'),
+      name: "Vegan",
+      icon: require("../../assets/iconimages/veganicon.png"),
     },
     {
       name: `Anything`,
-      icon: require('../../assets/iconimages/dieticon.png'),
+      icon: require("../../assets/iconimages/dieticon.png"),
     },
   ]);
   const [mhArray, setMhArray] = useState([
     {
-      name: 'None',
+      name: "None",
     },
     {
-      name: 'Annulled',
+      name: "Annulled",
     },
     {
       name: `Divorces`,
@@ -174,17 +160,17 @@ const EditScreenSetting = props => {
     },
   ]);
   const [mtArray, setMtArray] = useState([
-    {index: 0, stepLabel: '1 Year'},
-    {index: 1, stepLabel: '2 Years'},
-    {index: 2, stepLabel: '3 Years'},
-    {index: 3, stepLabel: '4 Years'},
+    { index: 0, stepLabel: "1 Year" },
+    { index: 1, stepLabel: "2 Years" },
+    { index: 2, stepLabel: "3 Years" },
+    { index: 3, stepLabel: "4 Years" },
   ]);
   const [ynArray, setYnArray] = useState([
     {
-      name: 'Yes',
+      name: "Yes",
     },
     {
-      name: 'No',
+      name: "No",
     },
   ]);
 
@@ -199,16 +185,16 @@ const EditScreenSetting = props => {
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
+      "keyboardDidShow",
       () => {
         setKeyboardVisible(true);
-      },
+      }
     );
     const keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
+      "keyboardDidHide",
       () => {
         setKeyboardVisible(false);
-      },
+      }
     );
 
     return () => {
@@ -216,17 +202,16 @@ const EditScreenSetting = props => {
       keyboardDidShowListener.remove();
     };
   }, []);
-  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (type === 'Tagline') {
+    if (type === "Tagline") {
       setTagline(userData?.Profile?.tagline);
-    } else if (type === 'Main Vibes') {
+    } else if (type === "Main Vibes") {
       setSelectedVibe(userData?.Profile?.vibes);
-    } else if (type === 'Prompts Pool') {
+    } else if (type === "Prompts Pool") {
       let copy = [...userData?.ProfilePrompts];
       let arr = [];
-      copy.map(item => {
+      copy.map((item) => {
         return arr.push({
           id: item?.Question?.id,
           title: item?.Question?.title,
@@ -234,9 +219,9 @@ const EditScreenSetting = props => {
         });
       });
       setSelectedPP(arr);
-    } else if (type === 'Height') {
+    } else if (type === "Height") {
       setSelectedHeight(userData?.Profile?.height);
-    } else if (type === 'Family Origin') {
+    } else if (type === "Family Origin") {
       let arr = [];
       arr = {
         ...arr,
@@ -247,7 +232,7 @@ const EditScreenSetting = props => {
           : null,
       };
       setSelectedFO([arr]);
-    } else if (type === 'Community') {
+    } else if (type === "Community") {
       let arr;
       arr = {
         ...arr,
@@ -258,7 +243,7 @@ const EditScreenSetting = props => {
           : null,
       };
       setSelectedCommunity([arr]);
-    } else if (type === 'Languages') {
+    } else if (type === "Languages") {
       if (preferenceEdit) {
         let arr = [];
         arr = {
@@ -273,13 +258,13 @@ const EditScreenSetting = props => {
           ? userData?.UserPreference?.languagesSpoken
           : null;
         if (copy !== null && copy?.length > 0) {
-          copy = copy.map(languageObj => {
-            return {name: languageObj.language};
+          copy = copy.map((languageObj) => {
+            return { name: languageObj.language };
           });
           setSelectedLanguage(copy);
         }
       }
-    } else if (type === 'Denomination') {
+    } else if (type === "Denomination") {
       let arr = [];
       arr = {
         ...arr,
@@ -290,29 +275,29 @@ const EditScreenSetting = props => {
           : null,
       };
       setSelectedDenomination(arr);
-    } else if (type === 'Education Level') {
+    } else if (type === "Education Level") {
       let arr = [];
       arr = {
         ...arr,
         name: userData?.Profile?.education,
       };
       setSelectedEL(arr);
-    } else if (type === 'Occupation') {
+    } else if (type === "Occupation") {
       setOccupation(userData?.Profile?.occupation);
-    } else if (type === 'Practicing Level') {
+    } else if (type === "Practicing Level") {
       let practiceLevel = userData?.Profile?.practiceLevel;
-      if (practiceLevel === 'Rarely Religious') {
+      if (practiceLevel === "Rarely Religious") {
         setSliderVal([1]);
-      } else if (practiceLevel === 'Somewhat Religious') {
+      } else if (practiceLevel === "Somewhat Religious") {
         setSliderVal([2]);
-      } else if (practiceLevel === 'Religious') {
+      } else if (practiceLevel === "Religious") {
         setSliderVal([3]);
-      } else if (practiceLevel === 'Strongly Religious') {
+      } else if (practiceLevel === "Strongly Religious") {
         setSliderVal([4]);
       } else {
         setSliderVal([1]);
       }
-    } else if (type === 'Pray') {
+    } else if (type === "Pray") {
       let arr = [];
       arr = {
         ...arr,
@@ -323,7 +308,7 @@ const EditScreenSetting = props => {
           : null,
       };
       setSelectedPray(arr);
-    } else if (type === 'Drink') {
+    } else if (type === "Drink") {
       let arr = [];
       arr = {
         ...arr,
@@ -333,21 +318,21 @@ const EditScreenSetting = props => {
           ? userData?.UserPreference?.drinking
           : null,
         icon: edit
-          ? userData?.Profile?.iDrink === 'I Drink'
-            ? require('../../assets/iconimages/yes-drink.png')
-            : userData?.Profile?.iDrink === 'Sometimes, Socially'
-            ? require('../../assets/iconimages/socially-drink.png')
-            : require('../../assets/iconimages/no-drinks.png')
+          ? userData?.Profile?.iDrink === "I Drink"
+            ? require("../../assets/iconimages/yes-drink.png")
+            : userData?.Profile?.iDrink === "Sometimes, Socially"
+            ? require("../../assets/iconimages/socially-drink.png")
+            : require("../../assets/iconimages/no-drinks.png")
           : preferenceEdit
-          ? userData?.UserPreference?.drinking === 'I Drink'
-            ? require('../../assets/iconimages/yes-drink.png')
-            : userData?.UserPreference?.drinking === 'Sometimes, Socially'
-            ? require('../../assets/iconimages/socially-drink.png')
-            : require('../../assets/iconimages/no-drinks.png')
+          ? userData?.UserPreference?.drinking === "I Drink"
+            ? require("../../assets/iconimages/yes-drink.png")
+            : userData?.UserPreference?.drinking === "Sometimes, Socially"
+            ? require("../../assets/iconimages/socially-drink.png")
+            : require("../../assets/iconimages/no-drinks.png")
           : null,
       };
       setSelectedDrink(arr);
-    } else if (type === 'Smoke') {
+    } else if (type === "Smoke") {
       if (preferenceEdit) {
         let arr = [];
         arr = {
@@ -362,25 +347,25 @@ const EditScreenSetting = props => {
           ? userData?.UserPreference?.smoking
           : null;
         if (copy !== null && copy?.length > 0) {
-          copy = copy.map(smokeObj => {
+          copy = copy.map((smokeObj) => {
             return {
               name: smokeObj?.choice,
               icon:
-                userData?.UserSmokes === 'Cigarette'
-                  ? require('../../assets/iconimages/cigaretteicon.png')
-                  : userData?.UserSmokes === 'Weed'
-                  ? require('../../assets/iconimages/weedicon.png')
-                  : userData?.UserSmokes === 'None'
-                  ? require('../../assets/iconimages/smileyicon.png')
-                  : userData?.UserSmokes === 'Hookah'
-                  ? require('../../assets/iconimages/hookahicon.png')
+                userData?.UserSmokes === "Cigarette"
+                  ? require("../../assets/iconimages/cigaretteicon.png")
+                  : userData?.UserSmokes === "Weed"
+                  ? require("../../assets/iconimages/weedicon.png")
+                  : userData?.UserSmokes === "None"
+                  ? require("../../assets/iconimages/smileyicon.png")
+                  : userData?.UserSmokes === "Hookah"
+                  ? require("../../assets/iconimages/hookahicon.png")
                   : null,
             };
           });
           setSelectedSmoke(copy);
         }
       }
-    } else if (type === 'Diet') {
+    } else if (type === "Diet") {
       if (preferenceEdit) {
         let arr = [];
         arr = {
@@ -395,23 +380,23 @@ const EditScreenSetting = props => {
           ? userData?.UserPreference?.dietChoices
           : null;
         if (copy !== null && copy?.length > 0) {
-          copy = copy.map(dietobject => {
+          copy = copy.map((dietobject) => {
             return {
               name: dietobject?.choice,
               icon:
-                userData?.UserDietChoices === 'Halal'
-                  ? require('../../assets/iconimages/halalicon.png')
-                  : userData?.UserDietChoices === 'Vegan'
-                  ? require('../../assets/iconimages/veganicon.png')
-                  : userData?.UserDietChoices === 'Anything'
-                  ? require('../../assets/iconimages/dieticon.png')
+                userData?.UserDietChoices === "Halal"
+                  ? require("../../assets/iconimages/halalicon.png")
+                  : userData?.UserDietChoices === "Vegan"
+                  ? require("../../assets/iconimages/veganicon.png")
+                  : userData?.UserDietChoices === "Anything"
+                  ? require("../../assets/iconimages/dieticon.png")
                   : null,
             };
           });
           setSelectedDiet(copy);
         }
       }
-    } else if (type === 'Marital History') {
+    } else if (type === "Marital History") {
       let arr = [];
       arr = {
         ...arr,
@@ -422,73 +407,73 @@ const EditScreenSetting = props => {
           : null,
       };
       setSelectedMH(arr);
-    } else if (type === 'Marriage Timeline') {
+    } else if (type === "Marriage Timeline") {
       let marriageTimeline = userData?.Profile?.marriageTimeline;
-      if (marriageTimeline === '1 Year') {
+      if (marriageTimeline === "1 Year") {
         setSliderMarriageVal([1]);
-      } else if (marriageTimeline === '2 Years') {
+      } else if (marriageTimeline === "2 Years") {
         setSliderMarriageVal([2]);
-      } else if (marriageTimeline === '3 Years') {
+      } else if (marriageTimeline === "3 Years") {
         setSliderMarriageVal([3]);
-      } else if (marriageTimeline === '4 Years') {
+      } else if (marriageTimeline === "4 Years") {
         setSliderMarriageVal([4]);
       } else {
         setSliderMarriageVal([1]);
       }
-    } else if (type === 'Have Kids') {
+    } else if (type === "Have Kids") {
       if (edit) {
         if (userData?.Profile?.haveKids) {
-          setSelectedHK('Yes');
+          setSelectedHK("Yes");
         } else if (userData?.Profile?.haveKids === false) {
-          setSelectedHK('No');
+          setSelectedHK("No");
         } else {
           setSelectedHK(null);
         }
       } else if (preferenceEdit) {
         if (userData?.UserPreference?.haveKids) {
-          setSelectedHK('Yes');
+          setSelectedHK("Yes");
         } else if (userData?.UserPreference?.haveKids === false) {
-          setSelectedHK('No');
+          setSelectedHK("No");
         } else {
           setSelectedHK(null);
         }
       } else {
         setSelectedHK(null);
       }
-    } else if (type === 'Want Kids') {
+    } else if (type === "Want Kids") {
       if (edit) {
         if (userData?.Profile?.wantKids) {
-          setSelectedWK('Yes');
+          setSelectedWK("Yes");
         } else if (userData?.Profile?.wantKids === false) {
-          setSelectedWK('No');
+          setSelectedWK("No");
         } else {
           setSelectedWK(null);
         }
       } else if (preferenceEdit) {
         if (userData?.UserPreference?.wantKids) {
-          setSelectedWK('Yes');
+          setSelectedWK("Yes");
         } else if (userData?.UserPreference?.wantKids === false) {
-          setSelectedWK('No');
+          setSelectedWK("No");
         } else {
           setSelectedWK(null);
         }
       } else {
         setSelectedWK(null);
       }
-    } else if (type === 'Relocate') {
+    } else if (type === "Relocate") {
       if (edit) {
         if (userData?.Profile?.willingToRelocate) {
-          setSelectedRelocate('Yes');
+          setSelectedRelocate("Yes");
         } else if (userData?.Profile?.willingToRelocate === false) {
-          setSelectedRelocate('No');
+          setSelectedRelocate("No");
         } else {
           setSelectedRelocate(null);
         }
       } else if (preferenceEdit) {
         if (userData?.UserPreference?.willingToRelocate) {
-          setSelectedRelocate('Yes');
+          setSelectedRelocate("Yes");
         } else if (userData?.UserPreference?.willingToRelocate === false) {
-          setSelectedRelocate('No');
+          setSelectedRelocate("No");
         } else {
           setSelectedRelocate(null);
         }
@@ -500,14 +485,14 @@ const EditScreenSetting = props => {
 
   const selectVibe = (item, index) => {
     let arr = [...selctedVibe];
-    let check = arr.some(item1 => {
+    let check = arr.some((item1) => {
       return item1 === item?.name;
     });
     if (arr.length < 8 && check === false) {
       arr.push(item?.name);
       setSelectedVibe(arr);
     } else if (check === true) {
-      let filtered = arr.filter(item1 => {
+      let filtered = arr.filter((item1) => {
         return item1 !== item?.name;
       });
       setSelectedVibe(filtered);
@@ -515,7 +500,7 @@ const EditScreenSetting = props => {
   };
   const selectPP = (item, index) => {
     let arr = [...selectedPP];
-    let check = arr.some(item1 => {
+    let check = arr.some((item1) => {
       return item1?.id === item?.id;
     });
 
@@ -530,19 +515,19 @@ const EditScreenSetting = props => {
       arr.push(item);
       setSelectedPP(arr);
     } else if (check === true) {
-      let filtered = arr.filter(item1 => {
+      let filtered = arr.filter((item1) => {
         return item1?.id !== item?.id;
       });
       setSelectedPP(filtered);
     }
   };
-  const selectHeight = number => {
+  const selectHeight = (number) => {
     setSelectedHeight(number);
   };
   const search = (text, type, currentIndex) => {
     setSearchValue(text);
     if (text?.length > 2) {
-      let filtered1 = allProfileValues?.[type].filter(item => {
+      let filtered1 = allProfileValues?.[type].filter((item) => {
         return item?.name.includes(text);
       });
       if (filtered1.length > 0) {
@@ -558,34 +543,34 @@ const EditScreenSetting = props => {
     } else {
       let arr = [...selectedFO];
 
-      let check2 = arr.some(item1 => {
+      let check2 = arr.some((item1) => {
         return item1?.name === item?.name;
       });
 
-      let check = arr.some(item1 => {
-        return item1?.name === 'Not Specified';
+      let check = arr.some((item1) => {
+        return item1?.name === "Not Specified";
       });
-      if (check && item?.name !== 'Not Specified') {
+      if (check && item?.name !== "Not Specified") {
         arr = [];
         arr.push(item);
         setSelectedFO(arr);
-      } else if (check && item?.name === 'Not Specified') {
+      } else if (check && item?.name === "Not Specified") {
         arr = [];
         setSelectedFO(arr);
-      } else if (item?.name === 'Not Specified' && !check) {
+      } else if (item?.name === "Not Specified" && !check) {
         arr = [];
         arr.push(item);
         setSelectedFO(arr);
       } else if (
         !check &&
-        item?.name !== 'Not Specified' &&
+        item?.name !== "Not Specified" &&
         !check2 &&
         selectedFO.length < 6
       ) {
         arr.push(item);
         setSelectedFO(arr);
-      } else if (!check && item?.name !== 'Not Specified' && check2) {
-        let filtered = arr.filter(item1 => {
+      } else if (!check && item?.name !== "Not Specified" && check2) {
+        let filtered = arr.filter((item1) => {
           return item1?.name !== item?.name;
         });
         setSelectedFO(filtered);
@@ -598,29 +583,29 @@ const EditScreenSetting = props => {
     } else {
       let arr = [...selectedLanguage];
 
-      let check2 = arr.some(item1 => {
+      let check2 = arr.some((item1) => {
         return item1?.name === item?.name;
       });
 
-      let check = arr.some(item1 => {
-        return item1?.name === 'Other';
+      let check = arr.some((item1) => {
+        return item1?.name === "Other";
       });
-      if (check && item?.name !== 'Other') {
+      if (check && item?.name !== "Other") {
         arr = [];
         arr.push(item);
         setSelectedLanguage(arr);
-      } else if (check && item?.name === 'Other') {
+      } else if (check && item?.name === "Other") {
         arr = [];
         setSelectedLanguage(arr);
-      } else if (item?.name === 'Other' && !check) {
+      } else if (item?.name === "Other" && !check) {
         arr = [];
         arr.push(item);
         setSelectedLanguage(arr);
-      } else if (!check && item?.name !== 'Other' && !check2) {
+      } else if (!check && item?.name !== "Other" && !check2) {
         arr.push(item);
         setSelectedLanguage(arr);
-      } else if (!check && item?.name !== 'Other' && check2) {
-        let filtered = arr.filter(item1 => {
+      } else if (!check && item?.name !== "Other" && check2) {
+        let filtered = arr.filter((item1) => {
           return item1?.name !== item?.name;
         });
         setSelectedLanguage(filtered);
@@ -648,9 +633,9 @@ const EditScreenSetting = props => {
 
   const scrollIndicatorPosition = Animated.multiply(
     scrollIndicator,
-    visibleScrollBarHeight / completeScrollBarHeight,
+    visibleScrollBarHeight / completeScrollBarHeight
   ).interpolate({
-    extrapolate: 'clamp',
+    extrapolate: "clamp",
     inputRange: [0, difference],
     outputRange: [0, difference],
   });
@@ -660,7 +645,7 @@ const EditScreenSetting = props => {
 
   const onLayout = ({
     nativeEvent: {
-      layout: {height},
+      layout: { height },
     },
   }) => {
     setVisibleScrollBarHeight(height);
@@ -671,29 +656,29 @@ const EditScreenSetting = props => {
     } else {
       let arr = [...selectedCommunity];
 
-      let check2 = arr.some(item1 => {
+      let check2 = arr.some((item1) => {
         return item1?.name === item?.name;
       });
 
-      let check = arr.some(item1 => {
-        return item1?.name === 'Not Specified';
+      let check = arr.some((item1) => {
+        return item1?.name === "Not Specified";
       });
-      if (check && item?.name !== 'Not Specified') {
+      if (check && item?.name !== "Not Specified") {
         arr = [];
         arr.push(item);
         setSelectedCommunity(arr);
-      } else if (check && item?.name === 'Not Specified') {
+      } else if (check && item?.name === "Not Specified") {
         arr = [];
         setSelectedCommunity(arr);
-      } else if (item?.name === 'Not Specified' && !check) {
+      } else if (item?.name === "Not Specified" && !check) {
         arr = [];
         arr.push(item);
         setSelectedCommunity(arr);
-      } else if (!check && item?.name !== 'Not Specified' && !check2) {
+      } else if (!check && item?.name !== "Not Specified" && !check2) {
         arr.push(item);
         setSelectedCommunity(arr);
-      } else if (!check && item?.name !== 'Not Specified' && check2) {
-        let filtered = arr.filter(item1 => {
+      } else if (!check && item?.name !== "Not Specified" && check2) {
+        let filtered = arr.filter((item1) => {
           return item1?.name !== item?.name;
         });
         setSelectedCommunity(filtered);
@@ -727,7 +712,7 @@ const EditScreenSetting = props => {
         enableLabel={true}
         customLabel={customLabel}
         bg="transparent"
-        multiSliderValuesChange={val => {
+        multiSliderValuesChange={(val) => {
           handleSliderValue(customLabel, val);
         }}
       />
@@ -757,7 +742,7 @@ const EditScreenSetting = props => {
         enableLabel={true}
         customLabel={customLabel}
         bg="transparent"
-        multiSliderValuesChange={val => {
+        multiSliderValuesChange={(val) => {
           handleSliderMarriageValue(customLabel, val);
         }}
       />
@@ -781,29 +766,29 @@ const EditScreenSetting = props => {
     } else {
       let arr = [...selectedSmoke];
 
-      let check2 = arr.some(item1 => {
+      let check2 = arr.some((item1) => {
         return item1?.name === item?.name;
       });
 
-      let check = arr.some(item1 => {
-        return item1?.name === 'None';
+      let check = arr.some((item1) => {
+        return item1?.name === "None";
       });
-      if (check && item?.name !== 'None') {
+      if (check && item?.name !== "None") {
         arr = [];
         arr.push(item);
         setSelectedSmoke(arr);
-      } else if (check && item?.name === 'None') {
+      } else if (check && item?.name === "None") {
         arr = [];
         setSelectedSmoke(arr);
-      } else if (item?.name === 'None' && !check) {
+      } else if (item?.name === "None" && !check) {
         arr = [];
         arr.push(item);
         setSelectedSmoke(arr);
-      } else if (!check && item?.name !== 'None' && !check2) {
+      } else if (!check && item?.name !== "None" && !check2) {
         arr.push(item);
         setSelectedSmoke(arr);
-      } else if (!check && item?.name !== 'None' && check2) {
-        let filtered = arr.filter(item1 => {
+      } else if (!check && item?.name !== "None" && check2) {
+        let filtered = arr.filter((item1) => {
           return item1?.name !== item?.name;
         });
         setSelectedSmoke(filtered);
@@ -816,29 +801,29 @@ const EditScreenSetting = props => {
     } else {
       let arr = [...selectedDiet];
 
-      let check2 = arr.some(item1 => {
+      let check2 = arr.some((item1) => {
         return item1?.name === item?.name;
       });
 
-      let check = arr.some(item1 => {
-        return item1?.name === 'Anything';
+      let check = arr.some((item1) => {
+        return item1?.name === "Anything";
       });
-      if (check && item?.name !== 'Anything') {
+      if (check && item?.name !== "Anything") {
         arr = [];
         arr.push(item);
         setSelectedDiet(arr);
-      } else if (check && item?.name === 'Anything') {
+      } else if (check && item?.name === "Anything") {
         arr = [];
         setSelectedDiet(arr);
-      } else if (item?.name === 'Anything' && !check) {
+      } else if (item?.name === "Anything" && !check) {
         arr = [];
         arr.push(item);
         setSelectedDiet(arr);
-      } else if (!check && item?.name !== 'Anything' && !check2) {
+      } else if (!check && item?.name !== "Anything" && !check2) {
         arr.push(item);
         setSelectedDiet(arr);
-      } else if (!check && item?.name !== 'Anything' && check2) {
-        let filtered = arr.filter(item1 => {
+      } else if (!check && item?.name !== "Anything" && check2) {
+        let filtered = arr.filter((item1) => {
           return item1?.name !== item?.name;
         });
         setSelectedDiet(filtered);
@@ -857,17 +842,17 @@ const EditScreenSetting = props => {
   const selectRelocate = (item, index) => {
     setSelectedRelocate(item?.name);
   };
-  const Distance = value => {
+  const Distance = (value) => {
     setDistance(value);
   };
-  const DistanceSlider = value => {
+  const DistanceSlider = (value) => {
     setDistanceSlider(value);
   };
-  const HeightSliderValuesChange = values => {
+  const HeightSliderValuesChange = (values) => {
     setHeightSlider(values);
   };
-  const AgeSliderValuesChange = value => {
-    value = value.map(item => {
+  const AgeSliderValuesChange = (value) => {
+    value = value.map((item) => {
       return parseInt(item);
     });
 
@@ -877,9 +862,9 @@ const EditScreenSetting = props => {
   const updateProfile = async () => {
     if (edit) {
       let formData = new FormData();
-      if (type === 'Prompts Pool') {
+      if (type === "Prompts Pool") {
         if (selectedPP?.length < 3) {
-          alerts('error', 'Please select atleast 3 prompt pools');
+          alerts("error", "Please select atleast 3 prompt pools");
         } else {
           setPPCheck(true);
           if (!ppCheck) {
@@ -887,20 +872,20 @@ const EditScreenSetting = props => {
           } else if (ppCheck && ppIndex < selectedPP.length - 1) {
             if (
               selectedPP[ppIndex]?.answer &&
-              selectedPP[ppIndex]?.answer !== ''
+              selectedPP[ppIndex]?.answer !== ""
             ) {
-              setPPIndex(prev => prev + 1);
+              setPPIndex((prev) => prev + 1);
             } else {
-              alerts('error', 'Please write your answer');
+              alerts("error", "Please write your answer");
             }
           } else {
             if (
               selectedPP[ppIndex]?.answer &&
-              selectedPP[ppIndex]?.answer !== ''
+              selectedPP[ppIndex]?.answer !== ""
             ) {
               let check;
               selectedPP.map((el, ind) => {
-                check = userData?.ProfilePrompts?.map(item => {
+                check = userData?.ProfilePrompts?.map((item) => {
                   return item?.Question?.id === el?.id;
                 });
 
@@ -908,113 +893,113 @@ const EditScreenSetting = props => {
                 formData.append(`profilePrompts[${ind}][answer]`, el.answer);
                 formData.append(
                   `profilePrompts[${ind}][operation]`,
-                  check[ind] ? 'update' : 'add',
+                  check[ind] ? "update" : "add"
                 );
               });
               await updateUser(formData, token);
               setPPCheck(false);
             } else {
-              alerts('error', 'Please write your answer');
+              alerts("error", "Please write your answer");
             }
           }
         }
       } else {
         let paramKey = type;
         switch (paramKey) {
-          case 'Tagline':
-            formData.append('tagline', tagline);
+          case "Tagline":
+            formData.append("tagline", tagline);
             break;
-          case 'Main Vibes':
+          case "Main Vibes":
             selctedVibe.map((x, index) => {
               formData.append(`vibes[]`, x);
             });
             break;
-          case 'Prompts Pool':
+          case "Prompts Pool":
             selectedPP.map((x, index) => {
               formData.append(`vibes[]`, x);
             });
             break;
-          case 'FirstName':
-            formData.append('firstName', textVal);
+          case "FirstName":
+            formData.append("firstName", textVal);
             break;
-          case 'Height':
-            formData.append('height', selectedHeight);
+          case "Height":
+            formData.append("height", selectedHeight);
             break;
-          case 'Family Origin':
-            formData.append('familyOrigin', selectedFO[0]?.name);
+          case "Family Origin":
+            formData.append("familyOrigin", selectedFO[0]?.name);
             break;
-          case 'Community':
-            formData.append('community', selectedCommunity[0]?.name);
+          case "Community":
+            formData.append("community", selectedCommunity[0]?.name);
             break;
-          case 'Languages':
+          case "Languages":
             selectedLanguage.map((x, index) => {
               formData.append(`languages[]`, x?.name);
             });
             break;
-          case 'Denomination':
-            formData.append('denomination', selectedDenomination?.name);
+          case "Denomination":
+            formData.append("denomination", selectedDenomination?.name);
             break;
-          case 'Education Level':
-            formData.append('education', selectedEL?.name);
+          case "Education Level":
+            formData.append("education", selectedEL?.name);
             break;
-          case 'Occupation':
-            formData.append('occupation', occupation);
+          case "Occupation":
+            formData.append("occupation", occupation);
             break;
-          case 'Practicing Level':
+          case "Practicing Level":
             formData.append(
-              'practiceLevel',
+              "practiceLevel",
               sliderVal[0] === 1
-                ? 'Rarely Religious'
+                ? "Rarely Religious"
                 : sliderVal[0] === 2
-                ? 'Somewhat Religious'
+                ? "Somewhat Religious"
                 : sliderVal[0] === 3
-                ? 'Religious'
-                : 'Strongly Religious',
+                ? "Religious"
+                : "Strongly Religious"
             );
             break;
-          case 'Pray':
-            formData.append('iPray', selectedPray?.name);
+          case "Pray":
+            formData.append("iPray", selectedPray?.name);
             break;
-          case 'Drink':
-            formData.append('iDrink', selectedDrink?.name);
+          case "Drink":
+            formData.append("iDrink", selectedDrink?.name);
             break;
-          case 'Smoke':
+          case "Smoke":
             selectedSmoke.map((x, index) => {
               formData.append(`smokeChoices[]`, x?.name);
             });
             break;
-          case 'Diet':
+          case "Diet":
             selectedDiet.map((x, index) => {
               formData.append(`dietChoices[]`, x?.name);
             });
             break;
-          case 'Marital History':
-            formData.append('maritalHistory', selectedMH?.name);
+          case "Marital History":
+            formData.append("maritalHistory", selectedMH?.name);
             break;
-          case 'Marriage Timeline':
+          case "Marriage Timeline":
             formData.append(
-              'marriageTimeline',
+              "marriageTimeline",
               sliderMarriageVal[0] === 1
-                ? '1 Year'
+                ? "1 Year"
                 : sliderMarriageVal[0] === 2
-                ? '2 Years'
+                ? "2 Years"
                 : sliderMarriageVal[0] === 3
-                ? '3 Years'
+                ? "3 Years"
                 : sliderMarriageVal[0] === 4
-                ? '4 Years'
-                : '',
+                ? "4 Years"
+                : ""
             );
             break;
-          case 'Have Kids':
-            formData.append('haveKids', selectedHK === 'Yes' ? true : false);
+          case "Have Kids":
+            formData.append("haveKids", selectedHK === "Yes" ? true : false);
             break;
-          case 'Want Kids':
-            formData.append('wantKids', selectedWK === 'Yes' ? true : false);
+          case "Want Kids":
+            formData.append("wantKids", selectedWK === "Yes" ? true : false);
             break;
-          case 'Relocate':
+          case "Relocate":
             formData.append(
-              'willingToRelocate',
-              selectedRelocate === 'Yes' ? true : false,
+              "willingToRelocate",
+              selectedRelocate === "Yes" ? true : false
             );
             break;
 
@@ -1027,13 +1012,13 @@ const EditScreenSetting = props => {
     } else if (preferenceEdit) {
       let filteredCommuntiy;
       let filteredFO;
-      if (type === 'Community') {
-        filteredCommuntiy = selectedCommunity?.filter(item => {
+      if (type === "Community") {
+        filteredCommuntiy = selectedCommunity?.filter((item) => {
           return item?.name !== null;
         });
       }
-      if (type === 'Family Origin') {
-        filteredFO = selectedFO?.filter(item => {
+      if (type === "Family Origin") {
+        filteredFO = selectedFO?.filter((item) => {
           return item?.name !== null;
         });
       }
@@ -1042,111 +1027,115 @@ const EditScreenSetting = props => {
       let type2;
       let paramKey = type;
       switch (paramKey) {
-        case 'Distance':
-          sendType = 'distance';
+        case "Distance":
+          sendType = "distance";
           value =
-            distance === 'range'
+            distance === "range"
               ? distanceSlider.toString()
               : distance === null
-              ? 'unlimited'
+              ? "unlimited"
               : distance;
           break;
-        case 'Height':
-          sendType = 'heightFrom';
-          type2 = 'heightTo';
+        case "Height":
+          sendType = "heightFrom";
+          type2 = "heightTo";
           value = [heightSlider[0], heightSlider[1]];
           break;
-        case 'Age':
-          sendType = 'ageFrom';
-          type2 = 'ageTo';
+        case "Age":
+          sendType = "ageFrom";
+          type2 = "ageTo";
           value = [age[0], age[1]];
           break;
 
-        case 'Religion':
-          sendType = 'religion';
+        case "Religion":
+          sendType = "religion";
           break;
-        case 'Family Origin':
-          sendType = 'familyOrigin';
+        case "Family Origin":
+          sendType = "familyOrigin";
           value = filteredFO[0]?.name;
           break;
-        case 'Community':
-          sendType = 'community';
+        case "Community":
+          sendType = "community";
           value = filteredCommuntiy[0]?.name;
           break;
-        case 'Languages':
-          sendType = 'languagesSpoken';
+        case "Languages":
+          sendType = "languagesSpoken";
           value = selectedLanguage[0]?.name;
           break;
-        case 'Denomination':
-          sendType = 'religiousDenomination';
+        case "Denomination":
+          sendType = "religiousDenomination";
           value = selectedDenomination?.name;
           break;
 
-        case 'Pray':
-          sendType = 'theyPray';
+        case "Pray":
+          sendType = "theyPray";
           value = selectedPray?.name;
           break;
-        case 'Drink':
-          sendType = 'drinking';
+        case "Drink":
+          sendType = "drinking";
           value = selectedDrink?.name;
           break;
-        case 'Smoke':
-          sendType = 'smoking';
+        case "Smoke":
+          sendType = "smoking";
           value = selectedSmoke[0]?.name;
           break;
-        case 'Diet':
-          sendType = 'dietChoices';
+        case "Diet":
+          sendType = "dietChoices";
           value = selectedDiet[0]?.name;
           break;
-        case 'Marital History':
-          sendType = 'maritalHistory';
+        case "Marital History":
+          sendType = "maritalHistory";
           value = selectedMH?.name;
           break;
-        case 'Have Kids':
-          sendType = 'haveKids';
-          value = selectedHK === 'Yes' ? true : false;
+        case "Have Kids":
+          sendType = "haveKids";
+          value = selectedHK === "Yes" ? true : false;
           break;
-        case 'Want Kids':
-          sendType = 'wantKids';
-          value = selectedWK === 'Yes' ? true : false;
+        case "Want Kids":
+          sendType = "wantKids";
+          value = selectedWK === "Yes" ? true : false;
           break;
-        case 'Relocate':
-          sendType = 'willingToRelocate';
-          value = selectedRelocate === 'Yes' ? true : false;
+        case "Relocate":
+          sendType = "willingToRelocate";
+          value = selectedRelocate === "Yes" ? true : false;
           break;
       }
       await updateUserPreference(
         token,
         sendType,
         value === undefined || value === null ? null : value,
-        type2,
+        type2
       );
       props.navigation.goBack();
     }
   };
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: colors.white, padding: 20}}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: colors.white, padding: 20 }}
+    >
       <TouchableOpacity
         onPress={() => props.navigation.goBack()}
         style={{
-          width: '12%',
-          paddingVertical: '2%',
+          width: "12%",
+          paddingVertical: "2%",
           height: 35,
-        }}>
+        }}
+      >
         <FastImage
           resizeMode="contain"
-          style={{width: 20, height: 20}}
-          source={require('../../assets/iconimages/settingback.png')}
+          style={{ width: 20, height: 20 }}
+          source={require("../../assets/iconimages/settingback.png")}
         />
       </TouchableOpacity>
       <Text
         style={{
           fontSize: 14,
-          fontFamily: 'Inter-Medium',
-          marginVertical: '5%',
-          color: '#23262F',
-        }}>
+          fontFamily: "Inter-Medium",
+          marginVertical: "5%",
+          color: "#23262F",
+        }}
+      >
         {type}
       </Text>
 
@@ -1154,35 +1143,37 @@ const EditScreenSetting = props => {
         style={[
           styles.ask,
           {
-            width: '100%',
+            width: "100%",
           },
-        ]}>
+        ]}
+      >
         {ask}
       </Text>
-      {preferenceEdit ? null : edit && type !== 'Main Vibes' ? null : (
+      {preferenceEdit ? null : edit && type !== "Main Vibes" ? null : (
         <Text style={[styles.line]}>{line}</Text>
       )}
       <View
         style={{
-          width: '100%',
+          width: "100%",
           height:
-            edit && type === 'Main Vibes' && android
-              ? '67%'
-              : edit && type === 'Main Vibes' && ios
-              ? '70%'
+            edit && type === "Main Vibes" && android
+              ? "67%"
+              : edit && type === "Main Vibes" && ios
+              ? "70%"
               : ios
-              ? '78%'
-              : '73%',
-        }}>
-        {type === 'Distance' ? (
+              ? "78%"
+              : "73%",
+        }}
+      >
+        {type === "Distance" ? (
           <View>
             <DropDownView
               // preferenceName={'Distance'}
               onValueChange={Distance}
               SelectDropdown
               defaultValue={
-                userData?.UserPreference?.distance === 'unlimited' ||
-                userData?.UserPreference?.distance === 'nationwide'
+                userData?.UserPreference?.distance === "unlimited" ||
+                userData?.UserPreference?.distance === "nationwide"
                   ? userData?.UserPreference?.distance
                   : distance
               }
@@ -1191,32 +1182,32 @@ const EditScreenSetting = props => {
               // textWithIconView
               // preferenceIcon={require('../../assets/iconimages/location.png')}
             />
-            {distance === 'range' ? (
+            {distance === "range" ? (
               <SliderView
                 sp={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginTop: '5%',
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginTop: "5%",
                 }}
                 multiSliderValue={[
-                  userData?.UserPreference?.distance === 'unlimited' ||
-                  userData?.UserPreference?.distance === 'nationwide'
+                  userData?.UserPreference?.distance === "unlimited" ||
+                  userData?.UserPreference?.distance === "nationwide"
                     ? 0
                     : parseInt(userData?.UserPreference?.distance),
                 ]}
                 multiSliderValuesChange={DistanceSlider}
                 min={0}
                 max={2000}
-                preferenceName={'Distance'}
+                preferenceName={"Distance"}
                 customLabel="kms"
                 enableLabel={true}
                 step={1}
               />
             ) : null}
           </View>
-        ) : type === 'Height' && preferenceEdit ? (
+        ) : type === "Height" && preferenceEdit ? (
           <SliderView
-            sp={{marginVertical: '1%'}}
+            sp={{ marginVertical: "1%" }}
             searchPreferences
             textWithoutIconView
             multiSliderValue={
@@ -1229,15 +1220,15 @@ const EditScreenSetting = props => {
             multiSliderValuesChange={HeightSliderValuesChange}
             min={4}
             max={10}
-            preferenceName={'Height'}
+            preferenceName={"Height"}
             customLabel="feet"
             enableLabel={true}
             step={0.1}
-            bg={{color: 'red'}}
+            bg={{ color: "red" }}
           />
-        ) : type === 'Age' && preferenceEdit ? (
+        ) : type === "Age" && preferenceEdit ? (
           <SliderView
-            sp={{marginVertical: '1%'}}
+            sp={{ marginVertical: "1%" }}
             searchPreferences
             textWithoutIconView
             multiSliderValue={
@@ -1250,40 +1241,41 @@ const EditScreenSetting = props => {
             multiSliderValuesChange={AgeSliderValuesChange}
             min={18}
             max={68}
-            preferenceName={'Age'}
+            preferenceName={"Age"}
             customLabel="age"
             enableLabel={true}
             step={0.1}
-            bg={{color: 'red'}}
+            bg={{ color: "red" }}
           />
-        ) : type === 'Tagline' ? (
+        ) : type === "Tagline" ? (
           <View style={styles.textinputView}>
             <TextInput
               style={styles.textinput}
               value={tagline}
-              onChangeText={text => {
+              onChangeText={(text) => {
                 setTagline(text);
               }}
               placeholder={`Remember first impressions count 😉`}
-              placeholderTextColor={'#9CA3AF'}
+              placeholderTextColor={"#9CA3AF"}
             />
           </View>
-        ) : type === 'Main Vibes' ? (
+        ) : type === "Main Vibes" ? (
           <View style={styles.scrollContainer}>
             <ScrollView
               onContentSizeChange={onContentSizeChange}
               onLayout={onLayout}
               onScroll={Animated.event(
-                [{nativeEvent: {contentOffset: {y: scrollIndicator}}}],
-                {useNativeDriver: false},
+                [{ nativeEvent: { contentOffset: { y: scrollIndicator } } }],
+                { useNativeDriver: false }
               )}
               scrollEventThrottle={16}
               showsVerticalScrollIndicator={false}
-              style={{marginVertical: '2%'}}>
+              style={{ marginVertical: "2%" }}
+            >
               {allVibes.length > 0 &&
                 allVibes.map((item, index) => {
-                  let findIndex = selctedVibe?.map(newItem => {
-                    return allVibes.findIndex(item => item.name === newItem);
+                  let findIndex = selctedVibe?.map((newItem) => {
+                    return allVibes.findIndex((item) => item.name === newItem);
                   });
                   return (
                     <NewOnBoardingDesign
@@ -1292,7 +1284,7 @@ const EditScreenSetting = props => {
                       index={index}
                       item={item}
                       multiSelect={true}
-                      nameorid={'name'}
+                      nameorid={"name"}
                       search={false}
                     />
                   );
@@ -1304,30 +1296,31 @@ const EditScreenSetting = props => {
                   styles.customScrollBar,
                   {
                     height: scrollIndicatorSize,
-                    transform: [{translateY: scrollIndicatorPosition}],
+                    transform: [{ translateY: scrollIndicatorPosition }],
                   },
                 ]}
               />
             </View>
           </View>
-        ) : type === 'Prompts Pool' ? (
+        ) : type === "Prompts Pool" ? (
           !ppCheck ? (
             <View style={styles.scrollContainer}>
               <ScrollView
                 onContentSizeChange={onContentSizeChange}
                 onLayout={onLayout}
                 onScroll={Animated.event(
-                  [{nativeEvent: {contentOffset: {y: scrollIndicator}}}],
-                  {useNativeDriver: false},
+                  [{ nativeEvent: { contentOffset: { y: scrollIndicator } } }],
+                  { useNativeDriver: false }
                 )}
                 scrollEventThrottle={16}
                 showsVerticalScrollIndicator={false}
-                style={{marginVertical: '5%'}}>
+                style={{ marginVertical: "5%" }}
+              >
                 {allPrompts.length > 0 &&
                   allPrompts.map((item, index) => {
-                    let findIndex = selectedPP.map(newItem => {
+                    let findIndex = selectedPP.map((newItem) => {
                       return allPrompts.findIndex(
-                        item => item?.id === newItem?.id,
+                        (item) => item?.id === newItem?.id
                       );
                     });
 
@@ -1338,7 +1331,7 @@ const EditScreenSetting = props => {
                         index={index}
                         item={item}
                         multiSelect={true}
-                        nameorid={'title'}
+                        nameorid={"title"}
                         search={false}
                       />
                     );
@@ -1350,7 +1343,7 @@ const EditScreenSetting = props => {
                     styles.customScrollBar,
                     {
                       height: scrollIndicatorSize,
-                      transform: [{translateY: scrollIndicatorPosition}],
+                      transform: [{ translateY: scrollIndicatorPosition }],
                     },
                   ]}
                 />
@@ -1360,31 +1353,33 @@ const EditScreenSetting = props => {
             <View>
               <View
                 style={{
-                  width: '100%',
+                  width: "100%",
                   borderWidth: 0.5,
-                  borderColor: '#EBECEF',
-                  marginVertical: '10%',
-                }}></View>
+                  borderColor: "#EBECEF",
+                  marginVertical: "10%",
+                }}
+              ></View>
               <Text style={styles.ask}>
-                {'“' + selectedPP[ppIndex]?.title + '”'}
+                {"“" + selectedPP[ppIndex]?.title + "”"}
               </Text>
               <View
                 style={{
-                  marginVertical: Platform.OS === 'ios' ? '5%' : '3%',
-                  width: '95%',
-                  backgroundColor: '#F9FAFB',
-                  paddingVertical: '5%',
-                  alignSelf: 'center',
-                }}>
+                  marginVertical: Platform.OS === "ios" ? "5%" : "3%",
+                  width: "95%",
+                  backgroundColor: "#F9FAFB",
+                  paddingVertical: "5%",
+                  alignSelf: "center",
+                }}
+              >
                 <TextInput
                   numberOfLines={1}
                   style={styles.textinput}
                   value={
                     selectedPP[ppIndex]?.answer
                       ? selectedPP[ppIndex]?.answer
-                      : ''
+                      : ""
                   }
-                  onChangeText={text => {
+                  onChangeText={(text) => {
                     let copy = [...selectedPP];
                     copy[ppIndex] = {
                       ...copy[ppIndex],
@@ -1393,16 +1388,16 @@ const EditScreenSetting = props => {
                     setSelectedPP(copy);
                   }}
                   placeholder={`Remember first impressions count 😉`}
-                  placeholderTextColor={'#9CA3AF'}
+                  placeholderTextColor={"#9CA3AF"}
                 />
               </View>
             </View>
           )
-        ) : type === 'Height' ? (
+        ) : type === "Height" ? (
           <View style={styles.rulerView}>
             <RulerPicker
               value={selectedHeight / 30.48}
-              onValueChangeEnd={number =>
+              onValueChangeEnd={(number) =>
                 selectHeight((number / 30.48).toFixed(1))
               }
               min={92}
@@ -1414,16 +1409,16 @@ const EditScreenSetting = props => {
               indicatorColor={colors.primaryPink}
               shortStepHeight={20}
               longStepHeight={50}
-              valueTextStyle={{color: colors.primaryPink, fontSize: 20}}
-              unitTextStyle={{color: colors.primaryPink, fontSize: 17}}
+              valueTextStyle={{ color: colors.primaryPink, fontSize: 20 }}
+              unitTextStyle={{ color: colors.primaryPink, fontSize: 17 }}
               step={2.55}
               initialValue={92 / 30.48}
             />
           </View>
-        ) : type === 'Family Origin' ? (
+        ) : type === "Family Origin" ? (
           <>
             <OnBoardingSearch
-              onChangeText={text => search(text, 'familyOrigin')}
+              onChangeText={(text) => search(text, "familyOrigin")}
               array={allProfileValues?.familyOrigin}
               // currentIndex={currentIndex}
               searchValue={searchValue}
@@ -1432,24 +1427,29 @@ const EditScreenSetting = props => {
               type={type}
             />
             <View style={styles.scrollContainer}>
-              <View style={{height: windowHeight * 0.6}}>
+              <View style={{ height: windowHeight * 0.6 }}>
                 <ScrollView
                   onContentSizeChange={onContentSizeChange}
                   onLayout={onLayout}
                   onScroll={Animated.event(
-                    [{nativeEvent: {contentOffset: {y: scrollIndicator}}}],
-                    {useNativeDriver: false},
+                    [
+                      {
+                        nativeEvent: { contentOffset: { y: scrollIndicator } },
+                      },
+                    ],
+                    { useNativeDriver: false }
                   )}
                   scrollEventThrottle={16}
                   showsVerticalScrollIndicator={false}
                   style={{
-                    marginVertical: '5%',
-                  }}>
+                    marginVertical: "5%",
+                  }}
+                >
                   {filtered?.length > 0
                     ? filtered.map((item, index) => {
-                        let findIndex = selectedFO.map(newItem => {
+                        let findIndex = selectedFO.map((newItem) => {
                           return filtered.findIndex(
-                            item => item?.name === newItem?.name,
+                            (item) => item?.name === newItem?.name
                           );
                         });
                         return (
@@ -1459,7 +1459,7 @@ const EditScreenSetting = props => {
                             index={index}
                             item={item}
                             multiSelect={true}
-                            nameorid={'name'}
+                            nameorid={"name"}
                             search={true}
                             radio={true}
                           />
@@ -1467,9 +1467,9 @@ const EditScreenSetting = props => {
                       })
                     : allProfileValues?.familyOrigin.length > 0 &&
                       allProfileValues?.familyOrigin.map((item, index) => {
-                        let findIndex = selectedFO.map(newItem => {
+                        let findIndex = selectedFO.map((newItem) => {
                           return allProfileValues?.familyOrigin.findIndex(
-                            item => item?.name === newItem?.name,
+                            (item) => item?.name === newItem?.name
                           );
                         });
 
@@ -1480,7 +1480,7 @@ const EditScreenSetting = props => {
                             index={index}
                             item={item}
                             multiSelect={true}
-                            nameorid={'name'}
+                            nameorid={"name"}
                             search={true}
                             radio={true}
                           />
@@ -1491,24 +1491,25 @@ const EditScreenSetting = props => {
               <View
                 style={[
                   styles.customScrollBarBackground,
-                  {height: '80%', marginTop: '5%'},
-                ]}>
+                  { height: "80%", marginTop: "5%" },
+                ]}
+              >
                 <Animated.View
                   style={[
                     styles.customScrollBar,
                     {
                       height: scrollIndicatorSize,
-                      transform: [{translateY: scrollIndicatorPosition}],
+                      transform: [{ translateY: scrollIndicatorPosition }],
                     },
                   ]}
                 />
               </View>
             </View>
           </>
-        ) : type === 'Community' ? (
+        ) : type === "Community" ? (
           <>
             <OnBoardingSearch
-              onChangeText={text => search(text, 'community')}
+              onChangeText={(text) => search(text, "community")}
               array={userData?.Profile?.community}
               // currentIndex={userData?.Profile?.community}
               searchValue={searchValue}
@@ -1517,24 +1518,29 @@ const EditScreenSetting = props => {
               type={type}
             />
             <View style={styles.scrollContainer}>
-              <View style={{height: windowHeight * 0.6}}>
+              <View style={{ height: windowHeight * 0.6 }}>
                 <ScrollView
                   onContentSizeChange={onContentSizeChange}
                   onLayout={onLayout}
                   onScroll={Animated.event(
-                    [{nativeEvent: {contentOffset: {y: scrollIndicator}}}],
-                    {useNativeDriver: false},
+                    [
+                      {
+                        nativeEvent: { contentOffset: { y: scrollIndicator } },
+                      },
+                    ],
+                    { useNativeDriver: false }
                   )}
                   scrollEventThrottle={16}
                   showsVerticalScrollIndicator={false}
                   style={{
-                    marginVertical: '5%',
-                  }}>
+                    marginVertical: "5%",
+                  }}
+                >
                   {filtered?.length > 0
                     ? filtered.map((item, index) => {
-                        let findIndex = selectedCommunity.map(newItem => {
+                        let findIndex = selectedCommunity.map((newItem) => {
                           return filtered.findIndex(
-                            item => item?.name === newItem?.name,
+                            (item) => item?.name === newItem?.name
                           );
                         });
                         return (
@@ -1544,7 +1550,7 @@ const EditScreenSetting = props => {
                             index={index}
                             item={item}
                             multiSelect={true}
-                            nameorid={'name'}
+                            nameorid={"name"}
                             search={true}
                             radio={true}
                           />
@@ -1552,9 +1558,9 @@ const EditScreenSetting = props => {
                       })
                     : allProfileValues?.community?.length > 0 &&
                       allProfileValues?.community.map((item, index) => {
-                        let findIndex = selectedCommunity.map(newItem => {
+                        let findIndex = selectedCommunity.map((newItem) => {
                           return allProfileValues?.community.findIndex(
-                            item => item?.name === newItem?.name,
+                            (item) => item?.name === newItem?.name
                           );
                         });
                         return (
@@ -1564,7 +1570,7 @@ const EditScreenSetting = props => {
                             index={index}
                             item={item}
                             multiSelect={true}
-                            nameorid={'name'}
+                            nameorid={"name"}
                             search={true}
                             radio={true}
                           />
@@ -1575,24 +1581,25 @@ const EditScreenSetting = props => {
               <View
                 style={[
                   styles.customScrollBarBackground,
-                  {height: '80%', marginTop: '5%'},
-                ]}>
+                  { height: "80%", marginTop: "5%" },
+                ]}
+              >
                 <Animated.View
                   style={[
                     styles.customScrollBar,
                     {
                       height: scrollIndicatorSize,
-                      transform: [{translateY: scrollIndicatorPosition}],
+                      transform: [{ translateY: scrollIndicatorPosition }],
                     },
                   ]}
                 />
               </View>
             </View>
           </>
-        ) : type === 'Languages' ? (
+        ) : type === "Languages" ? (
           <>
             <OnBoardingSearch
-              onChangeText={text => search(text, 'language')}
+              onChangeText={(text) => search(text, "language")}
               array={userData?.UserLanguages}
               // currentIndex={currentIndex}
               searchValue={searchValue}
@@ -1601,24 +1608,29 @@ const EditScreenSetting = props => {
               type={type}
             />
             <View style={styles.scrollContainer}>
-              <View style={{height: windowHeight * 0.6}}>
+              <View style={{ height: windowHeight * 0.6 }}>
                 <ScrollView
                   onContentSizeChange={onContentSizeChange}
                   onLayout={onLayout}
                   onScroll={Animated.event(
-                    [{nativeEvent: {contentOffset: {y: scrollIndicator}}}],
-                    {useNativeDriver: false},
+                    [
+                      {
+                        nativeEvent: { contentOffset: { y: scrollIndicator } },
+                      },
+                    ],
+                    { useNativeDriver: false }
                   )}
                   scrollEventThrottle={16}
                   showsVerticalScrollIndicator={false}
                   style={{
-                    marginVertical: '5%',
-                  }}>
+                    marginVertical: "5%",
+                  }}
+                >
                   {filtered?.length > 0
                     ? filtered.map((item, index) => {
-                        let findIndex = selectedLanguage.map(newItem => {
+                        let findIndex = selectedLanguage.map((newItem) => {
                           return filtered.findIndex(
-                            item => item?.name === newItem?.name,
+                            (item) => item?.name === newItem?.name
                           );
                         });
                         return (
@@ -1628,7 +1640,7 @@ const EditScreenSetting = props => {
                             index={index}
                             item={item}
                             multiSelect={true}
-                            nameorid={'name'}
+                            nameorid={"name"}
                             search={true}
                             radio={true}
                           />
@@ -1636,9 +1648,9 @@ const EditScreenSetting = props => {
                       })
                     : allProfileValues?.language.length > 0 &&
                       allProfileValues?.language.map((item, index) => {
-                        let findIndex = selectedLanguage.map(newItem => {
+                        let findIndex = selectedLanguage.map((newItem) => {
                           return allProfileValues?.language.findIndex(
-                            item => item?.name === newItem?.name,
+                            (item) => item?.name === newItem?.name
                           );
                         });
                         return (
@@ -1648,7 +1660,7 @@ const EditScreenSetting = props => {
                             index={index}
                             item={item}
                             multiSelect={true}
-                            nameorid={'name'}
+                            nameorid={"name"}
                             search={true}
                             radio={true}
                           />
@@ -1659,35 +1671,37 @@ const EditScreenSetting = props => {
               <View
                 style={[
                   styles.customScrollBarBackground,
-                  {height: '80%', marginTop: '5%'},
-                ]}>
+                  { height: "80%", marginTop: "5%" },
+                ]}
+              >
                 <Animated.View
                   style={[
                     styles.customScrollBar,
                     {
                       height: scrollIndicatorSize,
-                      transform: [{translateY: scrollIndicatorPosition}],
+                      transform: [{ translateY: scrollIndicatorPosition }],
                     },
                   ]}
                 />
               </View>
             </View>
           </>
-        ) : type === 'Denomination' && edit ? (
+        ) : type === "Denomination" && edit ? (
           <View style={styles.scrollContainer}>
-            <View style={{height: windowHeight * 0.6}}>
+            <View style={{ height: windowHeight * 0.6 }}>
               <ScrollView
                 onContentSizeChange={onContentSizeChange}
                 onLayout={onLayout}
                 onScroll={Animated.event(
-                  [{nativeEvent: {contentOffset: {y: scrollIndicator}}}],
-                  {useNativeDriver: false},
+                  [{ nativeEvent: { contentOffset: { y: scrollIndicator } } }],
+                  { useNativeDriver: false }
                 )}
                 scrollEventThrottle={16}
                 showsVerticalScrollIndicator={false}
                 style={{
-                  marginVertical: '5%',
-                }}>
+                  marginVertical: "5%",
+                }}
+              >
                 {allProfileValues?.denomination[userData?.Profile?.religion]
                   .length > 0 &&
                   allProfileValues?.denomination[
@@ -1705,7 +1719,7 @@ const EditScreenSetting = props => {
                         index={index}
                         item={item}
                         multiSelect={false}
-                        nameorid={'name'}
+                        nameorid={"name"}
                         search={false}
                         radio={true}
                       />
@@ -1716,34 +1730,36 @@ const EditScreenSetting = props => {
             <View
               style={[
                 styles.customScrollBarBackground,
-                {height: '80%', marginTop: '5%'},
-              ]}>
+                { height: "80%", marginTop: "5%" },
+              ]}
+            >
               <Animated.View
                 style={[
                   styles.customScrollBar,
                   {
                     height: scrollIndicatorSize,
-                    transform: [{translateY: scrollIndicatorPosition}],
+                    transform: [{ translateY: scrollIndicatorPosition }],
                   },
                 ]}
               />
             </View>
           </View>
-        ) : type === 'Denomination' && preferenceEdit ? (
+        ) : type === "Denomination" && preferenceEdit ? (
           <View style={styles.scrollContainer}>
-            <View style={{maxHeight: windowHeight * 0.6}}>
+            <View style={{ maxHeight: windowHeight * 0.6 }}>
               <ScrollView
                 onContentSizeChange={onContentSizeChange}
                 onLayout={onLayout}
                 onScroll={Animated.event(
-                  [{nativeEvent: {contentOffset: {y: scrollIndicator}}}],
-                  {useNativeDriver: false},
+                  [{ nativeEvent: { contentOffset: { y: scrollIndicator } } }],
+                  { useNativeDriver: false }
                 )}
                 scrollEventThrottle={16}
                 showsVerticalScrollIndicator={false}
                 style={{
-                  marginVertical: '5%',
-                }}>
+                  marginVertical: "5%",
+                }}
+              >
                 {allProfileValues?.denomination[
                   userData?.UserPreference?.religion
                 ].length > 0 ? (
@@ -1762,7 +1778,7 @@ const EditScreenSetting = props => {
                         index={index}
                         item={item}
                         multiSelect={false}
-                        nameorid={'name'}
+                        nameorid={"name"}
                         search={false}
                         radio={true}
                       />
@@ -1771,17 +1787,19 @@ const EditScreenSetting = props => {
                 ) : (
                   <View
                     style={{
-                      width: '100%',
+                      width: "100%",
                       height: 200,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
                     <Text
                       style={{
                         fontSize: 20,
-                        fontFamily: 'Inter-Medium',
+                        fontFamily: "Inter-Medium",
                         color: colors.black,
-                      }}>
+                      }}
+                    >
                       Please Select Religion First
                     </Text>
                   </View>
@@ -1791,20 +1809,21 @@ const EditScreenSetting = props => {
             <View
               style={[
                 styles.customScrollBarBackground,
-                {height: '80%', marginTop: '5%'},
-              ]}>
+                { height: "80%", marginTop: "5%" },
+              ]}
+            >
               <Animated.View
                 style={[
                   styles.customScrollBar,
                   {
                     height: scrollIndicatorSize,
-                    transform: [{translateY: scrollIndicatorPosition}],
+                    transform: [{ translateY: scrollIndicatorPosition }],
                   },
                 ]}
               />
             </View>
           </View>
-        ) : type === 'Education Level' ? (
+        ) : type === "Education Level" ? (
           elArray.length > 0 &&
           elArray.map((item, index) => {
             let findIndex = elArray.findIndex((item, index) => {
@@ -1817,37 +1836,37 @@ const EditScreenSetting = props => {
                 index={index}
                 item={item}
                 multiSelect={false}
-                nameorid={'name'}
+                nameorid={"name"}
                 search={false}
                 radio={true}
               />
             );
           })
-        ) : type === 'Occupation' ? (
+        ) : type === "Occupation" ? (
           <View style={styles.textinputView}>
             <TextInput
               style={styles.textinput}
               value={occupation}
-              onChangeText={text => {
+              onChangeText={(text) => {
                 setOccupation(text);
               }}
               placeholder={`Occupation Ex. Designer etc`}
-              placeholderTextColor={'#9CA3AF'}
+              placeholderTextColor={"#9CA3AF"}
             />
           </View>
-        ) : type === 'Practicing Level' ? (
-          <View style={{marginVertical: '5%'}}>
+        ) : type === "Practicing Level" ? (
+          <View style={{ marginVertical: "5%" }}>
             <RenderSlider
               min={1}
               max={4}
               stepsAs={plArray}
               showSteps={true}
               showStepLabels={true}
-              // prefName="Please make a selection:"
-              customLabel={'practicingLevel'}
+              // prefName='Please make a selection:'
+              customLabel={"practicingLevel"}
             />
           </View>
-        ) : type === 'Pray' ? (
+        ) : type === "Pray" ? (
           prayArray.map((item, index) => {
             let findIndex = prayArray.findIndex((item, index) => {
               return item?.name === selectedPray?.name;
@@ -1859,13 +1878,13 @@ const EditScreenSetting = props => {
                 index={index}
                 item={item}
                 multiSelect={false}
-                nameorid={'name'}
+                nameorid={"name"}
                 search={false}
                 radio={true}
               />
             );
           })
-        ) : type === 'Drink' ? (
+        ) : type === "Drink" ? (
           drinkArray.map((item, index) => {
             let findIndex = drinkArray.findIndex((item, index) => {
               return item?.name === selectedDrink?.name;
@@ -1877,16 +1896,18 @@ const EditScreenSetting = props => {
                 index={index}
                 item={item}
                 multiSelect={false}
-                nameorid={'name'}
+                nameorid={"name"}
                 search={false}
                 icon={true}
               />
             );
           })
-        ) : type === 'Smoke' ? (
+        ) : type === "Smoke" ? (
           smokeArray.map((item, index) => {
-            let findIndex = selectedSmoke.map(newItem => {
-              return smokeArray.findIndex(item => item?.name === newItem?.name);
+            let findIndex = selectedSmoke.map((newItem) => {
+              return smokeArray.findIndex(
+                (item) => item?.name === newItem?.name
+              );
             });
             return (
               <NewOnBoardingDesign
@@ -1895,16 +1916,18 @@ const EditScreenSetting = props => {
                 index={index}
                 item={item}
                 multiSelect={true}
-                nameorid={'name'}
+                nameorid={"name"}
                 search={false}
                 icon={true}
               />
             );
           })
-        ) : type === 'Diet' ? (
+        ) : type === "Diet" ? (
           dietArray.map((item, index) => {
-            let findIndex = selectedDiet.map(newItem => {
-              return dietArray.findIndex(item => item?.name === newItem?.name);
+            let findIndex = selectedDiet.map((newItem) => {
+              return dietArray.findIndex(
+                (item) => item?.name === newItem?.name
+              );
             });
             return (
               <NewOnBoardingDesign
@@ -1913,13 +1936,13 @@ const EditScreenSetting = props => {
                 index={index}
                 item={item}
                 multiSelect={true}
-                nameorid={'name'}
+                nameorid={"name"}
                 search={false}
                 icon={true}
               />
             );
           })
-        ) : type === 'Marital History' ? (
+        ) : type === "Marital History" ? (
           mhArray.map((item, index) => {
             let findIndex = mhArray.findIndex((item, index) => {
               return item?.name === selectedMH?.name;
@@ -1931,25 +1954,25 @@ const EditScreenSetting = props => {
                 index={index}
                 item={item}
                 multiSelect={false}
-                nameorid={'name'}
+                nameorid={"name"}
                 search={false}
                 radio={true}
               />
             );
           })
-        ) : type === 'Marriage Timeline' ? (
-          <View style={{marginVertical: '5%'}}>
+        ) : type === "Marriage Timeline" ? (
+          <View style={{ marginVertical: "5%" }}>
             <RenderMarriageSlider
               min={1}
               max={4}
               stepsAs={mtArray}
               showSteps={true}
               showStepLabels={true}
-              // prefName="Please make a selection:"
-              customLabel={'marriageTimeline'}
+              // prefName='Please make a selection:'
+              customLabel={"marriageTimeline"}
             />
           </View>
-        ) : type === 'Have Kids' ? (
+        ) : type === "Have Kids" ? (
           ynArray.map((item, index) => {
             let findIndex = ynArray.findIndex((item, index) => {
               return item?.name === selectedHK;
@@ -1961,13 +1984,13 @@ const EditScreenSetting = props => {
                 index={index}
                 item={item}
                 multiSelect={false}
-                nameorid={'name'}
+                nameorid={"name"}
                 search={false}
                 radio={true}
               />
             );
           })
-        ) : type === 'Want Kids' ? (
+        ) : type === "Want Kids" ? (
           ynArray.map((item, index) => {
             let findIndex = ynArray.findIndex((item, index) => {
               return item?.name === selectedWK;
@@ -1979,13 +2002,13 @@ const EditScreenSetting = props => {
                 index={index}
                 item={item}
                 multiSelect={false}
-                nameorid={'name'}
+                nameorid={"name"}
                 search={false}
                 radio={true}
               />
             );
           })
-        ) : type === 'Relocate' ? (
+        ) : type === "Relocate" ? (
           ynArray.map((item, index) => {
             let findIndex = ynArray.findIndex((item, index) => {
               return item?.name === selectedRelocate;
@@ -1997,7 +2020,7 @@ const EditScreenSetting = props => {
                 index={index}
                 item={item}
                 multiSelect={false}
-                nameorid={'name'}
+                nameorid={"name"}
                 search={false}
                 radio={true}
               />
@@ -2006,9 +2029,9 @@ const EditScreenSetting = props => {
         ) : null}
       </View>
       <BottomButton
-        bottomStyles={{bottom: isKeyboardVisible && android ? 2 : 15}}
+        bottomStyles={{ bottom: isKeyboardVisible && android ? 2 : 15 }}
         loading={buttonLoader}
-        text={'Update'}
+        text={"Update"}
         onPress={updateProfile}
       />
     </SafeAreaView>
@@ -2021,41 +2044,41 @@ const styles = StyleSheet.create({
     // maxWidth: '80%',
     fontSize: 14,
     color: colors.black,
-    paddingVertical: '2%',
-    paddingHorizontal: '3%',
+    paddingVertical: "2%",
+    paddingHorizontal: "3%",
   },
   textinputView: {
-    marginVertical: Platform.OS === 'ios' ? '5%' : '3%',
-    width: '90%',
-    backgroundColor: '#F9FAFB',
-    paddingVertical: '5%',
-    alignSelf: 'center',
+    marginVertical: Platform.OS === "ios" ? "5%" : "3%",
+    width: "90%",
+    backgroundColor: "#F9FAFB",
+    paddingVertical: "5%",
+    alignSelf: "center",
   },
   rulerView: {
-    width: '100%',
-    alignItems: 'center',
-    marginTop: '15%',
-    backgroundColor: '#F9FAFB',
-    paddingVertical: '5%',
+    width: "100%",
+    alignItems: "center",
+    marginTop: "15%",
+    backgroundColor: "#F9FAFB",
+    paddingVertical: "5%",
     borderRadius: 10,
   },
   scrollContainer: {
-    flexDirection: 'row',
-    width: '100%',
+    flexDirection: "row",
+    width: "100%",
   },
   ask: {
     fontSize: 24,
-    color: '#111827',
-    fontFamily: 'Inter-Bold',
-    marginVertical: '1%',
+    color: "#111827",
+    fontFamily: "Inter-Bold",
+    marginVertical: "1%",
     // maxWidth: '90%',
   },
   line: {
     fontSize: 16,
     color: colors.textGrey1,
-    fontFamily: 'Inter-Regular',
-    marginVertical: '4%',
-    maxWidth: '90%',
+    fontFamily: "Inter-Regular",
+    marginVertical: "4%",
+    maxWidth: "90%",
   },
   customScrollBar: {
     backgroundColor: colors.primaryPink,
@@ -2063,9 +2086,9 @@ const styles = StyleSheet.create({
     width: 6,
   },
   customScrollBarBackground: {
-    backgroundColor: '#D903680D',
+    backgroundColor: "#D903680D",
     borderRadius: 3,
-    height: '95%',
+    height: "95%",
     width: 6,
   },
 });

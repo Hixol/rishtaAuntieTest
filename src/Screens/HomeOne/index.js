@@ -1,4 +1,4 @@
-import React, {useRef, useState, useEffect, memo, useCallback} from 'react';
+import React, { useRef, useState, useEffect, memo, useCallback } from "react";
 import {
   SafeAreaView,
   FlatList,
@@ -9,35 +9,35 @@ import {
   Text,
   TouchableOpacity,
   Pressable,
-} from 'react-native';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
-import {UserService} from '../../services';
-import {useSelector, useDispatch} from 'react-redux';
-import {useFocusEffect, useIsFocused} from '@react-navigation/native';
-import {android, userDevice, windowHeight} from '../../utility/size';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {useHelper} from '../../hooks/useHelper';
+} from "react-native";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { UserService } from "../../services";
+import { useSelector, useDispatch } from "react-redux";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
+import { android, userDevice, windowHeight } from "../../utility/size";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useHelper } from "../../hooks/useHelper";
 
-import styles from './styles';
-import DiscoverImg from '../../components/DiscoverImg';
-import colors from '../../utility/colors';
-import ProfileServices from '../../services/ProfileServices';
-import DiscoverSkeleton from '../../components/Skeleton/DiscoverSkeleton';
-import PersonalityServices from '../../services/PersonalityServices';
-import VerificationPendingCard from '../../components/Cards/VerificationPendingCard';
-import BottomImageInteraction from '../../components/Modal/BottomImageInteraction';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import ConnectyCube from 'react-native-connectycube';
-import CallService from '../../services/call-service';
-import pushNotificationService from '../../services/PushNotificationService';
-import ChatServices from '../../services/ChatServices';
-import ActionCard from '../../components/Cards/ActionCard';
-import ActionBottomModal from '../../components/Modal/ActionBottomModal';
+import styles from "./styles";
+import DiscoverImg from "../../components/DiscoverImg";
+import colors from "../../utility/colors";
+import ProfileServices from "../../services/ProfileServices";
+import DiscoverSkeleton from "../../components/Skeleton/DiscoverSkeleton";
+import PersonalityServices from "../../services/PersonalityServices";
+import VerificationPendingCard from "../../components/Cards/VerificationPendingCard";
+import BottomImageInteraction from "../../components/Modal/BottomImageInteraction";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import ConnectyCube from "react-native-connectycube";
+import CallService from "../../services/call-service";
+import pushNotificationService from "../../services/PushNotificationService";
+import ChatServices from "../../services/ChatServices";
+import ActionCard from "../../components/Cards/ActionCard";
+import ActionBottomModal from "../../components/Modal/ActionBottomModal";
 
 let limit = 15;
 let offset = 0;
 
-const HomeOne = props => {
+const HomeOne = (props) => {
   const [userId, setUserId] = useState();
   const [userName, setUserName] = useState();
   const [reverify, setReverify] = useState(false);
@@ -51,22 +51,22 @@ const HomeOne = props => {
   const [blockAlert, setBlockAlert] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
   const [imageModal, setImageModal] = useState(false);
-  const [modalType, setModalType] = useState('');
+  const [modalType, setModalType] = useState("");
   const tabBarHeight = useBottomTabBarHeight();
   const [skeleton, setSkeleton] = useState(false);
   const [index, setIndex] = useState();
   const [check, setCheck] = useState(false);
   const flatListRef = useRef(null);
   const dispatch = useDispatch();
-  const {handlePlayerId, handleStatusCode, Alerts} = useHelper();
+  const { handlePlayerId, handleStatusCode, Alerts } = useHelper();
 
   const loginInChat = (token, login) => {
     const userCredentials = {
       login: login,
-      password: '12345678',
+      password: "12345678",
     };
     ConnectyCube.createSession(userCredentials)
-      .then(session => {
+      .then((session) => {
         handlePlayerId(token, session.id);
         ConnectyCube.chat
           .connect({
@@ -77,109 +77,111 @@ const HomeOne = props => {
             CallService.init();
             pushNotificationService.init();
           })
-          .catch(err => console.log('error: ', err));
+          .catch((err) => console.log("error: ", err));
       })
-      .catch(err => console.log('createSession err:', err));
+      .catch((err) => console.log("createSession err:", err));
   };
 
   const checkUserAlreadyExist = (token, login) => {
-    let obj = {login: login};
+    let obj = { login: login };
     ConnectyCube.users
       .get(obj)
-      .then(res => {
+      .then((res) => {
         if (res?.user?.login != login) {
           createConnectyCubeSession(token, login);
         } else {
           loginInChat(token, login);
         }
       })
-      .catch(err => {
+      .catch((err) => {
         if (err?.code == 404) {
-          console.log('ConnectyCube users err', err?.info?.errors[0]);
+          console.log("ConnectyCube users err", err?.info?.errors[0]);
           createConnectyCubeSession(token, login);
         } else {
-          console.log('ConnectyCube users err', err);
+          console.log("ConnectyCube users err", err);
         }
       });
   };
 
   const connectyCubeInitialization = (token, login) => {
     ChatServices.ccCred(token)
-      .then(res => {
+      .then((res) => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           let data = res.data.data;
-          AsyncStorage.setItem('cred', JSON.stringify(data));
+          AsyncStorage.setItem("cred", JSON.stringify(data));
           const CREDENTIALS = {
             appId: data?.appid,
             authKey: data?.authKey,
             authSecret: data?.authSec,
           };
           const CONFIG = {
-            debug: {mode: 0},
+            debug: { mode: 0 },
           };
           ConnectyCube.init(CREDENTIALS, CONFIG);
           ConnectyCube.createSession()
-            .then(session => {
+            .then((session) => {
               checkUserAlreadyExist(token, login);
             })
-            .catch(err => console.log('session', err));
+            .catch((err) => console.log("session", err));
         }
       })
-      .catch(err => console.log('cred err:', err));
+      .catch((err) => console.log("cred err:", err));
   };
 
   const createConnectyCubeSession = (token, login) => {
     const userProfile = {
-      password: '12345678',
+      password: "12345678",
       phone: login,
       login: login,
     };
     ConnectyCube.createSession()
-      .then(session => {
-        ConnectyCube.users.signup({...userProfile, ...session}).then(res => {
-          let userLoginCredentials = {
-            login: login,
-            password: '12345678',
-          };
-          ConnectyCube.createSession(userLoginCredentials).then(session => {
-            ConnectyCube.login(userLoginCredentials)
-              .then(res => {
-                handlePlayerId(token, res.id);
-                AsyncStorage.setItem('ccuid', `${res.id}`);
-                ConnectyCube.chat
-                  .connect({
-                    userId: session.id,
-                    password: session.token,
-                  })
-                  .then(() => {
-                    CallService.init();
-                    pushNotificationService.init();
-                  })
-                  .catch(err => console.log('cc chat err:', err));
-              })
-              .catch(err => console.log('login err', err));
+      .then((session) => {
+        ConnectyCube.users
+          .signup({ ...userProfile, ...session })
+          .then((res) => {
+            let userLoginCredentials = {
+              login: login,
+              password: "12345678",
+            };
+            ConnectyCube.createSession(userLoginCredentials).then((session) => {
+              ConnectyCube.login(userLoginCredentials)
+                .then((res) => {
+                  handlePlayerId(token, res.id);
+                  AsyncStorage.setItem("ccuid", `${res.id}`);
+                  ConnectyCube.chat
+                    .connect({
+                      userId: session.id,
+                      password: session.token,
+                    })
+                    .then(() => {
+                      CallService.init();
+                      pushNotificationService.init();
+                    })
+                    .catch((err) => console.log("cc chat err:", err));
+                })
+                .catch((err) => console.log("login err", err));
+            });
           });
-        });
       })
-      .catch(err => console.log('createSession err:', err));
+      .catch((err) => console.log("createSession err:", err));
   };
 
-  const personalityMatch = type => {
+  const personalityMatch = (type) => {
     PersonalityServices.matchPersonality(type, token)
-      .then(res => {
+      .then((res) => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
-            type: 'PERSONALITY_RES',
+            type: "PERSONALITY_RES",
             payload: res.data.data,
           });
         }
       })
-      .catch(err => console.log('Personality match err', err));
+      .catch((err) => console.log("Personality match err", err));
   };
 
-  const viewConfigRef = useRef({viewAreaCoveragePercentThreshold: 70});
+  const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 70 });
   const {
     token,
     status,
@@ -190,11 +192,11 @@ const HomeOne = props => {
     discoverUserIndex,
     preferenceFilter,
     userData,
-  } = useSelector(store => store.userReducer);
-  const {religion} = useSelector(store => store.NewOnBoardingReducer);
+  } = useSelector((store) => store.userReducer);
+  const { religion } = useSelector((store) => store.NewOnBoardingReducer);
 
   const isFocused = useIsFocused();
-  const handleBlockAlert = state => {
+  const handleBlockAlert = (state) => {
     setIsBlocked(true);
     setBlockAlert(state);
   };
@@ -206,20 +208,20 @@ const HomeOne = props => {
     getAllUser(limit, offset);
   };
 
-  const handleBlockedScreen = state => {
-    props.navigation.navigate('BlockedList');
+  const handleBlockedScreen = (state) => {
+    props.navigation.navigate("BlockedList");
     setBlockAlert(false);
   };
 
-  const handleReportAlert = state => {
-    props.navigation.navigate('ReportAccountScreen', {
+  const handleReportAlert = (state) => {
+    props.navigation.navigate("ReportAccountScreen", {
       userId: userId,
       userName: userName,
     });
     setAction(false);
   };
 
-  const handleAlert = state => {
+  const handleAlert = (state) => {
     setAction(state);
   };
 
@@ -234,61 +236,61 @@ const HomeOne = props => {
   const getMyProfile = () => {
     if (token != null) {
       ProfileServices.getMyProfile(token)
-        .then(res => {
+        .then((res) => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             let data = res?.data?.data;
             dispatch({
-              type: 'religion',
+              type: "religion",
               payload: data?.Profile?.religion,
             });
             setReverify(data?.needToReverify);
 
             dispatch({
-              type: 'AUTH_USER_STATUS',
+              type: "AUTH_USER_STATUS",
               payload: data?.status,
             });
 
             dispatch({
-              type: 'AUTH_USER',
+              type: "AUTH_USER",
               payload: data,
             });
             dispatch({
-              type: 'vibes',
+              type: "vibes",
               payload: userData?.Profile?.vibes,
             });
           }
         })
-        .catch(err => {
-          if (err?.message.includes('Network')) {
-            Alerts('error', err.message);
+        .catch((err) => {
+          if (err?.message.includes("Network")) {
+            Alerts("error", err.message);
           } else {
-            console.log('getMyProfile err:', err);
+            console.log("getMyProfile err:", err);
           }
         });
     }
   };
   const getAllUser = (limit, offset, pagination) => {
     if (
-      status === 'ACTIVE' ||
-      status === 'INCOMPLETE' ||
-      status === 'INACTIVE' ||
-      status === 'COMPLETED'
+      status === "ACTIVE" ||
+      status === "INCOMPLETE" ||
+      status === "INACTIVE" ||
+      status === "COMPLETED"
     ) {
       UserService.getAllUser(token, `limit=${limit}&offset=${offset * limit}`)
-        .then(res => {
+        .then((res) => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             let data = res?.data?.data;
             if (data?.totalProfiles === 0 && data?.noOfProfilesRemaining >= 0) {
               dispatch({
-                type: 'AUTH_USER_SCREEN_INDEX',
+                type: "AUTH_USER_SCREEN_INDEX",
                 payload: false,
               });
             } else if (!swipeScreenIndex) {
               setTimeout(() => {
                 dispatch({
-                  type: 'AUTH_USER_SCREEN_INDEX',
+                  type: "AUTH_USER_SCREEN_INDEX",
                   payload: true,
                 });
               }, 500);
@@ -299,22 +301,22 @@ const HomeOne = props => {
 
             if (preferenceFilter) {
               dispatch({
-                type: 'SET_PREFERENCE_FILTER',
+                type: "SET_PREFERENCE_FILTER",
                 payload: false,
               });
               setProfilesList(data?.profiles);
             } else if (!preferenceFilter && pagination) {
-              setProfilesList(prevState => [...prevState, ...data?.profiles]);
+              setProfilesList((prevState) => [...prevState, ...data?.profiles]);
             } else {
               setProfilesList(data?.profiles);
             }
           }
         })
-        .catch(err => {
-          if (err?.message.includes('Network')) {
-            Alerts('error', err.message);
+        .catch((err) => {
+          if (err?.message.includes("Network")) {
+            Alerts("error", err.message);
           } else {
-            console.log('getAllUser err:', err);
+            console.log("getAllUser err:", err);
           }
         })
         .finally(() => {
@@ -324,7 +326,7 @@ const HomeOne = props => {
     }
   };
 
-  let foundIndex = profilesList.findIndex(el => el.id == discoverUserIndex);
+  let foundIndex = profilesList.findIndex((el) => el.id == discoverUserIndex);
 
   useFocusEffect(
     useCallback(() => {
@@ -334,14 +336,14 @@ const HomeOne = props => {
           index: foundIndex + 1,
         });
       }
-      setProfilesList(prevState =>
-        prevState.filter(el => el.id != discoverUserIndex),
+      setProfilesList((prevState) =>
+        prevState.filter((el) => el.id != discoverUserIndex)
       );
       dispatch({
-        type: 'SET_DISCOVER_INDEX',
+        type: "SET_DISCOVER_INDEX",
         payload: null,
       });
-    }, [foundIndex]),
+    }, [foundIndex])
   );
 
   useFocusEffect(
@@ -350,13 +352,13 @@ const HomeOne = props => {
         offset = 0;
         getAllUser(limit, offset);
       }
-    }, [preferenceFilter]),
+    }, [preferenceFilter])
   );
 
   useEffect(() => {
-    if (token != null && mobileNumber != '') {
+    if (token != null && mobileNumber != "") {
       connectyCubeInitialization(token, mobileNumber);
-    } else if (token != null && email != '') {
+    } else if (token != null && email != "") {
       connectyCubeInitialization(token, email);
     }
 
@@ -369,14 +371,14 @@ const HomeOne = props => {
     getAllUser(limit, offset);
   }, [status]);
 
-  const onViewableItemsChanged = useRef(({viewableItems}) => {
+  const onViewableItemsChanged = useRef(({ viewableItems }) => {
     setUserMediaImage(null);
     setUserMediaVideo(null);
     for (var i = 0; i < viewableItems?.length; i++) {
-      viewableItems[i]?.item?.UserMedia?.map(item => {
-        if (item?.type == 'video' && item?.sequence == null) {
+      viewableItems[i]?.item?.UserMedia?.map((item) => {
+        if (item?.type == "video" && item?.sequence == null) {
           setUserMediaVideo(item);
-        } else if (item?.type == 'image' && item?.sequence == 1) {
+        } else if (item?.type == "image" && item?.sequence == 1) {
           setUserMediaImage(item);
         }
       });
@@ -386,7 +388,7 @@ const HomeOne = props => {
       setIndex(viewableItems[i].index);
       setUserId(viewableItems[i].item.id);
       setUserName(viewableItems[i].item?.firstName);
-      props.navigation.navigate('Discover', {
+      props.navigation.navigate("Discover", {
         enableees: swipeIndex,
         userId: viewableItems[i].item.id,
         userDetails: viewableItems[i].item,
@@ -397,18 +399,18 @@ const HomeOne = props => {
   useEffect(() => {
     if (imageModal) {
       dispatch({
-        type: 'AUTH_USER_SCREEN_INDEX',
+        type: "AUTH_USER_SCREEN_INDEX",
         payload: false,
       });
     } else if (profilesList.length > 0 && imageModal === false) {
       dispatch({
-        type: 'AUTH_USER_SCREEN_INDEX',
+        type: "AUTH_USER_SCREEN_INDEX",
         payload: true,
       });
     }
     if (android) {
       PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
       );
     }
   }, [imageModal]);
@@ -420,12 +422,12 @@ const HomeOne = props => {
 
   const onMicPress = () => {
     setImageModal(true);
-    setModalType('mic');
+    setModalType("mic");
   };
 
   const onCommentPress = () => {
     setImageModal(true);
-    setModalType('comment');
+    setModalType("comment");
   };
 
   const handleBackButton = () => {
@@ -438,37 +440,41 @@ const HomeOne = props => {
     return true;
   };
 
+  BackHandler.addEventListener("hardwareBackPress", handleBackButton);
+
   useEffect(() => {
-    BackHandler.addEventListener('hardwareBackPress', handleBackButton);
+    BackHandler.addEventListener("hardwareBackPress", handleBackButton);
     return () => {
-      BackHandler.removeEventListener('hardwareBackPress', handleBackButton);
+      BackHandler.removeEventListener("hardwareBackPress", handleBackButton);
     };
   }, [imageModal]);
 
-  const onHeartPress = id => {
+  const onHeartPress = (id) => {
     UserService.likeInteraction(
       {
         resourceId:
           userMediaVideo !== null ? userMediaVideo?.id : userMediaImage?.id,
-        resourceType: 'USER_MEDIA',
+        resourceType: "USER_MEDIA",
         otherUserId: userId,
       },
-      token,
+      token
     )
-      .then(res => {
+      .then((res) => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
-          setProfilesList(prevState => prevState.filter(el => el.id !== id));
+          setProfilesList((prevState) =>
+            prevState.filter((el) => el.id !== id)
+          );
 
           Alerts(
-            'success',
+            "success",
             `You Liked ${userName}'s ${
-              userMediaVideo != null ? 'discover video' : 'picture'
-            } successfully`,
+              userMediaVideo != null ? "discover video" : "picture"
+            } successfully`
           );
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
   };
@@ -485,8 +491,8 @@ const HomeOne = props => {
       {loading ? (
         <ActivityIndicator
           color={colors.primaryPink}
-          style={{alignSelf: 'center', flex: 1}}
-          size={'large'}
+          style={{ alignSelf: "center", flex: 1 }}
+          size={"large"}
         />
       ) : (
         <SafeAreaView style={styles.container}>
@@ -505,19 +511,19 @@ const HomeOne = props => {
             //   //   }}
             //   // />
             // ) :
-            (status === 'COMPLETED' && reverify) || status == 'FAILED' ? (
+            (status === "COMPLETED" && reverify) || status == "FAILED" ? (
               <VerificationPendingCard
                 heading="Re - Submit Verification"
                 tagline="Please click the button below to re-submit a selfie, please make sure that you are in a well lit space. Thank you!"
                 btnText="Resubmit Verification"
-                onPress={() => props.navigation.navigate('SelfieVerification')}
+                onPress={() => props.navigation.navigate("SelfieVerification")}
               />
             ) : totalProfiles === 0 && remainingProfiles === 0 ? (
               <VerificationPendingCard
                 heading="Upgrade to Premium Version"
                 tagline="Your Profile viewing limit is reached, Please upgrade to view profiles"
                 btnText="Upgrade"
-                onPress={() => props.navigation.navigate('Paywall')}
+                onPress={() => props.navigation.navigate("Paywall")}
               />
             ) : totalProfiles === 0 && remainingProfiles > 0 ? (
               <VerificationPendingCard
@@ -540,14 +546,14 @@ const HomeOne = props => {
                 inverted={false}
                 pagingEnabled
                 initialNumToRender={1}
-                snapToAlignment={'start'}
+                snapToAlignment={"start"}
                 data={profilesList}
                 onEndReachedThreshold={0.5}
                 onEndReached={loadMoreData}
-                keyExtractor={item => item.id}
-                renderItem={({item}) => {
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => {
                   let sortedImage = [...item?.UserMedia]
-                    .filter(media => media.type != 'video')
+                    .filter((media) => media.type != "video")
                     .sort((a, b) => a.sequence - b.sequence)[0].url;
 
                   return (
@@ -558,20 +564,20 @@ const HomeOne = props => {
                         userId={userId}
                         images={sortedImage}
                         check={check}
-                        video={item?.UserMedia?.filter(el => {
-                          return el?.type == 'video';
+                        video={item?.UserMedia?.filter((el) => {
+                          return el?.type == "video";
                         })}
                         paused={true}
                         pausedButton={false}
                         isFocused={isFocused}
                         tabBarHeight={tabBarHeight}
                         searchPress={() =>
-                          props.navigation.navigate('SearchPreferences')
+                          props.navigation.navigate("SearchPreferences")
                         }
                         onPressCommentInteraction={() => {
                           if (
-                            status === 'INACTIVE' ||
-                            status === 'INCOMPLETE'
+                            status === "INACTIVE" ||
+                            status === "INCOMPLETE"
                           ) {
                             setCheck(true);
                           } else {
@@ -579,12 +585,12 @@ const HomeOne = props => {
                           }
                         }}
                         onPressVoiceInteraction={() =>
-                          status === 'INACTIVE' || status === 'INCOMPLETE'
+                          status === "INACTIVE" || status === "INCOMPLETE"
                             ? setCheck(true)
                             : onMicPress()
                         }
                         onPressLikeInteraction={() =>
-                          status === 'INACTIVE' || status === 'INCOMPLETE'
+                          status === "INACTIVE" || status === "INCOMPLETE"
                             ? setCheck(true)
                             : onHeartPress(item?.id)
                         }
@@ -595,49 +601,54 @@ const HomeOne = props => {
                           <View
                             style={{
                               flex: 1,
-                              width: '100%',
-                              height: '100%',
+                              width: "100%",
+                              height: "100%",
                               zIndex: 1,
-                              position: 'absolute',
+                              position: "absolute",
                               backgroundColor: colors.black,
                               opacity: 0.8,
-                            }}></View>
+                            }}
+                          ></View>
                           <Pressable
                             onPress={() => setCheck(false)}
                             style={{
                               flex: 1,
-                              position: 'absolute',
-                              width: '100%',
-                              height: '100%',
+                              position: "absolute",
+                              width: "100%",
+                              height: "100%",
                               zIndex: 2,
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                            }}>
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
                             <View
                               style={{
-                                width: '90%',
+                                width: "90%",
                                 height: 250,
-                                alignItems: 'center',
-                                justifyContent: 'center',
+                                alignItems: "center",
+                                justifyContent: "center",
                                 backgroundColor: colors.white,
                                 borderRadius: 16,
-                              }}>
+                              }}
+                            >
                               <Text
                                 style={{
                                   fontSize: 20,
-                                  fontFamily: 'Roboto-Medium',
+                                  fontFamily: "Roboto-Medium",
                                   color: colors.black,
-                                }}>
+                                }}
+                              >
                                 Warning
                               </Text>
                               <Text
                                 style={{
                                   fontSize: 16,
-                                  fontFamily: 'Roboto-Regular',
-                                  color: '#6B7280',
-                                  marginTop: '5%',
-                                  marginHorizontal: '3%',
-                                }}>
+                                  fontFamily: "Roboto-Regular",
+                                  color: "#6B7280",
+                                  marginTop: "5%",
+                                  marginHorizontal: "3%",
+                                }}
+                              >
                                 Please complete your profile to interact with
                                 other users, thank you!
                               </Text>
@@ -645,25 +656,27 @@ const HomeOne = props => {
                               <TouchableOpacity
                                 onPress={() => {
                                   props.navigation.navigate(
-                                    'OnBoardingQuestions',
+                                    "OnBoardingQuestions"
                                   );
                                   setCheck(false);
                                 }}
                                 style={{
-                                  width: '80%',
-                                  paddingVertical: '3%',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
+                                  width: "80%",
+                                  paddingVertical: "3%",
+                                  alignItems: "center",
+                                  justifyContent: "center",
                                   borderRadius: 5,
                                   backgroundColor: colors.primaryPink,
-                                  marginTop: '5%',
-                                }}>
+                                  marginTop: "5%",
+                                }}
+                              >
                                 <Text
                                   style={{
                                     fontSize: 16,
-                                    fontFamily: 'Roboto-Regular',
+                                    fontFamily: "Roboto-Regular",
                                     color: colors.white,
-                                  }}>
+                                  }}
+                                >
                                   Complete Profile
                                 </Text>
                               </TouchableOpacity>
@@ -672,22 +685,24 @@ const HomeOne = props => {
                                   setCheck(false);
                                 }}
                                 style={{
-                                  width: '80%',
-                                  paddingVertical: '3%',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
+                                  width: "80%",
+                                  paddingVertical: "3%",
+                                  alignItems: "center",
+                                  justifyContent: "center",
                                   borderRadius: 5,
                                   backgroundColor: colors.white,
-                                  marginTop: '5%',
+                                  marginTop: "5%",
                                   borderWidth: 1,
                                   borderColor: colors.primaryPink,
-                                }}>
+                                }}
+                              >
                                 <Text
                                   style={{
                                     fontSize: 16,
-                                    fontFamily: 'Roboto-Regular',
+                                    fontFamily: "Roboto-Regular",
                                     color: colors.primaryPink,
-                                  }}>
+                                  }}
+                                >
                                   Later
                                 </Text>
                               </TouchableOpacity>
@@ -709,13 +724,14 @@ const HomeOne = props => {
           {imageModal ? (
             <GestureHandlerRootView
               style={{
-                width: '100%',
-                backgroundColor: '#00000061',
+                width: "100%",
+                backgroundColor: "#00000061",
                 height: imageModal ? windowHeight * 1 : 0,
                 bottom: 0,
-                position: 'absolute',
+                position: "absolute",
                 zIndex: 1,
-              }}>
+              }}
+            >
               <BottomImageInteraction
                 setUserProfilesData={setProfilesList}
                 userProfilesData={profilesList}
@@ -734,7 +750,7 @@ const HomeOne = props => {
                 toggle={imageModal}
                 setToggle={setImageModal}
                 modalType={modalType}
-                offset={userDevice.includes('Pro Max') ? 75 : 70}
+                offset={userDevice.includes("Pro Max") ? 75 : 70}
               />
             </GestureHandlerRootView>
           ) : null}
