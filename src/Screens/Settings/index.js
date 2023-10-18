@@ -303,23 +303,26 @@ const Settings = (props) => {
             </Pressable>
           )} */}
 
-          <View style={styles.actionItemsMainView}>
-            <View style={styles.actionItemsView}>
-              <Text style={styles.actionItemsText}>Action Items</Text>
-              {status === "COMPLETED" ? null : (
+          {userData.Profile.personalityType == "" ||
+          userData.Profile.personalityType == null ? (
+            <View style={styles.actionItemsMainView}>
+              <View style={styles.actionItemsView}>
+                <Text style={styles.actionItemsText}>Action Items</Text>
+                {status === "COMPLETED" ? null : (
+                  <SettingButton
+                    onPress={() =>
+                      props.navigation.navigate("OnBoardingQuestions")
+                    }
+                    title={"Complete my profile"}
+                  />
+                )}
                 <SettingButton
-                  onPress={() =>
-                    props.navigation.navigate("OnBoardingQuestions")
-                  }
-                  title={"Complete my profile"}
+                  onPress={() => props.navigation.navigate("PersonalityQuiz")}
+                  title={"Take personality quiz to get user insights"}
                 />
-              )}
-              <SettingButton
-                onPress={() => props.navigation.navigate("PersonalityQuiz")}
-                title={"Take personality quiz to get user insights"}
-              />
+              </View>
             </View>
-          </View>
+          ) : null}
           <View style={styles.actionItemsMainView}>
             <View style={styles.actionItemsView}>
               <View
