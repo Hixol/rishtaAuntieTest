@@ -627,7 +627,7 @@ const HomeOne = (props) => {
                               <Text
                                 style={{
                                   fontSize: 20,
-                                  fontFamily: "Roboto-Medium",
+                                  fontFamily: "Inter-Medium",
                                   color: colors.black,
                                 }}
                               >
@@ -636,7 +636,7 @@ const HomeOne = (props) => {
                               <Text
                                 style={{
                                   fontSize: 16,
-                                  fontFamily: "Roboto-Regular",
+                                  fontFamily: "Inter-Regular",
                                   color: "#6B7280",
                                   marginTop: "5%",
                                   marginHorizontal: "3%",
@@ -666,7 +666,7 @@ const HomeOne = (props) => {
                                 <Text
                                   style={{
                                     fontSize: 16,
-                                    fontFamily: "Roboto-Regular",
+                                    fontFamily: "Inter-Regular",
                                     color: colors.white,
                                   }}
                                 >
@@ -692,7 +692,7 @@ const HomeOne = (props) => {
                                 <Text
                                   style={{
                                     fontSize: 16,
-                                    fontFamily: "Roboto-Regular",
+                                    fontFamily: "Inter-Regular",
                                     color: colors.primaryPink,
                                   }}
                                 >

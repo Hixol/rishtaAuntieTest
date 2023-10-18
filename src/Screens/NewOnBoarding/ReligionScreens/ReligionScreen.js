@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
   ask: {
     fontSize: 16,
     color: colors.black,
-    fontFamily: "Roboto-light",
+    fontFamily: "Inter-light",
     marginVertical: "1%",
     maxWidth: "90%",
   },

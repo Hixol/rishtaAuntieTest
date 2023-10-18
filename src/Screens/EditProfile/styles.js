@@ -46,7 +46,7 @@ export default StyleSheet.create({
   },
   detailTxt: {
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     fontSize: 16,
   },
   arrowIconView: {
@@ -72,7 +72,7 @@ export default StyleSheet.create({
   },
   txtStyle: {
     color: colors.primaryPink,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
     fontSize: windowHeight * 0.022,
   },
   cardBackground: {

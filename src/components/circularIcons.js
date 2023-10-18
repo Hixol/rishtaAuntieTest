@@ -58,6 +58,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     elevation: 5,
   },
-  iconText: {fontSize: 17, color: '#0C3677', fontFamily: 'Roboto-Regular'},
+  iconText: {fontSize: 17, color: '#0C3677', fontFamily: 'Inter-Regular'},
 });
 export default CircularIcon;

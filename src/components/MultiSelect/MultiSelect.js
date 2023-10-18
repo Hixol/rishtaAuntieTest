@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   },
   btnTxt: {
     color: 'black',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     fontSize: 13,
   },
 });

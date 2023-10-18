@@ -24,7 +24,7 @@ const QuestionPool = ({item}) => {
             activeOpacity={0.7}
             key={index}
             style={[styles.details]}>
-            <Text style={{color: colors.black, fontFamily: 'Roboto-Medium'}}>
+            <Text style={{color: colors.black, fontFamily: 'Inter-Medium'}}>
               {view.title}
             </Text>
           </TouchableOpacity>
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   headingTxt: {
     fontSize: 18,
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     marginLeft: '3%',
   },
 });

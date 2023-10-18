@@ -133,13 +133,13 @@ const styles = StyleSheet.create({
     marginVertical: '2%',
   },
   questHeading: {
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
     color: colors.primaryPink,
     fontSize: 20,
     marginVertical: '2%',
   },
   ansHeading: {
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
     fontSize: 28,
     color: colors.primaryBlue,
     textAlign: 'right',
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
   editDeleteText: {
     marginHorizontal: '5%',
     fontSize: 17,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     color: colors.primaryPink,
   },
 });

@@ -55,7 +55,7 @@ const PrivacySettingContainer = props => {
               isOn={props.isOn}
               onColor={colors.primaryPink}
               offColor={colors.mediumGrey}
-              labelStyle={{color: 'black', fontFamily: 'Roboto-Bold'}}
+              labelStyle={{color: 'black', fontFamily: 'Inter-Bold'}}
               size="small"
               onToggle={toggleSwitch}
             />

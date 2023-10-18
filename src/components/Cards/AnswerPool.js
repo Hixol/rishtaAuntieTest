@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   title: {
     marginTop: '4%',
     color: colors.primaryPink,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     fontSize: 20,
   },
   textInputContainer: {

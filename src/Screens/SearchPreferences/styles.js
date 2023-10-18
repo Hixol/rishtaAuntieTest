@@ -6,7 +6,7 @@ export default StyleSheet.create({
   myPrivacySetting: {
     alignSelf: 'center',
     fontSize: 24,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     color: colors.primaryBlue,
   },
   SearchPreferencesView: {
@@ -40,7 +40,7 @@ export default StyleSheet.create({
   premiumPreferenceType: {
     alignSelf: 'center',
     fontSize: 20,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
 
     marginVertical: '2%',
   },
@@ -90,7 +90,7 @@ export default StyleSheet.create({
   privacySettingType: {
     alignSelf: 'center',
     fontSize: 18,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
     color: colors.primaryPink,
   },
   toggleOptionView: {
@@ -103,7 +103,7 @@ export default StyleSheet.create({
   toggleOptionText: {
     fontSize: 17,
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
   },
   toggleOptionTaglineView: {
     marginHorizontal: '5%',

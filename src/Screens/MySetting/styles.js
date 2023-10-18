@@ -12,7 +12,7 @@ export default StyleSheet.create({
   myPrivacySetting: {
     alignSelf: 'center',
     fontSize: 22,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     color: colors.primaryBlue,
     marginVertical: '5%',
   },
@@ -58,7 +58,7 @@ export default StyleSheet.create({
   },
   btnTitle: {
     fontSize: 17,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     color: '#D90368',
   },
   centeredView: {
@@ -100,7 +100,7 @@ export default StyleSheet.create({
   },
   textStyle: {
     color: 'white',
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
     textAlign: 'center',
   },
   modalText: {
@@ -134,7 +134,7 @@ export default StyleSheet.create({
     marginLeft: '5%',
     fontSize: 15,
     color: 'white',
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     width: '81%',
   },
   location: {
@@ -183,7 +183,7 @@ export default StyleSheet.create({
   boxText: {
     fontSize: 18,
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
   boxInside: {
     height: '50%',
@@ -195,7 +195,7 @@ export default StyleSheet.create({
   privacyTxt: {
     color: colors.primaryBlue,
     fontSize: 25,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     marginVertical: '4%',
   },
   boxFooter: {
@@ -224,7 +224,7 @@ export default StyleSheet.create({
     color: 'white',
     fontSize: 22,
     alignSelf: 'center',
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
   statementTxt: {
     color: 'white',
@@ -232,7 +232,7 @@ export default StyleSheet.create({
     alignSelf: 'center',
     marginTop: '3%',
   },
-  analystTxt: {color: 'white', fontSize: 15, fontFamily: 'Roboto-Medium'},
+  analystTxt: {color: 'white', fontSize: 15, fontFamily: 'Inter-Medium'},
 
   modalContainerStyle: {
     flex: 1,

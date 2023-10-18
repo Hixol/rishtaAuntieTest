@@ -5,6 +5,7 @@ const windowHeight = Dimensions.get('window').height;
 export default StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor:colors.white
   },
   headerContainer: {
     position: 'absolute',
@@ -53,7 +54,7 @@ export default StyleSheet.create({
   },
   optionText: {
     fontSize: 20,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
 
     color: '#161616',
     marginLeft: '7%',

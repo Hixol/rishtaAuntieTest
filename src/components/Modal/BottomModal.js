@@ -325,13 +325,13 @@ const styles = StyleSheet.create({
   contentContainer: {flexGrow: 1, alignItems: 'center', paddingBottom: '15%'},
 
   promptTxt: {
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
     fontSize: 22,
     color: colors.darkBlue,
     marginBottom: 12,
   },
   promptTagline: {
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     fontSize: 14,
     color: colors.darkBlue,
     lineHeight: 18,
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   selectedPrompts: {
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
     fontSize: 14,
     color: colors.darkBlue,
     marginVertical: '5%',
@@ -360,7 +360,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   promptTitle: {
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     fontSize: 14,
   },
   checkCircle: {
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   vibesHeading: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     color: colors.primaryBlue,
     marginTop: '5%',
   },
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
   dropdownTitle: {
     color: colors.darkBlue,
     fontSize: 18,
-    fontFamily: 'Roboto-Black',
+    fontFamily: 'Inter-Black',
     textAlign: 'center',
     padding: '3.5%',
   },

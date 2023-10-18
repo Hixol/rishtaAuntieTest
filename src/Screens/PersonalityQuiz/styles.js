@@ -23,7 +23,7 @@ export default StyleSheet.create({
   boxBorder: {borderWidth: 1, borderColor: colors.primaryPink},
   boxText: {
     color: colors.royalBlue,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     lineHeight: 20,
     fontSize: 16,
     textAlign: 'center',

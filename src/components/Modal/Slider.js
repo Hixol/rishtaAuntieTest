@@ -67,7 +67,7 @@ const SliderView = props => {
             isOn={isEnabled}
             onColor={colors.primaryPink}
             offColor={colors.mediumGrey}
-            labelStyle={{color: 'black', fontFamily: 'Roboto-Regular'}}
+            labelStyle={{color: 'black', fontFamily: 'Inter-Regular'}}
             size="small"
             label="Deal Break?"
             onToggle={toggleSwitch}
@@ -465,7 +465,7 @@ const styles = StyleSheet.create({
   detailsTxt: {
     fontSize: 16,
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
 
     alignSelf: 'flex-start',
     // marginLeft: '20%',

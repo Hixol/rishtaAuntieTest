@@ -6,7 +6,7 @@ export default StyleSheet.create({
   tabTitle: {
     color: colors.primaryPink,
     margin: 8,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     fontSize: 18,
   },
 });

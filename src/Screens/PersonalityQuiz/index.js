@@ -241,7 +241,7 @@ const PersonalityQuiz = props => {
               title="Save"
               YesNoBtn
               YesNoBtnStyle={{paddingVertical: '2.5%'}}
-              btnTitleStyle={{fontSize: 18, fontFamily: 'Roboto-Medium'}}
+              btnTitleStyle={{fontSize: 18, fontFamily: 'Inter-Medium'}}
             />
           ) : (
             <Button
@@ -249,7 +249,7 @@ const PersonalityQuiz = props => {
               title="NEXT"
               YesNoBtn
               YesNoBtnStyle={{paddingVertical: '2.5%'}}
-              btnTitleStyle={{fontSize: 18, fontFamily: 'Roboto-Medium'}}
+              btnTitleStyle={{fontSize: 18, fontFamily: 'Inter-Medium'}}
             />
           )}
         </SafeAreaView>

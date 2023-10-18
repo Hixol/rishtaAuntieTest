@@ -129,14 +129,14 @@ const styles = StyleSheet.create({
   },
   editMyProfile: {
     color: '#0C3677',
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     marginTop: '5%',
     fontSize: 15,
     textAlign: 'center',
   },
   name: {
     color: '#0C3677',
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     fontSize: 20,
     paddingVertical: '3%',
   },

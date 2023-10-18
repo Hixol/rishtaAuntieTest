@@ -24,9 +24,9 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
   text: {
-    fontSize: 22,
+    fontSize: 24,
     color: colors.blackBlue,
-    fontFamily: 'Inter-Medium',
+    fontFamily: 'Inter-Regular',
     marginLeft: 5,
     alignSelf: 'center',
   },

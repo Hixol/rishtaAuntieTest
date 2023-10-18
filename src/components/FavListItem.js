@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   msgText: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     fontSize: 14,
     color: colors.black,
   },
@@ -201,14 +201,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   nameTxt: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     color: colors.black,
     fontSize: 13,
     marginHorizontal: 6,
     flex: 1,
   },
   dateTxt: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     color: colors.black,
     fontSize: 13,
   },

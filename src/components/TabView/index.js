@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: colors.primaryBlue,
     textAlign: 'center',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
   },
   cardWrapper: {
     flexWrap: 'wrap',
@@ -243,6 +243,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: colors.primaryPink,
     fontSize: 14,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
   },
 });

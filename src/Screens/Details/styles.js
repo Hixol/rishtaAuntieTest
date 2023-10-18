@@ -21,9 +21,9 @@ export default StyleSheet.create({
     width: '100%',
   },
   name: {
-    fontSize: 22,
+    fontSize: 24,
     color: 'white',
-    fontFamily: 'Inter-Medium',
+    fontFamily: 'Inter-SemiBold',
     marginBottom: -3,
   },
   flagContainer: {
@@ -217,7 +217,7 @@ export default StyleSheet.create({
     marginLeft: '2%',
     fontSize: 16,
     color: 'white',
-    fontFamily: 'Inter-Regular',
+    fontFamily: 'Inter-Medium',
   },
   matchingSecHeader: {
     flexDirection: 'row',
@@ -228,8 +228,8 @@ export default StyleSheet.create({
   imgCircle: {height: '100%', width: '100%', borderRadius: 50},
   nameTxt: {
     color: 'white',
-    fontSize: 15,
-    fontFamily: 'Inter-Regular',
+    fontSize: 16,
+    fontFamily: 'Inter-Medium',
     marginBottom: 5,
   },
   ambitiousBttn: {
@@ -258,7 +258,7 @@ export default StyleSheet.create({
   },
   poolAnsTxt: {
     color: colors.blackBlue,
-    fontFamily: 'Inter-Medium',
+    fontFamily: 'Inter-SemiBold',
     fontSize: 24,
     marginVertical: '5%',
     alignSelf: 'flex-end',

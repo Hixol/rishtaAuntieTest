@@ -79,7 +79,7 @@ const MySearchPreferencesEditScreen = (props) => {
     },
     yesBtnTitle: {
       fontSize: 18,
-      fontFamily: "Roboto-Regular",
+      fontFamily: "Inter-Regular",
     },
     noBtnStyle: {
       width: "45%",
@@ -87,7 +87,7 @@ const MySearchPreferencesEditScreen = (props) => {
     },
     noBtnTitle: {
       fontSize: 18,
-      fontFamily: "Roboto-Regular",
+      fontFamily: "Inter-Regular",
     },
   };
 

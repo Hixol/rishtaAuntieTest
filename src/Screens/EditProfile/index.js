@@ -598,7 +598,7 @@ const EditProfile = props => {
               style={{
                 marginLeft: '2%',
                 color: colors.primaryBlue,
-                fontFamily: 'Roboto-Medium',
+                fontFamily: 'Inter-Medium',
                 marginVertical: '1%',
               }}>
               Share your personality to get the best interactions

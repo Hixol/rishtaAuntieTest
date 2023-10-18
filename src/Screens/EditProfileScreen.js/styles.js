@@ -15,7 +15,7 @@ export default StyleSheet.create({
   },
   detailTxt: {
     color: '#374151',
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     fontSize: 14,
   },
   actionItemsView: {

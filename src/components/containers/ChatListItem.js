@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
 
   userNameText: {
     color: colors.darkBlue,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     fontSize: 18,
   },
 

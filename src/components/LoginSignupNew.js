@@ -631,7 +631,7 @@ const LoginSignupNew = (props) => {
                     >
                       <Text
                         style={{
-                          fontFamily: "Roboto-Bold",
+                          fontFamily: "Inter-Bold",
                           color: colors.primaryBlue,
                         }}
                       >
@@ -673,7 +673,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   createOneText: {
-    fontFamily: "Roboto-Bold",
+    fontFamily: "Inter-Bold",
     color: colors.primaryBlue,
   },
   countryCode: {
@@ -683,7 +683,7 @@ const styles = StyleSheet.create({
   },
   signInCreate: {
     marginBottom: "3%",
-    fontFamily: "Roboto-Bold",
+    fontFamily: "Inter-Bold",
     fontSize: 24,
     color: colors.primaryBlue,
   },
@@ -719,12 +719,12 @@ const styles = StyleSheet.create({
   aggrementText: {
     marginLeft: "5%",
     fontSize: 11,
-    fontFamily: "Roboto-Medium",
+    fontFamily: "Inter-Medium",
     width: "80%",
     color: colors.darkBlue,
   },
   warningText: { color: "red", top: "6%", fontWeight: "700" },
-  firstNameText: { fontSize: 17, color: "#232323", fontFamily: "Roboto-Bold" },
+  firstNameText: { fontSize: 17, color: "#232323", fontFamily: "Inter-Bold" },
   textInput: { color: "black", marginTop: "-2%" },
   horizontalLine: {
     width: "100%",
@@ -775,7 +775,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: "5%",
   },
   signinBtnTxt: {
-    fontFamily: "Roboto-Medium",
+    fontFamily: "Inter-Medium",
     fontSize: 17,
     color: colors.white,
   },
@@ -791,7 +791,7 @@ const styles = StyleSheet.create({
   orSignin: {
     alignSelf: "center",
     fontSize: 22,
-    fontFamily: "Roboto-Bold",
+    fontFamily: "Inter-Bold",
     marginVertical: "5%",
     color: colors.primaryBlue,
   },
@@ -802,7 +802,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
   statementTxt: {
-    fontFamily: "Roboto-Regular",
+    fontFamily: "Inter-Regular",
     fontSize: 11,
     textAlign: "center",
     width: "90%",
@@ -845,9 +845,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.greyWhite,
   },
   noAccountTxt: { fontSize: 15, marginRight: "2%", color: colors.mediumGrey },
-  heading: { fontFamily: "Roboto-Bold", fontSize: 25, color: colors.black },
+  heading: { fontFamily: "Inter-Bold", fontSize: 25, color: colors.black },
   lightText: {
-    fontFamily: "Roboto-Light",
+    fontFamily: "Inter-Light",
     fontSize: 15,
     marginTop: "3%",
     color: colors.textGrey,
@@ -864,7 +864,7 @@ const styles = StyleSheet.create({
   },
   socialText: {
     fontSize: 18,
-    fontFamily: "Roboto-Medium",
+    fontFamily: "Inter-Medium",
     marginLeft: "3%",
   },
   divider: {

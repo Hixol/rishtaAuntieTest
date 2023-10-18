@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 27,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
     color: colors.primaryBlue,
     textAlign: 'center',
   },
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     fontSize: 12,
     textAlign: 'center',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     color: colors.primaryBlue,
   },
   btnContainer: {
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primaryBlue,
   },
   btnText: {
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     fontSize: 15,
     color: colors.primaryBlue,
   },

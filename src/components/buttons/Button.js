@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   },
   btnTitle: {
     fontSize: 20,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
 
     color: colors.primaryPink,
   },

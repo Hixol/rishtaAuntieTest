@@ -64,7 +64,7 @@ export default function MyLifeStyle({user}) {
                   style={{
                     textAlign: 'right',
                     width: '100%',
-                    fontFamily: 'Inter-Medium',
+                    fontFamily: 'Inter-SemiBold',
                     fontSize: 16,
                     flexDirection: 'row',
                     color: colors.blackBlue,
@@ -117,7 +117,7 @@ export default function MyLifeStyle({user}) {
                       style={{
                         textAlign: 'right',
                         width: '100%',
-                        fontFamily: 'Inter-Medium',
+                        fontFamily: 'Inter-SemiBold',
                         fontSize: 16,
                         color: colors.blackBlue,
                       }}>
@@ -171,7 +171,7 @@ export default function MyLifeStyle({user}) {
                         style={{
                           textAlign: 'right',
                           width: '100%',
-                          fontFamily: 'Inter-Medium',
+                          fontFamily: 'Inter-SemiBold',
                           fontSize: 16,
                           color: colors.blackBlue,
                         }}>

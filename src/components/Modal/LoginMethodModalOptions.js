@@ -34,7 +34,7 @@ const LoginMethodModalOptions = props => {
               isOn={isEnabled}
               onColor={colors.primaryPink}
               offColor={colors.mediumGrey}
-              labelStyle={{color: 'black', fontFamily: 'Roboto-Bold'}}
+              labelStyle={{color: 'black', fontFamily: 'Inter-Bold'}}
               size="small"
               onToggle={toggleSwitch}
             />
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     color: colors.primaryBlue,
     alignSelf: 'center',
     fontSize: 15,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     width: '80%',
   },
   editIcon: {

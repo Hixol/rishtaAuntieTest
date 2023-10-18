@@ -62,14 +62,14 @@ const styles = StyleSheet.create({
   question: {
     fontSize: 24,
     color: colors.black,
-    fontFamily: "Roboto-Bold",
+    fontFamily: "Inter-Bold",
     marginVertical: "2%",
     maxWidth: "90%",
   },
   ask: {
     fontSize: 16,
     color: colors.black,
-    fontFamily: "Roboto-light",
+    fontFamily: "Inter-light",
     marginVertical: "1%",
     maxWidth: "90%",
   },

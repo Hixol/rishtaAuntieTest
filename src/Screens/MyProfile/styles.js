@@ -30,7 +30,7 @@ export default StyleSheet.create({
     marginLeft: '5%',
     fontSize: 15,
     color: 'white',
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
 
     width: '81%',
   },

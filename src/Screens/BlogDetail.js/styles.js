@@ -11,12 +11,12 @@ export default StyleSheet.create({
   headingText:{
     fontSize: 22,
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
   },
   welcomeText:{
     color: colors.primaryBlue,
     fontSize: 20,
-    fontFamily:'Roboto-Bold',
+    fontFamily:'Inter-Bold',
     alignSelf: 'center',
     marginVertical: '3%',
   },

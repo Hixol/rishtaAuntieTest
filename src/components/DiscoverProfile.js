@@ -151,7 +151,7 @@ const DiscoverProfile = ({
         <Text numberOfLines={1} style={styles.nameTxt}>
           {userName}
           {''}
-          <Text style={{fontSize: 15, fontFamily: 'Roboto-Regular'}}>
+          <Text style={{fontSize: 15, fontFamily: 'Inter-Regular'}}>
             {' '}
             {age}
           </Text>
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     marginLeft: '5%',
     fontSize: 15,
     color: 'white',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
   },
   nameView: {
     position: 'absolute',
@@ -269,16 +269,16 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 22,
     alignSelf: 'center',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
   },
   statementTxt: {
     color: 'white',
     fontSize: 16,
     alignSelf: 'center',
     marginTop: '3%',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
   },
-  analystTxt: {color: 'white', fontSize: 15, fontFamily: 'Roboto-Regular'},
+  analystTxt: {color: 'white', fontSize: 15, fontFamily: 'Inter-Regular'},
   iconImg: {
     height: windowHeight * 0.055,
     width: windowHeight * 0.055,

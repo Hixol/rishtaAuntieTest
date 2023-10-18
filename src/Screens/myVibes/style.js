@@ -11,7 +11,7 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   vibesHeading: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     color: colors.primaryBlue,
     marginTop: '5%',
   },
@@ -23,7 +23,7 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
   selectionHeading: {
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     color: colors.primaryBlue,
     fontSize: 18,
   },
@@ -43,7 +43,7 @@ export default StyleSheet.create({
   },
   btnTxt: {
     color: 'black',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     fontSize: 13,
   },
   saveBtn: {
@@ -60,7 +60,7 @@ export default StyleSheet.create({
   },
   saveTxt: {
     color: colors.primaryPink,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     fontSize: 18,
   },
 });

@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   headingTxt: {
     fontSize: 22,
     color: colors.primaryPink,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     marginLeft: '2%',
   },
   detailsSec: {
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   detailsTxt: {
     fontSize: 13,
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
   dropDownBtn: {
     height: '47%',
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   dropdownTxt: {
     textAlign: 'left',
     fontSize: 14,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
 });
 

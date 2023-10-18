@@ -130,21 +130,21 @@ const WelcomeScreen = (props) => {
         <View style={{ marginTop: "5%" }}>
           <Button
             onPress={goToLogin}
-            btnTitleStyle={{ fontFamily: "Roboto-Regular", fontSize: 17 }}
+            btnTitleStyle={{ fontFamily: "Inter-Regular", fontSize: 17 }}
             YesNoBtnStyle={{ width: "50%" }}
             YesNoBtn
             title={"Login"}
           />
           {/*<Button
             onPress={() => props.navigation.navigate('SignUp')}
-            btnTitleStyle={{fontFamily: 'Roboto-Regular', fontSize: 17}}
+            btnTitleStyle={{fontFamily: 'Inter-Regular', fontSize: 17}}
             YesNoBtn
             title={'Get Started'}
             YesNoBtnStyle={{marginTop: '2%', width: '50%'}}
           /> */}
           <Button
             onPress={() => props.navigation.navigate("SignUp")}
-            btnTitleStyle={{ fontFamily: "Roboto-Regular", fontSize: 17 }}
+            btnTitleStyle={{ fontFamily: "Inter-Regular", fontSize: 17 }}
             YesNoBtn
             title={"Get Started"}
             YesNoBtnStyle={{ marginTop: "2%", width: "50%" }}

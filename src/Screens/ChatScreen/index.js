@@ -1192,14 +1192,14 @@ const ChatScreen = (props) => {
                     })
                   }
                   title="Edit My Profile"
-                  btnTitleStyle={{ fontFamily: "Roboto-Regular" }}
+                  btnTitleStyle={{ fontFamily: "Inter-Regular" }}
                   YesNoBtnStyle={{ marginVertical: "5%", width: "50%" }}
                 />
                 <Button
                   YesNoBtn
                   onPress={() => navProps.navigation.navigate("Discover")}
                   title="Go To Discover"
-                  btnTitleStyle={{ fontFamily: "Roboto-Regular" }}
+                  btnTitleStyle={{ fontFamily: "Inter-Regular" }}
                   YesNoBtnStyle={{ marginBottom: "5%", width: "50%" }}
                 />
               </View>

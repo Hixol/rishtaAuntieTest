@@ -24,7 +24,7 @@ const LoginOptionsButtons = props => {
         style={{
           color: props.txtColor,
           fontSize: 15,
-          fontFamily: 'Roboto-Regular',
+          fontFamily: 'Inter-Regular',
         }}>
         {props.iconName}
       </Text>

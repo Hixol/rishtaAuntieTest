@@ -142,7 +142,7 @@ export default StyleSheet.create({
     marginLeft: '5%',
     fontSize: 16,
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
   },
   highlight: {
     backgroundColor: 'rgba(52, 183, 241, 0.5)',
@@ -171,7 +171,7 @@ export default StyleSheet.create({
     textAlign: 'center',
     color: colors.textGrey1,
     fontSize: 14,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
   },
   interactionImageContainer: {
     width: windowWidth * 0.4,

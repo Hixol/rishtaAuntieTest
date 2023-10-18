@@ -1,4 +1,4 @@
-import React, {useState, useEffect, memo} from 'react';
+import React, { useState, useEffect, memo } from "react";
 import {
   Text,
   View,
@@ -7,30 +7,30 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Pressable,
-} from 'react-native';
-import {useFocusEffect, useIsFocused} from '@react-navigation/native';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
-import {useSelector, useDispatch} from 'react-redux';
-import {userDevice, windowHeight} from '../../utility/size';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {useHelper} from '../../hooks/useHelper';
+} from "react-native";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useSelector, useDispatch } from "react-redux";
+import { userDevice, windowHeight } from "../../utility/size";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useHelper } from "../../hooks/useHelper";
 
-import styles from './styles';
-import colors from '../../utility/colors';
-import FastImage from 'react-native-fast-image';
-import CountryFlag from 'react-native-country-flag';
-import ActionCard from '../../components/Cards/ActionCard';
-import UserService from '../../services/UserService';
-import ImageCarousel from '../../components/StorySlider/ImageCarousel';
-import CardCarousel from '../../modules/CardCarousel';
-import DetailsSkeleton from '../../components/Skeleton/DetailsSkeleton';
-import BottomImageInteraction from '../../components/Modal/BottomImageInteraction';
-import BottomPromptInteraction from '../../components/Modal/BottomPropmtInteraction';
-import Countries from '../../assets/countryLists/Countries';
-import Icons from '../../utility/icons';
-import ActionBottomModal from '../../components/Modal/ActionBottomModal';
+import styles from "./styles";
+import colors from "../../utility/colors";
+import FastImage from "react-native-fast-image";
+import CountryFlag from "react-native-country-flag";
+import ActionCard from "../../components/Cards/ActionCard";
+import UserService from "../../services/UserService";
+import ImageCarousel from "../../components/StorySlider/ImageCarousel";
+import CardCarousel from "../../modules/CardCarousel";
+import DetailsSkeleton from "../../components/Skeleton/DetailsSkeleton";
+import BottomImageInteraction from "../../components/Modal/BottomImageInteraction";
+import BottomPromptInteraction from "../../components/Modal/BottomPropmtInteraction";
+import Countries from "../../assets/countryLists/Countries";
+import Icons from "../../utility/icons";
+import ActionBottomModal from "../../components/Modal/ActionBottomModal";
 
-const DetailScreen = props => {
+const DetailScreen = (props) => {
   const tabBarHeight = useBottomTabBarHeight();
   const userDetails = props?.route?.params?.userDetails;
   const userId = props?.route?.params?.userId;
@@ -38,9 +38,9 @@ const DetailScreen = props => {
   let Images = [];
   const ref = React.useRef(null);
   const dispatch = useDispatch();
-  const {Alerts, handleStatusCode} = useHelper();
-  const {token, userData, status} = useSelector(store => store.userReducer);
-  const {personalityRes} = useSelector(store => store.profileReducer);
+  const { Alerts, handleStatusCode } = useHelper();
+  const { token, userData, status } = useSelector((store) => store.userReducer);
+  const { personalityRes } = useSelector((store) => store.profileReducer);
 
   let [userImages, setUserImages] = useState();
   const [blockAlert, setBlockAlert] = useState(false);
@@ -51,14 +51,14 @@ const DetailScreen = props => {
   const [imageModal, setImageModal] = useState(false);
   const [promptModal, setPromptModal] = useState(false);
   const [completeAlert, setCompleteAlert] = useState(false);
-  const [modalType, setModalType] = useState('');
+  const [modalType, setModalType] = useState("");
   const [index, setIndex] = useState(0);
   const [promptIndex, setPromptIndex] = useState();
   const [onBoardingCheck, setOnBoardingCheck] = useState(false);
 
-  const handleReportAlert = state => {
+  const handleReportAlert = (state) => {
     setAction(false);
-    props?.navigation.navigate('ReportAccountScreen', {
+    props?.navigation.navigate("ReportAccountScreen", {
       userId: userId,
       userName: userDetails?.firstName,
     });
@@ -66,17 +66,17 @@ const DetailScreen = props => {
 
   const handleHomeScreen = () => {
     setBlockAlert(false);
-    props?.navigation.jumpTo('HomeOne');
+    props?.navigation.jumpTo("HomeOne");
   };
 
-  const handleBlockedScreen = state => {
+  const handleBlockedScreen = (state) => {
     setBlockAlert(false);
-    props?.navigation.navigate('BlockedList');
+    props?.navigation.navigate("BlockedList");
   };
 
-  userDetails?.UserMedia?.map(item => {
-    if (item?.type === 'image') {
-      return Images.push({id: item?.id, url: item?.url});
+  userDetails?.UserMedia?.map((item) => {
+    if (item?.type === "image") {
+      return Images.push({ id: item?.id, url: item?.url });
     } else {
       return null;
     }
@@ -84,43 +84,43 @@ const DetailScreen = props => {
 
   Images = [...Images].sort((a, b) => a.id - b.id);
 
-  const handleAlert = state => {
+  const handleAlert = (state) => {
     setAction(state);
   };
 
-  const handleBlockAlert = state => {
+  const handleBlockAlert = (state) => {
     setBlockAlert(state);
     setIsBlocked(state);
   };
 
-  const userPhotosUrl = Images?.map(item => {
+  const userPhotosUrl = Images?.map((item) => {
     return item?.url;
   });
 
-  const userPhotosId = Images?.map(item => {
+  const userPhotosId = Images?.map((item) => {
     return item?.id;
   });
 
   const viewIntercation = () => {
     UserService.viewIntercation(props?.route?.params?.userId, token)
-      .then(res => {
+      .then((res) => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
         }
       })
-      .catch(err => console.log('viewIntercation err', err));
+      .catch((err) => console.log("viewIntercation err", err));
   };
 
   useFocusEffect(
     React.useCallback(() => {
       return viewIntercation();
-    }, [props?.route?.params?.userId]),
+    }, [props?.route?.params?.userId])
   );
 
   useEffect(() => {
     userDetails === null ||
     userDetails === undefined ||
-    userDetails === '' ||
+    userDetails === "" ||
     userDetails.length === 0
       ? null
       : setUserImages(userDetails?.Profile?.profilePics);
@@ -132,50 +132,50 @@ const DetailScreen = props => {
     UserService.likeInteraction(
       {
         resourceId: userPhotosId ? userPhotosId[index] : null,
-        resourceType: 'USER_MEDIA',
+        resourceType: "USER_MEDIA",
         otherUserId: userId,
       },
-      token,
+      token
     )
-      .then(res => {
+      .then((res) => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
-            type: 'SET_DISCOVER_INDEX',
+            type: "SET_DISCOVER_INDEX",
             payload: userId,
           });
           Alerts(
-            'success',
-            `You liked ${userDetails?.firstName}'s picture successfully`,
+            "success",
+            `You liked ${userDetails?.firstName}'s picture successfully`
           );
         }
       })
-      .catch(error => console.log('likeImageInteraction err', error));
+      .catch((error) => console.log("likeImageInteraction err", error));
   };
 
-  const likeProfilePrompt = item => {
+  const likeProfilePrompt = (item) => {
     UserService.likeInteraction(
       {
         resourceId: item?.id,
-        resourceType: 'PROFILE_PROMPT',
+        resourceType: "PROFILE_PROMPT",
         otherUserId: userId,
       },
-      token,
+      token
     )
-      .then(res => {
+      .then((res) => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
-            type: 'SET_DISCOVER_INDEX',
+            type: "SET_DISCOVER_INDEX",
             payload: userId,
           });
           Alerts(
-            'success',
-            `You liked ${userDetails?.firstName}'s profie prompt successfully`,
+            "success",
+            `You liked ${userDetails?.firstName}'s profie prompt successfully`
           );
         }
       })
-      .catch(error => console.log('likeProfilePrompt err', error));
+      .catch((error) => console.log("likeProfilePrompt err", error));
   };
 
   const handleBackButton = () => {
@@ -197,7 +197,7 @@ const DetailScreen = props => {
         action
       ) {
         dispatch({
-          type: 'AUTH_USER_SCREEN_INDEX',
+          type: "AUTH_USER_SCREEN_INDEX",
           payload: false,
         });
       } else if (
@@ -207,24 +207,24 @@ const DetailScreen = props => {
         action == false
       ) {
         dispatch({
-          type: 'AUTH_USER_SCREEN_INDEX',
+          type: "AUTH_USER_SCREEN_INDEX",
           payload: true,
         });
       }
       return () => {
         setOnBoardingCheck(false);
       };
-    }, [commentModal || imageModal || promptModal, action]),
+    }, [commentModal || imageModal || promptModal, action])
   );
 
   useEffect(() => {
     const add = BackHandler.addEventListener(
-      'hardwareBackPress',
-      handleBackButton,
+      "hardwareBackPress",
+      handleBackButton
     );
     return () => {
       add;
-      BackHandler.removeEventListener('hardwareBackPress', handleBackButton);
+      BackHandler.removeEventListener("hardwareBackPress", handleBackButton);
     };
   }, [imageModal || promptModal]);
 
@@ -232,23 +232,25 @@ const DetailScreen = props => {
   let fOrigin = props?.route?.params?.userDetails?.Profile?.familyOrigin;
 
   let flagsLiving = [];
-  flagsLiving = Countries.filter(item => {
+  flagsLiving = Countries.filter((item) => {
     return item?.en === country ? item.code : null;
   });
   let flagsOrigin = [];
-  flagsOrigin = Countries.filter(item => {
+  flagsOrigin = Countries.filter((item) => {
     return item.en === fOrigin ? item.code : null;
   });
 
-  const Capsule = ({outlined, title, style, titleStyle}) => (
+  const Capsule = ({ outlined, title, style, titleStyle }) => (
     <View
       style={[
         styles.capsule,
         style,
         outlined ? styles.outlined : styles.filled,
-      ]}>
+      ]}
+    >
       <Text
-        style={[styles.myvibes, titleStyle, !outlined && styles.whiteTitle]}>
+        style={[styles.myvibes, titleStyle, !outlined && styles.whiteTitle]}
+      >
         {title}
       </Text>
     </View>
@@ -289,35 +291,36 @@ const DetailScreen = props => {
             <View ref={ref} style={styles.imgSection}>
               <View
                 style={{
-                  width: '100%',
-                  height: '100%',
-                }}>
+                  width: "100%",
+                  height: "100%",
+                }}
+              >
                 {isFocused ? (
                   <ImageCarousel
                     photosLength={userPhotosUrl?.length}
                     isPaused={imageModal ? true : false}
                     imageUris={userPhotosUrl}
                     onIconPress
-                    onIconMicPress={imageUri => {
-                      if (status === 'INCOMPLETE') {
+                    onIconMicPress={(imageUri) => {
+                      if (status === "INCOMPLETE") {
                         setOnBoardingCheck(true);
                       } else {
                         setImageModal(true);
-                        setModalType('mic');
+                        setModalType("mic");
                         imageUri?.id;
                       }
                     }}
                     onIconCommentPress={() => {
-                      if (status === 'INCOMPLETE') {
+                      if (status === "INCOMPLETE") {
                         setOnBoardingCheck(true);
                       } else {
                         isFocused == true;
                         setImageModal(true);
-                        setModalType('comment');
+                        setModalType("comment");
                       }
                     }}
                     onIconHeartPress={() => {
-                      if (status === 'INCOMPLETE') {
+                      if (status === "INCOMPLETE") {
                         setOnBoardingCheck(true);
                       } else {
                         likeImageInteraction();
@@ -332,29 +335,31 @@ const DetailScreen = props => {
               <View style={styles.imgHeader}>
                 <TouchableOpacity
                   onPress={() =>
-                    props?.navigation.navigate('SearchPreferences')
+                    props?.navigation.navigate("SearchPreferences")
                   }
-                  style={styles.iconImg}>
+                  style={styles.iconImg}
+                >
                   <FastImage
-                    style={{height: '72%', width: '60%'}}
-                    source={require('../../assets/iconimages/heart-discover.png')}
+                    style={{ height: "72%", width: "60%" }}
+                    source={require("../../assets/iconimages/heart-discover.png")}
                   />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() =>
                     isBlocked ? setBlockAlert(true) : setAction(true)
-                  }>
+                  }
+                >
                   <Icons.MaterialCommunityIcons
                     name="dots-vertical"
                     size={34}
-                    color={'white'}
+                    color={"white"}
                   />
                 </TouchableOpacity>
               </View>
 
               <View style={styles.nameView}>
                 <Text numberOfLines={2} style={styles.name}>
-                  {userDetails ? userDetails?.firstName : null}{' '}
+                  {userDetails ? userDetails?.firstName : null}{" "}
                 </Text>
                 <Text style={styles.nameTxt}>
                   {userDetails
@@ -368,7 +373,7 @@ const DetailScreen = props => {
                   <CountryFlag
                     isoCode={`${flagsLiving[0]?.code}`}
                     size={17}
-                    style={{marginRight: 5}}
+                    style={{ marginRight: 5 }}
                   />
                   <CountryFlag isoCode={`${flagsOrigin[0]?.code}`} size={17} />
                 </View>
@@ -391,10 +396,11 @@ const DetailScreen = props => {
                 style={[
                   styles.myvibes,
                   {
-                    paddingHorizontal: '4%',
-                    marginTop: '5%',
+                    paddingHorizontal: "4%",
+                    marginTop: "5%",
                   },
-                ]}>
+                ]}
+              >
                 Details
               </Text>
               <View style={styles.analystSection}>
@@ -412,14 +418,15 @@ const DetailScreen = props => {
                       style={[
                         styles.locationTxt,
                         {
-                          minWidth: '50%',
-                          maxWidth: '70%',
+                          minWidth: "50%",
+                          maxWidth: "70%",
                         },
-                      ]}>
+                      ]}
+                    >
                       {userDetails ? userDetails?.city : null}
                       {userDetails
-                        ? userDetails?.country !== 'Not Specified'
-                          ? [', ' + userDetails?.country]
+                        ? userDetails?.country !== "Not Specified"
+                          ? [", " + userDetails?.country]
                           : null
                         : null}
                     </Text>
@@ -428,10 +435,11 @@ const DetailScreen = props => {
                     style={[
                       styles.locationTxt,
                       {
-                        minWidth: '30%',
-                        maxWidth: '40%',
+                        minWidth: "30%",
+                        maxWidth: "40%",
                       },
-                    ]}>
+                    ]}
+                  >
                     {userDetails ? userDetails?.Profile.occupation : null}
                   </Text>
                 </View>
@@ -453,9 +461,9 @@ const DetailScreen = props => {
 
                     <View style={styles.bulbView}>
                       <FastImage
-                        style={{height: '80%', width: '80%'}}
+                        style={{ height: "80%", width: "80%" }}
                         resizeMode="contain"
-                        source={require('../../assets/iconimages/bulb.png')}
+                        source={require("../../assets/iconimages/bulb.png")}
                       />
                     </View>
 
@@ -476,18 +484,19 @@ const DetailScreen = props => {
                 <Text style={styles.lookingForTxt}>Vibes</Text>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    flexWrap: 'wrap',
-                    marginTop: '1%',
-                  }}>
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    marginTop: "1%",
+                  }}
+                >
                   {userDetails != null &&
                     userDetails?.Profile?.vibes?.map((item, index) => {
                       return (
                         <Capsule
                           outlined
                           title={item}
-                          style={{margin: 3}}
-                          titleStyle={{fontSize: 14}}
+                          style={{ margin: 3 }}
+                          titleStyle={{ fontSize: 14 }}
                         />
                       );
                     })}
@@ -519,10 +528,10 @@ const DetailScreen = props => {
             </View>
 
             <CardCarousel user={userDetails} />
-            <View style={{height: 20, width: '100%'}}></View>
+            <View style={{ height: 20, width: "100%" }}></View>
 
             <View>
-              {userDetails?.ProfilePrompts?.map(item => {
+              {userDetails?.ProfilePrompts?.map((item) => {
                 return (
                   <View style={styles.lookingForSec}>
                     <Text style={styles.poolQuestTxt}>
@@ -532,48 +541,51 @@ const DetailScreen = props => {
                     <View style={styles.cardFooter}>
                       <TouchableOpacity
                         onPress={() => {
-                          if (status === 'INCOMPLETE') {
+                          if (status === "INCOMPLETE") {
                             setOnBoardingCheck(true);
                           } else {
                             setPromptModal(true);
                             setPromptIndex(item);
-                            setModalType('mic');
+                            setModalType("mic");
                           }
                         }}
-                        style={[styles.actionIcon, styles.actionbtnShadow]}>
+                        style={[styles.actionIcon, styles.actionbtnShadow]}
+                      >
                         <FastImage
-                          source={require('../../assets/iconimages/mic.png')}
-                          style={{height: '76%', width: '76%'}}
+                          source={require("../../assets/iconimages/mic.png")}
+                          style={{ height: "76%", width: "76%" }}
                         />
                       </TouchableOpacity>
                       <TouchableOpacity
                         onPress={() => {
-                          if (status === 'INCOMPLETE') {
+                          if (status === "INCOMPLETE") {
                             setOnBoardingCheck(true);
                           } else {
                             setPromptModal(true);
                             setPromptIndex(item);
-                            setModalType('comment');
+                            setModalType("comment");
                           }
                         }}
-                        style={[styles.actionIcon, styles.actionbtnShadow]}>
+                        style={[styles.actionIcon, styles.actionbtnShadow]}
+                      >
                         <FastImage
-                          source={require('../../assets/iconimages/chat.png')}
-                          style={{height: '54%', width: '54%'}}
+                          source={require("../../assets/iconimages/chat.png")}
+                          style={{ height: "54%", width: "54%" }}
                         />
                       </TouchableOpacity>
                       <TouchableOpacity
                         onPress={() => {
-                          if (status === 'INCOMPLETE') {
+                          if (status === "INCOMPLETE") {
                             setOnBoardingCheck(true);
                           } else {
                             likeProfilePrompt(item);
                           }
                         }}
-                        style={[styles.actionIcon, styles.actionbtnShadow]}>
+                        style={[styles.actionIcon, styles.actionbtnShadow]}
+                      >
                         <FastImage
-                          source={require('../../assets/iconimages/heart.png')}
-                          style={{height: '54%', width: '54%'}}
+                          source={require("../../assets/iconimages/heart.png")}
+                          style={{ height: "54%", width: "54%" }}
                         />
                       </TouchableOpacity>
                     </View>
@@ -591,92 +603,101 @@ const DetailScreen = props => {
           <View
             style={{
               flex: 1,
-              width: '100%',
+              width: "100%",
               height: windowHeight * 1,
               zIndex: 1,
-              position: 'absolute',
+              position: "absolute",
               backgroundColor: colors.black,
               opacity: 0.8,
-            }}></View>
+            }}
+          ></View>
           <Pressable
             onPress={() => setOnBoardingCheck(false)}
             style={{
               flex: 1,
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
+              position: "absolute",
+              width: "100%",
+              height: "100%",
               zIndex: 2,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             <View
               style={{
-                width: '90%',
+                width: "90%",
                 height: 250,
-                alignItems: 'center',
-                justifyContent: 'center',
+                alignItems: "center",
+                justifyContent: "center",
                 backgroundColor: colors.white,
                 borderRadius: 16,
-              }}>
+              }}
+            >
               <Text
                 style={{
                   fontSize: 20,
-                  fontFamily: 'Roboto-Medium',
+                  fontFamily: "Inter-Medium",
                   color: colors.black,
-                }}>
+                }}
+              >
                 Warning
               </Text>
               <Text
                 style={{
                   fontSize: 16,
-                  fontFamily: 'Roboto-Regular',
-                  color: '#6B7280',
-                  marginTop: '5%',
-                  marginHorizontal: '3%',
-                }}>
+                  fontFamily: "Inter-Regular",
+                  color: "#6B7280",
+                  marginTop: "5%",
+                  marginHorizontal: "3%",
+                }}
+              >
                 Please complete your profile to interact with other users, thank
                 you!
               </Text>
 
               <TouchableOpacity
-                onPress={() => props.navigation.navigate('OnBoardingQuestions')}
+                onPress={() => props.navigation.navigate("OnBoardingQuestions")}
                 style={{
-                  width: '80%',
-                  paddingVertical: '3%',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  width: "80%",
+                  paddingVertical: "3%",
+                  alignItems: "center",
+                  justifyContent: "center",
                   borderRadius: 5,
                   backgroundColor: colors.primaryPink,
-                  marginTop: '5%',
-                }}>
+                  marginTop: "5%",
+                }}
+              >
                 <Text
                   style={{
                     fontSize: 16,
-                    fontFamily: 'Roboto-Regular',
+                    fontFamily: "Inter-Regular",
                     color: colors.white,
-                  }}>
+                  }}
+                >
                   Complete Profile
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setOnBoardingCheck(false)}
                 style={{
-                  width: '80%',
-                  paddingVertical: '3%',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  width: "80%",
+                  paddingVertical: "3%",
+                  alignItems: "center",
+                  justifyContent: "center",
                   borderRadius: 5,
                   backgroundColor: colors.white,
-                  marginTop: '5%',
+                  marginTop: "5%",
                   borderWidth: 1,
                   borderColor: colors.primaryPink,
-                }}>
+                }}
+              >
                 <Text
                   style={{
                     fontSize: 16,
-                    fontFamily: 'Roboto-Regular',
+                    fontFamily: "Inter-Regular",
                     color: colors.primaryPink,
-                  }}>
+                  }}
+                >
                   Later
                 </Text>
               </TouchableOpacity>
@@ -687,13 +708,14 @@ const DetailScreen = props => {
       {imageModal ? (
         <GestureHandlerRootView
           style={{
-            width: '100%',
-            backgroundColor: '#00000061',
+            width: "100%",
+            backgroundColor: "#00000061",
             height: imageModal ? windowHeight * 1 : 0,
             bottom: 0,
-            position: 'absolute',
+            position: "absolute",
             zIndex: 1,
-          }}>
+          }}
+        >
           <BottomImageInteraction
             userId={userId}
             userName={userDetails?.firstName}
@@ -704,19 +726,20 @@ const DetailScreen = props => {
             toggle={imageModal}
             setToggle={setImageModal}
             modalType={modalType}
-            offset={userDevice.includes('Pro Max') ? 75 : 70}
+            offset={userDevice.includes("Pro Max") ? 75 : 70}
           />
         </GestureHandlerRootView>
       ) : promptModal ? (
         <GestureHandlerRootView
           style={{
-            width: '100%',
-            backgroundColor: '#00000061',
+            width: "100%",
+            backgroundColor: "#00000061",
             height: promptModal ? windowHeight * 1 : 0,
             bottom: 0,
-            position: 'absolute',
+            position: "absolute",
             zIndex: 1,
-          }}>
+          }}
+        >
           <BottomPromptInteraction
             userId={userId}
             userName={userDetails?.firstName}
@@ -725,7 +748,7 @@ const DetailScreen = props => {
             toggle={promptModal}
             modalType={modalType}
             setToggle={setPromptModal}
-            offset={userDevice.includes('Pro Max') ? 75 : 70}
+            offset={userDevice.includes("Pro Max") ? 75 : 70}
           />
         </GestureHandlerRootView>
       ) : action ? (

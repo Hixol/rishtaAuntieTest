@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   dropdownTxt: {
     textAlign: 'left',
     fontSize: 14,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
   dropdownStyle: {
     backgroundColor: '#f6f7fb',
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   dropdown2RowTxtStyle: {
     fontSize: 14,
     textAlign: 'center',
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
 });
 

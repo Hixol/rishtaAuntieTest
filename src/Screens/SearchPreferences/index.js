@@ -355,7 +355,7 @@ const SearchPreferences = (props) => {
           <Text
             style={{
               fontSize: 16,
-              fontFamily: 'Roboto-Medium',
+              fontFamily: 'Inter-Medium',
               color: colors.primaryPink,
               alignSelf: 'center',
               marginVertical: '3%',

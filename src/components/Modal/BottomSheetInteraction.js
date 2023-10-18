@@ -109,7 +109,7 @@ const BottomSheetInteraction = props => {
                         fontSize: 20,
                         marginLeft: '2%',
                         color: colors.primaryBlue,
-                        fontFamily: 'Roboto-Regular',
+                        fontFamily: 'Inter-Regular',
                       }}>
                       Within my Search Preferences
                     </Text>
@@ -132,7 +132,7 @@ const BottomSheetInteraction = props => {
                       width: '90%',
                       alignSelf: 'center',
                       textAlign: 'center',
-                      fontFamily: 'Roboto-Regular',
+                      fontFamily: 'Inter-Regular',
                       fontSize: 15,
                       color: colors.primaryBlue,
                     }}>
@@ -166,7 +166,7 @@ const BottomSheetInteraction = props => {
                           alignSelf: 'center',
                           fontSize: 20,
                           color: colors.primaryBlue,
-                          fontFamily: 'Roboto-Regular',
+                          fontFamily: 'Inter-Regular',
                         }}>
                         Filter interactions by:
                       </Text>

@@ -5,7 +5,7 @@ export default StyleSheet.create({
   myPrivacySetting: {
     alignSelf: 'center',
     fontSize: 20,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     color: colors.primaryBlue,
 
     marginVertical: '3%',
@@ -20,7 +20,7 @@ export default StyleSheet.create({
   basicPreferenceType: {
     alignSelf: 'center',
     fontSize: 20,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
     color: colors.primaryPink,
     marginVertical: '2%',
   },
@@ -40,7 +40,7 @@ export default StyleSheet.create({
     alignSelf: 'center',
     fontSize: 16,
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
   kidsCont: {
     marginBottom: '6%',
@@ -67,7 +67,7 @@ export default StyleSheet.create({
   },
   btnTitleStyle: {
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     fontSize: 18,
   },
 });

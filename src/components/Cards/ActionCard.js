@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
   boxText: {
     fontSize: 18,
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
   boxInside: {
     paddingHorizontal: '5%',
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
   privacyTxt: {
     color: colors.primaryBlue,
     fontSize: 25,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     width: '70%',
     textAlign: 'center',
   },
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
   },
   iconTxt: {
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     marginTop: '10%',
   },
   iconContainer: {

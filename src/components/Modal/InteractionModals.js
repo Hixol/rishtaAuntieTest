@@ -134,7 +134,7 @@ const InteractionModal = props => {
                       style={{
                         fontSize: 15,
                         width: '80%',
-                        fontFamily: 'Roboto-Regular',
+                        fontFamily: 'Inter-Regular',
                         color: colors.black,
                       }}
                       placeholderTextColor={colors.black}
@@ -156,7 +156,7 @@ const InteractionModal = props => {
                         style={{
                           fontSize: 15,
                           width: '80%',
-                          fontFamily: 'Roboto-Regular',
+                          fontFamily: 'Inter-Regular',
                           color: colors.black,
                         }}>
                         Leave a Voice Note

@@ -53,12 +53,12 @@ export default StyleSheet.create({
   borderBtnTxt: {
     fontSize: 18,
     color: colors.primaryPink,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
   borderBtnTxtGold: {
     fontSize: 18,
     color: colors.gold,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
   topMainContainer: {
     height: windowHeight * 0.38,
@@ -188,7 +188,7 @@ export default StyleSheet.create({
   mySettingsText: {
     marginBottom: '2%',
     fontSize: 20,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
     color: '#0C3677',
     alignSelf: 'flex-start',
     backgroundColor: 'red',

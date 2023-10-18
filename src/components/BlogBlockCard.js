@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   blockText: {
     fontSize: 25,
     color: colors.white,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
   blockTime: {
     fontSize: 15,

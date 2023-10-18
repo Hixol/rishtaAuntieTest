@@ -17,7 +17,7 @@ const detailsCard = ({item}) => {
       {item.views.map((view, index) => {
         return (
           <View key={index} style={[styles.details, {height: item.height}]}>
-            <Text style={{color: '#a8a8a8', fontFamily: 'Roboto-Medium'}}>
+            <Text style={{color: '#a8a8a8', fontFamily: 'Inter-Medium'}}>
               {view.one}
             </Text>
             <View
@@ -40,7 +40,7 @@ const detailsCard = ({item}) => {
               <Text
                 style={{
                   color: colors.primaryBlue,
-                  fontFamily: 'Roboto-Medium',
+                  fontFamily: 'Inter-Medium',
                 }}>
                 {view.oneValue}
               </Text>
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   headingTxt: {
     fontSize: 18,
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     marginLeft: '3%',
   },
 });

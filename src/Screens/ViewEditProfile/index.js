@@ -35,7 +35,7 @@ const ViewEditProfile = props => {
         tabBarActiveTintColor: proMember ? colors.gold : colors.primaryPink,
         tabBarInactiveTintColor: 'grey',
         tabBarLabelStyle: {
-          fontFamily: 'Roboto-Bold',
+          fontFamily: 'Inter-Bold',
           fontSize: 14,
         },
         tabBarIndicatorStyle: {

@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'white',
     width: '80%',
-    fontFamily: 'Inter-Regular',
+    fontFamily: 'Inter-Medium',
   },
   location: {
     flexDirection: 'row',
@@ -316,9 +316,9 @@ const styles = StyleSheet.create({
   },
   nameTxt: {
     color: 'white',
-    fontSize: 22,
+    fontSize: 24,
     // alignSelf: 'center',
-    fontFamily: 'Inter-Medium',
+    fontFamily: 'Inter-SemiBold',
   },
   statementTxt: {
     color: 'white',
@@ -327,8 +327,8 @@ const styles = StyleSheet.create({
   },
   analystTxt: {
     color: 'white',
-    fontSize: 15,
-    fontFamily: 'Inter-Regular',
+    fontSize: 16,
+    fontFamily: 'Inter-Medium',
     width: '17%',
   },
   iconImg: {

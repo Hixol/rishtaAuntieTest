@@ -241,7 +241,7 @@ const MySetting = (props) => {
                   style={{
                     fontSize: 22,
                     color: colors.primaryPink,
-                    fontFamily: 'Roboto-Bold',
+                    fontFamily: 'Inter-Bold',
                     marginHorizontal: '3%',
                   }}>
                   Login Options
@@ -281,7 +281,7 @@ const MySetting = (props) => {
             style={{
               fontSize: 17,
               color: colors.primaryBlue,
-              fontFamily: 'Roboto-Bold',
+              fontFamily: 'Inter-Bold',
               paddingVertical: '1%',
               paddingHorizontal: '2%',
               marginHorizontal: '5%',

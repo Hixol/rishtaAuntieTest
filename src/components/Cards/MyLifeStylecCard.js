@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
   headingTxt: {
     fontSize: 22,
     color: colors.primaryPink,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     marginLeft: '2%',
   },
   detailsSec: {
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
   detailsTxt: {
     fontSize: 13,
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
   btn: {
     height: '57%',
@@ -275,7 +275,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primaryPink,
   },
   btnText: {
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-SemiBold',
     marginLeft: '2%',
   },
   smokeBtn: {

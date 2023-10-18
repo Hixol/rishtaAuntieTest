@@ -367,7 +367,7 @@ const TabViewExample = (props) => {
                     textAlign: "center",
                     fontSize: 20,
                     fontFamily: "Inter-Medium",
-                    color: colors.primaryBlue,
+                    color: colors.blackBlue,
                   }}
                 >
                   No Interactions with your Profile yet
@@ -747,7 +747,7 @@ const TabViewExample = (props) => {
                     textAlign: "center",
                     fontSize: 20,
                     fontFamily: "Inter-Medium",
-                    color: colors.primaryBlue,
+                    color: colors.blackBlue,
                     alignSelf: "center",
                   }}
                 >
@@ -869,7 +869,7 @@ const TabViewExample = (props) => {
             color: colors.blackBlue,
             margin: 8,
             fontFamily: "Inter-SemiBold",
-            fontSize: 18,
+            fontSize: 16,
           }}
         >
           {route.title}
@@ -881,7 +881,7 @@ const TabViewExample = (props) => {
         height: 5,
         borderRadius: 3,
       }}
-      style={{ backgroundColor: colors.greyWhite }}
+      style={{ backgroundColor: colors.white }}
     />
   );
 
@@ -918,7 +918,7 @@ const TabViewExample = (props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "#F9FAFB",
   },
 
   interactionView: {
@@ -992,14 +992,14 @@ const styles = StyleSheet.create({
     marginBottom: "3%",
     paddingHorizontal: "2.7%",
     paddingVertical: "2%",
-    backgroundColor: colors.msgGrey,
+    backgroundColor: "#F9FAFB",
     borderRadius: 9,
   },
   selectedFilterBox: {
     backgroundColor: colors.primaryPink,
   },
   filterTxt: {
-    fontFamily: "Inter-Medium",
+    fontFamily: "Inter-Regular",
     color: colors.textGrey1,
     fontSize: 12,
   },

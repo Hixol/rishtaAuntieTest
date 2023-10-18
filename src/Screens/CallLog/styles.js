@@ -9,14 +9,14 @@ export default StyleSheet.create({
     padding: 12,
   },
   heading: {
-    fontFamily: 'Roboto-Black',
+    fontFamily: 'Inter-Black',
     fontSize: 32,
     color: '#303234',
     marginBottom: 12,
     marginTop: ios ? -40 : 0,
   },
   sub_heading: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     fontSize: 14,
     color: colors.textGrey,
     marginVertical: 5,
@@ -42,12 +42,12 @@ export default StyleSheet.create({
   image: {width: '100%', height: '100%'},
   nameTxt: {
     color: colors.black,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     fontSize: 16,
   },
   greyedTxt: {
     color: colors.textGrey,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     fontSize: 14,
   },
   nolog_container: {
@@ -63,5 +63,5 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  nologTxt: {color: 'black', fontFamily: 'Roboto-Regular', fontSize: 14},
+  nologTxt: {color: 'black', fontFamily: 'Inter-Regular', fontSize: 14},
 });

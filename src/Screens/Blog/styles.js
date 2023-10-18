@@ -10,7 +10,7 @@ export default StyleSheet.create({
   welcomeText: {
     color: colors.primaryBlue,
     fontSize: 20,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
     marginVertical: '3%',
     alignSelf: 'center',
   },
@@ -29,7 +29,7 @@ export default StyleSheet.create({
   noBlogTxt: {
     fontSize: 12,
     textAlign: 'center',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     color: colors.primaryBlue,
   },
 });

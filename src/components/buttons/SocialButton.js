@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   followText: {
     color: colors.primaryBlue,
     fontSize: 20,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     alignSelf: 'center',
   },
   iconSize: {height: 32, width: 32},

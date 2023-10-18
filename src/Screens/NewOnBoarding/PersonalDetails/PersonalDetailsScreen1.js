@@ -153,9 +153,9 @@ const PersonalDetailsScreen1 = ({ navigation, route }) => {
 };
 
 const styles = StyleSheet.create({
-  heading: { fontFamily: "Roboto-Bold", fontSize: 25, color: colors.black },
+  heading: { fontFamily: "Inter-Bold", fontSize: 25, color: colors.black },
   lightText: {
-    fontFamily: "Roboto-Light",
+    fontFamily: "Inter-Light",
     fontSize: 15,
     marginTop: "3%",
     color: colors.textGrey,
