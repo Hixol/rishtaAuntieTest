@@ -18,11 +18,10 @@ import SettingHeader from "../../components/containers/settingHeader";
 const SearchPreferences = (props) => {
   const isFocused = useIsFocused();
   const value = props?.route?.params?.preferences;
-  const { token, userData } = useSelector((store) => store.userReducer);
-  const dispatch = useDispatch();
-  const { handleDisablePremium, handleStatusCode, Alerts } = useHelper();
 
-  const [user, setUser] = useState();
+  const dispatch = useDispatch();
+  const { handleDisablePremium, handleStatusCode } = useHelper();
+  const { token, userData } = useSelector((store) => store.userReducer);
 
   const [premiumPrivacySetting, setPremiumPrivacySetting] = useState(
     userData?.UserSetting?.isSubscribed
@@ -167,7 +166,6 @@ const SearchPreferences = (props) => {
   const resetFeature = () => {
     UserService.applyReset(token)
       .then((res) => {
-        console.log("applyReset res:", res);
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
         }
@@ -180,6 +178,7 @@ const SearchPreferences = (props) => {
       props.navigation.navigate("Paywall");
     }
   };
+
   useEffect(() => {
     OnBoardingServices.profileValues(
       encodeURI(
@@ -194,7 +193,6 @@ const SearchPreferences = (props) => {
       )
     )
       .then(async (res) => {
-        console.log("PROFILE VALUES", res);
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
             type: "allProfileValues",
@@ -202,7 +200,7 @@ const SearchPreferences = (props) => {
           });
         }
       })
-      .catch((err) => console.log("err", err))
+      .catch((err) => console.log("profileValues err", err))
       .finally(() => {});
   }, []);
 
@@ -214,7 +212,6 @@ const SearchPreferences = (props) => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             let data = res?.data?.data;
-            console.log("userData 1", res);
 
             dispatch({
               type: "AUTH_USER",

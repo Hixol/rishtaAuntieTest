@@ -1,18 +1,18 @@
-import React, {useState, useEffect} from 'react';
-import {Text, View, Linking, ScrollView} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {useSelector} from 'react-redux';
-import {useHelper} from '../../hooks/useHelper';
+import React, { useState, useEffect } from "react";
+import { Text, View, Linking, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useSelector } from "react-redux";
+import { useHelper } from "../../hooks/useHelper";
 
-import styles from './styles';
-import HeaderContainer from '../../components/containers/headerContainer';
-import BlogServices from '../../services/BlogServices';
-import Loader from '../../components/Loader';
-import NewBlogCard from '../../components/Cards/NewBlogCard';
+import styles from "./styles";
+import HeaderContainer from "../../components/containers/headerContainer";
+import BlogServices from "../../services/BlogServices";
+import Loader from "../../components/Loader";
+import NewBlogCard from "../../components/Cards/NewBlogCard";
 
 const Blog = () => {
-  const {handleStatusCode} = useHelper();
-  const {token} = useSelector(store => store.userReducer);
+  const { handleStatusCode } = useHelper();
+  const { token } = useSelector((store) => store.userReducer);
 
   const [loading, setLoading] = useState(false);
   const [blogList, setBlogList] = useState([]);
@@ -20,13 +20,13 @@ const Blog = () => {
   const getBlogList = () => {
     setLoading(true);
     BlogServices.blogList(token)
-      .then(res => {
+      .then((res) => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           setBlogList(res.data.data);
         }
       })
-      .catch(err => console.log('err', err))
+      .catch((err) => console.log("blogList err", err))
       .finally(() => setLoading(false));
   };
 

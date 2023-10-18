@@ -1,43 +1,32 @@
-import { useFocusEffect } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
 import {
   View,
-  Alert,
   Text,
   TouchableOpacity,
   StyleSheet,
   Keyboard,
-  TouchableWithoutFeedback,
   ScrollView,
   ActivityIndicator,
   TextInput,
   Animated,
-  Dimensions,
-  Platform,
-  KeyboardAvoidingView,
 } from "react-native";
-
-import colors from "../../../utility/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-import FastImage from "react-native-fast-image";
-import BottomButton from "../../../components/buttons/BottomButton";
-
 import { OnBoardingServices, UserService } from "../../../services";
 import { useHelper } from "../../../hooks/useHelper";
+import { alerts } from "../../../utility/regex";
+import { useDispatch, useSelector } from "react-redux";
+import { RulerPicker } from "react-native-ruler-picker";
+import { android, ios, windowHeight, windowWidth } from "../../../utility/size";
 
+import colors from "../../../utility/colors";
+import FastImage from "react-native-fast-image";
+import BottomButton from "../../../components/buttons/BottomButton";
 import SliderView from "../../../components/Modal/Slider";
 import NewOnBoardingDesign from "../../../components/NewOnBoardingDesign";
 import OnBoardingSearch from "../../../components/OnBoardingSearch";
-import { alerts, measureUnits } from "../../../utility/regex";
-import { useDispatch, useSelector } from "react-redux";
-import { RulerPicker } from "react-native-ruler-picker";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { android, ios, userDevice } from "../../../utility/size";
-let filtered = [];
-let percentage = "";
 
-const windowWidth = Dimensions.get("window").width;
-const windowHeight = Dimensions.get("window").height;
+let filtered = [];
+
 const OnBoardingQuestions = ({ navigation }) => {
   const { token } = useSelector((store) => store.userReducer);
   const {
@@ -157,7 +146,7 @@ const OnBoardingQuestions = ({ navigation }) => {
       keyboardDidShowListener.remove();
     };
   }, []);
-  console.log("ISKEYBOARDVISIBLE", isKeyboardVisible);
+
   useEffect(() => {
     if (vibes && vibes.length > 0) {
       setSelectedVibe(vibes);
@@ -169,7 +158,6 @@ const OnBoardingQuestions = ({ navigation }) => {
       setSelectedFO(familyOrigin);
     }
     if (height !== null) {
-      console.log("HEIGHT123 5", height);
       setSelectedHeight(height);
     }
 
@@ -559,7 +547,6 @@ const OnBoardingQuestions = ({ navigation }) => {
       .then((res) => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
-          console.log("VIBESS SSSS", res);
           dispatch({
             type: "allVibes",
             payload: res?.data?.data,
@@ -577,7 +564,6 @@ const OnBoardingQuestions = ({ navigation }) => {
             .then((res) => {
               handleStatusCode(res);
               if (res.status >= 200 && res.status <= 299) {
-                console.log("PRONPTS SSSS", res);
                 dispatch({
                   type: "allPrompts",
                   payload: res?.data?.data,
@@ -601,10 +587,11 @@ const OnBoardingQuestions = ({ navigation }) => {
                 // );
               }
             })
-            .catch((err) => console.log("Questions err", err));
+            .catch((err) => console.log("getQuestions err", err));
         }
       })
-      .catch((err) => console.log("err", err));
+      .catch((err) => console.log("vibesListing err", err));
+
     OnBoardingServices.profileValues(
       encodeURI(
         JSON.stringify([
@@ -618,7 +605,6 @@ const OnBoardingQuestions = ({ navigation }) => {
       )
     )
       .then(async (res) => {
-        console.log("PROFILE VALUES", res);
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
@@ -678,10 +664,8 @@ const OnBoardingQuestions = ({ navigation }) => {
           setArray(copyarr);
         }
       })
-      .catch((err) => console.log("err", err))
-      .finally(() => {
-        setLoading(false);
-      });
+      .catch((err) => console.log("profileValues err", err))
+      .finally(() => setLoading(false));
   }, []);
 
   const selectVibe = (item, index) => {
@@ -780,7 +764,6 @@ const OnBoardingQuestions = ({ navigation }) => {
       payload: number,
     });
   };
-  console.log("HEIGHT1234", selectedHeight, height);
 
   const selectFO = (item, index) => {
     let arr = [...selectedFO];
@@ -1178,7 +1161,6 @@ const OnBoardingQuestions = ({ navigation }) => {
   };
 
   const continuePress = () => {
-    console.log("CHOICESSS", array[currentIndex]?.type);
     if (array[currentIndex]?.type === "Main Vibes" && selctedVibe?.length < 1) {
       alerts("error", "Please select any vibe to continue");
     } else if (array[currentIndex]?.type === "Prompts Pool") {
@@ -1318,10 +1300,9 @@ const OnBoardingQuestions = ({ navigation }) => {
           formData.append(`profilePrompts[${ind}][answer]`, el.answer);
           formData.append(`profilePrompts[${ind}][operation]`, "add");
         });
-        console.log("FORMDATA124", formData);
+
         UserService.updateNewProfile(formData, token)
           .then((res) => {
-            console.log("UPDATE res", res);
             if (res?.status >= 200 && res?.status <= 299) {
               Alerts("success", "Profile updated successfully");
               dispatch({
@@ -1335,7 +1316,7 @@ const OnBoardingQuestions = ({ navigation }) => {
           })
           .catch((e) => {
             // Alerts('Error', e?.data?.error?.message);
-            console.log("e", e);
+            console.log("updateNewProfile err", e);
           })
           .finally(() => {
             setButtonLoader(false);
@@ -1427,7 +1408,7 @@ const OnBoardingQuestions = ({ navigation }) => {
       />
     );
   };
-  console.log("selectedHeight 111", height);
+
   return loading ? (
     <View
       style={{
@@ -1459,7 +1440,6 @@ const OnBoardingQuestions = ({ navigation }) => {
               setPPIndex((prev) => prev - 1);
             }
           } else if (array[currentIndex]?.type === "Height") {
-            console.log("HELLO HEIGHt");
             setCurrentIndex((prev) => prev - 1);
             setPPCheck(true);
             setPPIndex(selectedPP?.length - 1);
@@ -1638,7 +1618,7 @@ const OnBoardingQuestions = ({ navigation }) => {
               </Text>
               <View
                 style={{
-                  marginVertical: Platform.OS === "ios" ? "5%" : "3%",
+                  marginVertical: ios ? "5%" : "3%",
                   width: "95%",
                   backgroundColor: "#F9FAFB",
                   paddingVertical: "5%",
@@ -1701,7 +1681,6 @@ const OnBoardingQuestions = ({ navigation }) => {
               step={2.55}
               initialValue={92 / 30.48}
             />
-            {console.log("HELLLLLOOOOO REDUX", height)}
           </View>
         ) : array[currentIndex]?.type === "Family Origin" ? (
           <>
@@ -1999,7 +1978,7 @@ const OnBoardingQuestions = ({ navigation }) => {
         ) : array[currentIndex]?.type === "Occupation" ? (
           <View
             style={{
-              marginVertical: Platform.OS === "ios" ? "5%" : "3%",
+              marginVertical: ios ? "5%" : "3%",
               width: "90%",
               backgroundColor: "#F9FAFB",
               paddingVertical: "5%",
@@ -2270,7 +2249,7 @@ const OnBoardingQuestions = ({ navigation }) => {
         ) : array[currentIndex]?.type === "Tagline" ? (
           <View
             style={{
-              marginVertical: Platform.OS === "ios" ? "5%" : "3%",
+              marginVertical: ios ? "5%" : "3%",
               width: "90%",
               backgroundColor: "#F9FAFB",
               paddingVertical: "5%",

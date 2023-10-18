@@ -1,36 +1,20 @@
-import {CommonActions, useFocusEffect} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
-import {
-  View,
-  Alert,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-  PermissionsAndroid,
-} from 'react-native';
+import React, { useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { launchCamera } from "react-native-image-picker";
+import { ios, android, windowHeight } from "../../../utility/size";
+import { alerts, handlePermissions } from "../../../utility/regex";
+import { PERMISSIONS } from "react-native-permissions";
+import { useDispatch, useSelector } from "react-redux";
+import { useHelper } from "../../../hooks/useHelper";
 
-import colors from '../../../utility/colors';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import FastImage from 'react-native-fast-image';
-import CustomTextInput from '../../../components/Textinput';
-import DatePicker from 'react-native-date-picker';
-import BottomButton from '../../../components/buttons/BottomButton';
-import Colors from '../../../constants/Colors';
-import {launchCamera} from 'react-native-image-picker';
-import {ios, android} from '../../../utility/size';
-import {alerts, handlePermissions} from '../../../utility/regex';
-import {PERMISSIONS} from 'react-native-permissions';
-import {useDispatch, useSelector} from 'react-redux';
-import Countries from '../../../assets/countryLists/Countries';
-import {useHelper} from '../../../hooks/useHelper';
-import {UserService} from '../../../services';
-import moment from 'moment';
-const height = Dimensions.get('window').height;
-const UploadSelfie = ({navigation, route}) => {
-  const {coords} = useSelector(store => store.chatReducer);
-  const {token} = useSelector(store => store.userReducer);
+import colors from "../../../utility/colors";
+import FastImage from "react-native-fast-image";
+import BottomButton from "../../../components/buttons/BottomButton";
+
+const UploadSelfie = ({ navigation, route }) => {
   const dispatch = useDispatch();
+  const {} = useHelper();
   const {
     firstName,
     lastName,
@@ -41,46 +25,46 @@ const UploadSelfie = ({navigation, route}) => {
     video,
     religion,
     profilePictures,
-  } = useSelector(store => store.NewOnBoardingReducer);
-  const {handleLocation, Alerts} = useHelper();
+  } = useSelector((store) => store.NewOnBoardingReducer);
+
   const [loading, setLoading] = useState(false);
   const [imageUri, setImageUri] = useState(null);
   const [mediaOptions, setMediaOptions] = useState(false);
-
   const [selfieObj, setSelfieObj] = useState(null);
 
   useEffect(() => {
-    console.log('SELFIEEE', selfie);
     if (selfie !== null) {
       setImageUri({
         uri: selfie?.uri,
       });
     }
   }, []);
+
   useEffect(() => {}, [imageUri]);
+
   const handleCameraMedia = async (state, result) => {
     try {
-      if (result == 'granted') {
+      if (result == "granted") {
         const options = {
-          mediaType: 'photo',
+          mediaType: "photo",
           quality: 0.4,
-          cameraType: 'front',
+          cameraType: "front",
         };
 
-        await launchCamera(options, res => {
-          if (res.errorCode == 'others') {
+        await launchCamera(options, (res) => {
+          if (res.errorCode == "others") {
             alerts(
-              'error',
+              "error",
               res.errorMessage
                 ? res.errorMessage
-                : 'Camera support is not available on your device.',
+                : "Camera support is not available on your device."
             );
           } else if (res.didCancel === true) {
           } else if (
             res?.assets[0]?.height == 0 ||
             res?.assets[0]?.width == 0
           ) {
-            alerts('error', 'Please select jpeg/png format images.');
+            alerts("error", "Please select jpeg/png format images.");
           } else {
             setMediaOptions(state);
             let obj = {};
@@ -98,98 +82,98 @@ const UploadSelfie = ({navigation, route}) => {
         });
       }
     } catch (err) {
-      console.log('camera err', err);
+      console.log("camera err", err);
     }
   };
 
-  const handleCamera = state => {
+  const handleCamera = (state) => {
     if (ios) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.IOS.CAMERA,
-        'camera',
-        res => {
+        "camera",
+        (res) => {
           handleCameraMedia(state, res);
-        },
+        }
       );
     } else if (android) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.ANDROID.CAMERA,
-        'camera',
-        res => {
+        "camera",
+        (res) => {
           handleCameraMedia(state, res);
-        },
+        }
       );
     }
   };
-  console.log('imageUri', imageUri);
-  console.log('selfie', selfie);
 
   const continuePress = () => {
-    console.log('SELFIE CONTINUE', selfie, selfieObj);
     if (selfieObj || selfie) {
       dispatch({
-        type: 'selfie',
+        type: "selfie",
         payload: selfieObj === null ? selfie : selfieObj,
       });
-      navigation.navigate('UploadPicture');
+      navigation.navigate("UploadPicture");
     } else {
-      // navigation.navigate('UploadPicture');
-      alerts('error', 'Please upload Selfie');
+      alerts("error", "Please upload Selfie");
     }
   };
-  console.log('selfie', selfie, imageUri);
+
   return (
-    <SafeAreaView style={{flex: 1, padding: 20, backgroundColor: colors.white}}>
+    <SafeAreaView
+      style={{ flex: 1, padding: 20, backgroundColor: colors.white }}
+    >
       <TouchableOpacity onPress={() => navigation.goBack()}>
         <FastImage
           resizeMode="contain"
-          style={{width: 20, height: 30}}
-          source={require('../../../assets/iconimages/arrow-back.png')}
+          style={{ width: 20, height: 30 }}
+          source={require("../../../assets/iconimages/arrow-back.png")}
         />
       </TouchableOpacity>
-      <View style={{marginTop: '8%'}}>
+      <View style={{ marginTop: "8%" }}>
         <Text style={styles.heading}>Profile Verification</Text>
         <Text style={styles.lightText}>
           Building trust, one selfie at a time.
         </Text>
-        <View style={{width: '100%', marginVertical: '5%'}}></View>
+        <View style={{ width: "100%", marginVertical: "5%" }}></View>
         {selfie === null && imageUri === null ? (
           <TouchableOpacity
             onPress={handleCamera}
             style={{
-              width: '100%',
-              backgroundColor: '#D9036814',
-              height: height * 0.2,
+              width: "100%",
+              backgroundColor: "#D9036814",
+              height: windowHeight * 0.2,
               borderRadius: 5,
               borderWidth: 1,
               borderColor: colors.primaryPink,
-              borderStyle: 'dashed',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
+              borderStyle: "dashed",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             <FastImage
               resizeMode="contain"
-              style={{width: 30, height: 30}}
-              source={require('../../../assets/iconimages/add-circle.png')}
+              style={{ width: 30, height: 30 }}
+              source={require("../../../assets/iconimages/add-circle.png")}
             />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
             onPress={handleCamera}
             style={{
-              width: '100%',
+              width: "100%",
               height: 400,
-              alignItems: 'center',
-              justifyContent: 'center',
+              alignItems: "center",
+              justifyContent: "center",
               borderRadius: 20,
-            }}>
-            <View style={{width: '100%', height: '100%', borderRadius: 20}}>
+            }}
+          >
+            <View style={{ width: "100%", height: "100%", borderRadius: 20 }}>
               <FastImage
                 resizeMode="cover"
-                style={{width: '100%', height: '100%', borderRadius: 20}}
+                style={{ width: "100%", height: "100%", borderRadius: 20 }}
                 source={{
                   uri: imageUri?.uri,
-                  priority: 'high',
+                  priority: "high",
                 }}
               />
             </View>
@@ -202,11 +186,11 @@ const UploadSelfie = ({navigation, route}) => {
 };
 
 const styles = StyleSheet.create({
-  heading: {fontFamily: 'Inter-Bold', fontSize: 25, color: colors.black},
+  heading: { fontFamily: "Inter-Bold", fontSize: 25, color: colors.black },
   lightText: {
-    fontFamily: 'Inter-Regular',
+    fontFamily: "Inter-Regular",
     fontSize: 15,
-    marginTop: '3%',
+    marginTop: "3%",
     color: colors.textGrey1,
   },
 });

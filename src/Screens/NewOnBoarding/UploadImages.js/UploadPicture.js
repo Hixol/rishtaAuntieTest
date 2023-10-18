@@ -1,105 +1,84 @@
-import {CommonActions, useFocusEffect} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
-import {
-  View,
-  Alert,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-  PermissionsAndroid,
-} from 'react-native';
+import React, { useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { launchCamera } from "react-native-image-picker";
+import { OS_VER, android, ios, windowHeight } from "../../../utility/size";
+import { alerts, handlePermissions } from "../../../utility/regex";
+import { PERMISSIONS } from "react-native-permissions";
+import { useDispatch, useSelector } from "react-redux";
+import { useHelper } from "../../../hooks/useHelper";
 
-import colors from '../../../utility/colors';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import FastImage from 'react-native-fast-image';
-import ImagePicker from 'react-native-image-crop-picker';
+import colors from "../../../utility/colors";
+import FastImage from "react-native-fast-image";
+import ImagePicker from "react-native-image-crop-picker";
+import BottomButton from "../../../components/buttons/BottomButton";
+import ActionCard from "../../../components/Cards/ActionCard";
+import ImageCard from "../../../components/Cards/ImageCard";
 
-import BottomButton from '../../../components/buttons/BottomButton';
-import {launchCamera} from 'react-native-image-picker';
-import {OS_VER, android, ios} from '../../../utility/size';
-import {alerts, handlePermissions} from '../../../utility/regex';
-import {PERMISSIONS} from 'react-native-permissions';
-import {useDispatch, useSelector} from 'react-redux';
-import ActionCard from '../../../components/Cards/ActionCard';
-import ImageCard from '../../../components/Cards/ImageCard';
-import {useHelper} from '../../../hooks/useHelper';
-import {log} from 'react-native-reanimated';
-const height = Dimensions.get('window').height;
-const windowHeight = Dimensions.get('window').height;
-const windowWidth = Dimensions.get('window').width;
-const UploadPicture = ({navigation, route}) => {
-  const {userData, token} = useSelector(store => store.userReducer);
-
-  const [loader, setLoader] = useState(false);
-
-  const {updateUser} = useHelper();
-
+const UploadPicture = ({ navigation, route }) => {
   let edit = route?.params;
 
+  const dispatch = useDispatch();
+  const { updateUser } = useHelper();
+  const { userData, token } = useSelector((store) => store.userReducer);
+  const { profilePictures } = useSelector(
+    (store) => store.NewOnBoardingReducer
+  );
+
+  const [loader, setLoader] = useState(false);
+  const [imageUri, setImageUri] = useState(null);
+  const [mediaOptions, setMediaOptions] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [check, setCheck] = useState(false);
   const [profilePicArr, setProfilePicArr] = useState([
     {
       index: 0,
-      title: 'Main profile pic',
+      title: "Main profile pic",
       profile: true,
       selected: false,
-      key: 'one',
+      key: "one",
     },
     {
       index: 1,
       profile: true,
       selected: false,
-      key: 'two',
+      key: "two",
     },
     {
       index: 2,
       profile: true,
       selected: false,
-      key: 'three',
+      key: "three",
     },
     {
       index: 3,
       profile: true,
       selected: false,
-      key: 'four',
+      key: "four",
     },
     {
       index: 4,
       profile: true,
       selected: false,
-      key: 'five',
+      key: "five",
     },
     {
       index: 5,
       profile: true,
       selected: false,
-      key: 'six',
+      key: "six",
     },
   ]);
 
-  const {picture, profilePictures} = useSelector(
-    store => store.NewOnBoardingReducer,
-  );
-  const dispatch = useDispatch();
-  const [imageUri, setImageUri] = useState(null);
-  const [mediaOptions, setMediaOptions] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
-  const [selfieObj, setSelfieObj] = useState(null);
-  const [pictureObj, setPictureObj] = useState(null);
-  const [check, setCheck] = useState(false);
-
   useEffect(() => {
     if (edit) {
-      console.log('user Data', userData);
-      let filtered = userData?.UserMedia?.filter(item => {
-        return item?.type === 'image';
+      let filtered = userData?.UserMedia?.filter((item) => {
+        return item?.type === "image";
       });
-      console.log('FILTERED', filtered);
       let arr = [...profilePicArr];
       filtered.map((item, index) => {
-        console.log('PICTURE PUSHED');
         let obj = {
-          name: 'image',
+          name: "image",
           type: item?.type,
           uri: item?.url,
         };
@@ -111,51 +90,50 @@ const UploadPicture = ({navigation, route}) => {
       });
       setProfilePicArr(arr);
     } else {
-      console.log('profilePictures 1', profilePictures);
       if (profilePictures?.length !== 0) {
         setProfilePicArr(profilePictures);
       }
     }
   }, []);
 
-  const handleOnSelect = item => {
+  const handleOnSelect = (item) => {
     if (item?.uri) {
       let dummyArr = [...profilePicArr];
-      dummyArr[item.index]['image'] = item;
+      dummyArr[item.index]["image"] = item;
       setProfilePicArr(dummyArr);
     } else {
       // setSelectedVibes(item);
     }
   };
 
-  const handleOnRemove = index => {
+  const handleOnRemove = (index) => {
     let dummyArr = [...profilePicArr];
-    dummyArr[index]['image'] = null;
+    dummyArr[index]["image"] = null;
     setProfilePicArr(dummyArr);
   };
 
   const handleCameraMedia = async (state, result) => {
     try {
-      if (result == 'granted') {
+      if (result == "granted") {
         const options = {
-          mediaType: 'photo',
+          mediaType: "photo",
           quality: 0.4,
         };
 
-        await launchCamera(options, res => {
-          if (res.errorCode == 'others') {
+        await launchCamera(options, (res) => {
+          if (res.errorCode == "others") {
             alerts(
-              'error',
+              "error",
               res.errorMessage
                 ? res.errorMessage
-                : 'Camera support is not available on your device.',
+                : "Camera support is not available on your device."
             );
           } else if (res.didCancel === true) {
           } else if (
             res?.assets[0]?.height == 0 ||
             res?.assets[0]?.width == 0
           ) {
-            alerts('error', 'Please select jpeg/png format images.');
+            alerts("error", "Please select jpeg/png format images.");
           } else {
             setMediaOptions(state);
             let obj = {};
@@ -164,10 +142,9 @@ const UploadPicture = ({navigation, route}) => {
               type: res?.assets[0]?.type,
               uri: res?.assets[0]?.uri,
             };
-            console.log('OBJECT', profilePicArr);
+
             let dummyArr = [...profilePicArr];
             dummyArr[0].image = obj;
-            console.log('DUMMY ARRAY', dummyArr);
             setProfilePicArr(dummyArr);
             setCheck(true);
           }
@@ -178,26 +155,26 @@ const UploadPicture = ({navigation, route}) => {
           });
       }
     } catch (err) {
-      console.log('camera err', err);
+      console.log("camera err", err);
     }
   };
 
-  const handleCamera = state => {
+  const handleCamera = (state) => {
     if (ios) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.IOS.CAMERA,
-        'camera',
-        res => {
+        "camera",
+        (res) => {
           handleCameraMedia(state, res);
-        },
+        }
       );
     } else if (android) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.ANDROID.CAMERA,
-        'camera',
-        res => {
+        "camera",
+        (res) => {
           handleCameraMedia(state, res);
-        },
+        }
       );
     }
   };
@@ -206,10 +183,8 @@ const UploadPicture = ({navigation, route}) => {
     if (edit) {
       setLoader(true);
       let formData = new FormData();
-      console.log('PROFILE OICTURES', profilePicArr);
       profilePicArr.map((x, index) => {
-        console.log('xxxxxxxx', x?.image?.uri?.includes('https'));
-        if (x?.image && !x?.image?.uri?.includes('https')) {
+        if (x?.image && !x?.image?.uri?.includes("https")) {
           formData.append(`profilePic${index + 1}`, {
             name: x?.image?.name,
             type: x?.image.type,
@@ -217,57 +192,55 @@ const UploadPicture = ({navigation, route}) => {
           });
         }
       });
-      console.log('FORMDATA', formData);
+
       await updateUser(formData, token);
       setLoader(false);
       navigation.goBack();
     } else {
-      let check = profilePicArr.some(item => {
+      let check = profilePicArr.some((item) => {
         return item?.image;
       });
-      console.log('check', check);
 
       if (check) {
         dispatch({
-          type: 'profilePictures',
+          type: "profilePictures",
           payload: profilePicArr,
         });
-        navigation.navigate('UploadVideo');
+        navigation.navigate("UploadVideo");
       } else {
-        alerts('error', 'Please atleast upload one image');
+        alerts("error", "Please atleast upload one image");
       }
     }
   };
 
   const handleGalleryMedia = async (state, result) => {
     try {
-      if (result == 'granted') {
+      if (result == "granted") {
         ImagePicker.openPicker({
           cropping: false,
-          mediaType: 'photo',
+          mediaType: "photo",
           compressImageQuality: 0.5,
           forceJpg: true,
         })
-          .then(el => {
+          .then((el) => {
             if (el.height == 0 || el.width == 0) {
-              alerts('error', 'Please select jpeg/png/heif format images.');
+              alerts("error", "Please select jpeg/png/heif format images.");
             } else {
               let obj = {
-                name: el.path.split('/')[el.path.split('/').length - 1],
+                name: el.path.split("/")[el.path.split("/").length - 1],
                 type: el.mime,
                 uri: el.path,
               };
 
               let dummyArr = [...profilePicArr];
               dummyArr[0].image = obj;
-              console.log('DUMMY ARRAY', dummyArr);
               setProfilePicArr(dummyArr);
               setCheck(true);
             }
           })
-          .catch(err => {
-            alerts('error', err.toString());
-            console.log('gallery picker err:', err);
+          .catch((err) => {
+            alerts("error", err.toString());
+            console.log("gallery picker err:", err);
           })
           .finally(() => {
             setMediaOptions(state);
@@ -275,51 +248,51 @@ const UploadPicture = ({navigation, route}) => {
           });
       }
     } catch (err) {
-      console.log('gallery err', err);
+      console.log("gallery err", err);
     }
   };
 
-  const handleGallery = state => {
+  const handleGallery = (state) => {
     if (ios) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.IOS.PHOTO_LIBRARY,
-        'gallery',
-        res => {
+        "gallery",
+        (res) => {
           handleGalleryMedia(state, res);
-        },
+        }
       );
     } else if (android) {
       if (OS_VER >= 13) {
-        handleGalleryMedia(state, 'granted');
+        handleGalleryMedia(state, "granted");
       } else {
         handlePermissions.checkMultiplePermissions(
           PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
-          'gallery',
-          res => {
+          "gallery",
+          (res) => {
             handleGalleryMedia(state, res);
-          },
+          }
         );
       }
     }
   };
-  const handleAlert = state => {
-    console.log('mediaOptions', mediaOptions);
+  const handleAlert = (state) => {
     setMediaOptions(state);
-    console.log('hello', state);
   };
 
-  const handleRemoveImage = state => {
+  const handleRemoveImage = (state) => {
     setImageUri(null);
     setMediaOptions(false);
   };
-  console.log('PROFILE PIC ARRAY', profilePicArr);
+
   return (
-    <SafeAreaView style={{flex: 1, padding: 20, backgroundColor: colors.white}}>
+    <SafeAreaView
+      style={{ flex: 1, padding: 20, backgroundColor: colors.white }}
+    >
       <ActionCard
         videoUpload
         handleCloseAlert={() => setShowAlert(false)}
         isImageAct={true}
-        heading={'Choose an Action'}
+        heading={"Choose an Action"}
         handleGallery={handleGallery}
         handleCamera={handleCamera}
         handleAlert={handleAlert}
@@ -329,32 +302,33 @@ const UploadPicture = ({navigation, route}) => {
       <TouchableOpacity onPress={() => navigation.goBack()}>
         <FastImage
           resizeMode="contain"
-          style={{width: 20, height: 30}}
-          source={require('../../../assets/iconimages/arrow-back.png')}
+          style={{ width: 20, height: 30 }}
+          source={require("../../../assets/iconimages/arrow-back.png")}
         />
       </TouchableOpacity>
-      <View style={{marginTop: '8%'}}>
+      <View style={{ marginTop: "8%" }}>
         <Text style={styles.heading}>Upload photos that reflect you</Text>
         <Text style={styles.lightText}>
           Upload your best photos to stand out.
         </Text>
-        <View style={{width: '100%', marginVertical: '5%'}}></View>
+        <View style={{ width: "100%", marginVertical: "5%" }}></View>
 
         <View
           style={{
             marginTop: 7,
 
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <ImageCard
             imageAbsolute={{
               right: 10,
               height: windowHeight * 0.025,
               width: windowHeight * 0.025,
-              marginTop: '2%',
+              marginTop: "2%",
             }}
-            actualImage={{width: '90%', borderRadius: 10, marginTop: '10%'}}
+            actualImage={{ width: "90%", borderRadius: 10, marginTop: "10%" }}
             onPress
             selectedItem={handleOnSelect}
             handleOnRemove={handleOnRemove}
@@ -366,7 +340,7 @@ const UploadPicture = ({navigation, route}) => {
         </View>
       </View>
       <BottomButton
-        text={edit ? 'Update' : 'Continue'}
+        text={edit ? "Update" : "Continue"}
         loading={loader}
         onPress={() => continuePress()}
       />
@@ -375,11 +349,11 @@ const UploadPicture = ({navigation, route}) => {
 };
 
 const styles = StyleSheet.create({
-  heading: {fontFamily: 'Inter-Bold', fontSize: 25, color: colors.black},
+  heading: { fontFamily: "Inter-Bold", fontSize: 25, color: colors.black },
   lightText: {
-    fontFamily: 'Inter-Regular',
+    fontFamily: "Inter-Regular",
     fontSize: 15,
-    marginTop: '3%',
+    marginTop: "3%",
     color: colors.textGrey1,
   },
 });

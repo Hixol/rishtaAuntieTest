@@ -475,16 +475,9 @@ const HomeOne = (props) => {
         }
       })
       .catch((error) => {
-        console.log(error);
+        console.log("likeInteraction err", error);
       });
   };
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     setSkeleton(true);
-  //     getAllUser(limit, offset);
-  //     console.log('LOG 5');
-  //   }, [status]),
-  // );
 
   return (
     <>

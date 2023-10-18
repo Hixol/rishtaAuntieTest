@@ -88,7 +88,7 @@ const MyPrivacySetting = (props) => {
           if (res.data.status >= 200 && res.data.status <= 299) {
           }
         })
-        .catch((err) => console.log("err", err));
+        .catch((err) => console.log("updateUserSettings err", err));
     }
   };
 

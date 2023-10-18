@@ -204,25 +204,25 @@ const EditProfileScreen = (props) => {
     OnBoardingServices.vibesListing()
       .then((res) => {
         if (res.status >= 200 && res.status <= 299) {
-          console.log("VIBESS SSSS", res);
           dispatch({
             type: "allVibes",
             payload: res?.data?.data,
           });
+
           UserService.getQuestions()
             .then((res) => {
               if (res.status >= 200 && res.status <= 299) {
-                console.log("PRONPTS SSSS", res);
                 dispatch({
                   type: "allPrompts",
                   payload: res?.data?.data,
                 });
               }
             })
-            .catch((err) => console.log("Questions err", err));
+            .catch((err) => console.log("getQuestions err", err));
         }
       })
-      .catch((err) => console.log("err", err));
+      .catch((err) => console.log("vibesListing err", err));
+
     OnBoardingServices.profileValues(
       encodeURI(
         JSON.stringify([
@@ -236,7 +236,6 @@ const EditProfileScreen = (props) => {
       )
     )
       .then(async (res) => {
-        console.log("PROFILE VALUES", res);
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
             type: "allProfileValues",
@@ -244,7 +243,7 @@ const EditProfileScreen = (props) => {
           });
         }
       })
-      .catch((err) => console.log("err", err))
+      .catch((err) => console.log("profileValues err", err))
       .finally(() => {});
   }, []);
 

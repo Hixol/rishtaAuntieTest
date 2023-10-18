@@ -268,7 +268,7 @@ const Settings = (props) => {
 
   const handleUrl = (endpoint) =>
     Linking.openURL(`https://rishtaauntie.app/${endpoint}/`);
-  console.log("STTTATATS", status);
+
   return (
     <SafeAreaView style={styles.container}>
       <HeaderContainer Icon />

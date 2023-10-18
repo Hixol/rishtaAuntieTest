@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -9,56 +9,56 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   BackHandler,
-} from 'react-native';
-import {android, ios, OS_VER} from '../../utility/size';
+} from "react-native";
+import { android, ios, OS_VER } from "../../utility/size";
 import {
   checkExtension,
   checkInteractionStatement,
   directory,
   getTypeForApi,
   handlePermissions,
-} from '../../utility/regex';
-import {PERMISSIONS} from 'react-native-permissions';
-import {launchCamera} from 'react-native-image-picker';
-import {UserService} from '../../services';
-import {useSelector} from 'react-redux';
-import {useRecorder} from '../../hooks/useRecorder';
-import {useHelper} from '../../hooks/useHelper';
-import {Divider} from 'react-native-elements';
-import {SocketContext} from '../../context/SocketContext';
-import EmojiSelector, {Categories} from 'react-native-emoji-selector';
-import {useFocusEffect} from '@react-navigation/native';
+} from "../../utility/regex";
+import { PERMISSIONS } from "react-native-permissions";
+import { launchCamera } from "react-native-image-picker";
+import { UserService } from "../../services";
+import { useSelector } from "react-redux";
+import { useRecorder } from "../../hooks/useRecorder";
+import { useHelper } from "../../hooks/useHelper";
+import { Divider } from "react-native-elements";
+import { SocketContext } from "../../context/SocketContext";
+import EmojiSelector, { Categories } from "react-native-emoji-selector";
+import { useFocusEffect } from "@react-navigation/native";
 
-import ImagePicker from 'react-native-image-crop-picker';
-import styles from './styles';
-import colors from '../../utility/colors';
-import ChatHeaderContainer from '../../components/containers/chatHeaderContainer';
-import FastImage from 'react-native-fast-image';
-import Message from '../../components/Message';
-import config from '../../config/appConfig';
-import ActionCard from '../../components/Cards/ActionCard';
-import ChatServices from '../../services/ChatServices';
-import Loader from '../../components/Loader';
-import Button from '../../components/buttons/Button';
-import Icons from '../../utility/icons';
-import Video from 'react-native-video';
-import ActionBottomModal from '../../components/Modal/ActionBottomModal';
-import WaveForm from 'react-native-audiowaveform';
+import ImagePicker from "react-native-image-crop-picker";
+import styles from "./styles";
+import colors from "../../utility/colors";
+import ChatHeaderContainer from "../../components/containers/chatHeaderContainer";
+import FastImage from "react-native-fast-image";
+import Message from "../../components/Message";
+import config from "../../config/appConfig";
+import ActionCard from "../../components/Cards/ActionCard";
+import ChatServices from "../../services/ChatServices";
+import Loader from "../../components/Loader";
+import Button from "../../components/buttons/Button";
+import Icons from "../../utility/icons";
+import Video from "react-native-video";
+import ActionBottomModal from "../../components/Modal/ActionBottomModal";
+import WaveForm from "react-native-audiowaveform";
 
 let limit = 50;
 let offset = 0; // offset starts like an array index and 0 will points to first page.
 let count = 0;
 
-const ChatScreen = props => {
+const ChatScreen = (props) => {
   const navProps = props.props;
-  const {el} = navProps.route.params;
+  const { el } = navProps.route.params;
 
   const socket = useContext(SocketContext);
-  const {Alerts, handleStatusCode} = useHelper();
-  const {token, userData} = useSelector(store => store.userReducer);
+  const { Alerts, handleStatusCode } = useHelper();
+  const { token, userData } = useSelector((store) => store.userReducer);
 
   const flatRef = useRef(null);
-  const [msg, setMsg] = useState('');
+  const [msg, setMsg] = useState("");
   const [action, setAction] = useState(false);
   const [userFirstImage, setUserFirstImage] = useState(null);
   const [mediaUri, setMediaUri] = useState(null);
@@ -76,7 +76,7 @@ const ChatScreen = props => {
   const [typingStatus, setTypingStatus] = useState(false);
   const [loader, setLoader] = useState(false);
   const [pause, setPause] = useState(false);
-  const [msgRead, setMsgRead] = useState('');
+  const [msgRead, setMsgRead] = useState("");
   const [matchReq, setMatchReq] = useState(null);
   const [isTicketOpened, setIsTicketOpened] = useState(false);
   const {
@@ -93,13 +93,13 @@ const ChatScreen = props => {
   } = useRecorder();
 
   const noMatchMessages = [
-    {id: 1, msg: 'You have no active matches right now 🙁'},
-    {id: 2, msg: 'But don’t worry!'},
+    { id: 1, msg: "You have no active matches right now 🙁" },
+    { id: 2, msg: "But don’t worry!" },
     {
       id: 3,
-      msg: 'Try editing your profile with some interesting prompts and some of your best photos',
+      msg: "Try editing your profile with some interesting prompts and some of your best photos",
     },
-    {id: 4, msg: 'Then when you’re ready, discover new profiles!'},
+    { id: 4, msg: "Then when you’re ready, discover new profiles!" },
   ];
 
   const captureMedia = () => {
@@ -116,12 +116,12 @@ const ChatScreen = props => {
       chatHeadId: el.id,
       senderId: userData?.id,
       recipientId:
-        el.type === 'GROUP'
-          ? el.ChatMembers.map(el => el.memberId)
+        el.type === "GROUP"
+          ? el.ChatMembers.map((el) => el.memberId)
           : el?.ChatMembers[0]?.memberId,
     };
-    socket.emit('message-read', obj, res => {
-      console.log('message-read emit: ', res);
+    socket.emit("message-read", obj, (res) => {
+      console.log("message-read emit: ", res);
     });
   };
 
@@ -133,10 +133,10 @@ const ChatScreen = props => {
         senderId: userData?.id,
         messageReplyId: replyMsg?.id,
         recipientId:
-          el.type === 'GROUP'
-            ? el.ChatMembers.map(el => el.memberId)
+          el.type === "GROUP"
+            ? el.ChatMembers.map((el) => el.memberId)
             : el.ChatMembers[0]?.memberId,
-        message: msgType == 'TEXT_MESSAGE' ? msg : val,
+        message: msgType == "TEXT_MESSAGE" ? msg : val,
         type: msgType,
       };
       setReply(false);
@@ -146,18 +146,18 @@ const ChatScreen = props => {
         chatHeadId: el.id,
         senderId: userData?.id,
         recipientId:
-          el.type === 'GROUP'
-            ? el.ChatMembers.map(el => el.memberId)
+          el.type === "GROUP"
+            ? el.ChatMembers.map((el) => el.memberId)
             : el.ChatMembers[0]?.memberId,
-        message: msgType == 'TEXT_MESSAGE' ? msg : val,
+        message: msgType == "TEXT_MESSAGE" ? msg : val,
         type: msgType,
       };
     }
 
-    socket.emit('message-send', obj, res => {
-      console.log('message-send res', obj, res);
-      if (res.event == 'message-send') {
-        setChatMessages(prevState => ({
+    socket.emit("message-send", obj, (res) => {
+      console.log("message-send res", obj, res);
+      if (res.event == "message-send") {
+        setChatMessages((prevState) => ({
           ...prevState,
           rows: [
             ...prevState.rows,
@@ -179,25 +179,25 @@ const ChatScreen = props => {
     setLoader(false);
     setTypingStatus(false);
     setAudioUri(null);
-    setMsg('');
+    setMsg("");
   };
 
   const onSend = (val, type) => {
-    if (val.includes('https') && type != 'TEXT_MESSAGE') {
+    if (val.includes("https") && type != "TEXT_MESSAGE") {
       onSendMsg(val, type);
-    } else if (val != '' && type == 'TEXT_MESSAGE') {
+    } else if (val != "" && type == "TEXT_MESSAGE") {
       onSendMsg(val, type);
     }
   };
 
   const onPressSend = () => {
-    if (el.type === 'GROUP' && isTicketOpened == false) {
+    if (el.type === "GROUP" && isTicketOpened == false) {
       createTicket(msg);
     }
-    if (msg.includes('https')) {
-      onSendMsg(msg, 'LINK');
+    if (msg.includes("https")) {
+      onSendMsg(msg, "LINK");
     } else if (msg) {
-      onSend(msg, 'TEXT_MESSAGE');
+      onSend(msg, "TEXT_MESSAGE");
     } else if (audioUri) {
       handleSendAudio();
     } else {
@@ -212,50 +212,49 @@ const ChatScreen = props => {
 
   const getOpenendTicket = () => {
     ChatServices.getOpenendTicket(token)
-      .then(res => {
+      .then((res) => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 201) {
-          console.log('getOpenendTicket res', res);
           if (res.data.data == null) setIsTicketOpened(false);
           else setIsTicketOpened(true);
         }
       })
-      .catch(err => Alerts('error', err?.message));
+      .catch((err) => Alerts("error", err?.message));
   };
 
-  const createTicket = description => {
+  const createTicket = (description) => {
     ChatServices.createTicket(
       {
         chatHeadId: el.id,
         description,
       },
-      token,
+      token
     )
-      .then(res => {
+      .then((res) => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 201) {
           setIsTicketOpened(true);
-          Alerts('success', res.data.message);
+          Alerts("success", res.data.message);
         }
       })
-      .catch(err => console.log('createTicket err:', err));
+      .catch((err) => console.log("createTicket err:", err));
   };
 
   useEffect(() => {
     msgReadStatus();
 
-    userData?.UserMedia.map(media => {
+    userData?.UserMedia.map((media) => {
       if (media.sequence == 1) setUserFirstImage(media.url);
     });
 
-    if (el.type === 'GROUP') getOpenendTicket();
+    if (el.type === "GROUP") getOpenendTicket();
   }, []);
 
   useEffect(() => {
-    BackHandler.addEventListener('hardwareBackPress', handleBackButton);
+    BackHandler.addEventListener("hardwareBackPress", handleBackButton);
 
     return () => {
-      BackHandler.removeEventListener('hardwareBackPress', handleBackButton);
+      BackHandler.removeEventListener("hardwareBackPress", handleBackButton);
     };
   }, [handleBackButton]);
 
@@ -264,14 +263,14 @@ const ChatScreen = props => {
       return () => {
         setPause(true);
       };
-    }, []),
+    }, [])
   );
 
   let clientTimer;
 
   useEffect(() => {
-    socket.on('message-receive', res => {
-      console.log('message-receive on', res);
+    socket.on("message-receive", (res) => {
+      console.log("message-receive on", res);
       if (Object.keys(res).length > 0) {
         let obj = {
           chatHeadId: el.id,
@@ -286,7 +285,7 @@ const ChatScreen = props => {
         // });
 
         // append new msg
-        setChatMessages(prevState => ({
+        setChatMessages((prevState) => ({
           ...prevState,
           rows: [
             ...prevState.rows,
@@ -305,19 +304,19 @@ const ChatScreen = props => {
       }
     });
 
-    socket.on('is-online', res => {
-      console.log('is-online on: ', res);
+    socket.on("is-online", (res) => {
+      console.log("is-online on: ", res);
       setUserStatus(res.isOnline);
     });
 
-    socket.on('go-online-or-offline', res => {
+    socket.on("go-online-or-offline", (res) => {
       if (res.isOnline) {
         getAllChatMessages(limit, offset);
       }
       setUserStatus(res.isOnline);
     });
 
-    socket.on('message-typing', res => {
+    socket.on("message-typing", (res) => {
       clearTimeout(clientTimer);
       if (Object.keys(res).length > 0) {
         setTypingStatus(true);
@@ -357,16 +356,16 @@ const ChatScreen = props => {
     //   }
     // });
 
-    socket.on('message-reaction', res => {
+    socket.on("message-reaction", (res) => {
       if (Object.keys(res).length > 0) {
         if (userData?.id != el?.ChatMembers[0]?.memberId) {
-          setChatMessages(prevState => ({
+          setChatMessages((prevState) => ({
             ...prevState,
             rows: [
-              prevState.rows.map(el =>
+              prevState.rows.map((el) =>
                 el.id == res.messageId
-                  ? {...el, MessageReactions: [{emoji: res.emoji}]}
-                  : el,
+                  ? { ...el, MessageReactions: [{ emoji: res.emoji }] }
+                  : el
               ),
             ][0],
           }));
@@ -376,10 +375,10 @@ const ChatScreen = props => {
   }, []);
 
   const emitUserStatus = () => {
-    socket.emit('is-online', {
+    socket.emit("is-online", {
       recipientId:
-        el.type === 'GROUP'
-          ? el.ChatMembers.map(el => el.memberId)
+        el.type === "GROUP"
+          ? el.ChatMembers.map((el) => el.memberId)
           : el?.ChatMembers[0]?.memberId,
     });
   };
@@ -390,43 +389,43 @@ const ChatScreen = props => {
       ChatServices.chatMessages(
         el.id,
         `limit=${limit}&offset=${offset * limit}`,
-        token,
+        token
       )
-        .then(res => {
+        .then((res) => {
           if (res.status >= 200 && res.status <= 299) {
             let data = res.data.data;
             count += data.rows.length;
             if (limit <= 50 && offset == 0) {
               setChatMessages(data);
             } else if (offset > 0) {
-              setChatMessages(prevState => ({
+              setChatMessages((prevState) => ({
                 ...prevState,
                 rows: [...prevState.rows, ...data?.rows],
               }));
             }
           } else if (res.status >= 300 && res.status <= 399) {
             Alerts(
-              'error',
-              'You need to perform further actions to complete the request!',
+              "error",
+              "You need to perform further actions to complete the request!"
             );
           } else if (res.status >= 400 && res.status <= 499) {
-            if (el.type === 'GROUP') {
+            if (el.type === "GROUP") {
               setMatchReq(false);
-            } else if (res.data.error.message.includes('matchRequest')) {
+            } else if (res.data.error.message.includes("matchRequest")) {
               setMatchReq(true);
             } else {
-              Alerts('error', res.data.error.message);
+              Alerts("error", res.data.error.message);
             }
           } else if (res.status >= 500 && res.status <= 599) {
             Alerts(
-              'error',
-              'Internal server error! Your server is probably down.',
+              "error",
+              "Internal server error! Your server is probably down."
             );
           } else {
-            Alerts('error', 'Something went wrong Please try again later');
+            Alerts("error", "Something went wrong Please try again later");
           }
         })
-        .catch(err => console.log('ChatMessages Err: ', err))
+        .catch((err) => console.log("ChatMessages Err: ", err))
         .finally(() => setLoading(false));
     }
   };
@@ -436,8 +435,8 @@ const ChatScreen = props => {
       recipientId: userData?.id,
       isOnline: true,
     };
-    socket.emit('go-online-or-offline', obj, res => {
-      console.log('go-online-or-offline emit: ', res);
+    socket.emit("go-online-or-offline", obj, (res) => {
+      console.log("go-online-or-offline emit: ", res);
     });
 
     emitUserStatus();
@@ -447,26 +446,26 @@ const ChatScreen = props => {
 
       directory
         .checkAudioPermission()
-        .then(res => {
+        .then((res) => {
           if (res) {
             directory
               .checkDirectory(config.audioPath)
-              .then(res => {
+              .then((res) => {
                 if (res) {
                 } else {
                   directory
                     .makeNewDirectory(config.audioPath)
-                    .then(res => {
+                    .then((res) => {
                       if (res) {
                       }
                     })
-                    .catch(err => console.log('make Dir err: ', err));
+                    .catch((err) => console.log("make Dir err: ", err));
                 }
               })
-              .catch(err => console.log('check Dir err: ', err));
+              .catch((err) => console.log("check Dir err: ", err));
           }
         })
-        .catch(err => console.log('permission Err: ', err));
+        .catch((err) => console.log("permission Err: ", err));
     }
 
     getAllChatMessages(limit, offset);
@@ -480,56 +479,56 @@ const ChatScreen = props => {
         recipientId: userData?.id,
         isOnline: false,
       };
-      socket.emit('go-online-or-offline', obj, res => {
-        console.log('go-online-or-offline emit: ', res);
+      socket.emit("go-online-or-offline", obj, (res) => {
+        console.log("go-online-or-offline emit: ", res);
       });
     };
   }, []);
 
   const handleGalleryMedia = async (state, result) => {
     try {
-      if (result == 'granted') {
+      if (result == "granted") {
         ImagePicker.openPicker({
           cropping: false,
-          mediaType: 'any',
+          mediaType: "any",
           compressImageQuality: 0.99,
           forceJpg: true,
         })
-          .then(el => {
+          .then((el) => {
             let obj = {
-              name: el.path.split('/')[el.path.split('/').length - 1],
+              name: el.path.split("/")[el.path.split("/").length - 1],
               type: el.mime,
               uri: el.path,
             };
             chatSendMedia(obj);
           })
-          .catch(err => console.log('gallery picker err:', err))
+          .catch((err) => console.log("gallery picker err:", err))
           .finally(() => setMediaModal(state));
       }
     } catch (err) {
-      console.log('gallery err', err);
+      console.log("gallery err", err);
     }
   };
 
-  const handleGallery = state => {
+  const handleGallery = (state) => {
     if (ios) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.IOS.PHOTO_LIBRARY,
-        'gallery',
-        res => {
+        "gallery",
+        (res) => {
           handleGalleryMedia(state, res);
-        },
+        }
       );
     } else if (android) {
       if (OS_VER >= 13) {
-        handleGalleryMedia(state, 'granted');
+        handleGalleryMedia(state, "granted");
       } else {
         handlePermissions.checkMultiplePermissions(
           PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
-          'gallery',
-          res => {
+          "gallery",
+          (res) => {
             handleGalleryMedia(state, res);
-          },
+          }
         );
       }
     }
@@ -537,19 +536,19 @@ const ChatScreen = props => {
 
   const handleCameraMedia = async (state, result) => {
     try {
-      if (result == 'granted') {
+      if (result == "granted") {
         const options = {
-          mediaType: 'photo',
+          mediaType: "photo",
           quality: 0.4,
         };
 
-        await launchCamera(options, res => {
-          if (res.errorCode == 'others') {
+        await launchCamera(options, (res) => {
+          if (res.errorCode == "others") {
             Alerts(
-              'error',
+              "error",
               res.errorMessage
                 ? res.errorMessage
-                : 'Camera support is not available on your device.',
+                : "Camera support is not available on your device."
             );
           } else if (res.didCancel === true) {
             setMediaModal(state);
@@ -566,45 +565,45 @@ const ChatScreen = props => {
         });
       }
     } catch (err) {
-      console.log('camera err', err);
+      console.log("camera err", err);
     }
   };
 
-  const handleCamera = state => {
+  const handleCamera = (state) => {
     if (ios) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.IOS.CAMERA,
-        'camera',
-        res => {
+        "camera",
+        (res) => {
           handleCameraMedia(state, res);
-        },
+        }
       );
     } else if (android) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.ANDROID.CAMERA,
-        'camera',
-        res => {
+        "camera",
+        (res) => {
           handleCameraMedia(state, res);
-        },
+        }
       );
     }
   };
 
   const handleVideoMedia = async (state, result) => {
     try {
-      if (result === 'granted') {
+      if (result === "granted") {
         const options = {
-          mediaType: 'video',
-          videoQuality: 'high',
+          mediaType: "video",
+          videoQuality: "high",
         };
 
-        await launchCamera(options, res => {
-          if (res.errorCode == 'others') {
+        await launchCamera(options, (res) => {
+          if (res.errorCode == "others") {
             Alerts(
-              'error',
+              "error",
               res.errorMessage
                 ? res.errorMessage
-                : 'Camera support is not available on your device.',
+                : "Camera support is not available on your device."
             );
           } else if (res.didCancel === true) {
             setMediaModal(state);
@@ -622,31 +621,31 @@ const ChatScreen = props => {
         });
       }
     } catch (err) {
-      console.log('video err:', err);
+      console.log("video err:", err);
     }
   };
 
-  const handleVideo = state => {
+  const handleVideo = (state) => {
     if (ios) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.IOS.CAMERA,
-        'camera',
-        res => {
+        "camera",
+        (res) => {
           handleVideoMedia(state, res);
-        },
+        }
       );
     } else if (android) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.ANDROID.CAMERA,
-        'camera',
-        res => {
+        "camera",
+        (res) => {
           handleVideoMedia(state, res);
-        },
+        }
       );
     }
   };
 
-  const handleRemoveImage = state => {
+  const handleRemoveImage = (state) => {
     setMediaUri(null);
     setMediaModal(state);
   };
@@ -655,32 +654,32 @@ const ChatScreen = props => {
     setAction(true);
   };
 
-  const chatSendMedia = obj => {
+  const chatSendMedia = (obj) => {
     setLoader(true);
-    let type = '';
+    let type = "";
     type = getTypeForApi(obj.type);
 
     let formData = new FormData();
-    formData.append('mediaType', type);
-    formData.append('media', obj);
+    formData.append("mediaType", type);
+    formData.append("media", obj);
 
     ChatServices.sendChatMedia(formData, token)
-      .then(res => {
+      .then((res) => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           setMediaUri(res.data.data);
           onSend(res.data.data, type);
         }
       })
-      .catch(err => {
-        console.log('chatSendMedia err:', err);
+      .catch((err) => {
+        console.log("chatSendMedia err:", err);
         setLoader(false);
       })
       .finally(() => setLoader(false));
   };
 
   const handleReportAlert = () => {
-    navProps.navigation.navigate('ReportAccountScreen', {
+    navProps.navigation.navigate("ReportAccountScreen", {
       userId: el?.ChatMembers[0]?.memberId,
       userName: el?.ChatMembers[0]?.User?.firstName,
     });
@@ -688,31 +687,31 @@ const ChatScreen = props => {
     setReportModal(false);
   };
 
-  const handleAlert = state => {
+  const handleAlert = (state) => {
     setMediaModal(state);
     setReportModal(state);
   };
 
-  const handleBlockAlert = state => {
+  const handleBlockAlert = (state) => {
     UserService.blockUser(el?.ChatMembers[0]?.memberId, token)
-      .then(res => {
+      .then((res) => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           setIsBlocked(true);
           setBlockAlert(state);
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
   };
 
-  const handleBlockedScreen = state => {
-    navProps.navigation.navigate('BlockedList');
+  const handleBlockedScreen = (state) => {
+    navProps.navigation.navigate("BlockedList");
     setBlockAlert(false);
   };
 
-  const onSendEmoji = emo => {
+  const onSendEmoji = (emo) => {
     let obj = {
       chatHeadId: el.id,
       senderId: selectedMsg?.senderId,
@@ -721,14 +720,14 @@ const ChatScreen = props => {
       emoji: `${emo}`,
     };
 
-    socket.emit('message-reaction', obj, res => {
-      setChatMessages(prevState => ({
+    socket.emit("message-reaction", obj, (res) => {
+      setChatMessages((prevState) => ({
         ...prevState,
         rows: [
-          prevState.rows.map(el =>
+          prevState.rows.map((el) =>
             el.id == selectedMsg?.id
-              ? {...el, MessageReactions: [{emoji: res.emoji}]}
-              : el,
+              ? { ...el, MessageReactions: [{ emoji: res.emoji }] }
+              : el
           ),
         ][0],
       }));
@@ -743,36 +742,36 @@ const ChatScreen = props => {
     let obj = {
       chatHeadId: el.id,
       recipientId:
-        el.type === 'GROUP'
-          ? el.ChatMembers.map(el => el.memberId)
+        el.type === "GROUP"
+          ? el.ChatMembers.map((el) => el.memberId)
           : el?.ChatMembers[0]?.memberId,
       typing: true,
     };
 
     if (senderTimer == null) {
-      socket.emit('message-typing', obj);
+      socket.emit("message-typing", obj);
       senderTimer = setTimeout(() => {
         senderTimer = null;
       }, 500);
     }
   };
 
-  const onChangeText = val => {
+  const onChangeText = (val) => {
     if (val.length > 0) {
       checkTypingStatus();
     }
     setMsg(val);
   };
 
-  const TextWithIcon = ({icon, text}) => (
-    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+  const TextWithIcon = ({ icon, text }) => (
+    <View style={{ flexDirection: "row", alignItems: "center" }}>
       <Icons.MaterialIcons
         name={icon}
         size={16}
         color={colors.vibeMidGrey}
-        style={{marginRight: 2}}
+        style={{ marginRight: 2 }}
       />
-      <Text style={{color: colors.mediumGrey, fontSize: 12}}>{text}</Text>
+      <Text style={{ color: colors.mediumGrey, fontSize: 12 }}>{text}</Text>
     </View>
   );
 
@@ -782,28 +781,28 @@ const ChatScreen = props => {
       messageId: selectedMsg?.id,
       userId: userData?.id,
     };
-    socket.emit('message-favourite', obj, res => {});
+    socket.emit("message-favourite", obj, (res) => {});
     setSelectedMsg(null);
   };
 
   const onReport = () => {
     ChatServices.chatReportMessage(selectedMsg?.id, token)
-      .then(res => {
+      .then((res) => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
-          Alerts('success', res.data.message);
+          Alerts("success", res.data.message);
         }
       })
-      .catch(err => console.log('chatReportMessage err:', err))
+      .catch((err) => console.log("chatReportMessage err:", err))
       .finally(() => setSelectedMsg(null));
   };
 
   const reportCallback = () => {
     Alert.alert(
-      'Report Message?',
-      'This message will be forwarded to Rishta Auntie. This contact will not be notified.',
-      [{text: 'CANCEL'}, {text: 'REPORT', onPress: () => onReport()}],
-      {cancelable: false},
+      "Report Message?",
+      "This message will be forwarded to Rishta Auntie. This contact will not be notified.",
+      [{ text: "CANCEL" }, { text: "REPORT", onPress: () => onReport() }],
+      { cancelable: false }
     );
   };
 
@@ -812,22 +811,22 @@ const ChatScreen = props => {
     getAllChatMessages(limit, offset);
   };
 
-  const onLongPress = item => {
-    if (el?.type != 'GROUP') setSelectedMsg(item);
+  const onLongPress = (item) => {
+    if (el?.type != "GROUP") setSelectedMsg(item);
   };
 
   const Avatar = () => (
     <View>
       <FastImage
         style={styles.image}
-        resizeMode={'stretch'}
-        source={{uri: el?.ChatMembers[0]?.User?.UserMedia[0]?.url}}
+        resizeMode={"stretch"}
+        source={{ uri: el?.ChatMembers[0]?.User?.UserMedia[0]?.url }}
       />
       {userStatus ? <View style={styles.status} /> : null}
     </View>
   );
 
-  const renderItem = ({item}) =>
+  const renderItem = ({ item }) =>
     item?.senderId != userData?.id ? (
       <>
         {selectedMsg?.id === item.id && <View style={styles.highlight} />}
@@ -859,7 +858,7 @@ const ChatScreen = props => {
       )
     );
 
-  const renderMatchItem = ({item}) => <Message item={item.msg} />;
+  const renderMatchItem = ({ item }) => <Message item={item.msg} />;
 
   const renderInteraction = () => (
     <View style={styles.interactionContainer}>
@@ -869,7 +868,7 @@ const ChatScreen = props => {
       </View>
 
       <View style={styles.interactionImageContainer}>
-        {chatMessages?.firstInteraction?.resource?.type == 'video' ? (
+        {chatMessages?.firstInteraction?.resource?.type == "video" ? (
           <View>
             <Video
               poster={chatMessages?.firstInteraction?.resource?.url}
@@ -883,22 +882,22 @@ const ChatScreen = props => {
               style={styles.video}
             />
             <Icons.FontAwesome5
-              name={pause ? 'play' : 'pause'}
+              name={pause ? "play" : "pause"}
               size={20}
               color={colors.primaryPink}
               style={styles.playBtn}
               onPress={() => setPause(!pause)}
             />
           </View>
-        ) : chatMessages?.firstInteraction?.resource?.type == 'image' ? (
+        ) : chatMessages?.firstInteraction?.resource?.type == "image" ? (
           <FastImage
             source={{
               uri: /your/.test(
                 checkInteractionStatement(
                   userData?.id,
                   chatMessages?.firstInteraction,
-                  el?.ChatMembers[0]?.User?.firstName,
-                ),
+                  el?.ChatMembers[0]?.User?.firstName
+                )
               )
                 ? userFirstImage
                 : el?.ChatMembers[0]?.User?.UserMedia[0]?.url,
@@ -909,9 +908,9 @@ const ChatScreen = props => {
         ) : null}
       </View>
       {/LIKE/.test(
-        chatMessages?.firstInteraction?.type,
+        chatMessages?.firstInteraction?.type
       ) ? null : /VOICE_NOTE/.test(
-          chatMessages?.firstInteraction?.type,
+          chatMessages?.firstInteraction?.type
         ) ? null : (
         // <WaveForm
         //   style={{
@@ -945,7 +944,7 @@ const ChatScreen = props => {
         {checkInteractionStatement(
           userData?.id,
           chatMessages?.firstInteraction,
-          el?.ChatMembers[0]?.User?.firstName,
+          el?.ChatMembers[0]?.User?.firstName
         )}
       </Text>
     );
@@ -957,20 +956,20 @@ const ChatScreen = props => {
         backPress={() =>
           selectedMsg
             ? setSelectedMsg(null)
-            : el.type === 'GROUP'
-            ? navProps.navigation.replace('BottomTab', {
-                screen: 'Settings',
+            : el.type === "GROUP"
+            ? navProps.navigation.replace("BottomTab", {
+                screen: "Settings",
               })
             : navProps.navigation.goBack()
         }
-        type={el.type === 'GROUP' && 'GROUP'}
+        type={el.type === "GROUP" && "GROUP"}
         name={
-          el.type === 'GROUP'
-            ? 'Customer Support'
+          el.type === "GROUP"
+            ? "Customer Support"
             : el?.ChatMembers[0]?.User?.firstName
         }
         image={el?.ChatMembers[0]?.User?.UserMedia[0]?.url}
-        status={typingStatus ? 'typing...' : userStatus ? 'online' : ''}
+        status={typingStatus ? "typing..." : userStatus ? "online" : ""}
         selected={selectedMsg}
         user={el?.ChatMembers[0]?.User}
         starCallback={starCallback}
@@ -981,7 +980,7 @@ const ChatScreen = props => {
         <ActionCard
           chatType={el.type}
           isImageAct={true}
-          heading={'Choose an Action'}
+          heading={"Choose an Action"}
           handleGallery={handleGallery}
           handleCamera={handleCamera}
           handleVideo={handleVideo}
@@ -1027,25 +1026,26 @@ const ChatScreen = props => {
           <FlatList
             inverted={matchReq ? false : true}
             ref={flatRef}
-            contentContainerStyle={{paddingHorizontal: '3%'}}
+            contentContainerStyle={{ paddingHorizontal: "3%" }}
             showsVerticalScrollIndicator={false}
             data={
               matchReq
                 ? noMatchMessages
                 : chatMessages?.rows?.sort((a, b) => b.id - a.id)
             }
-            keyExtractor={item => item.id.toString()}
+            keyExtractor={(item) => item.id.toString()}
             onEndReached={loadMoreData}
             renderItem={matchReq ? renderMatchItem : renderItem}
             ListFooterComponent={
-              el.type != 'GROUP' ? renderInteraction() : null
+              el.type != "GROUP" ? renderInteraction() : null
             }
           />
 
           {/* BOTTOM CONTAINER */}
           <KeyboardAvoidingView
-            behavior={ios ? 'padding' : ''}
-            keyboardVerticalOffset={100}>
+            behavior={ios ? "padding" : ""}
+            keyboardVerticalOffset={100}
+          >
             {reply && (
               <View style={styles.replyContainer}>
                 <View style={styles.replyInnerContainer}>
@@ -1053,22 +1053,27 @@ const ChatScreen = props => {
                     name="close"
                     size={20}
                     color={colors.mediumGrey}
-                    style={{position: 'absolute', right: 6, top: 5, zIndex: 2}}
+                    style={{
+                      position: "absolute",
+                      right: 6,
+                      top: 5,
+                      zIndex: 2,
+                    }}
                     onPress={() => setReply(false)}
                   />
                   <View>
-                    {replyMsg?.msgPosition == 'right' ? (
+                    {replyMsg?.msgPosition == "right" ? (
                       <Text style={styles.replyYou}>You</Text>
                     ) : (
                       <Text style={styles.replyYou}>
                         {el?.ChatMembers[0]?.User?.firstName}
                       </Text>
                     )}
-                    {checkExtension(replyMsg?.message) == 'Photo' ? (
+                    {checkExtension(replyMsg?.message) == "Photo" ? (
                       <TextWithIcon icon="photo" text="Photo" />
-                    ) : checkExtension(replyMsg?.message) == 'Video' ? (
+                    ) : checkExtension(replyMsg?.message) == "Video" ? (
                       <TextWithIcon icon="videocam" text="Video" />
-                    ) : checkExtension(replyMsg?.message) == 'Audio' ? (
+                    ) : checkExtension(replyMsg?.message) == "Audio" ? (
                       <TextWithIcon icon="mic" text="Audio" />
                     ) : (
                       <Text style={styles.replyText} numberOfLines={3}>
@@ -1080,7 +1085,7 @@ const ChatScreen = props => {
               </View>
             )}
             {selectedMsg ? (
-              <View style={{height: 280}}>
+              <View style={{ height: 280 }}>
                 <EmojiSelector
                   columns={10}
                   category={Categories.symbols}
@@ -1093,34 +1098,40 @@ const ChatScreen = props => {
                   style={[
                     styles.inputContainer,
                     // reply && styles.replyInputContainer,
-                  ]}>
+                  ]}
+                >
                   {recordView ? (
                     <View style={styles.audioContainer}>
                       <TouchableOpacity
                         onPress={onStopRecord}
-                        style={[styles.deletePauseContainer, {marginRight: 5}]}>
+                        style={[
+                          styles.deletePauseContainer,
+                          { marginRight: 5 },
+                        ]}
+                      >
                         <FastImage
                           style={{
-                            width: '50%',
-                            height: '50%',
+                            width: "50%",
+                            height: "50%",
                           }}
                           resizeMode="contain"
-                          source={require('../../assets/iconimages/delete-White.png')}
+                          source={require("../../assets/iconimages/delete-White.png")}
                         />
                       </TouchableOpacity>
                       <TouchableOpacity
                         onPress={pauseView ? onResumeRecord : onPauseRecord}
-                        style={styles.deletePauseContainer}>
+                        style={styles.deletePauseContainer}
+                      >
                         <FastImage
                           style={{
-                            width: pauseView ? '55%' : '40%',
-                            height: pauseView ? '55%' : '40%',
+                            width: pauseView ? "55%" : "40%",
+                            height: pauseView ? "55%" : "40%",
                           }}
                           resizeMode="contain"
                           source={
                             pauseView
-                              ? require('../../assets/iconimages/mic.png')
-                              : require('../../assets/iconimages/pauseVoice.png')
+                              ? require("../../assets/iconimages/mic.png")
+                              : require("../../assets/iconimages/pauseVoice.png")
                           }
                         />
                       </TouchableOpacity>
@@ -1137,8 +1148,8 @@ const ChatScreen = props => {
                       />
                       <TouchableOpacity onPress={captureMedia}>
                         <FastImage
-                          source={require('../../assets/iconimages/camera-blue-01.png')}
-                          style={{width: 24, height: 24}}
+                          source={require("../../assets/iconimages/camera-blue-01.png")}
+                          style={{ width: 24, height: 24 }}
                           tintColor={colors.vibeMidGrey}
                         />
                       </TouchableOpacity>
@@ -1148,15 +1159,16 @@ const ChatScreen = props => {
                 <TouchableOpacity
                   disabled={matchReq}
                   style={styles.micContainer}
-                  onPress={onPressSend}>
+                  onPress={onPressSend}
+                >
                   {loader ? (
                     <Loader />
                   ) : (
                     <FastImage
                       source={
                         msg || recordView
-                          ? require('../../assets/iconimages/send-03.png')
-                          : require('../../assets/iconimages/mic.png')
+                          ? require("../../assets/iconimages/send-03.png")
+                          : require("../../assets/iconimages/mic.png")
                       }
                       tintColor="white"
                       style={{
@@ -1175,20 +1187,20 @@ const ChatScreen = props => {
                 <Button
                   YesNoBtn
                   onPress={() =>
-                    navProps.navigation.navigate('ViewEditProfile', {
-                      screen: 'EditProfile',
+                    navProps.navigation.navigate("ViewEditProfile", {
+                      screen: "EditProfile",
                     })
                   }
                   title="Edit My Profile"
-                  btnTitleStyle={{fontFamily: 'Roboto-Regular'}}
-                  YesNoBtnStyle={{marginVertical: '5%', width: '50%'}}
+                  btnTitleStyle={{ fontFamily: "Roboto-Regular" }}
+                  YesNoBtnStyle={{ marginVertical: "5%", width: "50%" }}
                 />
                 <Button
                   YesNoBtn
-                  onPress={() => navProps.navigation.navigate('Discover')}
+                  onPress={() => navProps.navigation.navigate("Discover")}
                   title="Go To Discover"
-                  btnTitleStyle={{fontFamily: 'Roboto-Regular'}}
-                  YesNoBtnStyle={{marginBottom: '5%', width: '50%'}}
+                  btnTitleStyle={{ fontFamily: "Roboto-Regular" }}
+                  YesNoBtnStyle={{ marginBottom: "5%", width: "50%" }}
                 />
               </View>
             )}
@@ -1203,7 +1215,7 @@ const ChatScreen = props => {
           }}
           fav={() => {
             setAction(false);
-            navProps.navigation.navigate('FavouriteMessages', el);
+            navProps.navigation.navigate("FavouriteMessages", el);
           }}
           toggle={action}
           setAction={setAction}

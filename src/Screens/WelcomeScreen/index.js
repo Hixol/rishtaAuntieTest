@@ -1,26 +1,24 @@
-import {useFocusEffect} from '@react-navigation/native';
-import React, {useState} from 'react';
-import {View, Alert} from 'react-native';
-import FastImage from 'react-native-fast-image';
-import {PERMISSIONS} from 'react-native-permissions';
-import Button from '../../components/buttons/Button';
-import colors from '../../utility/colors';
+import React, { useState } from "react";
+import { View, Alert } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import { PERMISSIONS } from "react-native-permissions";
+import { handlePermissions } from "../../utility/regex";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   android,
   ios,
   OS_VER,
   windowHeight,
   windowWidth,
-} from '../../utility/size';
-import NetInfo from '@react-native-community/netinfo';
-import styles from './styles';
-import {handlePermissions} from '../../utility/regex';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {useSelector} from 'react-redux';
+} from "../../utility/size";
 
-const WelcomeScreen = props => {
-  const {routeName} = useSelector(store => store.NewOnBoardingReducer);
+import FastImage from "react-native-fast-image";
+import Button from "../../components/buttons/Button";
+import colors from "../../utility/colors";
+import NetInfo from "@react-native-community/netinfo";
+import styles from "./styles";
 
+const WelcomeScreen = (props) => {
   const [connection, setConnection] = useState(false);
 
   const getAllPermissions = () => {
@@ -32,8 +30,8 @@ const WelcomeScreen = props => {
           PERMISSIONS.IOS.MICROPHONE,
           PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
         ],
-        '',
-        res => {},
+        "",
+        (res) => {}
       );
     } else if (android) {
       if (OS_VER >= 13) {
@@ -64,11 +62,11 @@ const WelcomeScreen = props => {
 
   const goToLogin = () => {
     if (connection) {
-      props.navigation.navigate('Login');
+      props.navigation.navigate("Login");
     } else {
       Alert.alert(
-        'Internet Connection!',
-        'Please check your internet connection.',
+        "Internet Connection!",
+        "Please check your internet connection."
       );
     }
   };
@@ -76,28 +74,26 @@ const WelcomeScreen = props => {
   useFocusEffect(
     React.useCallback(() => {
       getAllPermissions();
-      const unsubscribe = NetInfo.addEventListener(state => {
+      const unsubscribe = NetInfo.addEventListener((state) => {
         setConnection(state.isConnected);
       });
 
       // Unsubscribe
       return () => unsubscribe();
-    }, []),
+    }, [])
   );
-  console.log('1', '1' - -'1');
-  console.log('2', '1' + +'1');
-  console.log('3', '1' + -'1');
-  console.log('4', '1' - +'1');
+
   return (
     <SafeAreaView style={styles.container}>
       <View
         style={{
           height: windowHeight * 1,
           width: windowWidth * 1,
-        }}>
+        }}
+      >
         <FastImage
-          style={{width: '100%', height: '100%'}}
-          source={require('../../assets/images/couple.jpg')}
+          style={{ width: "100%", height: "100%" }}
+          source={require("../../assets/images/couple.jpg")}
         />
       </View>
       <View
@@ -106,36 +102,38 @@ const WelcomeScreen = props => {
           borderTopLeftRadius: 40,
           borderTopRightRadius: 40,
           zIndex: 1,
-          width: '100%',
-          height: '55%',
-          position: 'absolute',
+          width: "100%",
+          height: "55%",
+          position: "absolute",
           backgroundColor: colors.white,
-        }}>
+        }}
+      >
         <View
           style={{
-            alignSelf: 'center',
-            marginTop: '15%',
-            width: '23%',
-            height: '23%',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
+            alignSelf: "center",
+            marginTop: "15%",
+            width: "23%",
+            height: "23%",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <FastImage
             resizeMode="contain"
-            source={require('../../assets/iconimages/logo.png')}
+            source={require("../../assets/iconimages/logo.png")}
             style={{
-              width: '100%',
-              height: '100%',
+              width: "100%",
+              height: "100%",
             }}
           />
         </View>
-        <View style={{marginTop: '5%'}}>
+        <View style={{ marginTop: "5%" }}>
           <Button
             onPress={goToLogin}
-            btnTitleStyle={{fontFamily: 'Roboto-Regular', fontSize: 17}}
-            YesNoBtnStyle={{width: '50%'}}
+            btnTitleStyle={{ fontFamily: "Roboto-Regular", fontSize: 17 }}
+            YesNoBtnStyle={{ width: "50%" }}
             YesNoBtn
-            title={'Login'}
+            title={"Login"}
           />
           {/*<Button
             onPress={() => props.navigation.navigate('SignUp')}
@@ -145,11 +143,11 @@ const WelcomeScreen = props => {
             YesNoBtnStyle={{marginTop: '2%', width: '50%'}}
           /> */}
           <Button
-            onPress={() => props.navigation.navigate('SignUp')}
-            btnTitleStyle={{fontFamily: 'Roboto-Regular', fontSize: 17}}
+            onPress={() => props.navigation.navigate("SignUp")}
+            btnTitleStyle={{ fontFamily: "Roboto-Regular", fontSize: 17 }}
             YesNoBtn
-            title={'Get Started'}
-            YesNoBtnStyle={{marginTop: '2%', width: '50%'}}
+            title={"Get Started"}
+            YesNoBtnStyle={{ marginTop: "2%", width: "50%" }}
           />
         </View>
       </View>

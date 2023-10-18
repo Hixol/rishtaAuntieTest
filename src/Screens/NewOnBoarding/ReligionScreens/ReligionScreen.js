@@ -1,55 +1,43 @@
-import {useFocusEffect} from '@react-navigation/native';
-import React, {useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
-  Alert,
   Text,
   TouchableOpacity,
   StyleSheet,
-  Keyboard,
-  TouchableWithoutFeedback,
   ScrollView,
   ActivityIndicator,
-  TextInput,
   Animated,
-} from 'react-native';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { OnBoardingServices } from "../../../services";
+import { useHelper } from "../../../hooks/useHelper";
+import { useDispatch, useSelector } from "react-redux";
 
-import colors from '../../../utility/colors';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import FastImage from 'react-native-fast-image';
-import BottomButton from '../../../components/buttons/BottomButton';
-
-import {OnBoardingServices, UserService} from '../../../services';
-import {useHelper} from '../../../hooks/useHelper';
-
-import SliderView from '../../../components/Modal/Slider';
-import NewOnBoardingDesign from '../../../components/NewOnBoardingDesign';
-import OnBoardingSearch from '../../../components/OnBoardingSearch';
-import {alerts} from '../../../utility/regex';
-import {useDispatch, useSelector} from 'react-redux';
-import ProfileServices from '../../../services/ProfileServices';
+import colors from "../../../utility/colors";
+import FastImage from "react-native-fast-image";
+import BottomButton from "../../../components/buttons/BottomButton";
+import NewOnBoardingDesign from "../../../components/NewOnBoardingDesign";
+import OnBoardingSearch from "../../../components/OnBoardingSearch";
 
 let filtered = [];
 
-const ReligionScreen = ({navigation, route}) => {
-  const {userData, token} = useSelector(store => store.userReducer);
-  const {updateUser, updateUserPreference} = useHelper();
-
-  const {coords} = useSelector(store => store.chatReducer);
-  const {religion} = useSelector(store => store.NewOnBoardingReducer);
-  const [searchValue, setSearchValue] = useState('');
-  const {handleLocation, Alerts} = useHelper();
-
+const ReligionScreen = ({ navigation, route }) => {
   let edit = route?.params?.edit;
   let preferenceEdit = route?.params?.preferenceEdit;
 
   const dispatch = useDispatch();
+  const { updateUser, updateUserPreference } = useHelper();
+
+  const { userData, token } = useSelector((store) => store.userReducer);
+  const { religion } = useSelector((store) => store.NewOnBoardingReducer);
+
+  const [searchValue, setSearchValue] = useState("");
   const [array, setArray] = useState([
     {
       id: 1,
-      type: 'Religion',
+      type: "Religion",
       question: `What is your religion?`,
-      ask: 'Please Select one of the religion',
+      ask: "Please Select one of the religion",
       options: [],
       search: true,
       multiSelect: false,
@@ -77,9 +65,9 @@ const ReligionScreen = ({navigation, route}) => {
 
   const scrollIndicatorPosition = Animated.multiply(
     scrollIndicator,
-    visibleScrollBarHeight / completeScrollBarHeight,
+    visibleScrollBarHeight / completeScrollBarHeight
   ).interpolate({
-    extrapolate: 'clamp',
+    extrapolate: "clamp",
     inputRange: [0, difference],
     outputRange: [0, difference],
   });
@@ -89,7 +77,7 @@ const ReligionScreen = ({navigation, route}) => {
 
   const onLayout = ({
     nativeEvent: {
-      layout: {height},
+      layout: { height },
     },
   }) => {
     setVisibleScrollBarHeight(height);
@@ -99,17 +87,16 @@ const ReligionScreen = ({navigation, route}) => {
     setLoading(true);
     let copyarr = [...array];
     OnBoardingServices.profileValues(
-      encodeURI(JSON.stringify(['denomination'])),
+      encodeURI(JSON.stringify(["denomination"]))
     )
-      .then(async res => {
-        console.log('PROFILE VALUES', res);
+      .then(async (res) => {
         if (res.status >= 200 && res.status <= 299) {
           let data = res?.data?.data;
-          let findReligionIndex = copyarr.findIndex(item => {
-            return item?.type === 'Religion';
+          let findReligionIndex = copyarr.findIndex((item) => {
+            return item?.type === "Religion";
           });
           let religionArray = await Object.keys(data?.denomination)
-            .map(x => ({name: x}))
+            .map((x) => ({ name: x }))
             .sort((a, b) => {
               if (a.name < b.name) return -1;
               if (a.name > b.name) return 1;
@@ -123,24 +110,22 @@ const ReligionScreen = ({navigation, route}) => {
           setArray(copyarr);
         }
       })
-
-      .catch(err => console.log('err', err))
-
-      .finally(() => {
-        console.log('FINALLY');
-        setLoading(false);
-      });
+      .catch((err) => console.log("profileValues err", err))
+      .finally(() => setLoading(false));
   }, []);
+
   const selectReligion = (item, index) => {
     setSelectedReligion(item);
     dispatch({
-      type: 'religion',
+      type: "religion",
       payload: item,
     });
   };
+
   const selectDenomination = (item, index) => {
     setSelectedDenomination(item);
   };
+
   useEffect(() => {}, [selectedReligion]);
 
   useEffect(() => {
@@ -149,14 +134,12 @@ const ReligionScreen = ({navigation, route}) => {
         ...copy,
         name: userData?.Profile?.religion,
       };
-      console.log('COPYYY', copy);
       setSelectedReligion(copy);
     } else if (preferenceEdit) {
       let copy = {
         ...copy,
         name: userData?.UserPreference?.religion,
       };
-      console.log('COPYYY', copy);
       setSelectedReligion(copy);
     }
   }, []);
@@ -164,32 +147,29 @@ const ReligionScreen = ({navigation, route}) => {
   const createProfile = async () => {
     if (edit) {
       let formData = new FormData();
-      formData.append('religion', selectedReligion?.name);
-      console.log('FORM DATA', formData);
+      formData.append("religion", selectedReligion?.name);
       await updateUser(formData, token);
       navigation.goBack();
     } else if (preferenceEdit) {
-      await updateUserPreference(token, 'religion', selectedReligion?.name);
+      await updateUserPreference(token, "religion", selectedReligion?.name);
       navigation.goBack();
     } else {
       if (selectedReligion !== null) {
         dispatch({
-          type: 'religion',
+          type: "religion",
           payload: selectedReligion === null ? religion : selectedReligion,
         });
-        navigation.navigate('UploadSelfie');
+        navigation.navigate("UploadSelfie");
       }
     }
   };
-
-  console.log('REDUX RELIGION', religion);
 
   const search = (text, type, currentIndex) => {
     setSearchValue(text);
     if (text?.length > 2) {
       filtered = [...array];
       let copyArray = [...array];
-      let filtered1 = array[currentIndex]?.options.filter(item => {
+      let filtered1 = array[currentIndex]?.options.filter((item) => {
         return item?.name.includes(text);
       });
       if (filtered1.length > 0) {
@@ -200,28 +180,30 @@ const ReligionScreen = ({navigation, route}) => {
         filtered = copyArray;
       }
     } else if (text?.length <= 2) {
-      console.log('HELLO123');
       filtered = [];
     }
   };
-  console.log('selectedReligion', selectedReligion);
+
   return loading ? (
     <View
       style={{
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: "center",
+        justifyContent: "center",
         backgroundColor: colors.white,
-      }}>
-      <ActivityIndicator size={'large'} color={colors.primaryPink} />
+      }}
+    >
+      <ActivityIndicator size={"large"} color={colors.primaryPink} />
     </View>
   ) : (
-    <SafeAreaView style={{flex: 1, padding: 20, backgroundColor: colors.white}}>
+    <SafeAreaView
+      style={{ flex: 1, padding: 20, backgroundColor: colors.white }}
+    >
       <TouchableOpacity onPress={() => navigation.goBack()}>
         <FastImage
           resizeMode="contain"
-          style={{width: 20, height: 30}}
-          source={require('../../../assets/iconimages/arrow-back.png')}
+          style={{ width: 20, height: 30 }}
+          source={require("../../../assets/iconimages/arrow-back.png")}
         />
       </TouchableOpacity>
       <View style={styles.typeandCountView}>
@@ -230,11 +212,11 @@ const ReligionScreen = ({navigation, route}) => {
 
       <Text style={styles.question}>{array[currentIndex]?.question}</Text>
       {/* <Text style={styles.ask}>{array[currentIndex]?.ask}</Text> */}
-      <View style={{width: '100%', height: '80%'}}>
-        {array[currentIndex]?.type === 'Religion' ? (
+      <View style={{ width: "100%", height: "80%" }}>
+        {array[currentIndex]?.type === "Religion" ? (
           <>
             <OnBoardingSearch
-              onChangeText={text =>
+              onChangeText={(text) =>
                 search(text, array[currentIndex]?.type, currentIndex)
               }
               array={array}
@@ -243,25 +225,30 @@ const ReligionScreen = ({navigation, route}) => {
               search={array[currentIndex]?.search}
             />
             <View style={styles.scrollContainer}>
-              <View style={{height: '95%', width: '95%'}}>
+              <View style={{ height: "95%", width: "95%" }}>
                 <ScrollView
                   onContentSizeChange={onContentSizeChange}
                   onLayout={onLayout}
                   onScroll={Animated.event(
-                    [{nativeEvent: {contentOffset: {y: scrollIndicator}}}],
-                    {useNativeDriver: false},
+                    [
+                      {
+                        nativeEvent: { contentOffset: { y: scrollIndicator } },
+                      },
+                    ],
+                    { useNativeDriver: false }
                   )}
                   scrollEventThrottle={16}
                   showsVerticalScrollIndicator={false}
                   style={{
-                    marginVertical: '5%',
-                  }}>
+                    marginVertical: "5%",
+                  }}
+                >
                   {filtered?.length > 0
                     ? filtered[currentIndex]?.options.map((item, index) => {
                         let findIndex = filtered[
                           currentIndex
                         ]?.options.findIndex(
-                          item => item?.name === selectedReligion?.name,
+                          (item) => item?.name === selectedReligion?.name
                         );
 
                         return (
@@ -271,7 +258,7 @@ const ReligionScreen = ({navigation, route}) => {
                             index={index}
                             item={item}
                             multiSelect={array[currentIndex]?.multiSelect}
-                            nameorid={'name'}
+                            nameorid={"name"}
                             search={array[currentIndex]?.search}
                             radio={true}
                           />
@@ -281,7 +268,7 @@ const ReligionScreen = ({navigation, route}) => {
                         let findIndex = array[currentIndex]?.options.findIndex(
                           (item, index) => {
                             return item?.name === selectedReligion?.name;
-                          },
+                          }
                         );
                         return (
                           <NewOnBoardingDesign
@@ -290,7 +277,7 @@ const ReligionScreen = ({navigation, route}) => {
                             index={index}
                             item={item}
                             multiSelect={array[currentIndex]?.multiSelect}
-                            nameorid={'name'}
+                            nameorid={"name"}
                             search={array[currentIndex]?.search}
                             radio={true}
                           />
@@ -301,27 +288,28 @@ const ReligionScreen = ({navigation, route}) => {
               <View
                 style={[
                   styles.customScrollBarBackground,
-                  {height: '80%', marginTop: '5%'},
-                ]}>
+                  { height: "80%", marginTop: "5%" },
+                ]}
+              >
                 <Animated.View
                   style={[
                     styles.customScrollBar,
                     {
                       height: scrollIndicatorSize,
-                      transform: [{translateY: scrollIndicatorPosition}],
+                      transform: [{ translateY: scrollIndicatorPosition }],
                     },
                   ]}
                 />
               </View>
             </View>
           </>
-        ) : array[currentIndex]?.type === 'Denomination' ? (
-          <ScrollView style={{marginVertical: '5%'}}>
+        ) : array[currentIndex]?.type === "Denomination" ? (
+          <ScrollView style={{ marginVertical: "5%" }}>
             {array[currentIndex]?.options.map((item, index) => {
               let findIndex = array[currentIndex]?.options.findIndex(
                 (item, index) => {
                   return item?.name === selectedDenomination?.name;
-                },
+                }
               );
               return (
                 <NewOnBoardingDesign
@@ -330,7 +318,7 @@ const ReligionScreen = ({navigation, route}) => {
                   index={index}
                   item={item}
                   multiSelect={array[currentIndex]?.multiSelect}
-                  nameorid={'name'}
+                  nameorid={"name"}
                   search={array[currentIndex]?.search}
                   radio={true}
                 />
@@ -340,7 +328,7 @@ const ReligionScreen = ({navigation, route}) => {
         ) : null}
       </View>
       <BottomButton
-        text={edit ? 'Update' : 'Continue'}
+        text={edit ? "Update" : "Continue"}
         onPress={() => createProfile()}
       />
     </SafeAreaView>
@@ -349,80 +337,80 @@ const ReligionScreen = ({navigation, route}) => {
 export default ReligionScreen;
 const styles = StyleSheet.create({
   typeandCountView: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
-    paddingVertical: '2%',
-    marginVertical: '2%',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    paddingVertical: "2%",
+    marginVertical: "2%",
   },
-  type: {fontSize: 16, color: colors.black},
+  type: { fontSize: 16, color: colors.black },
   countView: {
-    paddingHorizontal: '4%',
-    paddingVertical: '2%',
+    paddingHorizontal: "4%",
+    paddingVertical: "2%",
     borderRadius: 7,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#23262F',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#23262F",
   },
-  countText: {fontSize: 14, color: colors.white},
+  countText: { fontSize: 14, color: colors.white },
   question: {
     fontSize: 24,
     color: colors.black,
-    fontFamily: 'Inter-Bold',
-    marginVertical: '2%',
-    maxWidth: '90%',
+    fontFamily: "Inter-Bold",
+    marginVertical: "2%",
+    maxWidth: "90%",
   },
   ask: {
     fontSize: 16,
     color: colors.black,
-    fontFamily: 'Roboto-light',
-    marginVertical: '1%',
-    maxWidth: '90%',
+    fontFamily: "Roboto-light",
+    marginVertical: "1%",
+    maxWidth: "90%",
   },
   vibesListing: {
-    width: '80%',
-    paddingVertical: '3%',
-    backgroundColor: '#F9FAFB',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    marginVertical: '3%',
-    alignSelf: 'center',
-    paddingHorizontal: '5%',
+    width: "80%",
+    paddingVertical: "3%",
+    backgroundColor: "#F9FAFB",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexDirection: "row",
+    marginVertical: "3%",
+    alignSelf: "center",
+    paddingHorizontal: "5%",
     borderRadius: 10,
   },
   radioView: {
     width: 25,
     height: 25,
-    borderColor: '#EBECEF',
+    borderColor: "#EBECEF",
     borderRadius: 25 / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   textinputView: {
-    width: '90%',
-    alignSelf: 'center',
-    paddingHorizontal: '5%',
-    paddingVertical: '5%',
+    width: "90%",
+    alignSelf: "center",
+    paddingHorizontal: "5%",
+    paddingVertical: "5%",
     borderRadius: 10,
-    backgroundColor: '#F9FAFB',
-    marginVertical: '5%',
-    flexDirection: 'row',
+    backgroundColor: "#F9FAFB",
+    marginVertical: "5%",
+    flexDirection: "row",
   },
   textinput: {
-    minWidth: '60%',
-    maxWidth: '80%',
-    marginLeft: '5%',
+    minWidth: "60%",
+    maxWidth: "80%",
+    marginLeft: "5%",
     fontSize: 18,
   },
   scrollContainer: {
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-between",
   },
   scrollViewContainer: {
-    width: '100%',
+    width: "100%",
   },
   customScrollBar: {
     backgroundColor: colors.primaryPink,
@@ -430,9 +418,9 @@ const styles = StyleSheet.create({
     width: 6,
   },
   customScrollBarBackground: {
-    backgroundColor: '#D903680D',
+    backgroundColor: "#D903680D",
     borderRadius: 3,
-    height: '95%',
+    height: "95%",
     width: 6,
   },
 });

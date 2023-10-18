@@ -1,53 +1,53 @@
-import React, {useState, useEffect} from 'react';
-import {Text, View} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {OnBoardingServices} from '../../services';
-import {useDispatch, useSelector} from 'react-redux';
-import {useHelper} from '../../hooks/useHelper';
+import React, { useState, useEffect } from "react";
+import { Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { OnBoardingServices } from "../../services";
+import { useDispatch, useSelector } from "react-redux";
+import { useHelper } from "../../hooks/useHelper";
 
-import styles from './styles';
-import colors from '../../utility/colors';
-import HeaderContainer from '../../components/containers/headerContainer';
-import Button from '../../components/buttons/Button';
-import SliderView from '../../components/Modal/Slider';
-import DropDownView from '../../components/Modal/DropDown';
-import PreferenceTextName from '../../components/containers/PreferenceTextName';
-import UserService from '../../services/UserService';
+import styles from "./styles";
+import colors from "../../utility/colors";
+import HeaderContainer from "../../components/containers/headerContainer";
+import Button from "../../components/buttons/Button";
+import SliderView from "../../components/Modal/Slider";
+import DropDownView from "../../components/Modal/DropDown";
+import PreferenceTextName from "../../components/containers/PreferenceTextName";
+import UserService from "../../services/UserService";
 
-const MySearchPreferencesEditScreen = props => {
+const MySearchPreferencesEditScreen = (props) => {
   const dispatch = useDispatch();
-  const {Alerts, handleStatusCode} = useHelper();
-  const {token} = useSelector(store => store.userReducer);
-  const {paramKey, paramKey2, value} = props.route.params;
+  const { Alerts, handleStatusCode } = useHelper();
+  const { token } = useSelector((store) => store.userReducer);
+  const { paramKey, paramKey2, value } = props.route.params;
 
   let [distance, setDistance] = useState(
-    value?.distance === 'unlimited' || value?.distance === 'nationwide'
+    value?.distance === "unlimited" || value?.distance === "nationwide"
       ? value?.distance
-      : 'range',
+      : "range"
   );
 
   let [distanceSlider, setDistanceSlider] = useState(
-    value?.distance === 'range' && value.distance !== null
+    value?.distance === "range" && value.distance !== null
       ? parseInt(value?.distance)
-      : parseInt(value?.distance),
+      : parseInt(value?.distance)
   );
 
   let [age, setAge] = useState(
     (value?.ageFrom === null && value?.ageTo === null) ||
       (value?.ageFrom === undefined && value?.ageTo === undefined)
       ? [null]
-      : [value?.ageFrom, value?.ageTo],
+      : [value?.ageFrom, value?.ageTo]
   );
 
   const [heightSlider, setHeightSlider] = useState(
     (value?.heightFrom === null && value?.heightTo === null) ||
       (value?.heightFrom === undefined && value?.heightTo === undefined)
       ? [null]
-      : [value?.heightFrom, value?.heightTo],
+      : [value?.heightFrom, value?.heightTo]
   );
 
   const [textVal, setTextVal] = useState(
-    value?.theyPray !== null ? value?.theyPray : '',
+    value?.theyPray !== null ? value?.theyPray : ""
   );
   const [religion, setReligion] = useState(value?.religion);
   const [fOrigin, setFOrigin] = useState(value?.familyOrigin);
@@ -71,23 +71,23 @@ const MySearchPreferencesEditScreen = props => {
   const [religionList, setReligionList] = useState([]);
 
   const boolTypes = {
-    haveKids: 'haveKids',
-    wantKids: 'wantKids',
-    relocate: 'relocate',
+    haveKids: "haveKids",
+    wantKids: "wantKids",
+    relocate: "relocate",
     yesBtnStyle: {
-      width: '45%',
+      width: "45%",
     },
     yesBtnTitle: {
       fontSize: 18,
-      fontFamily: 'Roboto-Regular',
+      fontFamily: "Roboto-Regular",
     },
     noBtnStyle: {
-      width: '45%',
+      width: "45%",
       borderColor: colors.primaryBlue,
     },
     noBtnTitle: {
       fontSize: 18,
-      fontFamily: 'Roboto-Regular',
+      fontFamily: "Roboto-Regular",
     },
   };
 
@@ -95,49 +95,49 @@ const MySearchPreferencesEditScreen = props => {
     OnBoardingServices.profileValues(
       encodeURI(
         JSON.stringify([
-          'college',
-          'community',
-          'denomination',
-          'familyOrigin',
-          'language',
-          'occupation',
-        ]),
-      ),
+          "college",
+          "community",
+          "denomination",
+          "familyOrigin",
+          "language",
+          "occupation",
+        ])
+      )
     )
-      .then(res => {
+      .then((res) => {
         handleStatusCode(res);
         if (res.data.status >= 200 && res.data.status <= 299) {
           let data = res?.data?.data;
 
           setReligionList(Object.keys(data?.denomination)),
-            setFamilyOriginList(data?.familyOrigin.map(x => x.name));
+            setFamilyOriginList(data?.familyOrigin.map((x) => x.name));
 
-          setCommunityList(data?.community.map(x => x.name));
-          setLanguageList(data?.language.map(x => x.name));
-          setOccupationList(data?.occupation.map(x => x.name));
-          setDenominationList(data?.denomination[religion]?.map(x => x.name));
+          setCommunityList(data?.community.map((x) => x.name));
+          setLanguageList(data?.language.map((x) => x.name));
+          setOccupationList(data?.occupation.map((x) => x.name));
+          setDenominationList(data?.denomination[religion]?.map((x) => x.name));
         }
       })
-      .catch(err => console.log('err', err));
+      .catch((err) => console.log("profileValues err", err));
   }, []);
 
   useEffect(() => {
-    if (paramKey == 'smoke') {
+    if (paramKey == "smoke") {
       if (Boolean(value[0].choice)) {
-        smokeBtns.findIndex(x => {
+        smokeBtns.findIndex((x) => {
           for (let i = 0; i < value.length; i++) {
             if (value[i].choice == x.title) {
-              addRemovechoice(smokeBtns[i], 'None', smokeBtns, i);
+              addRemovechoice(smokeBtns[i], "None", smokeBtns, i);
             }
           }
         });
       }
-    } else if (paramKey == 'diet') {
+    } else if (paramKey == "diet") {
       if (Boolean(value[0].choice)) {
-        dietBtns.findIndex(x => {
+        dietBtns.findIndex((x) => {
           for (let i = 0; i < value.length; i++) {
             if (value[i].choice == x.title) {
-              addRemovechoice(dietBtns[i], 'Anything', dietBtns, i);
+              addRemovechoice(dietBtns[i], "Anything", dietBtns, i);
             }
           }
         });
@@ -148,7 +148,7 @@ const MySearchPreferencesEditScreen = props => {
   const UpdateUserPreference = () => {
     if (token != null) {
       const body = {
-        distance: distance === 'range' ? distanceSlider.toString() : distance,
+        distance: distance === "range" ? distanceSlider.toString() : distance,
         ageFrom: age[0],
         ageTo: age[1],
         religion: religion,
@@ -168,73 +168,70 @@ const MySearchPreferencesEditScreen = props => {
         willingToRelocate: relocate,
       };
 
-      console.log('body', body);
-
       UserService.searchUserPreference(body, token)
-        .then(res => {
+        .then((res) => {
           handleStatusCode(res);
-          console.log('res', res.data);
           if (res.data.status >= 200 && res.data.status <= 299) {
             dispatch({
-              type: 'SET_PREFERENCE_FILTER',
+              type: "SET_PREFERENCE_FILTER",
               payload: true,
             });
             props.navigation.goBack();
           }
         })
-        .catch(err => console.log('err', err));
+        .catch((err) => console.log("searchUserPreference err", err));
     } else {
-      Alerts('error', 'Your token has expired. Please login again.');
+      Alerts("error", "Your token has expired. Please login again.");
     }
   };
 
-  const maritalStatusList = ['None', 'Divorced', 'Widowed', 'Annulled'];
+  const maritalStatusList = ["None", "Divorced", "Widowed", "Annulled"];
 
   const Drink = [
     {
       id: 1,
-      title: 'I Drink',
-      btnIcon: require('../../assets/iconimages/drink.png'),
+      title: "I Drink",
+      btnIcon: require("../../assets/iconimages/drink.png"),
     },
     {
       id: 2,
       title: "Don't Drink",
-      btnIcon: require('../../assets/iconimages/no-glass.png'),
+      btnIcon: require("../../assets/iconimages/no-glass.png"),
     },
   ];
 
   const getSliderNumberValue = (label, val) => {
     switch (label) {
-      case 'religious':
-        if (val == 'Rarely Religious') {
+      case "religious":
+        if (val == "Rarely Religious") {
           return [1];
-        } else if (val == 'Somewhat Religious') {
+        } else if (val == "Somewhat Religious") {
           return [2];
-        } else if (val == 'Religious') {
+        } else if (val == "Religious") {
           return [3];
         } else {
           return [4];
         }
 
-      case 'pray':
+      case "pray":
         if (val == `Don't pray`) {
           return [1];
-        } else if (val == 'Sometimes') {
+        } else if (val == "Sometimes") {
           return [2];
-        } else if (val == 'Often') {
+        } else if (val == "Often") {
           return [3];
-        } else if (val == 'Regularly') {
+        } else if (val == "Regularly") {
           return [4];
         } else {
           return [0];
         }
 
-      case 'ideal':
+      case "ideal":
         if (val == `0.5 year`) {
           return [1];
-        } else if (val == '1 year') {
+        } else if (val == "1 year") {
           return [2];
-        } else if (val == '2 year') {
+        } else if (val == "2 year") {
           return [3];
         } else {
           return [4];
@@ -247,37 +244,37 @@ const MySearchPreferencesEditScreen = props => {
 
   const handleSliderValue = (label, val) => {
     switch (label) {
-      case 'religious':
+      case "religious":
         if (val[0] == 1) {
-          setTextVal('Rarely Religious');
+          setTextVal("Rarely Religious");
         } else if (val[0] == 2) {
-          setTextVal('Somewhat Religious');
+          setTextVal("Somewhat Religious");
         } else if (val[0] == 3) {
-          setTextVal('Religious');
+          setTextVal("Religious");
         } else {
-          setTextVal('Strongly Religious');
+          setTextVal("Strongly Religious");
         }
         break;
-      case 'pray':
+      case "pray":
         if (val[0] == 1 || val[0] == 0) {
           setPray(`Don't pray`);
         } else if (val[0] == 2) {
-          setPray('Sometimes');
+          setPray("Sometimes");
         } else if (val[0] == 3) {
-          setPray('Often');
+          setPray("Often");
         } else {
-          setPray('Regularly');
+          setPray("Regularly");
         }
         break;
-      case 'ideal':
+      case "ideal":
         if (val[0] == 1) {
           setTextVal(`0.5 year`);
         } else if (val[0] == 2) {
-          setTextVal('1 year');
+          setTextVal("1 year");
         } else if (val[0] == 3) {
-          setTextVal('2 year');
+          setTextVal("2 year");
         } else {
-          setTextVal('3 year');
+          setTextVal("3 year");
         }
         break;
 
@@ -289,75 +286,75 @@ const MySearchPreferencesEditScreen = props => {
   const [smokeBtns, setSmokeBtns] = useState([
     {
       id: 1,
-      title: 'Hookah',
-      btnIcon: require('../../assets/iconimages/Hookah-01.png'),
+      title: "Hookah",
+      btnIcon: require("../../assets/iconimages/Hookah-01.png"),
       selected: false,
     },
     {
       id: 2,
-      title: 'Cigarette',
-      btnIcon: require('../../assets/iconimages/Cigarette.png'),
+      title: "Cigarette",
+      btnIcon: require("../../assets/iconimages/Cigarette.png"),
       selected: false,
     },
     {
       id: 3,
-      title: 'Weed',
-      btnIcon: require('../../assets/iconimages/Weed-01.png'),
+      title: "Weed",
+      btnIcon: require("../../assets/iconimages/Weed-01.png"),
       selected: false,
     },
     {
       id: 4,
-      title: 'None',
-      btnIcon: require('../../assets/iconimages/no.png'),
+      title: "None",
+      btnIcon: require("../../assets/iconimages/no.png"),
       selected: false,
     },
   ]);
   const [dietBtns, setDietBtns] = useState([
     {
       id: 1,
-      title: 'Halal',
-      btnIcon: require('../../assets/iconimages/Halal.png'),
+      title: "Halal",
+      btnIcon: require("../../assets/iconimages/Halal.png"),
       selected: false,
     },
 
     {
       id: 2,
-      title: 'Vegan',
-      btnIcon: require('../../assets/iconimages/Vegan-01.png'),
+      title: "Vegan",
+      btnIcon: require("../../assets/iconimages/Vegan-01.png"),
       selected: false,
     },
     {
       id: 3,
-      title: 'Vegetarian',
-      btnIcon: require('../../assets/iconimages/Vegetarian-01.png'),
+      title: "Vegetarian",
+      btnIcon: require("../../assets/iconimages/Vegetarian-01.png"),
       selected: false,
     },
 
     {
       id: 4,
-      title: 'Anything',
-      btnIcon: require('../../assets/iconimages/Anything-01.png'),
+      title: "Anything",
+      btnIcon: require("../../assets/iconimages/Anything-01.png"),
       selected: false,
     },
   ]);
 
-  const distanceList = ['unlimited', 'nationwide', 'range'];
+  const distanceList = ["unlimited", "nationwide", "range"];
 
   const addRemovechoice = (item, title, arr, index) => {
     if (item.title == title) {
-      arr.map(x => (x.title != title ? (x.selected = false) : x.selected));
+      arr.map((x) => (x.title != title ? (x.selected = false) : x.selected));
     }
-    arr.map(x => (x.title == title ? (x.selected = false) : x.selected));
+    arr.map((x) => (x.title == title ? (x.selected = false) : x.selected));
     let dummyArr = [...arr];
     dummyArr[index].selected = !item.selected;
-    title == 'None' ? setSmokeBtns(dummyArr) : setDietBtns(dummyArr);
+    title == "None" ? setSmokeBtns(dummyArr) : setDietBtns(dummyArr);
   };
 
-  const RenderButton = ({Array, paramKey, type}) => {
+  const RenderButton = ({ Array, paramKey, type }) => {
     return (
       <>
         <PreferenceTextName PreferenceTextName={paramKey} />
-        {type == 'Drink' ? (
+        {type == "Drink" ? (
           Array.length > 0 &&
           Array.map((item, index) => (
             <Button
@@ -367,15 +364,15 @@ const MySearchPreferencesEditScreen = props => {
               }}
               OnBoadringBtn
               YesNoBtnStyle={{
-                width: '60%',
+                width: "60%",
                 marginVertical: 8,
-                paddingVertical: '2.5%',
+                paddingVertical: "2.5%",
                 backgroundColor:
                   drink == item.title ? colors.primaryPink : colors.white,
               }}
               width={23}
               height={23}
-              imgStyle={{marginRight: 7}}
+              imgStyle={{ marginRight: 7 }}
               btnTitleStyle={{
                 fontSize: 15,
                 color: drink == item.title ? colors.white : colors.primaryPink,
@@ -388,10 +385,11 @@ const MySearchPreferencesEditScreen = props => {
         ) : (
           <View
             style={{
-              flexDirection: 'row',
-              flexWrap: 'wrap',
-              justifyContent: 'space-between',
-            }}>
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+            }}
+          >
             {/HaveKids|WantKids|Relocate/.test(type)
               ? Array.map((item, index) => (
                   <Button
@@ -399,27 +397,27 @@ const MySearchPreferencesEditScreen = props => {
                     onPress={() => setInd(index)}
                     YesNoBtn
                     YesNoBtnStyle={{
-                      width: '45%',
+                      width: "45%",
                       borderColor:
-                        item.title == 'No'
+                        item.title == "No"
                           ? colors.darkBlue
                           : colors.primaryPink,
                       backgroundColor:
-                        ind == index && item.title == 'No'
+                        ind == index && item.title == "No"
                           ? colors.darkBlue
-                          : ind == index && item.title == 'Yes'
+                          : ind == index && item.title == "Yes"
                           ? colors.primaryPink
                           : colors.white,
                     }}
                     width={23}
                     height={23}
-                    imgStyle={{marginRight: 7}}
+                    imgStyle={{ marginRight: 7 }}
                     btnTitleStyle={{
                       fontSize: 16,
                       color:
                         ind == index
                           ? colors.white
-                          : item.title == 'No'
+                          : item.title == "No"
                           ? colors.darkBlue
                           : colors.primaryPink,
                     }}
@@ -428,12 +426,12 @@ const MySearchPreferencesEditScreen = props => {
                   />
                 ))
               : Array.map((item, index) => {
-                  return type == 'Diet' ? (
+                  return type == "Diet" ? (
                     <Button
                       onPress={() => setDietChoice(item.title)}
                       OnBoadringBtn
                       YesNoBtnStyle={{
-                        width: '48%',
+                        width: "48%",
                         marginBottom: 22,
                         backgroundColor:
                           item.title == dietChoice
@@ -442,7 +440,7 @@ const MySearchPreferencesEditScreen = props => {
                       }}
                       width={23}
                       height={23}
-                      imgStyle={{marginRight: 7}}
+                      imgStyle={{ marginRight: 7 }}
                       btnTitleStyle={{
                         fontSize: 16,
                         color:
@@ -459,7 +457,7 @@ const MySearchPreferencesEditScreen = props => {
                       onPress={() => setSmokeChoice(item.title)}
                       OnBoadringBtn
                       YesNoBtnStyle={{
-                        width: '48%',
+                        width: "48%",
                         marginBottom: 22,
                         backgroundColor:
                           item.title == smokeChoice
@@ -468,7 +466,7 @@ const MySearchPreferencesEditScreen = props => {
                       }}
                       width={23}
                       height={23}
-                      imgStyle={{marginRight: 7}}
+                      imgStyle={{ marginRight: 7 }}
                       btnTitleStyle={{
                         fontSize: 16,
                         color:
@@ -488,43 +486,43 @@ const MySearchPreferencesEditScreen = props => {
     );
   };
 
-  const Distance = value => {
+  const Distance = (value) => {
     setDistance(value);
   };
 
-  const DistanceSlider = value => {
+  const DistanceSlider = (value) => {
     setDistanceSlider(value);
   };
 
-  const AgeSliderValuesChange = value => {
+  const AgeSliderValuesChange = (value) => {
     setAge(value);
   };
 
-  const Religion = value => {
+  const Religion = (value) => {
     setReligion(value);
   };
 
-  const familyOrigin = value => {
+  const familyOrigin = (value) => {
     setFOrigin(value);
   };
 
-  const HeightSliderValuesChange = values => {
+  const HeightSliderValuesChange = (values) => {
     setHeightSlider(values);
   };
 
-  const Community = value => {
+  const Community = (value) => {
     setCommunity(value);
   };
 
-  const Languages = value => {
+  const Languages = (value) => {
     setLanguages(value);
   };
 
-  const ReligiousDenomination = value => {
+  const ReligiousDenomination = (value) => {
     setDenomination(value);
   };
 
-  const MaritalHistory = value => {
+  const MaritalHistory = (value) => {
     setMaritalHistory(value);
   };
 
@@ -539,44 +537,44 @@ const MySearchPreferencesEditScreen = props => {
   };
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{ flex: 1 }}>
       <HeaderContainer
-        goback={'arrow-back'}
+        goback={"arrow-back"}
         backButton
         Icon
-        name={'setting'}
+        name={"setting"}
         gobackButtonPress={() => props.navigation.goBack()}
       />
 
       <View style={styles.container}>
         <View style={styles.privacySettingContainer}>
           <View>
-            {paramKey === 'Distance' ? (
+            {paramKey === "Distance" ? (
               <View>
                 <DropDownView
                   preferenceName={paramKey2}
                   onValueChange={Distance}
                   SelectDropdown
                   defaultValue={
-                    value?.distance === 'unlimited' ||
-                    value?.distance === 'nationwide'
+                    value?.distance === "unlimited" ||
+                    value?.distance === "nationwide"
                       ? value?.distance
                       : distance
                   }
                   DropDownPlaceholder={value?.distance}
                   data={distanceList}
                   textWithIconView
-                  preferenceIcon={require('../../assets/iconimages/location.png')}
+                  preferenceIcon={require("../../assets/iconimages/location.png")}
                 />
-                {distance === 'range' ? (
+                {distance === "range" ? (
                   <SliderView
                     sp={{
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                     multiSliderValue={[
-                      value?.distance === 'unlimited' ||
-                      value?.distance === 'nationwide'
+                      value?.distance === "unlimited" ||
+                      value?.distance === "nationwide"
                         ? 0
                         : parseInt(value?.distance),
                     ]}
@@ -590,9 +588,9 @@ const MySearchPreferencesEditScreen = props => {
                   />
                 ) : null}
               </View>
-            ) : paramKey === 'Age' ? (
+            ) : paramKey === "Age" ? (
               <SliderView
-                sp={{marginVertical: '1%'}}
+                sp={{ marginVertical: "1%" }}
                 searchPreferences
                 textWithoutIconView
                 multiSliderValue={
@@ -610,10 +608,10 @@ const MySearchPreferencesEditScreen = props => {
                 enableLabel={true}
                 step={0.1}
               />
-            ) : paramKey === 'Religion' ? (
+            ) : paramKey === "Religion" ? (
               <DropDownView
                 textWithIconView
-                preferenceIcon={require('../../assets/iconimages/myReligion.png')}
+                preferenceIcon={require("../../assets/iconimages/myReligion.png")}
                 onValueChange={Religion}
                 preferenceName={paramKey2}
                 SelectDropdown
@@ -621,7 +619,7 @@ const MySearchPreferencesEditScreen = props => {
                 DropDownPlaceholder={value?.religion}
                 data={religionList}
               />
-            ) : paramKey === 'Origin' ? (
+            ) : paramKey === "Origin" ? (
               <DropDownView
                 onValueChange={familyOrigin}
                 preferenceName={paramKey2}
@@ -630,11 +628,11 @@ const MySearchPreferencesEditScreen = props => {
                 DropDownPlaceholder={fOrigin}
                 data={familyOriginList}
                 textWithIconView
-                preferenceIcon={require('../../assets/iconimages/familyOrigin.png')}
+                preferenceIcon={require("../../assets/iconimages/familyOrigin.png")}
               />
-            ) : paramKey === 'Height' ? (
+            ) : paramKey === "Height" ? (
               <SliderView
-                sp={{marginVertical: '1%'}}
+                sp={{ marginVertical: "1%" }}
                 searchPreferences
                 textWithoutIconView
                 multiSliderValue={
@@ -652,7 +650,7 @@ const MySearchPreferencesEditScreen = props => {
                 enableLabel={true}
                 step={0.1}
               />
-            ) : paramKey === 'Community' ? (
+            ) : paramKey === "Community" ? (
               <DropDownView
                 onValueChange={Community}
                 preferenceName={paramKey2}
@@ -662,7 +660,7 @@ const MySearchPreferencesEditScreen = props => {
                 data={communityList}
                 textWithoutIconView
               />
-            ) : paramKey === 'Languages' ? (
+            ) : paramKey === "Languages" ? (
               <DropDownView
                 onValueChange={Languages}
                 preferenceName={paramKey2}
@@ -672,50 +670,50 @@ const MySearchPreferencesEditScreen = props => {
                 data={languageList}
                 textWithoutIconView
               />
-            ) : paramKey === 'Religious' ? (
+            ) : paramKey === "Religious" ? (
               <DropDownView
                 onValueChange={ReligiousDenomination}
                 preferenceName={paramKey2}
                 SelectDropdown
                 defaultValue={denomination}
-                DropDownPlaceholder={'Select On'}
+                DropDownPlaceholder={"Select On"}
                 data={denominationList}
                 textWithoutIconView
               />
-            ) : paramKey === 'Pray' ? (
+            ) : paramKey === "Pray" ? (
               <SliderView
                 enableLabel={true}
-                customLabel={'pray'}
+                customLabel={"pray"}
                 textWithoutIconView
                 preferenceName={paramKey2}
-                multiSliderValue={getSliderNumberValue('pray', pray)}
+                multiSliderValue={getSliderNumberValue("pray", pray)}
                 min={1}
                 max={4}
                 showSteps={true}
                 showStepLabels={false}
-                multiSliderValuesChange={val => {
-                  handleSliderValue('pray', val);
+                multiSliderValuesChange={(val) => {
+                  handleSliderValue("pray", val);
                 }}
               />
-            ) : paramKey === 'Drink' ? (
+            ) : paramKey === "Drink" ? (
               <RenderButton
                 Array={Drink}
                 paramKey={paramKey2}
                 type={paramKey}
               />
-            ) : paramKey === 'Smoke' ? (
+            ) : paramKey === "Smoke" ? (
               <RenderButton
                 Array={smokeBtns}
                 paramKey={paramKey2}
                 type={paramKey}
               />
-            ) : paramKey === 'Diet' ? (
+            ) : paramKey === "Diet" ? (
               <RenderButton
                 Array={dietBtns}
                 paramKey={paramKey2}
                 type={paramKey}
               />
-            ) : paramKey === 'Marital' ? (
+            ) : paramKey === "Marital" ? (
               <DropDownView
                 onValueChange={MaritalHistory}
                 preferenceName={paramKey2}
@@ -725,7 +723,7 @@ const MySearchPreferencesEditScreen = props => {
                 data={maritalStatusList}
                 textWithoutIconView
               />
-            ) : paramKey === 'HaveKids' ? (
+            ) : paramKey === "HaveKids" ? (
               <View>
                 <View style={styles.kidsCont}>
                   <View style={styles.textView}>
@@ -736,20 +734,20 @@ const MySearchPreferencesEditScreen = props => {
                   <Button
                     onPress={() => handleBoolValues(boolTypes.haveKids, true)}
                     YesNoBtn
-                    title={'Yes'}
+                    title={"Yes"}
                     YesNoBtnStyle={[
                       boolTypes.yesBtnStyle,
-                      {backgroundColor: haveKids ? colors.primaryPink : null},
+                      { backgroundColor: haveKids ? colors.primaryPink : null },
                     ]}
                     btnTitleStyle={[
                       boolTypes.yesBtnTitle,
-                      {color: haveKids ? colors.white : colors.primaryPink},
+                      { color: haveKids ? colors.white : colors.primaryPink },
                     ]}
                   />
                   <Button
                     onPress={() => handleBoolValues(boolTypes.haveKids, false)}
                     YesNoBtn
-                    title={'No'}
+                    title={"No"}
                     YesNoBtnStyle={[
                       boolTypes.noBtnStyle,
                       {
@@ -767,7 +765,7 @@ const MySearchPreferencesEditScreen = props => {
                   />
                 </View>
               </View>
-            ) : paramKey === 'WantKids' ? (
+            ) : paramKey === "WantKids" ? (
               <View>
                 <View style={styles.kidsCont}>
                   <View style={styles.textView}>
@@ -778,20 +776,20 @@ const MySearchPreferencesEditScreen = props => {
                   <Button
                     onPress={() => handleBoolValues(boolTypes.wantKids, true)}
                     YesNoBtn
-                    title={'Yes'}
+                    title={"Yes"}
                     YesNoBtnStyle={[
                       boolTypes.yesBtnStyle,
-                      {backgroundColor: wantKids ? colors.primaryPink : null},
+                      { backgroundColor: wantKids ? colors.primaryPink : null },
                     ]}
                     btnTitleStyle={[
                       boolTypes.yesBtnTitle,
-                      {color: wantKids ? colors.white : colors.primaryPink},
+                      { color: wantKids ? colors.white : colors.primaryPink },
                     ]}
                   />
                   <Button
                     onPress={() => handleBoolValues(boolTypes.wantKids, false)}
                     YesNoBtn
-                    title={'No'}
+                    title={"No"}
                     YesNoBtnStyle={[
                       boolTypes.noBtnStyle,
                       {
@@ -809,7 +807,7 @@ const MySearchPreferencesEditScreen = props => {
                   />
                 </View>
               </View>
-            ) : paramKey === 'Relocate' ? (
+            ) : paramKey === "Relocate" ? (
               <View>
                 <View style={styles.kidsCont}>
                   <View style={styles.textView}>
@@ -820,20 +818,20 @@ const MySearchPreferencesEditScreen = props => {
                   <Button
                     onPress={() => handleBoolValues(boolTypes.relocate, true)}
                     YesNoBtn
-                    title={'Yes'}
+                    title={"Yes"}
                     YesNoBtnStyle={[
                       boolTypes.yesBtnStyle,
-                      {backgroundColor: relocate ? colors.primaryPink : null},
+                      { backgroundColor: relocate ? colors.primaryPink : null },
                     ]}
                     btnTitleStyle={[
                       boolTypes.yesBtnTitle,
-                      {color: relocate ? colors.white : colors.primaryPink},
+                      { color: relocate ? colors.white : colors.primaryPink },
                     ]}
                   />
                   <Button
                     onPress={() => handleBoolValues(boolTypes.relocate, false)}
                     YesNoBtn
-                    title={'No'}
+                    title={"No"}
                     YesNoBtnStyle={[
                       boolTypes.noBtnStyle,
                       {
@@ -853,12 +851,12 @@ const MySearchPreferencesEditScreen = props => {
               </View>
             ) : null}
 
-            <View style={{marginVertical: '5%'}}>
+            <View style={{ marginVertical: "5%" }}>
               <Button
                 onPress={() => UpdateUserPreference()}
-                btnTitleStyle={{alignItems: 'center'}}
+                btnTitleStyle={{ alignItems: "center" }}
                 YesNoBtn
-                title={'Save'}
+                title={"Save"}
               />
             </View>
           </View>

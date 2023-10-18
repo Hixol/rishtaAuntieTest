@@ -69,10 +69,8 @@ export const useHelper = (props) => {
           (userDevice.includes("X") || userDevice.includes("x")) &&
           !userDevice.includes("Pro")
         ) {
-          console.log("1");
           setKeyboardSpace(e.endCoordinates.height);
         } else {
-          console.log("2");
           setKeyboardSpace(e.endCoordinates.height - offset);
         }
       }
@@ -342,12 +340,9 @@ export const useHelper = (props) => {
   };
 
   const updateUser = async (formData, token) => {
-    console.log("FORMDATA in hook", formData);
     await ProfileServices.updateProfile(formData, token)
       .then(async (res) => {
         handleStatusCode(res);
-
-        console.log("RES RELIGION", res);
         if (res.data.status >= 200 && res.data.status <= 299) {
           await dispatch({
             type: "AUTH_USER",
@@ -356,13 +351,10 @@ export const useHelper = (props) => {
           alerts("success", res.data.message);
         }
       })
-      .catch((err) => console.log("err", err))
+      .catch((err) => console.log("updateProfile err", err))
       .finally(() => {});
   };
   const updateUserPreference = async (token, type, value, type2) => {
-    console.log("TYPEEE", type);
-    console.log("SendValue", value);
-
     let body = {
       distance: userData?.UserPreference?.distance
         ? userData?.UserPreference?.distance
@@ -385,12 +377,11 @@ export const useHelper = (props) => {
       wantKids: userData?.UserPreference?.wantKids,
       willingToRelocate: userData?.UserPreference?.willingToRelocate,
     };
-    console.log("TYPE OF TYOE", type, typeof type);
+
     if (
       (type === "heightFrom" || type === "ageFrom") &&
       (type2 === "heightTo" || type2 === "ageTo")
     ) {
-      console.log("HELLO", type, type2, value);
       body = {
         ...body,
         [type]: value[0],
@@ -403,12 +394,9 @@ export const useHelper = (props) => {
       };
     }
 
-    console.log("BODY123", body);
-
     await UserService.searchUserPreference(body, token)
       .then(async (res) => {
         handleStatusCode(res);
-        console.log("res", res.data);
         if (res.data.status >= 200 && res.data.status <= 299) {
           alerts("success", res.data.message);
 
@@ -419,8 +407,7 @@ export const useHelper = (props) => {
         }
       })
       .catch((err) => {
-        console.log("err", err);
-        // alerts('error', 'value not updated.Try again');
+        console.log("searchUserPreference err", err);
       });
   };
 
