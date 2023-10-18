@@ -1,58 +1,58 @@
-import ApiManager from './ApiManager';
-import Resources, {Singleton} from './Resources';
+import ApiManager from "./ApiManager";
+import Resources, { Singleton } from "./Resources";
 
 class UserService extends Resources {
   authUser = {};
   routes = {
-    login: '/auth/signup/phone-number',
-    signUp: '/auth/signup/phone-number',
-    createNewProfile: '/user',
-    updateNewProfile: '/user',
-    signUpSocial: '/auth/signup/social',
-    verifyOtp: '/auth/verify-code',
-    getVibes: '/user/vibes',
-    getQuestions: '/user/questions',
-    deleteAccount: '/user/id',
-    getAllUser: '/user/discover?',
-    getOneUser: '/user/',
-    likeIntercation: '/interaction/like',
-    viewIntercation: '/interaction/view',
-    getOtherUserDetail: '/user/',
-    getAllMyMoves: '/interaction/my-moves?limit=',
-    getAllMyLikes: '/interaction/my-moves/like?limit=',
-    getAllMyComments: '/interaction/my-moves/comment?limit=',
-    getAllMyViews: '/interaction/my-moves/view?limit=',
-    getAllTheirViews: '/interaction/their-moves/view?limit=',
-    getAllMyVoice: '/interaction/my-moves/voice-note?limit=',
-    getAllTheirMoves: '/interaction/their-moves?limit=',
-    getAllTheirLikes: '/interaction/their-moves/like?limit=',
-    getAllTheirComments: '/interaction/their-moves/comment?limit=',
-    getAllTheirVoice: '/interaction/their-moves/voice-note?limit=',
-    getAllTheirMatchRequest: '/interaction/their-moves/match-request?',
-    commentIntercation: '/interaction/comment',
-    voiceIntercation: '/interaction/voice-note',
-    unmatchUser: '/interaction/unmatch/',
-    matchRequest: '/user/match-request',
-    blockUser: '/user/',
-    reportUser: '/user/',
-    getOtherUser: '/user/',
-    blockList: '/user/block-list',
-    unblockUser: '/user/',
-    myInsight: '/user/insight/',
-    searchUserPreference: '/user/search-preferences',
-    profile: 'chat-info',
-    userGet: 'user',
-    userProfileUpdate: 'save-profile',
-    status_update: 'user-status',
-    userrestriction: 'user-restriction',
-    searchUser: 'user-search',
-    respondLater: 'message-respond-later',
-    chatInfo: 'chat-info',
-    callLog: 'call-list',
-    changePassword: 'change-password',
-    resetPassword: 'forgot-password',
-    updateCurrentLocation: '/user/location',
-    applyReset: '/user/apply-reset',
+    login: "/auth/signup/phone-number",
+    signUp: "/auth/signup/phone-number",
+    createNewProfile: "/user",
+    updateNewProfile: "/user",
+    signUpSocial: "/auth/signup/social",
+    verifyOtp: "/auth/verify-code",
+    getVibes: "/user/vibes",
+    getQuestions: "/user/questions",
+    deleteAccount: `/user`,
+    getAllUser: "/user/discover?",
+    getOneUser: "/user/",
+    likeIntercation: "/interaction/like",
+    viewIntercation: "/interaction/view",
+    getOtherUserDetail: "/user/",
+    getAllMyMoves: "/interaction/my-moves?limit=",
+    getAllMyLikes: "/interaction/my-moves/like?limit=",
+    getAllMyComments: "/interaction/my-moves/comment?limit=",
+    getAllMyViews: "/interaction/my-moves/view?limit=",
+    getAllTheirViews: "/interaction/their-moves/view?limit=",
+    getAllMyVoice: "/interaction/my-moves/voice-note?limit=",
+    getAllTheirMoves: "/interaction/their-moves?limit=",
+    getAllTheirLikes: "/interaction/their-moves/like?limit=",
+    getAllTheirComments: "/interaction/their-moves/comment?limit=",
+    getAllTheirVoice: "/interaction/their-moves/voice-note?limit=",
+    getAllTheirMatchRequest: "/interaction/their-moves/match-request?",
+    commentIntercation: "/interaction/comment",
+    voiceIntercation: "/interaction/voice-note",
+    unmatchUser: "/interaction/unmatch/",
+    matchRequest: "/user/match-request",
+    blockUser: "/user/",
+    reportUser: "/user/",
+    getOtherUser: "/user/",
+    blockList: "/user/block-list",
+    unblockUser: "/user/",
+    myInsight: "/user/insight/",
+    searchUserPreference: "/user/search-preferences",
+    profile: "chat-info",
+    userGet: "user",
+    userProfileUpdate: "save-profile",
+    status_update: "user-status",
+    userrestriction: "user-restriction",
+    searchUser: "user-search",
+    respondLater: "message-respond-later",
+    chatInfo: "chat-info",
+    callLog: "call-list",
+    changePassword: "change-password",
+    resetPassword: "forgot-password",
+    updateCurrentLocation: "/user/location",
+    applyReset: "/user/apply-reset",
   };
 
   constructor() {
@@ -65,23 +65,29 @@ class UserService extends Resources {
     }
   }
 
-  login = payload => {
+  login = (payload) => {
     return ApiManager.post(this.routes.login, payload);
   };
 
-  signUp = payload => {
+  signUp = (payload) => {
     return ApiManager.post(this.routes.signUp, payload);
   };
 
-  signUpSocial = payload => {
+  signUpSocial = (payload) => {
     return ApiManager.post(this.routes.signUpSocial, payload);
   };
 
-  verifyOtp = payload => {
+  verifyOtp = (payload) => {
     return ApiManager.post(this.routes.verifyOtp, payload);
   };
-  deleteAccount = payload => {
-    return ApiManager.delete(this.routes.deleteAccount, payload);
+  deleteAccount = (id, token) => {
+    console.log("TOKEN INSIDE", token, id);
+
+    return ApiManager.delete(
+      `${this.routes.deleteAccount}/?id=${id}`,
+      "",
+      token
+    );
   };
   getVibes = () => {
     return ApiManager.get(this.routes.getVibes);
@@ -122,25 +128,25 @@ class UserService extends Resources {
   getAllTheirMatchRequest = (token, payload) => {
     return ApiManager.get(this.routes.getAllTheirMatchRequest, payload, token);
   };
-  getOneUser = id => {
+  getOneUser = (id) => {
     return ApiManager.get(this.routes.getOneUser, id);
   };
   getOtherUser = (id, token) => {
     return ApiManager.get(this.routes.getOtherUser, id, token);
   };
-  blockList = token => {
-    return ApiManager.get(this.routes.blockList, '', token);
+  blockList = (token) => {
+    return ApiManager.get(this.routes.blockList, "", token);
   };
   unblockUser = (payload, token) => {
     return ApiManager.post(
       `${this.routes.unblockUser}${payload}/unblock`,
-      '',
+      "",
       false,
-      token,
+      token
     );
   };
-  myInsight = token => {
-    return ApiManager.get(this.routes.myInsight, '', token);
+  myInsight = (token) => {
+    return ApiManager.get(this.routes.myInsight, "", token);
   };
 
   userProfile = (payload, token) => {
@@ -151,15 +157,15 @@ class UserService extends Resources {
       `${this.routes.getOtherUserDetail}${id}/profile`,
 
       payload,
-      token,
+      token
     );
   };
   viewIntercation = (id, token) => {
     return ApiManager.post(
       `${this.routes.viewIntercation}/${id}`,
-      '',
+      "",
       false,
-      token,
+      token
     );
   };
   blockUser = (id, token, payload) => {
@@ -167,7 +173,7 @@ class UserService extends Resources {
       `${this.routes.blockUser}${id}/block`,
       payload,
       false,
-      token,
+      token
     );
   };
   reportUser = (id, token, payload) => {
@@ -175,7 +181,7 @@ class UserService extends Resources {
       `${this.routes.reportUser}${id}/report`,
       payload,
       false,
-      token,
+      token
     );
   };
 
@@ -198,7 +204,7 @@ class UserService extends Resources {
       this.routes.userProfileUpdate,
       payload,
       false,
-      token,
+      token
     );
   };
 
@@ -210,7 +216,7 @@ class UserService extends Resources {
       this.routes.commentIntercation,
       payload,
       false,
-      token,
+      token
     );
   };
   voiceIntercation = (payload, token) => {
@@ -241,7 +247,7 @@ class UserService extends Resources {
     return ApiManager.post(this.routes.chatInfo, payload, false, token);
   };
 
-  callLog = token => {
+  callLog = (token) => {
     return ApiManager.get(this.routes.callLog, null, token);
   };
 
@@ -249,7 +255,7 @@ class UserService extends Resources {
     return ApiManager.post(this.routes.changePassword, payload, false, token);
   };
 
-  resetPassword = payload => {
+  resetPassword = (payload) => {
     return ApiManager.post(this.routes.resetPassword, payload);
   };
 
@@ -257,7 +263,7 @@ class UserService extends Resources {
     return ApiManager.patch(this.routes.updateCurrentLocation, payload, token);
   };
 
-  applyReset = token => {
+  applyReset = (token) => {
     return ApiManager.delete(this.routes.applyReset, null, token);
   };
   createNewProfile = (payload, token) => {

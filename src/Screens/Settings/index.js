@@ -46,7 +46,7 @@ const Settings = (props) => {
   const settingsArr = [
     {
       id: 1,
-      title: "My search preferences",
+      title: "My Search Preferences",
       screen: "SearchPreferences",
       icon: require("../../assets/iconimages/setting-logo.png"),
     },

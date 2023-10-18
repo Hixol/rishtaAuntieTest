@@ -28,6 +28,9 @@ import colors from "../../utility/colors";
 import Icons from "../../utility/icons";
 import MyButton from "../buttons/MyButton";
 import NewOnBoardingDesign from "../NewOnBoardingDesign";
+import { alerts } from "../../utility/regex";
+import axios from "axios";
+import { CommonActions } from "@react-navigation/native";
 
 const ActionBottomModal = ({
   onDismiss,
@@ -39,7 +42,7 @@ const ActionBottomModal = ({
   deleteAcc,
 }) => {
   const dispatch = useDispatch();
-  const { token } = useSelector((store) => store.userReducer);
+  const { token, userData } = useSelector((store) => store.userReducer);
   const {
     Alerts,
     navigation,
@@ -241,7 +244,7 @@ const ActionBottomModal = ({
       />
       <Button
         TouchableComponent={TouchableOpacity}
-        // onPress={() => handleNavigate('HomeOne')}
+        onPress={() => deleteAccountFn()}
         buttonStyle={styles.btnContainer2}
         titleStyle={[styles.btnTitle, { color: colors.white }]}
         title="Delete"
@@ -413,7 +416,47 @@ const ActionBottomModal = ({
       </Pressable>
     </>
   );
+  const deleteAccountFn = () => {
+    console.log("USERDATTOKENA", token, userData?.id);
 
+    let config = {
+      method: "DELETE",
+      url: `https://api.rishtaauntie.app/dev/rishta_auntie/api/v1/user/${userData?.id}`,
+      headers: {
+        "x-auth-token": `${token}`,
+      },
+    };
+    axios
+      .request(config)
+      .then((res) => {
+        if (res?.status >= 200 && res?.status <= 299) {
+          console.log("RES", res);
+          alerts("success", "User Deleted Successfully");
+          dispatch({
+            type: "AUTH_USER",
+            payload: null,
+          });
+          dispatch({
+            type: "AUTH_USER_STATUS",
+            payload: null,
+          });
+          dispatch({
+            type: "AUTH_TOKEN",
+            payload: null,
+          });
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: "WelcomeScreen" }],
+            })
+          );
+        }
+      })
+      .catch((e) => {
+        console.log("E", e);
+      })
+      .finally(() => {});
+  };
   return (
     <GestureHandlerRootView
       style={[styles.rootContainer, { height: toggle ? windowHeight * 1 : 0 }]}
