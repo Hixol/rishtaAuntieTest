@@ -567,7 +567,9 @@ const LoginSignup = (props) => {
           >
             <View style={styles.divider}></View>
             <Text style={{ fontFamily: "Inter-Medium", color: "#6B7280" }}>
-              Or sign in with email
+              {props.login
+                ? "Or sign in with phone number"
+                : "Or sign up with phone number"}
             </Text>
             <View style={styles.divider}></View>
           </View>
@@ -661,7 +663,7 @@ const LoginSignup = (props) => {
             }}
             style={[
               styles.signInButton,
-              { marginTop: props.login ? "35%" : "20%" },
+              { marginTop: props.login ? "20%" : "10%" },
             ]}
           >
             {loading ? (
@@ -993,7 +995,7 @@ const styles = StyleSheet.create({
     color: colors.black,
   },
   divider: {
-    width: "30%",
+    width: "20%",
     borderWidth: 1,
     borderColor: "#F3F4F6",
   },

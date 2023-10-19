@@ -547,33 +547,49 @@ const OnBoardingQuestions = ({ navigation }) => {
       .then((res) => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
+          let sortedData = res?.data?.data
+            .map((x) => ({ name: x?.name, id: x?.id }))
+            .sort((a, b) => {
+              if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+              if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+              return 0;
+            });
+          console.log("sortedData", sortedData);
           dispatch({
             type: "allVibes",
-            payload: res?.data?.data,
+            payload: sortedData,
           });
 
           let find = copyarr.findIndex((item, index) => {
             return item?.type === "Main Vibes";
           });
+
           copyarr[find] = {
             ...copyarr[find],
-            options: res?.data?.data,
+            options: sortedData,
           };
 
           UserService.getQuestions()
             .then((res) => {
               handleStatusCode(res);
               if (res.status >= 200 && res.status <= 299) {
+                let sortedData = res.data.data.sort((a, b) => {
+                  if (a.title.toLowerCase() < b.title.toLowerCase()) return -1;
+                  if (a.title.toLowerCase() > b.title.toLowerCase()) return 1;
+                  return 0;
+                });
+                console.log("SORTEDDATA123", sortedData, res?.data?.data);
+
                 dispatch({
                   type: "allPrompts",
-                  payload: res?.data?.data,
+                  payload: sortedData,
                 });
                 let findIndex = copyarr.findIndex((item) => {
                   return item?.type === "Prompts Pool";
                 });
                 copyarr[findIndex] = {
                   ...copyarr[findIndex],
-                  options: res?.data?.data,
+                  options: sortedData,
                 };
 
                 setArray(copyarr);
