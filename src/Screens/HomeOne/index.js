@@ -401,12 +401,15 @@ const HomeOne = props => {
   });
 
   useEffect(() => {
-    if (imageModal) {
+    if (imageModal || action) {
       dispatch({
         type: "AUTH_USER_SCREEN_INDEX",
         payload: false,
       });
-    } else if (profilesList.length > 0 && imageModal === false) {
+    } else if (
+      profilesList.length > 0 &&
+      (imageModal == false || action == false)
+    ) {
       dispatch({
         type: "AUTH_USER_SCREEN_INDEX",
         payload: true,
@@ -417,7 +420,7 @@ const HomeOne = props => {
         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
       );
     }
-  }, [imageModal]);
+  }, [imageModal, action]);
 
   const loadMoreData = () => {
     offset += 1;
