@@ -416,9 +416,8 @@ const ActionBottomModal = ({
       </Pressable>
     </>
   );
-  const deleteAccountFn = () => {
-    console.log("USERDATTOKENA", token, userData?.id);
 
+  const deleteAccountFn = () => {
     let config = {
       method: "DELETE",
       url: `https://api.rishtaauntie.app/dev/rishta_auntie/api/v1/user/${userData?.id}`,
@@ -426,11 +425,11 @@ const ActionBottomModal = ({
         "x-auth-token": `${token}`,
       },
     };
+
     axios
       .request(config)
       .then((res) => {
         if (res?.status >= 200 && res?.status <= 299) {
-          console.log("RES", res);
           alerts("success", "User Deleted Successfully");
           dispatch({
             type: "AUTH_USER",
@@ -453,10 +452,10 @@ const ActionBottomModal = ({
         }
       })
       .catch((e) => {
-        console.log("E", e);
-      })
-      .finally(() => {});
+        console.log("deleteUser err", e);
+      });
   };
+
   return (
     <GestureHandlerRootView
       style={[styles.rootContainer, { height: toggle ? windowHeight * 1 : 0 }]}

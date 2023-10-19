@@ -15,8 +15,8 @@ import axios from "axios";
 import Toast from "react-native-toast-message";
 import ProfileServices from "../services/ProfileServices";
 
-export const useHelper = (props) => {
-  const { userData } = useSelector((store) => store.userReducer);
+export const useHelper = props => {
+  const { userData } = useSelector(store => store.userReducer);
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -43,8 +43,8 @@ export const useHelper = (props) => {
     };
   }, []);
 
-  const handleKeyboardEvents = (offset) => {
-    Keyboard.addListener("keyboardWillShow", (e) => {
+  const handleKeyboardEvents = offset => {
+    Keyboard.addListener("keyboardWillShow", e => {
       if (ios) {
         if (
           (userDevice.includes("X") || userDevice.includes("x")) &&
@@ -57,13 +57,13 @@ export const useHelper = (props) => {
       }
     });
 
-    Keyboard.addListener("keyboardWillHide", (e) => {
+    Keyboard.addListener("keyboardWillHide", e => {
       setKeyboardOffset(0);
     });
   };
 
-  const handleKeyboardSpace = (offset) => {
-    Keyboard.addListener("keyboardWillShow", (e) => {
+  const handleKeyboardSpace = offset => {
+    Keyboard.addListener("keyboardWillShow", e => {
       if (ios) {
         if (
           (userDevice.includes("X") || userDevice.includes("x")) &&
@@ -76,7 +76,7 @@ export const useHelper = (props) => {
       }
     });
 
-    Keyboard.addListener("keyboardWillHide", (e) => {
+    Keyboard.addListener("keyboardWillHide", e => {
       setKeyboardSpace(15);
     });
   };
@@ -118,7 +118,7 @@ export const useHelper = (props) => {
     });
   };
 
-  const handleStatusCode = (res) => {
+  const handleStatusCode = res => {
     if (res.status >= 300 && res.status <= 399) {
       Alerts(
         "error",
@@ -135,7 +135,7 @@ export const useHelper = (props) => {
 
   const handlePlayerId = (token, ccuid) => {
     OneSignal.getDeviceState()
-      .then((res) => {
+      .then(res => {
         if (res.userId.length > 0) {
           const body = {
             deviceToken: res.userId,
@@ -143,11 +143,11 @@ export const useHelper = (props) => {
           };
 
           NotificationServices.deviceToken(body, token)
-            .then((res) => {})
-            .catch((err) => console.log("deviceToken err:", err));
+            .then(res => {})
+            .catch(err => console.log("deviceToken err:", err));
         }
       })
-      .catch((err) => console.log("getDeviceState err:", err));
+      .catch(err => console.log("getDeviceState err:", err));
   };
 
   const dispatchAndNavigate = (status, route, data) => {
@@ -180,7 +180,7 @@ export const useHelper = (props) => {
     );
   };
 
-  const updateLocation = (token) => {
+  const updateLocation = token => {
     let body = {
       longitude: lng,
       latitude: lat,
@@ -189,12 +189,12 @@ export const useHelper = (props) => {
       address: state,
     };
     UserService.updateCurrentLocation(body, token)
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
         }
       })
-      .catch((err) => console.log("updateCurrentLocation err", err));
+      .catch(err => console.log("updateCurrentLocation err", err));
   };
 
   const getAddress = (lat, lng) => {
@@ -202,7 +202,7 @@ export const useHelper = (props) => {
     let geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${KEY}`;
     axios
       .get(geocodeUrl)
-      .then((res) => {
+      .then(res => {
         let data = res.data.results;
         let city = "",
           state = "",
@@ -260,13 +260,13 @@ export const useHelper = (props) => {
           });
         }
       })
-      .catch((err) => console.log("geocode err", err));
+      .catch(err => console.log("geocode err", err));
   };
 
-  const handleLocationCoords = async (result) => {
+  const handleLocationCoords = async result => {
     if (result == "granted") {
       Geolocation.getCurrentPosition(
-        (position) => {
+        position => {
           let lat = position.coords.latitude;
           let lng = position.coords.longitude;
           if (lat != undefined && lng != undefined) {
@@ -277,7 +277,7 @@ export const useHelper = (props) => {
           setLat(lat);
           setLng(lng);
         },
-        (err) => {
+        err => {
           if (err.code == 1) {
             Alerts("error", "Location permission is not granted");
           } else if (err.code == 2) {
@@ -310,7 +310,7 @@ export const useHelper = (props) => {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
         "location",
-        (res) => {
+        res => {
           handleLocationCoords(res);
         }
       );
@@ -319,7 +319,7 @@ export const useHelper = (props) => {
         handlePermissions.checkAndroidPermissions(
           PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
           "location",
-          (res) => {
+          res => {
             if (res === "granted") {
               handleLocationCoords("granted");
             }
@@ -329,7 +329,7 @@ export const useHelper = (props) => {
         handlePermissions.checkAndroidPermissions(
           PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION,
           "location",
-          (res) => {
+          res => {
             if (res === "granted") {
               handleLocationCoords("granted");
             }
@@ -341,7 +341,7 @@ export const useHelper = (props) => {
 
   const updateUser = async (formData, token) => {
     await ProfileServices.updateProfile(formData, token)
-      .then(async (res) => {
+      .then(async res => {
         handleStatusCode(res);
         if (res.data.status >= 200 && res.data.status <= 299) {
           await dispatch({
@@ -351,9 +351,10 @@ export const useHelper = (props) => {
           alerts("success", res.data.message);
         }
       })
-      .catch((err) => console.log("updateProfile err", err))
+      .catch(err => console.log("updateProfile err", err))
       .finally(() => {});
   };
+
   const updateUserPreference = async (token, type, value, type2) => {
     let body = {
       distance: userData?.UserPreference?.distance
@@ -395,7 +396,7 @@ export const useHelper = (props) => {
     }
 
     await UserService.searchUserPreference(body, token)
-      .then(async (res) => {
+      .then(async res => {
         handleStatusCode(res);
         if (res.data.status >= 200 && res.data.status <= 299) {
           alerts("success", res.data.message);
@@ -406,7 +407,7 @@ export const useHelper = (props) => {
           });
         }
       })
-      .catch((err) => {
+      .catch(err => {
         console.log("searchUserPreference err", err);
       });
   };

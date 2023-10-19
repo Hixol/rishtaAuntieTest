@@ -206,7 +206,15 @@ const ChatScreen = (props) => {
   };
 
   const handleBackButton = () => {
-    navProps.navigation.goBack(null);
+    if (action) {
+      setAction(false);
+    } else if (selectedMsg) {
+      setSelectedMsg(null);
+    } else if (mediaModal) {
+      setMediaModal(false);
+    } else {
+      navProps.navigation.goBack(null);
+    }
     return true;
   };
 

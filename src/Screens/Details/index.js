@@ -30,7 +30,7 @@ import Countries from "../../assets/countryLists/Countries";
 import Icons from "../../utility/icons";
 import ActionBottomModal from "../../components/Modal/ActionBottomModal";
 
-const DetailScreen = (props) => {
+const DetailScreen = props => {
   const tabBarHeight = useBottomTabBarHeight();
   const userDetails = props?.route?.params?.userDetails;
   const userId = props?.route?.params?.userId;
@@ -39,8 +39,10 @@ const DetailScreen = (props) => {
   const ref = React.useRef(null);
   const dispatch = useDispatch();
   const { Alerts, handleStatusCode } = useHelper();
-  const { token, userData, status } = useSelector((store) => store.userReducer);
-  const { personalityRes } = useSelector((store) => store.profileReducer);
+  const { token, userData, status, focusedScreen } = useSelector(
+    store => store.userReducer
+  );
+  const { personalityRes } = useSelector(store => store.profileReducer);
 
   let [userImages, setUserImages] = useState();
   const [blockAlert, setBlockAlert] = useState(false);
@@ -56,7 +58,7 @@ const DetailScreen = (props) => {
   const [promptIndex, setPromptIndex] = useState();
   const [onBoardingCheck, setOnBoardingCheck] = useState(false);
 
-  const handleReportAlert = (state) => {
+  const handleReportAlert = state => {
     setAction(false);
     props?.navigation.navigate("ReportAccountScreen", {
       userId: userId,
@@ -69,12 +71,12 @@ const DetailScreen = (props) => {
     props?.navigation.jumpTo("HomeOne");
   };
 
-  const handleBlockedScreen = (state) => {
+  const handleBlockedScreen = state => {
     setBlockAlert(false);
     props?.navigation.navigate("BlockedList");
   };
 
-  userDetails?.UserMedia?.map((item) => {
+  userDetails?.UserMedia?.map(item => {
     if (item?.type === "image") {
       return Images.push({ id: item?.id, url: item?.url });
     } else {
@@ -84,31 +86,31 @@ const DetailScreen = (props) => {
 
   Images = [...Images].sort((a, b) => a.id - b.id);
 
-  const handleAlert = (state) => {
+  const handleAlert = state => {
     setAction(state);
   };
 
-  const handleBlockAlert = (state) => {
+  const handleBlockAlert = state => {
     setBlockAlert(state);
     setIsBlocked(state);
   };
 
-  const userPhotosUrl = Images?.map((item) => {
+  const userPhotosUrl = Images?.map(item => {
     return item?.url;
   });
 
-  const userPhotosId = Images?.map((item) => {
+  const userPhotosId = Images?.map(item => {
     return item?.id;
   });
 
   const viewIntercation = () => {
     UserService.viewIntercation(props?.route?.params?.userId, token)
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
         }
       })
-      .catch((err) => console.log("viewIntercation err", err));
+      .catch(err => console.log("viewIntercation err", err));
   };
 
   useFocusEffect(
@@ -137,7 +139,7 @@ const DetailScreen = (props) => {
       },
       token
     )
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
@@ -150,10 +152,10 @@ const DetailScreen = (props) => {
           );
         }
       })
-      .catch((error) => console.log("likeImageInteraction err", error));
+      .catch(error => console.log("likeImageInteraction err", error));
   };
 
-  const likeProfilePrompt = (item) => {
+  const likeProfilePrompt = item => {
     UserService.likeInteraction(
       {
         resourceId: item?.id,
@@ -162,7 +164,7 @@ const DetailScreen = (props) => {
       },
       token
     )
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
@@ -175,13 +177,20 @@ const DetailScreen = (props) => {
           );
         }
       })
-      .catch((error) => console.log("likeProfilePrompt err", error));
+      .catch(error => console.log("likeProfilePrompt err", error));
   };
 
   const handleBackButton = () => {
-    if (imageModal == true || promptModal === true) {
+    if (imageModal || promptModal || action) {
       setImageModal(false);
       setPromptModal(false);
+      setAction(false);
+    } else if (focusedScreen) {
+      dispatch({
+        type: "SET_FOCUSED_SCREEN",
+        payload: false,
+      });
+      BackHandler.exitApp();
     } else {
       props.navigation.goBack();
     }
@@ -211,6 +220,12 @@ const DetailScreen = (props) => {
           payload: true,
         });
       }
+
+      dispatch({
+        type: "SET_FOCUSED_SCREEN",
+        payload: false,
+      });
+
       return () => {
         setOnBoardingCheck(false);
       };
@@ -226,17 +241,17 @@ const DetailScreen = (props) => {
       add;
       BackHandler.removeEventListener("hardwareBackPress", handleBackButton);
     };
-  }, [imageModal || promptModal]);
+  }, [handleBackButton]);
 
   let country = props?.route?.params?.userDetails?.country;
   let fOrigin = props?.route?.params?.userDetails?.Profile?.familyOrigin;
 
   let flagsLiving = [];
-  flagsLiving = Countries.filter((item) => {
+  flagsLiving = Countries.filter(item => {
     return item?.en === country ? item.code : null;
   });
   let flagsOrigin = [];
-  flagsOrigin = Countries.filter((item) => {
+  flagsOrigin = Countries.filter(item => {
     return item.en === fOrigin ? item.code : null;
   });
 
@@ -301,7 +316,7 @@ const DetailScreen = (props) => {
                     isPaused={imageModal ? true : false}
                     imageUris={userPhotosUrl}
                     onIconPress
-                    onIconMicPress={(imageUri) => {
+                    onIconMicPress={imageUri => {
                       if (status === "INCOMPLETE") {
                         setOnBoardingCheck(true);
                       } else {
@@ -531,7 +546,7 @@ const DetailScreen = (props) => {
             <View style={{ height: 20, width: "100%" }}></View>
 
             <View>
-              {userDetails?.ProfilePrompts?.map((item) => {
+              {userDetails?.ProfilePrompts?.map(item => {
                 return (
                   <View style={styles.lookingForSec}>
                     <Text style={styles.poolQuestTxt}>
