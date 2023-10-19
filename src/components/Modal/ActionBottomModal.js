@@ -60,6 +60,7 @@ const ActionBottomModal = ({
   const [submitted, setSubmitted] = useState(null);
   const [foundIndex, setFoundIndex] = useState(null);
   const [adjustHeight, setAdjustHeight] = useState(false);
+  const [deleteText, setDeleteText] = useState("false");
 
   const snapPoints = useMemo(
     () => (deleteAcc ? ["40%"] : adjustHeight ? ["31%"] : ["29%"]),
@@ -239,7 +240,7 @@ const ActionBottomModal = ({
         multiline={ios ? false : true}
         backgroundColor={colors.greyWhite}
         borderRadius={10}
-        onChangeText={setReason}
+        onChangeText={setDeleteText}
         onEndEditing={onFormSubmitted}
       />
       <Button
@@ -418,42 +419,46 @@ const ActionBottomModal = ({
   );
 
   const deleteAccountFn = () => {
-    let config = {
-      method: "DELETE",
-      url: `https://api.rishtaauntie.app/dev/rishta_auntie/api/v1/user/${userData?.id}`,
-      headers: {
-        "x-auth-token": `${token}`,
-      },
-    };
+    if (deleteText !== "DELETE") {
+      alerts("error", "Please type DELETE");
+    } else {
+      let config = {
+        method: "DELETE",
+        url: `https://api.rishtaauntie.app/dev/rishta_auntie/api/v1/user/${userData?.id}`,
+        headers: {
+          "x-auth-token": `${token}`,
+        },
+      };
 
-    axios
-      .request(config)
-      .then((res) => {
-        if (res?.status >= 200 && res?.status <= 299) {
-          alerts("success", "User Deleted Successfully");
-          dispatch({
-            type: "AUTH_USER",
-            payload: null,
-          });
-          dispatch({
-            type: "AUTH_USER_STATUS",
-            payload: null,
-          });
-          dispatch({
-            type: "AUTH_TOKEN",
-            payload: null,
-          });
-          navigation.dispatch(
-            CommonActions.reset({
-              index: 0,
-              routes: [{ name: "WelcomeScreen" }],
-            })
-          );
-        }
-      })
-      .catch((e) => {
-        console.log("deleteUser err", e);
-      });
+      axios
+        .request(config)
+        .then((res) => {
+          if (res?.status >= 200 && res?.status <= 299) {
+            alerts("success", "User Deleted Successfully");
+            dispatch({
+              type: "AUTH_USER",
+              payload: null,
+            });
+            dispatch({
+              type: "AUTH_USER_STATUS",
+              payload: null,
+            });
+            dispatch({
+              type: "AUTH_TOKEN",
+              payload: null,
+            });
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [{ name: "WelcomeScreen" }],
+              })
+            );
+          }
+        })
+        .catch((e) => {
+          console.log("deleteUser err", e);
+        });
+    }
   };
 
   return (
