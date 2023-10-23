@@ -18,6 +18,7 @@ import BottomButton from "../../../components/buttons/BottomButton";
 import ActionCard from "../../../components/Cards/ActionCard";
 import Video from "react-native-video";
 import Countries from "../../../assets/countryLists/Countries";
+import DeviceInfo from "react-native-device-info";
 
 const UploadVideo = ({ navigation, route }) => {
   const edit = route?.params;
@@ -201,8 +202,18 @@ const UploadVideo = ({ navigation, route }) => {
                   type: "SET_VIDEO_FLAG",
                   payload: true,
                 });
+                let versionCode = DeviceInfo.getVersion();
+                let userDevice = DeviceInfo.getModel();
+                let OSVersion = DeviceInfo.getSystemVersion();
+                let OSName = android
+                  ? `Android ${OSVersion}`
+                  : `iOS ${OSVersion}`;
 
                 let formData = new FormData();
+                formData.append("versionCode", versionCode);
+                formData.append("userDevice", userDevice);
+                formData.append("OSVersion", OSVersion);
+                formData.append("OSName", OSName);
                 formData.append("firstName", firstName);
                 formData.append("lastName", lastName);
                 formData.append("dob", moment(dob).format("YYYY-MM-DD"));
