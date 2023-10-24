@@ -582,7 +582,7 @@ const MySearchPreferencesEditScreen = (props) => {
                     min={0}
                     max={2000}
                     preferenceName={paramKey2}
-                    customLabel="kms"
+                    customLabel="mi"
                     enableLabel={true}
                     step={1}
                   />

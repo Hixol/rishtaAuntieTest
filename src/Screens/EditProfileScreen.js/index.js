@@ -193,7 +193,7 @@ const EditProfileScreen = (props) => {
     },
     {
       id: 19,
-      preferenceName: "Are they willing to relocate?",
+      preferenceName: "Are you willing to relocate?",
       type: "Relocate",
       ask: "Are you willing to relocate?",
       //   value: userData?.Profile?.willingToRelocate,

@@ -1128,17 +1128,49 @@ const EditScreenSetting = (props) => {
           source={require("../../assets/iconimages/settingback.png")}
         />
       </TouchableOpacity>
-      <Text
+      <View
         style={{
-          fontSize: 14,
-          fontFamily: "Inter-Medium",
-          marginVertical: "5%",
-          color: "#23262F",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+          // paddingVertical: "2%",
+          // marginVertical: "2%",
         }}
       >
-        {type}
-      </Text>
-
+        <Text
+          style={{
+            fontSize: 14,
+            fontFamily: "Inter-Medium",
+            marginVertical: "5%",
+            color: "#23262F",
+          }}
+        >
+          {type}
+        </Text>
+        {type === "Prompts Pool" && ppCheck ? (
+          <View
+            style={{
+              paddingHorizontal: "4%",
+              paddingVertical: "2%",
+              borderRadius: 7,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#23262F",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 14,
+                color: colors.white,
+                fontFamily: "Inter-Regular",
+              }}
+            >
+              {ppIndex + 1 + " / " + selectedPP?.length}
+            </Text>
+          </View>
+        ) : null}
+      </View>
       <Text
         style={[
           styles.ask,
@@ -1199,7 +1231,7 @@ const EditScreenSetting = (props) => {
                 min={0}
                 max={2000}
                 preferenceName={"Distance"}
-                customLabel="kms"
+                customLabel="mi"
                 enableLabel={true}
                 step={1}
               />

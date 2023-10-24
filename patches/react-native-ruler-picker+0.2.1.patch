@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-ruler-picker/src/components/RulerPicker.tsx b/node_modules/react-native-ruler-picker/src/components/RulerPicker.tsx
+index 2dd82da..39457c8 100644
+--- a/node_modules/react-native-ruler-picker/src/components/RulerPicker.tsx
++++ b/node_modules/react-native-ruler-picker/src/components/RulerPicker.tsx
+@@ -163,7 +163,7 @@ export const RulerPicker = ({
+ 
+       if (prevValue.current !== newStep) {
+         onValueChange?.(newStep);
+-        stepTextRef.current?.setNativeProps({ text: newStep });
++        stepTextRef.current?.setNativeProps({ text: JSON.stringify((newStep / 30.48).toFixed(1)) });
+       }
+ 
+       prevValue.current = newStep;

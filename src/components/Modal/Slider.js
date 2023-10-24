@@ -1,13 +1,13 @@
-import React, {useState} from 'react';
-import {Platform, StyleSheet, Text, View, Image} from 'react-native';
-import {measureUnits} from '../../utility/regex';
-import {windowWidth} from '../../utility/size';
+import React, { useState } from "react";
+import { Platform, StyleSheet, Text, View, Image } from "react-native";
+import { measureUnits } from "../../utility/regex";
+import { windowWidth } from "../../utility/size";
 
-import MultiSlider from '@ptomasroos/react-native-multi-slider';
-import colors from '../../utility/colors';
-import ToggleSwitch from 'toggle-switch-react-native';
+import MultiSlider from "@ptomasroos/react-native-multi-slider";
+import colors from "../../utility/colors";
+import ToggleSwitch from "toggle-switch-react-native";
 
-const SliderView = props => {
+const SliderView = (props) => {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(!isEnabled);
 
@@ -15,27 +15,29 @@ const SliderView = props => {
     <View style={styles.details}>
       <View
         style={{
-          justifyContent: 'center',
-          flexDirection: 'row',
+          justifyContent: "center",
+          flexDirection: "row",
           backgroundColor: props.bg ? props.bg : colors.white,
-          marginHorizontal: props.bg ? '6%' : '2%',
-        }}>
+          marginHorizontal: props.bg ? "6%" : "2%",
+        }}
+      >
         {props.textWithIconView ? (
           <View
             style={{
-              flexDirection: 'row',
-              width: '100%',
-              alignItems: 'center',
-              justifyContent: 'flex-start',
-            }}>
+              flexDirection: "row",
+              width: "100%",
+              alignItems: "center",
+              justifyContent: "flex-start",
+            }}
+          >
             <Image
               style={{
                 // marginRight: '3%',
-                width: '9%',
-                height: '100%',
+                width: "9%",
+                height: "100%",
                 // marginLeft: '5%',
               }}
-              resizeMode={'contain'}
+              resizeMode={"contain"}
               source={props.preferenceIcon}
             />
 
@@ -46,17 +48,19 @@ const SliderView = props => {
         <View
           style={[
             {
-              flexDirection: 'row',
-              width: '100%',
+              flexDirection: "row",
+              width: "100%",
               // marginBottom: ,
             },
             props.sp,
-          ]}>
+          ]}
+        >
           <Text
             style={[
               styles.detailsTxt,
-              props.bg && {fontSize: 14, color: colors.black},
-            ]}>
+              props.bg && { fontSize: 14, color: colors.black },
+            ]}
+          >
             {props.preferenceName}
           </Text>
         </View>
@@ -67,32 +71,32 @@ const SliderView = props => {
             isOn={isEnabled}
             onColor={colors.primaryPink}
             offColor={colors.mediumGrey}
-            labelStyle={{color: 'black', fontFamily: 'Inter-Regular'}}
+            labelStyle={{ color: "black", fontFamily: "Inter-Regular" }}
             size="small"
             label="Deal Break?"
             onToggle={toggleSwitch}
           />
         )}
       </View>
-      <View style={{alignSelf: 'center', marginTop: '5%'}}>
+      <View style={{ alignSelf: "center", marginTop: "5%" }}>
         <MultiSlider
           markerStyle={{
             ...Platform.select({
               ios: {
                 height: 22,
                 width: 22,
-                shadowColor: '#000000',
+                shadowColor: "#000000",
                 shadowOffset: {
                   width: 0,
                   height: 3,
                 },
                 shadowRadius: 1,
                 shadowOpacity: 0.1,
-                alignSelf: 'center',
-                position: 'relative',
+                alignSelf: "center",
+                position: "relative",
                 backgroundColor:
-                  props?.customLabel === 'practicingLevel' ||
-                  props?.customLabel === 'marriageTimeline'
+                  props?.customLabel === "practicingLevel" ||
+                  props?.customLabel === "marriageTimeline"
                     ? colors.primaryPink
                     : colors.primaryPink,
               },
@@ -112,7 +116,7 @@ const SliderView = props => {
                 width: 22,
                 borderRadius: 20,
                 backgroundColor: colors.primaryPink,
-                alignSelf: 'center',
+                alignSelf: "center",
               },
             }),
           }}
@@ -120,7 +124,7 @@ const SliderView = props => {
             backgroundColor: colors.primaryPink,
           }}
           trackStyle={{
-            backgroundColor: '#CECECE',
+            backgroundColor: "#CECECE",
             height: 7,
             borderRadius: 10,
           }}
@@ -133,9 +137,9 @@ const SliderView = props => {
           }}
           values={props.multiSliderValue}
           sliderLength={
-            props.preferenceName == 'Tag Line'
+            props.preferenceName == "Tag Line"
               ? windowWidth * 0.83
-              : props.preferenceName == 'Height:'
+              : props.preferenceName == "Height:"
               ? windowWidth * 0.93
               : windowWidth * 0.8
           }
@@ -154,106 +158,117 @@ const SliderView = props => {
             top: -2,
             backgroundColor: colors.PremiumGrey,
           }}
-          stepLabelStyle={{left: 2}}
+          stepLabelStyle={{ left: 2 }}
           allowOverlap={false}
           snapped={true}
           minMarkerOverlapDistance={10}
           enableLabel={props.enableLabel}
-          customLabel={sliderPosition => {
+          customLabel={(sliderPosition) => {
             return (
               <>
-                {props.customLabel == 'simple' ? (
+                {props.customLabel == "simple" ? (
                   <View
                     style={{
-                      position: 'absolute',
+                      position: "absolute",
                       left: sliderPosition.oneMarkerLeftPosition - 6,
                       bottom: 40,
-                    }}>
-                    <Text style={{color: colors.black, fontWeight: '700'}}>
+                    }}
+                  >
+                    <Text style={{ color: colors.black, fontWeight: "700" }}>
                       {sliderPosition.oneMarkerValue}
                     </Text>
                   </View>
-                ) : props.customLabel === 'practicingLevel' ? (
+                ) : props.customLabel === "practicingLevel" ? (
                   <View>
                     <View
                       style={{
-                        position: 'absolute',
+                        position: "absolute",
                         left:
                           sliderPosition.oneMarkerValue === 4
                             ? sliderPosition.oneMarkerLeftPosition - 100
                             : sliderPosition.oneMarkerLeftPosition - 20,
                         top: 40,
-                      }}>
+                      }}
+                    >
                       <Text
                         style={{
                           color: colors.black,
-                          fontWeight: '600',
+                          fontWeight: "600",
                           fontSize: 12,
-                        }}>
+                        }}
+                      >
                         {/* {index: 0, stepLabel: 'Rarely Religious'},
         {index: 1, stepLabel: 'Somewhat Religious'},
         {index: 2, stepLabel: 'Religious'},
         {index: 3, stepLabel: 'Strongly Religious'}, */}
                         {sliderPosition.oneMarkerValue === 1
-                          ? 'Rarely Religious'
+                          ? "Rarely Religious"
                           : sliderPosition.oneMarkerValue === 2
-                          ? 'Somewhat Religious'
+                          ? "Somewhat Religious"
                           : sliderPosition.oneMarkerValue === 3
-                          ? 'Religious'
-                          : 'Strongly Religious'}
+                          ? "Religious"
+                          : "Strongly Religious"}
                       </Text>
                     </View>
                   </View>
-                ) : props.customLabel === 'marriageTimeline' ? (
+                ) : props.customLabel === "marriageTimeline" ? (
                   <View>
                     <View
                       style={{
-                        position: 'absolute',
+                        position: "absolute",
                         left:
                           sliderPosition.oneMarkerValue === 4
                             ? sliderPosition.oneMarkerLeftPosition - 30
                             : sliderPosition.oneMarkerLeftPosition - 20,
                         top: 40,
-                      }}>
+                      }}
+                    >
                       <Text
                         style={{
                           color: colors.black,
-                          fontWeight: '600',
+                          fontWeight: "600",
                           fontSize: 12,
-                        }}>
+                        }}
+                      >
                         {sliderPosition.oneMarkerValue === 1
-                          ? '1 Year'
+                          ? "1 Year"
                           : sliderPosition.oneMarkerValue === 2
-                          ? '2 Years'
+                          ? "2 Years"
                           : sliderPosition.oneMarkerValue === 3
-                          ? '3 Years'
-                          : '4 Years'}
+                          ? "3 Years"
+                          : "4 Years"}
                       </Text>
                     </View>
                   </View>
-                ) : props.customLabel == 'feet' ? (
+                ) : props.customLabel == "feet" ? (
                   props.searchPreferences ? (
                     <View>
                       <View
                         style={{
-                          position: 'absolute',
+                          position: "absolute",
                           left: sliderPosition.oneMarkerLeftPosition - 25,
                           top: 40,
-                        }}>
-                        <Text style={{color: colors.black, fontWeight: '600'}}>
-                          {parseFloat(sliderPosition.oneMarkerValue).toFixed(1)}{' '}
+                        }}
+                      >
+                        <Text
+                          style={{ color: colors.black, fontWeight: "600" }}
+                        >
+                          {parseFloat(sliderPosition.oneMarkerValue).toFixed(1)}{" "}
                           ft
                         </Text>
                       </View>
 
                       <View
                         style={{
-                          position: 'absolute',
+                          position: "absolute",
                           left: sliderPosition.twoMarkerLeftPosition - 10,
                           top: -10,
-                        }}>
-                        <Text style={{color: colors.black, fontWeight: '600'}}>
-                          {parseFloat(sliderPosition.twoMarkerValue).toFixed(1)}{' '}
+                        }}
+                      >
+                        <Text
+                          style={{ color: colors.black, fontWeight: "600" }}
+                        >
+                          {parseFloat(sliderPosition.twoMarkerValue).toFixed(1)}{" "}
                           ft
                         </Text>
                       </View>
@@ -262,80 +277,90 @@ const SliderView = props => {
                     <View>
                       <View
                         style={{
-                          position: 'absolute',
+                          position: "absolute",
                           left: sliderPosition.oneMarkerLeftPosition - 25,
                           top: 40,
-                        }}>
-                        <Text style={{color: colors.black, fontWeight: '600'}}>
-                          {parseFloat(sliderPosition.oneMarkerValue).toFixed(1)}{' '}
+                        }}
+                      >
+                        <Text
+                          style={{ color: colors.black, fontWeight: "600" }}
+                        >
+                          {parseFloat(sliderPosition.oneMarkerValue).toFixed(1)}{" "}
                           ft
                         </Text>
                       </View>
                     </View>
                   )
-                ) : props.customLabel == 'cm' ? (
+                ) : props.customLabel == "cm" ? (
                   <View>
                     <View
                       style={{
-                        position: 'absolute',
+                        position: "absolute",
                         left: sliderPosition.oneMarkerLeftPosition - 18,
                         top: 40,
-                      }}>
-                      <Text style={{color: colors.black, fontWeight: '600'}}>
+                      }}
+                    >
+                      <Text style={{ color: colors.black, fontWeight: "600" }}>
                         {measureUnits.convertCentimetertoFeetAndInches(
-                          sliderPosition.oneMarkerValue,
-                        )}{' '}
+                          sliderPosition.oneMarkerValue
+                        )}{" "}
                         ft
                       </Text>
                     </View>
                   </View>
-                ) : props.customLabel == 'kms' ? (
+                ) : props.customLabel == "mi" ? (
                   <View
                     style={{
-                      position: 'absolute',
-                      left: sliderPosition.oneMarkerLeftPosition - 25,
+                      position: "absolute",
+                      left:
+                        sliderPosition.oneMarkerValue === 0
+                          ? sliderPosition.oneMarkerLeftPosition - 25
+                          : sliderPosition.oneMarkerLeftPosition - 40,
                       top: 40,
-                    }}>
-                    {sliderPosition?.oneMarkerValue === 'unlimited' ||
-                    sliderPosition?.oneMarkerValue === 'nationwide' ? (
-                      <Text style={{color: colors.black, fontWeight: '600'}}>
+                    }}
+                  >
+                    {sliderPosition?.oneMarkerValue === "unlimited" ||
+                    sliderPosition?.oneMarkerValue === "nationwide" ? (
+                      <Text style={{ color: colors.black, fontWeight: "600" }}>
                         {sliderPosition.oneMarkerValue}
                       </Text>
                     ) : (
-                      <Text style={{color: colors.black, fontWeight: '600'}}>
-                        {sliderPosition.oneMarkerValue} kms
+                      <Text style={{ color: colors.black, fontWeight: "600" }}>
+                        {sliderPosition.oneMarkerValue} mi
                       </Text>
                     )}
                   </View>
-                ) : props.customLabel == 'age' ? (
+                ) : props.customLabel == "age" ? (
                   <View>
                     <View
                       style={{
-                        position: 'absolute',
+                        position: "absolute",
                         left: sliderPosition.oneMarkerLeftPosition - 8,
                         top: 40,
-                      }}>
-                      <Text style={{color: colors.black, fontWeight: '600'}}>
+                      }}
+                    >
+                      <Text style={{ color: colors.black, fontWeight: "600" }}>
                         {sliderPosition.oneMarkerValue}
                       </Text>
                     </View>
                     <View
                       style={{
-                        position: 'absolute',
+                        position: "absolute",
                         left: sliderPosition.twoMarkerLeftPosition - 8,
                         top: -10,
-                      }}>
-                      <Text style={{color: colors.black, fontWeight: '600'}}>
+                      }}
+                    >
+                      <Text style={{ color: colors.black, fontWeight: "600" }}>
                         {sliderPosition.twoMarkerValue}
                       </Text>
                     </View>
                   </View>
-                ) : props.customLabel == 'religious' ? (
+                ) : props.customLabel == "religious" ? (
                   <View
                     style={[
                       props.style,
                       {
-                        position: 'absolute',
+                        position: "absolute",
                         left:
                           sliderPosition.oneMarkerValue == 4
                             ? sliderPosition.oneMarkerLeftPosition -
@@ -353,24 +378,25 @@ const SliderView = props => {
                               23,
                         bottom: -10,
                       },
-                    ]}>
-                    <Text style={{color: colors.black, fontWeight: '700'}}>
+                    ]}
+                  >
+                    <Text style={{ color: colors.black, fontWeight: "700" }}>
                       {sliderPosition.oneMarkerValue == 1 ||
                       sliderPosition.oneMarkerValue == 0
-                        ? 'Rarely Religious'
+                        ? "Rarely Religious"
                         : sliderPosition.oneMarkerValue == 2
-                        ? 'Somewhat Religious'
+                        ? "Somewhat Religious"
                         : sliderPosition.oneMarkerValue == 3
-                        ? 'Religious'
+                        ? "Religious"
                         : sliderPosition.oneMarkerValue == 4
-                        ? 'Strongly Religious'
+                        ? "Strongly Religious"
                         : null}
                     </Text>
                   </View>
-                ) : props.customLabel == 'pray' ? (
+                ) : props.customLabel == "pray" ? (
                   <View
                     style={{
-                      position: 'absolute',
+                      position: "absolute",
                       left:
                         sliderPosition.oneMarkerValue == 4
                           ? sliderPosition.oneMarkerLeftPosition -
@@ -387,40 +413,42 @@ const SliderView = props => {
                             windowWidth * 0.1 +
                             23,
                       bottom: -10,
-                    }}>
-                    <Text style={{color: colors.black, fontWeight: '700'}}>
+                    }}
+                  >
+                    <Text style={{ color: colors.black, fontWeight: "700" }}>
                       {sliderPosition.oneMarkerValue == 1 ||
                       sliderPosition.oneMarkerValue == 0
                         ? `Don't pray`
                         : sliderPosition.oneMarkerValue == 2
-                        ? 'Sometimes'
+                        ? "Sometimes"
                         : sliderPosition.oneMarkerValue == 3
-                        ? 'Often'
+                        ? "Often"
                         : sliderPosition.oneMarkerValue == 4
-                        ? 'Regularly'
+                        ? "Regularly"
                         : null}
                     </Text>
                   </View>
-                ) : props.customLabel == 'ideal' ? (
+                ) : props.customLabel == "ideal" ? (
                   <View
                     style={{
-                      position: 'absolute',
+                      position: "absolute",
                       left:
                         sliderPosition.oneMarkerValue == 4
                           ? sliderPosition.oneMarkerLeftPosition - 28
                           : sliderPosition.oneMarkerLeftPosition - 18,
                       bottom: 40,
-                    }}>
-                    <Text style={{color: colors.black, fontWeight: '700'}}>
+                    }}
+                  >
+                    <Text style={{ color: colors.black, fontWeight: "700" }}>
                       {sliderPosition.oneMarkerValue == 1 ||
                       sliderPosition.oneMarkerValue == 0
                         ? `0.5 year`
                         : sliderPosition.oneMarkerValue == 2
-                        ? '1 year'
+                        ? "1 year"
                         : sliderPosition.oneMarkerValue == 3
-                        ? '2 year'
+                        ? "2 year"
                         : sliderPosition.oneMarkerValue == 4
-                        ? '3 year'
+                        ? "3 year"
                         : null}
                     </Text>
                   </View>
@@ -441,15 +469,15 @@ const styles = StyleSheet.create({
     margin: 20,
     width: 320,
     height: 300,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   ViewContainer: {
-    alignSelf: 'center',
-    justifyContent: 'center',
+    alignSelf: "center",
+    justifyContent: "center",
   },
   LabelWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     padding: 20,
   },
 
@@ -459,15 +487,15 @@ const styles = StyleSheet.create({
 
   details: {
     // height: '25%',
-    width: '100%',
-    marginVertical: '2%',
+    width: "100%",
+    marginVertical: "2%",
   },
   detailsTxt: {
     fontSize: 16,
     color: colors.primaryBlue,
-    fontFamily: 'Inter-Medium',
+    fontFamily: "Inter-Medium",
 
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     // marginLeft: '20%',
   },
 });
