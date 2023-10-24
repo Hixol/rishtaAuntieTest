@@ -4,6 +4,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { PERMISSIONS } from "react-native-permissions";
 import { handlePermissions } from "../../utility/regex";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Button } from "react-native-elements";
 import {
   android,
   ios,
@@ -13,12 +14,11 @@ import {
 } from "../../utility/size";
 
 import FastImage from "react-native-fast-image";
-import Button from "../../components/buttons/Button";
 import colors from "../../utility/colors";
 import NetInfo from "@react-native-community/netinfo";
 import styles from "./styles";
 
-const WelcomeScreen = (props) => {
+const WelcomeScreen = props => {
   const [connection, setConnection] = useState(false);
 
   const getAllPermissions = () => {
@@ -31,7 +31,7 @@ const WelcomeScreen = (props) => {
           PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
         ],
         "",
-        (res) => {}
+        res => {}
       );
     } else if (android) {
       if (OS_VER >= 13) {
@@ -74,7 +74,7 @@ const WelcomeScreen = (props) => {
   useFocusEffect(
     React.useCallback(() => {
       getAllPermissions();
-      const unsubscribe = NetInfo.addEventListener((state) => {
+      const unsubscribe = NetInfo.addEventListener(state => {
         setConnection(state.isConnected);
       });
 
@@ -130,24 +130,15 @@ const WelcomeScreen = (props) => {
         <View style={{ marginTop: "5%" }}>
           <Button
             onPress={goToLogin}
-            btnTitleStyle={{ fontFamily: "Inter-Regular", fontSize: 17 }}
-            YesNoBtnStyle={{ width: "50%" }}
-            YesNoBtn
-            title={"Login"}
+            title="Login"
+            buttonStyle={styles.btnContainer}
+            titleStyle={styles.titleStyle}
           />
-          {/*<Button
-            onPress={() => props.navigation.navigate('SignUp')}
-            btnTitleStyle={{fontFamily: 'Inter-Regular', fontSize: 17}}
-            YesNoBtn
-            title={'Get Started'}
-            YesNoBtnStyle={{marginTop: '2%', width: '50%'}}
-          /> */}
           <Button
             onPress={() => props.navigation.navigate("SignUp")}
-            btnTitleStyle={{ fontFamily: "Inter-Regular", fontSize: 17 }}
-            YesNoBtn
-            title={"Get Started"}
-            YesNoBtnStyle={{ marginTop: "2%", width: "50%" }}
+            title="Get Started"
+            buttonStyle={styles.btnContainer}
+            titleStyle={styles.titleStyle}
           />
         </View>
       </View>
