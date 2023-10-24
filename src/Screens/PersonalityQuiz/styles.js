@@ -29,4 +29,10 @@ export default StyleSheet.create({
     textAlign: "center",
     width: windowWidth * 0.78,
   },
+  btnContainer: {
+    marginBottom: 40,
+    borderWidth: 1,
+    backgroundColor: colors.white,
+    borderColor: colors.primaryPink,
+  },
 });

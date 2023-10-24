@@ -30,12 +30,12 @@ import Loader from "../../components/Loader";
 import SettingButton from "../../components/buttons/SettingButton";
 import BoostUpgradeCard from "../../components/Cards/BoostUpgradeCard";
 
-const Settings = (props) => {
+const Settings = props => {
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const { Alerts, handleStatusCode } = useHelper();
-  const { token, userData, status } = useSelector((store) => store.userReducer);
-  const { denomination } = useSelector((store) => store.profileReducer);
+  const { token, userData, status } = useSelector(store => store.userReducer);
+  const { denomination } = useSelector(store => store.profileReducer);
 
   const proMember = userData?.UserSetting?.isSubscribed;
 
@@ -86,7 +86,7 @@ const Settings = (props) => {
     React.useCallback(() => {
       if (token != null) {
         ProfileServices.getMyProfile(token)
-          .then((res) => {
+          .then(res => {
             handleStatusCode(res);
             if (res.status >= 200 && res.status <= 299) {
               let data = res?.data?.data;
@@ -153,7 +153,7 @@ const Settings = (props) => {
                   ])
                 )
               )
-                .then((res) => {
+                .then(res => {
                   handleStatusCode(res);
                   if (res.status >= 200 && res.status <= 299) {
                     let data = res?.data?.data;
@@ -163,16 +163,16 @@ const Settings = (props) => {
                     });
                   }
                 })
-                .catch((err) => console.log("profileValues err", err));
+                .catch(err => console.log("profileValues err", err));
             }
           })
-          .catch((err) => console.log("getMyProfile err", err));
+          .catch(err => console.log("getMyProfile err", err));
 
         if (denomination.length > 0) {
           dispatch({
             type: "PROFILE_DEN_VALUES",
             payload: denomination[userData?.Profile?.religion]?.map(
-              (x) => x.name
+              x => x.name
             ),
           });
         }
@@ -182,18 +182,18 @@ const Settings = (props) => {
     }, [isFocused])
   );
 
-  const handleQuiz = (state) => {
+  const handleQuiz = state => {
     setMediaOptions(state);
     props.navigation.navigate("PersonalityQuiz");
   };
 
-  const handleAlert = (state) => {
+  const handleAlert = state => {
     setMediaOptions(state);
   };
 
   const handleEnableSpotlight = () => [
     IAPServices.enableSpotlight(token)
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           Alerts("success", res.data.message);
@@ -210,25 +210,25 @@ const Settings = (props) => {
           });
         }
       })
-      .catch((err) => Alerts("error", err?.message)),
+      .catch(err => Alerts("error", err?.message)),
   ];
 
   const createContactSupport = () => {
     ChatServices.contactSupport(token)
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 201) {
           getChatHeads();
         }
       })
-      .catch((err) => Alerts("error", err?.message))
+      .catch(err => Alerts("error", err?.message))
       .finally(() => setLoading(false));
   };
 
   const getChatHeads = () => {
     setLoading(true);
     ChatServices.chatHead(token)
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           let typeFlag = false;
@@ -242,7 +242,7 @@ const Settings = (props) => {
           }
 
           if (typeFlag) {
-            data.map((el) => {
+            data.map(el => {
               if (el.type === "GROUP") {
                 props.navigation.navigate("BottomTab", {
                   screen: "UserChatList",
@@ -262,11 +262,11 @@ const Settings = (props) => {
           }
         }
       })
-      .catch((err) => Alerts("error", err?.message))
+      .catch(err => Alerts("error", err?.message))
       .finally(() => setLoading(false));
   };
 
-  const handleUrl = (endpoint) =>
+  const handleUrl = endpoint =>
     Linking.openURL(`https://rishtaauntie.app/${endpoint}/`);
 
   return (
@@ -303,8 +303,9 @@ const Settings = (props) => {
             </Pressable>
           )} */}
 
-          {userData.Profile.personalityType == "" ||
-          userData.Profile.personalityType == null ? (
+          {(userData.Profile.personalityType == "" ||
+            userData.Profile.personalityType == null) &&
+          status === "COMPLETED" ? (
             <View style={styles.actionItemsMainView}>
               <View style={styles.actionItemsView}>
                 <Text style={styles.actionItemsText}>Action Items</Text>
@@ -316,10 +317,15 @@ const Settings = (props) => {
                     title={"Complete my profile"}
                   />
                 )}
-                <SettingButton
-                  onPress={() => props.navigation.navigate("PersonalityQuiz")}
-                  title={"Take personality quiz to get user insights"}
-                />
+                {userData.Profile.personalityType == "" ||
+                  (userData.Profile.personalityType == null && (
+                    <SettingButton
+                      onPress={() =>
+                        props.navigation.navigate("PersonalityQuiz")
+                      }
+                      title={"Take personality quiz to get user insights"}
+                    />
+                  ))}
               </View>
             </View>
           ) : null}

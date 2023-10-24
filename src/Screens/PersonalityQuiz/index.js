@@ -12,7 +12,6 @@ import { useSelector } from "react-redux";
 import { useHelper } from "../../hooks/useHelper";
 
 import styles from "./styles";
-import Button from "../../components/buttons/Button";
 import PersonalityServices from "../../services/PersonalityServices";
 import colors from "../../utility/colors";
 import * as Progress from "react-native-progress";
@@ -20,9 +19,9 @@ import BottomButton from "../../components/buttons/BottomButton";
 
 let isSubmitted = true;
 
-const PersonalityQuiz = (props) => {
+const PersonalityQuiz = props => {
   const { Alerts, handleStatusCode } = useHelper();
-  const { token } = useSelector((store) => store.userReducer);
+  const { token } = useSelector(store => store.userReducer);
 
   let [finalQuiz, setFinalQuiz] = useState([]),
     [outerIndex, setOuterIndex] = useState(0),
@@ -39,12 +38,12 @@ const PersonalityQuiz = (props) => {
   useEffect(() => {
     setLoading(true);
     PersonalityServices.getQuestions()
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           let data = res.data.data;
           for (let i = 0; i < data.length; i++) {
-            setQuiz((prevState) => [
+            setQuiz(prevState => [
               ...prevState,
               {
                 type: data[i].type,
@@ -58,10 +57,10 @@ const PersonalityQuiz = (props) => {
               qna: [data[0]?.questionAndAnswers[innerIndex]],
             },
           ]);
-          setInnerIndex((prevState) => prevState + 1);
+          setInnerIndex(prevState => prevState + 1);
         }
       })
-      .catch((err) => {
+      .catch(err => {
         if (err?.message.includes("Network")) {
           Alerts("error", err.message);
         } else {
@@ -76,14 +75,14 @@ const PersonalityQuiz = (props) => {
   }, []);
 
   const onNext = () => {
-    setQCounter((prevState) => prevState + 2);
+    setQCounter(prevState => prevState + 2);
     if (index != null) {
       if (
         quiz[outerIndex]?.qna[innerIndex] !=
         finalQuiz[outerIndex]?.qna[innerIndex]
       ) {
-        setFinalQuiz((prevState) =>
-          prevState.map((el) => {
+        setFinalQuiz(prevState =>
+          prevState.map(el => {
             if (el.type == quiz[outerIndex].type) {
               return {
                 ...el,
@@ -94,7 +93,7 @@ const PersonalityQuiz = (props) => {
             }
           })
         );
-        setInnerIndex((prevState) => prevState + 1);
+        setInnerIndex(prevState => prevState + 1);
         if (
           outerIndex == quiz.length - 1 &&
           innerIndex == quiz[outerIndex].qna.length - 1
@@ -102,7 +101,7 @@ const PersonalityQuiz = (props) => {
           setShowBtn(true);
         }
       } else {
-        setOuterIndex((prevState) => prevState + 1);
+        setOuterIndex(prevState => prevState + 1);
         setInnerIndex(1);
         let obj = {
           type: quiz[outerIndex + 1].type,
@@ -117,8 +116,8 @@ const PersonalityQuiz = (props) => {
           selectedQuestions[outerIndex]?.qna.length
       ) {
         setProgress(qCounter / 50);
-        setSelectedQuestions((prevState) =>
-          prevState.map((item) => {
+        setSelectedQuestions(prevState =>
+          prevState.map(item => {
             if (item.type == quiz[outerIndex].type) {
               return {
                 ...item,
@@ -134,7 +133,7 @@ const PersonalityQuiz = (props) => {
         );
       } else {
         setProgress(qCounter / 50);
-        setSelectedQuestions((prevState) => [
+        setSelectedQuestions(prevState => [
           ...prevState,
           {
             type: quiz[outerIndex].type,
@@ -158,7 +157,7 @@ const PersonalityQuiz = (props) => {
       isSubmitted = false;
 
       PersonalityServices.solveQuestions(obj, token)
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             Alerts("success", res.data.message);
@@ -167,7 +166,7 @@ const PersonalityQuiz = (props) => {
             });
           }
         })
-        .catch((err) => {
+        .catch(err => {
           if (err?.message.includes("Network")) {
             Alerts("error", err.message);
           } else {
@@ -183,8 +182,8 @@ const PersonalityQuiz = (props) => {
       setLoading(true);
       setAfterSave(true);
       setProgress(qCounter / 50);
-      setSelectedQuestions((prevState) =>
-        prevState.map((item) => {
+      setSelectedQuestions(prevState =>
+        prevState.map(item => {
           if (item.type == quiz[outerIndex].type) {
             return {
               ...item,
@@ -244,25 +243,17 @@ const PersonalityQuiz = (props) => {
           </View>
 
           {showBtn ? (
-            <Button
+            <BottomButton
+              bottomStyles={styles.btnContainer}
+              titleStyle={{ color: colors.primaryPink }}
               onPress={onSave}
-              title="Save"
-              YesNoBtn
-              YesNoBtnStyle={{ paddingVertical: "2.5%" }}
-              btnTitleStyle={{ fontSize: 18, fontFamily: "Inter-Medium" }}
+              text="Save"
             />
           ) : (
-            // <Button
-            //   onPress={onNext}
-            //   title="NEXT"
-            //   YesNoBtn
-            //   YesNoBtnStyle={{paddingVertical: '2.5%'}}
-            //   btnTitleStyle={{fontSize: 18, fontFamily: 'Inter-Medium'}}
-            // />
             <BottomButton
               bottomStyles={{ marginBottom: 40 }}
               onPress={onNext}
-              text={"NEXT"}
+              text="NEXT"
             />
           )}
         </SafeAreaView>

@@ -8,7 +8,7 @@ import {
 import { useHelper } from "../../hooks/useHelper";
 import colors from "../../utility/colors";
 
-const BottomButton = (props) => {
+const BottomButton = props => {
   const { keyboardSpace } = useHelper();
 
   return (
@@ -25,7 +25,7 @@ const BottomButton = (props) => {
       {props.loading ? (
         <ActivityIndicator size={"small"} color={colors.white} />
       ) : (
-        <Text style={styles.buttonText}>
+        <Text style={[styles.buttonText, props.titleStyle]}>
           {props.text === "" || props?.text === undefined
             ? "Continue"
             : props.text}
