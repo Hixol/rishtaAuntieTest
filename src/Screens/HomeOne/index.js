@@ -323,6 +323,10 @@ const HomeOne = (props) => {
           } else {
             console.log("getAllUser err:", err);
           }
+          dispatch({
+            type: "AUTH_USER_SCREEN_INDEX",
+            payload: false,
+          });
         })
         .finally(() => {
           setLoading(false);
