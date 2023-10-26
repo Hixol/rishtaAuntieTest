@@ -1117,10 +1117,10 @@ const EditScreenSetting = (props) => {
         style={{ flex: 1, backgroundColor: colors.white, padding: 20 }}
       >
         <KeyboardAwareScrollView
-          enableOnAndroid={ppCheck ? true : false}
-          extraScrollHeight={ppCheck ? windowHeight * 0.1 : 0}
-          // style={{  }}
-          contentContainerStyle={{ flex: ppCheck ? 0 : 1 }}
+          enableOnAndroid={ppCheck && android ? true : false}
+          extraScrollHeight={ppCheck && android ? windowHeight * 0.2 : 0}
+          // style={{ flex: 1 }}
+          contentContainerStyle={ppCheck && android ? null : { flex: 1 }}
           keyboardShouldPersistTaps={"handled"}
           showsVerticalScrollIndicator={false}
         >

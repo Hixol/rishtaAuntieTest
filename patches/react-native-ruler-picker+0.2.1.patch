@@ -1,13 +1,132 @@
 diff --git a/node_modules/react-native-ruler-picker/src/components/RulerPicker.tsx b/node_modules/react-native-ruler-picker/src/components/RulerPicker.tsx
-index 2dd82da..39457c8 100644
+index 2dd82da..c6e0a7a 100644
 --- a/node_modules/react-native-ruler-picker/src/components/RulerPicker.tsx
 +++ b/node_modules/react-native-ruler-picker/src/components/RulerPicker.tsx
-@@ -163,7 +163,7 @@ export const RulerPicker = ({
- 
+@@ -9,19 +9,14 @@ import {
+   TextInput,
+ } from 'react-native';
+ import type { NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+-
+ import { AnimatedFlashList, ListRenderItem } from '@shopify/flash-list';
+-
+ import { RulerPickerItem, RulerPickerItemProps } from './RulerPickerItem';
+ import { calculateCurrentValue } from '../utils/';
+-
+ export type RulerPickerTextProps = Pick<
+   TextStyle,
+   'color' | 'fontSize' | 'fontWeight'
+ >;
+-
+ const { width: windowWidth } = Dimensions.get('window');
+-
+ export type RulerPickerProps = {
+   /**
+    * Width of the ruler picker
+@@ -115,7 +110,6 @@ export type RulerPickerProps = {
+    */
+   onValueChangeEnd?: (value: string) => void;
+ } & Partial<RulerPickerItemProps>;
+-
+ export const RulerPicker = ({
+   width = windowWidth,
+   height = 500,
+@@ -141,14 +135,12 @@ export const RulerPicker = ({
+ }: RulerPickerProps) => {
+   const itemAmount = (max - min) / step;
+   const arrData = Array.from({ length: itemAmount + 1 }, (_, index) => index);
+-
+   const stepTextRef = useRef<TextInput>(null);
+   const prevValue = useRef<string>(initialValue.toFixed(fractionDigits));
+   const prevMomentumValue = useRef<string>(
+     initialValue.toFixed(fractionDigits)
+   );
+   const scrollPosition = useRef(new Animated.Value(0)).current;
+-
+   const valueCallback: Animated.ValueListenerCallback = useCallback(
+     ({ value }) => {
+       const newStep = calculateCurrentValue(
+@@ -160,25 +152,20 @@ export const RulerPicker = ({
+         step,
+         fractionDigits
+       );
+-
        if (prevValue.current !== newStep) {
          onValueChange?.(newStep);
 -        stepTextRef.current?.setNativeProps({ text: newStep });
 +        stepTextRef.current?.setNativeProps({ text: JSON.stringify((newStep / 30.48).toFixed(1)) });
        }
- 
+-
        prevValue.current = newStep;
+     },
+     [fractionDigits, gapBetweenSteps, stepWidth, max, min, onValueChange, step]
+   );
+-
+   useEffect(() => {
+     scrollPosition.addListener(valueCallback);
+-
+     return () => {
+       scrollPosition.removeAllListeners();
+     };
+   }, [scrollPosition, valueCallback]);
+-
+   const scrollHandler = Animated.event(
+     [
+       {
+@@ -193,12 +180,10 @@ export const RulerPicker = ({
+       useNativeDriver: true,
+     }
+   );
+-
+   const renderSeparator = useCallback(
+     () => <View style={{ width: width * 0.5 - stepWidth * 0.5 }} />,
+     [stepWidth, width]
+   );
+-
+   const renderItem: ListRenderItem<unknown> = useCallback(
+     ({ index }) => {
+       return (
+@@ -224,7 +209,6 @@ export const RulerPicker = ({
+       shortStepHeight,
+     ]
+   );
+-
+   const onMomentumScrollEnd = useCallback(
+     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+       const newStep = calculateCurrentValue(
+@@ -236,11 +220,9 @@ export const RulerPicker = ({
+         step,
+         fractionDigits
+       );
+-
+       if (prevMomentumValue.current !== newStep) {
+         onValueChangeEnd?.(newStep);
+       }
+-
+       prevMomentumValue.current = newStep;
+     },
+     [
+@@ -253,7 +235,6 @@ export const RulerPicker = ({
+       step,
+     ]
+   );
+-
+   return (
+     <View style={{ width, height }}>
+       <AnimatedFlashList
+@@ -311,7 +292,7 @@ export const RulerPicker = ({
+         >
+           <TextInput
+             ref={stepTextRef}
+-            defaultValue={initialValue.toFixed(fractionDigits)}
++            defaultValue={JSON.stringify(initialValue.toFixed(1))}
+             style={[
+               {
+                 lineHeight:
+@@ -349,7 +330,6 @@ export const RulerPicker = ({
+     </View>
+   );
+ };
+-
+ const styles = StyleSheet.create({
+   indicator: {
+     position: 'absolute',

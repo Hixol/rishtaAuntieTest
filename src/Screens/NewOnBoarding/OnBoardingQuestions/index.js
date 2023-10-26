@@ -1462,9 +1462,9 @@ const OnBoardingQuestions = ({ navigation }) => {
       >
         <KeyboardAwareScrollView
           enableOnAndroid={ppCheck && android ? true : false}
-          extraScrollHeight={ppCheck && android ? windowHeight*0.1 : 0}
+          extraScrollHeight={ppCheck && android ? windowHeight * 0.2 : 0}
           // style={{ flex: 1 }}
-          contentContainerStyle={ppCheck && android ? null : {flex:1}}
+          contentContainerStyle={ppCheck && android ? null : { flex: 1 }}
           keyboardShouldPersistTaps={"handled"}
           showsVerticalScrollIndicator={false}
         >
@@ -1702,7 +1702,7 @@ const OnBoardingQuestions = ({ navigation }) => {
                         });
                       }}
                       placeholder={`Remember first impressions count 😉`}
-                      placeholderTextColor={"#9CA3AF"}
+                      placeholderTextColor={"red"}
                     />
                   </View>
                 </View>
@@ -1711,11 +1711,13 @@ const OnBoardingQuestions = ({ navigation }) => {
               <View
                 style={{
                   width: "100%",
-                  alignItems: "center",
                   marginTop: "15%",
                   backgroundColor: "#F9FAFB",
-                  paddingVertical: "5%",
+                  // paddingVertical: "5%",
                   borderRadius: 10,
+                  height: windowHeight * 0.2,
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 <RulerPicker
