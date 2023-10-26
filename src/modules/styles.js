@@ -27,7 +27,6 @@ export default StyleSheet.create({
     fontSize: 24,
     color: colors.blackBlue,
     fontFamily: 'Inter-Regular',
-    marginLeft: 5,
     alignSelf: 'center',
   },
   textcontainer: {

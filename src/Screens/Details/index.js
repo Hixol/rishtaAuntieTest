@@ -11,7 +11,7 @@ import {
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useSelector, useDispatch } from "react-redux";
-import { userDevice, windowHeight } from "../../utility/size";
+import { userDevice, windowHeight, windowWidth } from "../../utility/size";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useHelper } from "../../hooks/useHelper";
 
@@ -496,12 +496,15 @@ const DetailScreen = (props) => {
                 </View>
               ) : null}
               <View style={styles.matchingSection}>
-                <Text style={styles.lookingForTxt}>Vibes</Text>
+                <Text style={[styles.lookingForTxt]}>Vibes</Text>
                 <View
                   style={{
                     flexDirection: "row",
                     flexWrap: "wrap",
-                    marginTop: "1%",
+                    marginTop: 12,
+                    alignItems: "flex-start",
+                    justifyContent: "flex-start",
+                    alignSelf: "flex-start",
                   }}
                 >
                   {userDetails != null &&
@@ -541,18 +544,35 @@ const DetailScreen = (props) => {
                 </View>
               </View> */}
             </View>
-
-            <CardCarousel user={userDetails} />
+            <View style={{ width: windowWidth * 0.92, alignSelf: "center" }}>
+              <CardCarousel user={userDetails} />
+            </View>
             <View style={{ height: 20, width: "100%" }}></View>
 
             <View>
               {userDetails?.ProfilePrompts?.map((item) => {
                 return (
                   <View style={styles.lookingForSec}>
-                    <Text style={styles.poolQuestTxt}>
+                    <Text
+                      style={[
+                        styles.poolQuestTxt,
+                        {
+                          marginTop: 15,
+                        },
+                      ]}
+                    >
                       {item?.Question?.title}
                     </Text>
-                    <Text style={styles.poolAnsTxt}>{item?.answer}</Text>
+                    <Text
+                      style={[
+                        styles.poolAnsTxt,
+                        {
+                          marginTop: 14,
+                        },
+                      ]}
+                    >
+                      {item?.answer}
+                    </Text>
                     <View style={styles.cardFooter}>
                       <TouchableOpacity
                         onPress={() => {
@@ -564,7 +584,7 @@ const DetailScreen = (props) => {
                             setModalType("mic");
                           }
                         }}
-                        style={[styles.actionIcon, styles.actionbtnShadow]}
+                        style={[styles.actionIcon]}
                       >
                         <FastImage
                           source={require("../../assets/iconimages/mic.png")}
@@ -581,7 +601,7 @@ const DetailScreen = (props) => {
                             setModalType("comment");
                           }
                         }}
-                        style={[styles.actionIcon, styles.actionbtnShadow]}
+                        style={[styles.actionIcon]}
                       >
                         <FastImage
                           source={require("../../assets/iconimages/chat.png")}
@@ -596,7 +616,7 @@ const DetailScreen = (props) => {
                             likeProfilePrompt(item);
                           }
                         }}
-                        style={[styles.actionIcon, styles.actionbtnShadow]}
+                        style={[styles.actionIcon]}
                       >
                         <FastImage
                           source={require("../../assets/iconimages/heart.png")}

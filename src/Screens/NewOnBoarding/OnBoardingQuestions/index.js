@@ -149,9 +149,9 @@ const OnBoardingQuestions = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    console.log('HELLO VIBES',vibes);
+    console.log("HELLO VIBES", vibes);
     if (vibes && vibes.length > 0) {
-      console.log("HELLO VIVES",vibes);
+      console.log("HELLO VIVES", vibes);
       setSelectedVibe(vibes);
     }
     if (promptsPool && promptsPool.length > 0) {

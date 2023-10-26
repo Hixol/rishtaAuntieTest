@@ -1,4 +1,4 @@
-import React, {useState, useEffect, memo} from 'react';
+import React, { useState, useEffect, memo } from "react";
 import {
   Text,
   View,
@@ -6,24 +6,24 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-} from 'react-native';
+} from "react-native";
 import {
   ios,
   OS_VER,
   windowHeight,
   windowWidth,
   screenHeight,
-} from '../utility/size';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+} from "../utility/size";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import FastImage from 'react-native-fast-image';
-import CountryFlag from 'react-native-country-flag';
-import ActionButton from './buttons/FloatingActionButton';
-import Video from 'react-native-video';
-import convertToProxyURL from 'react-native-video-cache';
-import colors from '../utility/colors';
-import Icons from '../utility/icons';
-import Countries from '../assets/countryLists/Countries';
+import FastImage from "react-native-fast-image";
+import CountryFlag from "react-native-country-flag";
+import ActionButton from "./buttons/FloatingActionButton";
+import Video from "react-native-video";
+import convertToProxyURL from "react-native-video-cache";
+import colors from "../utility/colors";
+import Icons from "../utility/icons";
+import Countries from "../assets/countryLists/Countries";
 
 const DiscoverImg = ({
   item,
@@ -68,7 +68,7 @@ const DiscoverImg = ({
     pausedButton === false ? setIsPausedButton(false) : setIsPausedButton(true);
   }, [userId, isFocused, check]);
 
-  Countries.filter(country => {
+  Countries.filter((country) => {
     if (country.en == item.country) {
       flagsLiving = country.code;
     }
@@ -83,173 +83,222 @@ const DiscoverImg = ({
     adjustHeight = windowHeight - tabBarHeight - 24;
   }
   return (
-    <Pressable
-      onPress={() => pausePlay()}
-      style={[
-        styles.container,
-        {
-          height:
-            (windowHeight <= 640 || windowHeight < 790) &&
-            !(windowHeight <= 770)
-              ? adjustHeight
-              : (windowHeight < 755 || windowHeight < 880) &&
-                !(
-                  windowHeight <= 770 ||
-                  (windowHeight > 830 && windowHeight < 845)
-                ) &&
-                OS_VER == 13
-              ? adjustHeight
-              : ios
-              ? windowHeight - tabBarHeight - insets.top
-              : windowHeight - tabBarHeight,
-        },
-      ]}>
-      {video?.length > 0 ? (
-        <View>
-          {isPreloading && (
-            <ActivityIndicator
-              animating
-              color={colors.primaryPink}
-              size="large"
-              style={{
-                flex: 1,
-                position: 'absolute',
-                top: '50%',
-                left: '45%',
-                zIndex: 1,
-              }}
-            />
-          )}
-          <Video
-            onLoadStart={() => setIsPreloading(true)}
-            resizeMode={'cover'}
-            repeat={true}
-            onReadyForDisplay={() => setIsPreloading(false)}
-            playInBackground={false}
-            playWhenInactive={false}
-            paused={isPaused}
-            style={{
-              width: '100%',
-              height: '100%',
-            }}
-            source={{
-              uri: convertToProxyURL(video[0]?.url),
-            }}
-          />
-          {isPausedButton ? (
-            <View
-              style={{
-                width: '100%',
-                height: '100%',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'absolute',
-                opacity: 0.4,
-              }}>
-              <FastImage
-                resizeMode="contain"
-                source={require('../assets/iconimages/playIcon.png')}
+    <>
+      <Pressable
+        onPress={() => pausePlay()}
+        style={[
+          styles.container,
+          {
+            height:
+              (windowHeight <= 640 || windowHeight < 790) &&
+              !(windowHeight <= 770)
+                ? adjustHeight
+                : (windowHeight < 755 || windowHeight < 880) &&
+                  !(
+                    windowHeight <= 770 ||
+                    (windowHeight > 830 && windowHeight < 845)
+                  ) &&
+                  OS_VER == 13
+                ? adjustHeight
+                : ios
+                ? windowHeight - tabBarHeight - insets.top
+                : windowHeight - tabBarHeight,
+          },
+        ]}
+      >
+        {video?.length > 0 ? (
+          <>
+            <View>
+              {isPreloading && (
+                <ActivityIndicator
+                  animating
+                  color={colors.primaryPink}
+                  size="large"
+                  style={{
+                    flex: 1,
+                    position: "absolute",
+                    top: "50%",
+                    left: "45%",
+                    zIndex: 1,
+                  }}
+                />
+              )}
+              <View
                 style={{
-                  width: 60,
-                  height: 60,
+                  width: "100%",
+                  height: "100%",
+                  zIndex: 1,
+                  position: "absolute",
+                }}
+              >
+                <FastImage
+                  resizeMode="cover"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    overflow: "hidden",
+                  }}
+                  source={require("../assets/iconimages/opacity-01.png")}
+                />
+              </View>
+              <Video
+                onLoadStart={() => setIsPreloading(true)}
+                resizeMode={"cover"}
+                repeat={true}
+                onReadyForDisplay={() => setIsPreloading(false)}
+                playInBackground={false}
+                playWhenInactive={false}
+                paused={isPaused}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                }}
+                source={{
+                  uri: convertToProxyURL(video[0]?.url),
                 }}
               />
+              {isPausedButton ? (
+                <View
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    position: "absolute",
+                    opacity: 0.4,
+                  }}
+                >
+                  <FastImage
+                    resizeMode="contain"
+                    source={require("../assets/iconimages/playIcon.png")}
+                    style={{
+                      width: 60,
+                      height: 60,
+                    }}
+                  />
+                </View>
+              ) : null}
             </View>
-          ) : null}
-        </View>
-      ) : (
-        <View>
-          {isPreloadingImage && (
-            <ActivityIndicator
-              animating
-              color={colors.primaryPink}
-              size="large"
+          </>
+        ) : (
+          <View>
+            {isPreloadingImage && (
+              <ActivityIndicator
+                animating
+                color={colors.primaryPink}
+                size="large"
+                style={{
+                  flex: 1,
+                  position: "absolute",
+                  top: "50%",
+                  left: "45%",
+                  zIndex: 1,
+                }}
+              />
+            )}
+            <View
               style={{
-                flex: 1,
-                position: 'absolute',
-                top: '50%',
-                left: '45%',
+                width: "100%",
+                height: "100%",
                 zIndex: 1,
+                position: "absolute",
               }}
-            />
-          )}
-          <FastImage
-            onLoadStart={() => setIsPreloadingImage(true)}
-            onLoadEnd={() => setIsPreloadingImage(false)}
-            source={
-              images === undefined
-                ? 'https://images.unsplash.com/photo-1657214059264-99456d9aae24?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80'
-                : {uri: images}
-            }
-            style={{width: '100%', height: '100%', zIndex: 0}}
-          />
-        </View>
-      )}
-      <View style={styles.imgHeader}>
-        <TouchableOpacity style={styles.iconImg} onPress={searchPress}>
-          <FastImage
-            style={{height: '72%', width: '60%'}}
-            source={require('../assets/iconimages/heart-discover.png')}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onDotsPress}>
-          <Icons.MaterialCommunityIcons
-            name="dots-vertical"
-            size={34}
-            color={'white'}
-          />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.imgFooter}>
-        <View style={{alignItems: 'flex-end', bottom: 120}}>
-          <ActionButton
-            onPressCommentInteraction={onPressCommentInteraction}
-            onPressVoiceInteraction={onPressVoiceInteraction}
-            onPressLikeInteraction={onPressLikeInteraction}
-            imageRound={images}
-          />
-        </View>
-
-        <Text numberOfLines={1} style={styles.nameTxt}>
-          {item.firstName}
-        </Text>
-        <Text
-          style={[
-            styles.analystTxt,
-            {
-              width: '80%',
-            },
-          ]}>
-          {item.Profile.age}, {item.Profile.occupation}
-        </Text>
-
-        {/* <Text style={styles.statementTxt}>{item.Profile.tagline}</Text> */}
-        <View style={styles.lastFooter}>
-          <View style={styles.flagContainer}>
-            <CountryFlag isoCode={`${flagsLiving}`} size={18} />
-            <View style={{marginLeft: '20%'}}>
-              <CountryFlag isoCode={`${flagsOrigin}`} size={18} />
+            >
+              <FastImage
+                resizeMode="cover"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  overflow: "hidden",
+                }}
+                source={require("../assets/iconimages/opacity-01.png")}
+              />
             </View>
+            <FastImage
+              onLoadStart={() => setIsPreloadingImage(true)}
+              onLoadEnd={() => setIsPreloadingImage(false)}
+              source={
+                images === undefined
+                  ? "https://images.unsplash.com/photo-1657214059264-99456d9aae24?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
+                  : { uri: images }
+              }
+              style={{ width: "100%", height: "100%", zIndex: 0 }}
+            />
           </View>
+        )}
+        <View style={styles.imgHeader}>
+          <TouchableOpacity style={styles.iconImg} onPress={searchPress}>
+            <FastImage
+              style={{ height: "72%", width: "60%" }}
+              source={require("../assets/iconimages/heart-discover.png")}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onDotsPress}>
+            <Icons.MaterialCommunityIcons
+              name="dots-vertical"
+              size={34}
+              color={"white"}
+            />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.imgFooter}>
           <View
             style={{
-              width: '10%',
-              height: 20,
-            }}></View>
-          <View style={styles.location}>
-            <Icons.Ionicons
-              name="location-outline"
-              size={20}
-              color={colors.textGrey1}
+              alignItems: "flex-end",
+              bottom: 120,
+            }}
+          >
+            <ActionButton
+              onPressCommentInteraction={onPressCommentInteraction}
+              onPressVoiceInteraction={onPressVoiceInteraction}
+              onPressLikeInteraction={onPressLikeInteraction}
+              imageRound={images}
             />
-            <Text style={[styles.name, {width: '60%'}]}>
-              {item.city}, {item.country}
-            </Text>
+          </View>
+
+          <Text numberOfLines={1} style={styles.nameTxt}>
+            {item.firstName}
+          </Text>
+          <Text
+            style={[
+              styles.analystTxt,
+              {
+                width: "80%",
+              },
+            ]}
+          >
+            {item.Profile.age}, {item.Profile.occupation}
+          </Text>
+
+          {/* <Text style={styles.statementTxt}>{item.Profile.tagline}</Text> */}
+          <View style={styles.lastFooter}>
+            <View style={styles.flagContainer}>
+              <CountryFlag isoCode={`${flagsLiving}`} size={18} />
+              <View style={{ marginLeft: "20%" }}>
+                <CountryFlag isoCode={`${flagsOrigin}`} size={18} />
+              </View>
+            </View>
+            <View
+              style={{
+                width: "10%",
+                height: 20,
+              }}
+            ></View>
+            <View style={styles.location}>
+              <Icons.Ionicons
+                name="location-outline"
+                size={20}
+                color={colors.textGrey1}
+              />
+              <Text style={[styles.name, { width: "60%" }]}>
+                {item.city}, {item.country}
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
-    </Pressable>
+      </Pressable>
+    </>
   );
 };
 
@@ -258,84 +307,85 @@ const styles = StyleSheet.create({
     width: windowWidth,
   },
   imgHeader: {
-    position: 'absolute',
-    padding: '1%',
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    position: "absolute",
+    padding: "1%",
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
   },
   imgFooter: {
-    position: 'absolute',
     bottom: 0,
-    width: '100%',
-    paddingBottom: '3%',
-    paddingHorizontal: '3%',
+    width: "100%",
+    paddingBottom: "3%",
+    paddingHorizontal: "3%",
+    zIndex: 3,
+    position: "absolute",
   },
   flagContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '15%',
+    flexDirection: "row",
+    alignItems: "center",
+    width: "15%",
   },
   name: {
-    marginLeft: '2%',
+    marginLeft: "2%",
     fontSize: 16,
-    color: 'white',
-    width: '80%',
-    fontFamily: 'Inter-Medium',
+    color: "white",
+    width: "80%",
+    fontFamily: "Inter-Medium",
   },
   location: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '80%',
+    flexDirection: "row",
+    alignItems: "center",
+    width: "80%",
   },
   lastFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: '2%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: "2%",
   },
   circularImg: {
-    position: 'absolute',
-    backgroundColor: 'white',
+    position: "absolute",
+    backgroundColor: "white",
     height: windowHeight * 0.075,
     width: windowHeight * 0.075,
     borderRadius: 50,
     borderWidth: 1.3,
-    borderColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: "white",
+    alignItems: "center",
+    justifyContent: "center",
   },
   textWrap: {
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
     height: windowHeight * 0.12,
     width: windowHeight * 0.12,
     borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   nameTxt: {
-    color: 'white',
+    color: "white",
     fontSize: 24,
     // alignSelf: 'center',
-    fontFamily: 'Inter-SemiBold',
+    fontFamily: "Inter-SemiBold",
   },
   statementTxt: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontFamily: 'Inter-Regular',
+    fontFamily: "Inter-Regular",
   },
   analystTxt: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontFamily: 'Inter-Medium',
-    width: '17%',
+    fontFamily: "Inter-Medium",
+    width: "17%",
   },
   iconImg: {
     height: windowHeight * 0.055,
     width: windowHeight * 0.055,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

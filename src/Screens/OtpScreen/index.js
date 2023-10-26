@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     fontFamily: "Inter-Bold",
     fontSize: 30,
     alignSelf: "center",
-    color: colors.primaryBlue,
+    color: colors.blackBlue,
   },
   verifyContainer: {
     marginTop: "10%",
