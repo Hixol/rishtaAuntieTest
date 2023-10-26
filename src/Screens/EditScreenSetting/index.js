@@ -1113,242 +1113,201 @@ const EditScreenSetting = (props) => {
 
   return (
     <>
-      <KeyboardAwareScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ flex: 1 }}
-        keyboardShouldPersistTaps={"handled"}
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: colors.white, padding: 20 }}
       >
-        <SafeAreaView
-          style={{ flex: 1, backgroundColor: colors.white, padding: 20 }}
+        <KeyboardAwareScrollView
+          enableOnAndroid={true}
+          extraScrollHeight={50}
+          // style={{ flex: 1 }}
+          // contentContainerStyle={{ flex: 1 }}
+          keyboardShouldPersistTaps={"handled"}
         >
-          <TouchableOpacity
-            onPress={() => props.navigation.goBack()}
-            style={{
-              width: "12%",
-              paddingVertical: "2%",
-              height: 35,
-            }}
-          >
-            <FastImage
-              resizeMode="contain"
-              style={{ width: 20, height: 20 }}
-              source={require("../../assets/iconimages/settingback.png")}
-            />
-          </TouchableOpacity>
           <View
             style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
+              height: windowHeight,
+              // backgroundColor: "green",
               width: "100%",
-              // paddingVertical: "2%",
-              // marginVertical: "2%",
             }}
           >
-            <Text
+            <TouchableOpacity
+              onPress={() => props.navigation.goBack()}
               style={{
-                fontSize: 14,
-                fontFamily: "Inter-Medium",
-                marginVertical: "5%",
-                color: "#23262F",
+                width: "12%",
+                paddingVertical: "2%",
+                height: 35,
               }}
             >
-              {type}
-            </Text>
-            {type === "Prompts Pool" && ppCheck ? (
-              <View
+              <FastImage
+                resizeMode="contain"
+                style={{ width: 20, height: 20 }}
+                source={require("../../assets/iconimages/settingback.png")}
+              />
+            </TouchableOpacity>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                // paddingVertical: "2%",
+                // marginVertical: "2%",
+              }}
+            >
+              <Text
                 style={{
-                  paddingHorizontal: "4%",
-                  paddingVertical: "2%",
-                  borderRadius: 7,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundColor: "#23262F",
+                  fontSize: 14,
+                  fontFamily: "Inter-Medium",
+                  marginVertical: "5%",
+                  color: "#23262F",
                 }}
               >
-                <Text
+                {type}
+              </Text>
+              {type === "Prompts Pool" && ppCheck ? (
+                <View
                   style={{
-                    fontSize: 14,
-                    color: colors.white,
-                    fontFamily: "Inter-Regular",
+                    paddingHorizontal: "4%",
+                    paddingVertical: "2%",
+                    borderRadius: 7,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "#23262F",
                   }}
                 >
-                  {ppIndex + 1 + " / " + selectedPP?.length}
-                </Text>
-              </View>
-            ) : null}
-          </View>
-          <Text
-            style={[
-              styles.ask,
-              {
-                width: "100%",
-              },
-            ]}
-          >
-            {ask}
-          </Text>
-          {preferenceEdit ? null : edit && type !== "Main Vibes" ? null : (
-            <Text style={[styles.line]}>{line}</Text>
-          )}
-          <View
-            style={{
-              width: "100%",
-              height:
-                edit && type === "Main Vibes" && android
-                  ? "67%"
-                  : edit && type === "Main Vibes" && ios
-                  ? "70%"
-                  : ios
-                  ? "78%"
-                  : "73%",
-            }}
-          >
-            {type === "Distance" ? (
-              <View>
-                <DropDownView
-                  // preferenceName={'Distance'}
-                  onValueChange={Distance}
-                  SelectDropdown
-                  defaultValue={
-                    userData?.UserPreference?.distance === "unlimited" ||
-                    userData?.UserPreference?.distance === "nationwide"
-                      ? userData?.UserPreference?.distance
-                      : distance
-                  }
-                  DropDownPlaceholder={userData?.UserPreference?.distance}
-                  data={distanceList}
-                  // textWithIconView
-                  // preferenceIcon={require('../../assets/iconimages/location.png')}
-                />
-                {distance === "range" ? (
-                  <SliderView
-                    sp={{
-                      alignItems: "center",
-                      justifyContent: "center",
-                      marginTop: "5%",
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      color: colors.white,
+                      fontFamily: "Inter-Regular",
                     }}
-                    multiSliderValue={[
+                  >
+                    {ppIndex + 1 + " / " + selectedPP?.length}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
+            <Text
+              style={[
+                styles.ask,
+                {
+                  width: "100%",
+                },
+              ]}
+            >
+              {ask}
+            </Text>
+            {preferenceEdit ? null : edit && type !== "Main Vibes" ? null : (
+              <Text style={[styles.line]}>{line}</Text>
+            )}
+            <View
+              style={{
+                width: "100%",
+                height:
+                  edit && type === "Main Vibes" && android
+                    ? "67%"
+                    : edit && type === "Main Vibes" && ios
+                    ? "70%"
+                    : ios
+                    ? "78%"
+                    : "73%",
+              }}
+            >
+              {type === "Distance" ? (
+                <View>
+                  <DropDownView
+                    // preferenceName={'Distance'}
+                    onValueChange={Distance}
+                    SelectDropdown
+                    defaultValue={
                       userData?.UserPreference?.distance === "unlimited" ||
                       userData?.UserPreference?.distance === "nationwide"
-                        ? 0
-                        : parseInt(userData?.UserPreference?.distance),
-                    ]}
-                    multiSliderValuesChange={DistanceSlider}
-                    min={0}
-                    max={2000}
-                    preferenceName={"Distance"}
-                    customLabel="mi"
-                    enableLabel={true}
-                    step={1}
+                        ? userData?.UserPreference?.distance
+                        : distance
+                    }
+                    DropDownPlaceholder={userData?.UserPreference?.distance}
+                    data={distanceList}
+                    // textWithIconView
+                    // preferenceIcon={require('../../assets/iconimages/location.png')}
                   />
-                ) : null}
-              </View>
-            ) : type === "Height" && preferenceEdit ? (
-              <SliderView
-                sp={{ marginVertical: "1%" }}
-                searchPreferences
-                textWithoutIconView
-                multiSliderValue={
-                  heightSlider[0] !== null && heightSlider[1] !== null
-                    ? [heightSlider[0], heightSlider[1]]
-                    : [4, 10]
-                }
-                isMarkersSeparated={true}
-                showSteps={true}
-                multiSliderValuesChange={HeightSliderValuesChange}
-                min={4}
-                max={10}
-                preferenceName={"Height"}
-                customLabel="feet"
-                enableLabel={true}
-                step={0.1}
-                bg={{ color: "red" }}
-              />
-            ) : type === "Age" && preferenceEdit ? (
-              <SliderView
-                sp={{ marginVertical: "1%" }}
-                searchPreferences
-                textWithoutIconView
-                multiSliderValue={
-                  age[0] !== null && age[1] !== null
-                    ? [parseInt(age[0]), parseInt(age[1])]
-                    : [18, 68]
-                }
-                isMarkersSeparated={true}
-                showSteps={true}
-                multiSliderValuesChange={AgeSliderValuesChange}
-                min={18}
-                max={68}
-                preferenceName={"Age"}
-                customLabel="age"
-                enableLabel={true}
-                step={0.1}
-                bg={{ color: "red" }}
-              />
-            ) : type === "Tagline" ? (
-              <View style={styles.textinputView}>
-                <TextInput
-                  style={styles.textinput}
-                  value={tagline}
-                  onChangeText={(text) => {
-                    setTagline(text);
-                  }}
-                  placeholder={`Remember first impressions count 😉`}
-                  placeholderTextColor={"#9CA3AF"}
+                  {distance === "range" ? (
+                    <SliderView
+                      sp={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginTop: "5%",
+                      }}
+                      multiSliderValue={[
+                        userData?.UserPreference?.distance === "unlimited" ||
+                        userData?.UserPreference?.distance === "nationwide"
+                          ? 0
+                          : parseInt(userData?.UserPreference?.distance),
+                      ]}
+                      multiSliderValuesChange={DistanceSlider}
+                      min={0}
+                      max={2000}
+                      preferenceName={"Distance"}
+                      customLabel="mi"
+                      enableLabel={true}
+                      step={1}
+                    />
+                  ) : null}
+                </View>
+              ) : type === "Height" && preferenceEdit ? (
+                <SliderView
+                  sp={{ marginVertical: "1%" }}
+                  searchPreferences
+                  textWithoutIconView
+                  multiSliderValue={
+                    heightSlider[0] !== null && heightSlider[1] !== null
+                      ? [heightSlider[0], heightSlider[1]]
+                      : [4, 10]
+                  }
+                  isMarkersSeparated={true}
+                  showSteps={true}
+                  multiSliderValuesChange={HeightSliderValuesChange}
+                  min={4}
+                  max={10}
+                  preferenceName={"Height"}
+                  customLabel="feet"
+                  enableLabel={true}
+                  step={0.1}
+                  bg={{ color: "red" }}
                 />
-              </View>
-            ) : type === "Main Vibes" ? (
-              <View style={styles.scrollContainer}>
-                <ScrollView
-                  onContentSizeChange={onContentSizeChange}
-                  onLayout={onLayout}
-                  onScroll={Animated.event(
-                    [
-                      {
-                        nativeEvent: { contentOffset: { y: scrollIndicator } },
-                      },
-                    ],
-                    { useNativeDriver: false }
-                  )}
-                  scrollEventThrottle={16}
-                  showsVerticalScrollIndicator={false}
-                  style={{ marginVertical: "2%" }}
-                >
-                  {allVibes.length > 0 &&
-                    allVibes.map((item, index) => {
-                      let findIndex = selctedVibe?.map((newItem) => {
-                        return allVibes.findIndex(
-                          (item) => item.name === newItem
-                        );
-                      });
-                      return (
-                        <NewOnBoardingDesign
-                          mainOnPress={() => selectVibe(item, index)}
-                          findIndex={findIndex}
-                          index={index}
-                          item={item}
-                          multiSelect={true}
-                          nameorid={"name"}
-                          search={false}
-                        />
-                      );
-                    })}
-                </ScrollView>
-                <View style={styles.customScrollBarBackground}>
-                  <Animated.View
-                    style={[
-                      styles.customScrollBar,
-                      {
-                        height: scrollIndicatorSize,
-                        transform: [{ translateY: scrollIndicatorPosition }],
-                      },
-                    ]}
+              ) : type === "Age" && preferenceEdit ? (
+                <SliderView
+                  sp={{ marginVertical: "1%" }}
+                  searchPreferences
+                  textWithoutIconView
+                  multiSliderValue={
+                    age[0] !== null && age[1] !== null
+                      ? [parseInt(age[0]), parseInt(age[1])]
+                      : [18, 68]
+                  }
+                  isMarkersSeparated={true}
+                  showSteps={true}
+                  multiSliderValuesChange={AgeSliderValuesChange}
+                  min={18}
+                  max={68}
+                  preferenceName={"Age"}
+                  customLabel="age"
+                  enableLabel={true}
+                  step={0.1}
+                  bg={{ color: "red" }}
+                />
+              ) : type === "Tagline" ? (
+                <View style={styles.textinputView}>
+                  <TextInput
+                    style={styles.textinput}
+                    value={tagline}
+                    onChangeText={(text) => {
+                      setTagline(text);
+                    }}
+                    placeholder={`Remember first impressions count 😉`}
+                    placeholderTextColor={"#9CA3AF"}
                   />
                 </View>
-              </View>
-            ) : type === "Prompts Pool" ? (
-              !ppCheck ? (
+              ) : type === "Main Vibes" ? (
                 <View style={styles.scrollContainer}>
                   <ScrollView
                     onContentSizeChange={onContentSizeChange}
@@ -1365,24 +1324,23 @@ const EditScreenSetting = (props) => {
                     )}
                     scrollEventThrottle={16}
                     showsVerticalScrollIndicator={false}
-                    style={{ marginVertical: "5%" }}
+                    style={{ marginVertical: "2%" }}
                   >
-                    {allPrompts.length > 0 &&
-                      allPrompts.map((item, index) => {
-                        let findIndex = selectedPP.map((newItem) => {
-                          return allPrompts.findIndex(
-                            (item) => item?.id === newItem?.id
+                    {allVibes.length > 0 &&
+                      allVibes.map((item, index) => {
+                        let findIndex = selctedVibe?.map((newItem) => {
+                          return allVibes.findIndex(
+                            (item) => item.name === newItem
                           );
                         });
-
                         return (
                           <NewOnBoardingDesign
-                            mainOnPress={() => selectPP(item, index)}
+                            mainOnPress={() => selectVibe(item, index)}
                             findIndex={findIndex}
                             index={index}
                             item={item}
                             multiSelect={true}
-                            nameorid={"title"}
+                            nameorid={"name"}
                             search={false}
                           />
                         );
@@ -1400,85 +1358,9 @@ const EditScreenSetting = (props) => {
                     />
                   </View>
                 </View>
-              ) : (
-                <View>
-                  <View
-                    style={{
-                      width: "100%",
-                      borderWidth: 0.5,
-                      borderColor: "#EBECEF",
-                      marginVertical: "10%",
-                    }}
-                  ></View>
-                  <Text style={styles.ask}>
-                    {"“" + selectedPP[ppIndex]?.title + "”"}
-                  </Text>
-                  <View
-                    style={{
-                      marginVertical: Platform.OS === "ios" ? "5%" : "3%",
-                      width: "95%",
-                      backgroundColor: "#F9FAFB",
-                      paddingVertical: "5%",
-                      alignSelf: "center",
-                    }}
-                  >
-                    <TextInput
-                      numberOfLines={1}
-                      style={styles.textinput}
-                      value={
-                        selectedPP[ppIndex]?.answer
-                          ? selectedPP[ppIndex]?.answer
-                          : ""
-                      }
-                      onChangeText={(text) => {
-                        let copy = [...selectedPP];
-                        copy[ppIndex] = {
-                          ...copy[ppIndex],
-                          answer: text,
-                        };
-                        setSelectedPP(copy);
-                      }}
-                      placeholder={`Remember first impressions count 😉`}
-                      placeholderTextColor={"#9CA3AF"}
-                    />
-                  </View>
-                </View>
-              )
-            ) : type === "Height" ? (
-              <View style={styles.rulerView}>
-                <RulerPicker
-                  value={selectedHeight / 30.48}
-                  onValueChangeEnd={(number) =>
-                    selectHeight((number / 30.48).toFixed(1))
-                  }
-                  min={92}
-                  max={252}
-                  unit="ft"
-                  height={100}
-                  width={windowWidth * 0.8}
-                  indicatorHeight={40}
-                  indicatorColor={colors.primaryPink}
-                  shortStepHeight={20}
-                  longStepHeight={50}
-                  valueTextStyle={{ color: colors.primaryPink, fontSize: 20 }}
-                  unitTextStyle={{ color: colors.primaryPink, fontSize: 17 }}
-                  step={2.55}
-                  initialValue={92 / 30.48}
-                />
-              </View>
-            ) : type === "Family Origin" ? (
-              <>
-                <OnBoardingSearch
-                  onChangeText={(text) => search(text, "familyOrigin")}
-                  array={allProfileValues?.familyOrigin}
-                  // currentIndex={currentIndex}
-                  searchValue={searchValue}
-                  search={true}
-                  edit
-                  type={type}
-                />
-                <View style={styles.scrollContainer}>
-                  <View style={{ height: windowHeight * 0.6 }}>
+              ) : type === "Prompts Pool" ? (
+                !ppCheck ? (
+                  <View style={styles.scrollContainer}>
                     <ScrollView
                       onContentSizeChange={onContentSizeChange}
                       onLayout={onLayout}
@@ -1494,611 +1376,772 @@ const EditScreenSetting = (props) => {
                       )}
                       scrollEventThrottle={16}
                       showsVerticalScrollIndicator={false}
-                      style={{
-                        marginVertical: "5%",
-                      }}
+                      style={{ marginVertical: "5%" }}
                     >
-                      {filtered?.length > 0
-                        ? filtered.map((item, index) => {
-                            let findIndex = selectedFO.map((newItem) => {
-                              return filtered.findIndex(
-                                (item) => item?.name === newItem?.name
-                              );
-                            });
-                            return (
-                              <NewOnBoardingDesign
-                                mainOnPress={() => selectFO(item, index)}
-                                findIndex={findIndex}
-                                index={index}
-                                item={item}
-                                multiSelect={true}
-                                nameorid={"name"}
-                                search={true}
-                                radio={true}
-                              />
+                      {allPrompts.length > 0 &&
+                        allPrompts.map((item, index) => {
+                          let findIndex = selectedPP.map((newItem) => {
+                            return allPrompts.findIndex(
+                              (item) => item?.id === newItem?.id
                             );
-                          })
-                        : allProfileValues?.familyOrigin.length > 0 &&
-                          allProfileValues?.familyOrigin.map((item, index) => {
-                            let findIndex = selectedFO.map((newItem) => {
-                              return allProfileValues?.familyOrigin.findIndex(
-                                (item) => item?.name === newItem?.name
-                              );
-                            });
+                          });
 
-                            return (
-                              <NewOnBoardingDesign
-                                mainOnPress={() => selectFO(item, index)}
-                                findIndex={findIndex}
-                                index={index}
-                                item={item}
-                                multiSelect={true}
-                                nameorid={"name"}
-                                search={true}
-                                radio={true}
-                              />
-                            );
-                          })}
+                          return (
+                            <NewOnBoardingDesign
+                              mainOnPress={() => selectPP(item, index)}
+                              findIndex={findIndex}
+                              index={index}
+                              item={item}
+                              multiSelect={true}
+                              nameorid={"title"}
+                              search={false}
+                            />
+                          );
+                        })}
                     </ScrollView>
-                  </View>
-                  <View
-                    style={[
-                      styles.customScrollBarBackground,
-                      { height: "80%", marginTop: "5%" },
-                    ]}
-                  >
-                    <Animated.View
-                      style={[
-                        styles.customScrollBar,
-                        {
-                          height: scrollIndicatorSize,
-                          transform: [{ translateY: scrollIndicatorPosition }],
-                        },
-                      ]}
-                    />
-                  </View>
-                </View>
-              </>
-            ) : type === "Community" ? (
-              <>
-                <OnBoardingSearch
-                  onChangeText={(text) => search(text, "community")}
-                  array={userData?.Profile?.community}
-                  // currentIndex={userData?.Profile?.community}
-                  searchValue={searchValue}
-                  search={true}
-                  edit
-                  type={type}
-                />
-                <View style={styles.scrollContainer}>
-                  <View style={{ height: windowHeight * 0.6 }}>
-                    <ScrollView
-                      onContentSizeChange={onContentSizeChange}
-                      onLayout={onLayout}
-                      onScroll={Animated.event(
-                        [
+                    <View style={styles.customScrollBarBackground}>
+                      <Animated.View
+                        style={[
+                          styles.customScrollBar,
                           {
-                            nativeEvent: {
-                              contentOffset: { y: scrollIndicator },
-                            },
+                            height: scrollIndicatorSize,
+                            transform: [
+                              { translateY: scrollIndicatorPosition },
+                            ],
                           },
-                        ],
-                        { useNativeDriver: false }
-                      )}
-                      scrollEventThrottle={16}
-                      showsVerticalScrollIndicator={false}
+                        ]}
+                      />
+                    </View>
+                  </View>
+                ) : (
+                  <View>
+                    <View
                       style={{
-                        marginVertical: "5%",
+                        width: "100%",
+                        borderWidth: 0.5,
+                        borderColor: "#EBECEF",
+                        marginVertical: "10%",
+                      }}
+                    ></View>
+                    <Text style={styles.ask}>
+                      {"“" + selectedPP[ppIndex]?.title + "”"}
+                    </Text>
+                    <View
+                      style={{
+                        marginVertical: Platform.OS === "ios" ? "5%" : "3%",
+                        width: "95%",
+                        backgroundColor: "#F9FAFB",
+                        paddingVertical: "5%",
+                        alignSelf: "center",
                       }}
                     >
-                      {filtered?.length > 0
-                        ? filtered.map((item, index) => {
-                            let findIndex = selectedCommunity.map((newItem) => {
-                              return filtered.findIndex(
-                                (item) => item?.name === newItem?.name
-                              );
-                            });
-                            return (
-                              <NewOnBoardingDesign
-                                mainOnPress={() => selectCommunity(item, index)}
-                                findIndex={findIndex}
-                                index={index}
-                                item={item}
-                                multiSelect={true}
-                                nameorid={"name"}
-                                search={true}
-                                radio={true}
-                              />
-                            );
-                          })
-                        : allProfileValues?.community?.length > 0 &&
-                          allProfileValues?.community.map((item, index) => {
-                            let findIndex = selectedCommunity.map((newItem) => {
-                              return allProfileValues?.community.findIndex(
-                                (item) => item?.name === newItem?.name
-                              );
-                            });
-                            return (
-                              <NewOnBoardingDesign
-                                mainOnPress={() => selectCommunity(item, index)}
-                                findIndex={findIndex}
-                                index={index}
-                                item={item}
-                                multiSelect={true}
-                                nameorid={"name"}
-                                search={true}
-                                radio={true}
-                              />
-                            );
-                          })}
-                    </ScrollView>
+                      <TextInput
+                        numberOfLines={1}
+                        style={styles.textinput}
+                        value={
+                          selectedPP[ppIndex]?.answer
+                            ? selectedPP[ppIndex]?.answer
+                            : ""
+                        }
+                        onChangeText={(text) => {
+                          let copy = [...selectedPP];
+                          copy[ppIndex] = {
+                            ...copy[ppIndex],
+                            answer: text,
+                          };
+                          setSelectedPP(copy);
+                        }}
+                        placeholder={`Remember first impressions count 😉`}
+                        placeholderTextColor={"#9CA3AF"}
+                      />
+                    </View>
                   </View>
-                  <View
-                    style={[
-                      styles.customScrollBarBackground,
-                      { height: "80%", marginTop: "5%" },
-                    ]}
-                  >
-                    <Animated.View
-                      style={[
-                        styles.customScrollBar,
-                        {
-                          height: scrollIndicatorSize,
-                          transform: [{ translateY: scrollIndicatorPosition }],
-                        },
-                      ]}
-                    />
-                  </View>
-                </View>
-              </>
-            ) : type === "Languages" ? (
-              <>
-                <OnBoardingSearch
-                  onChangeText={(text) => search(text, "language")}
-                  array={userData?.UserLanguages}
-                  // currentIndex={currentIndex}
-                  searchValue={searchValue}
-                  search={true}
-                  edit
-                  type={type}
-                />
-                <View style={styles.scrollContainer}>
-                  <View style={{ height: windowHeight * 0.6 }}>
-                    <ScrollView
-                      onContentSizeChange={onContentSizeChange}
-                      onLayout={onLayout}
-                      onScroll={Animated.event(
-                        [
-                          {
-                            nativeEvent: {
-                              contentOffset: { y: scrollIndicator },
-                            },
-                          },
-                        ],
-                        { useNativeDriver: false }
-                      )}
-                      scrollEventThrottle={16}
-                      showsVerticalScrollIndicator={false}
-                      style={{
-                        marginVertical: "5%",
-                      }}
-                    >
-                      {filtered?.length > 0
-                        ? filtered.map((item, index) => {
-                            let findIndex = selectedLanguage.map((newItem) => {
-                              return filtered.findIndex(
-                                (item) => item?.name === newItem?.name
-                              );
-                            });
-                            return (
-                              <NewOnBoardingDesign
-                                mainOnPress={() => selectLanguage(item, index)}
-                                findIndex={findIndex}
-                                index={index}
-                                item={item}
-                                multiSelect={true}
-                                nameorid={"name"}
-                                search={true}
-                                radio={true}
-                              />
-                            );
-                          })
-                        : allProfileValues?.language.length > 0 &&
-                          allProfileValues?.language.map((item, index) => {
-                            let findIndex = selectedLanguage.map((newItem) => {
-                              return allProfileValues?.language.findIndex(
-                                (item) => item?.name === newItem?.name
-                              );
-                            });
-                            return (
-                              <NewOnBoardingDesign
-                                mainOnPress={() => selectLanguage(item, index)}
-                                findIndex={findIndex}
-                                index={index}
-                                item={item}
-                                multiSelect={true}
-                                nameorid={"name"}
-                                search={true}
-                                radio={true}
-                              />
-                            );
-                          })}
-                    </ScrollView>
-                  </View>
-                  <View
-                    style={[
-                      styles.customScrollBarBackground,
-                      { height: "80%", marginTop: "5%" },
-                    ]}
-                  >
-                    <Animated.View
-                      style={[
-                        styles.customScrollBar,
-                        {
-                          height: scrollIndicatorSize,
-                          transform: [{ translateY: scrollIndicatorPosition }],
-                        },
-                      ]}
-                    />
-                  </View>
-                </View>
-              </>
-            ) : type === "Denomination" && edit ? (
-              <View style={styles.scrollContainer}>
-                <View style={{ height: windowHeight * 0.6 }}>
-                  <ScrollView
-                    onContentSizeChange={onContentSizeChange}
-                    onLayout={onLayout}
-                    onScroll={Animated.event(
-                      [
-                        {
-                          nativeEvent: {
-                            contentOffset: { y: scrollIndicator },
-                          },
-                        },
-                      ],
-                      { useNativeDriver: false }
-                    )}
-                    scrollEventThrottle={16}
-                    showsVerticalScrollIndicator={false}
-                    style={{
-                      marginVertical: "5%",
-                    }}
-                  >
-                    {allProfileValues?.denomination[userData?.Profile?.religion]
-                      .length > 0 &&
-                      allProfileValues?.denomination[
-                        userData?.Profile?.religion
-                      ].map((item, index) => {
-                        let findIndex = allProfileValues?.denomination[
-                          userData?.Profile?.religion
-                        ]?.findIndex((item, index) => {
-                          return item?.name === selectedDenomination?.name;
-                        });
-                        return (
-                          <NewOnBoardingDesign
-                            mainOnPress={() => selectDenomination(item, index)}
-                            findIndex={findIndex}
-                            index={index}
-                            item={item}
-                            multiSelect={false}
-                            nameorid={"name"}
-                            search={false}
-                            radio={true}
-                          />
-                        );
-                      })}
-                  </ScrollView>
-                </View>
-                <View
-                  style={[
-                    styles.customScrollBarBackground,
-                    { height: "80%", marginTop: "5%" },
-                  ]}
-                >
-                  <Animated.View
-                    style={[
-                      styles.customScrollBar,
-                      {
-                        height: scrollIndicatorSize,
-                        transform: [{ translateY: scrollIndicatorPosition }],
-                      },
-                    ]}
+                )
+              ) : type === "Height" ? (
+                <View style={styles.rulerView}>
+                  <RulerPicker
+                    value={selectedHeight / 30.48}
+                    onValueChangeEnd={(number) =>
+                      selectHeight((number / 30.48).toFixed(1))
+                    }
+                    min={92}
+                    max={252}
+                    unit="ft"
+                    height={100}
+                    width={windowWidth * 0.8}
+                    indicatorHeight={40}
+                    indicatorColor={colors.primaryPink}
+                    shortStepHeight={20}
+                    longStepHeight={50}
+                    valueTextStyle={{ color: colors.primaryPink, fontSize: 20 }}
+                    unitTextStyle={{ color: colors.primaryPink, fontSize: 17 }}
+                    step={2.55}
+                    initialValue={92 / 30.48}
                   />
                 </View>
-              </View>
-            ) : type === "Denomination" && preferenceEdit ? (
-              <View style={styles.scrollContainer}>
-                <View style={{ maxHeight: windowHeight * 0.6 }}>
-                  <ScrollView
-                    onContentSizeChange={onContentSizeChange}
-                    onLayout={onLayout}
-                    onScroll={Animated.event(
-                      [
-                        {
-                          nativeEvent: {
-                            contentOffset: { y: scrollIndicator },
-                          },
-                        },
-                      ],
-                      { useNativeDriver: false }
-                    )}
-                    scrollEventThrottle={16}
-                    showsVerticalScrollIndicator={false}
-                    style={{
-                      marginVertical: "5%",
-                    }}
-                  >
-                    {allProfileValues?.denomination[
-                      userData?.UserPreference?.religion
-                    ].length > 0 ? (
-                      allProfileValues?.denomination[
-                        userData?.UserPreference?.religion
-                      ].map((item, index) => {
-                        let findIndex = allProfileValues?.denomination[
-                          userData?.UserPreference?.religion
-                        ]?.findIndex((item, index) => {
-                          return item?.name === selectedDenomination?.name;
-                        });
-                        return (
-                          <NewOnBoardingDesign
-                            mainOnPress={() => selectDenomination(item, index)}
-                            findIndex={findIndex}
-                            index={index}
-                            item={item}
-                            multiSelect={false}
-                            nameorid={"name"}
-                            search={false}
-                            radio={true}
-                          />
-                        );
-                      })
-                    ) : (
-                      <View
+              ) : type === "Family Origin" ? (
+                <>
+                  <OnBoardingSearch
+                    onChangeText={(text) => search(text, "familyOrigin")}
+                    array={allProfileValues?.familyOrigin}
+                    // currentIndex={currentIndex}
+                    searchValue={searchValue}
+                    search={true}
+                    edit
+                    type={type}
+                  />
+                  <View style={styles.scrollContainer}>
+                    <View style={{ height: windowHeight * 0.6 }}>
+                      <ScrollView
+                        onContentSizeChange={onContentSizeChange}
+                        onLayout={onLayout}
+                        onScroll={Animated.event(
+                          [
+                            {
+                              nativeEvent: {
+                                contentOffset: { y: scrollIndicator },
+                              },
+                            },
+                          ],
+                          { useNativeDriver: false }
+                        )}
+                        scrollEventThrottle={16}
+                        showsVerticalScrollIndicator={false}
                         style={{
-                          width: "100%",
-                          height: 200,
-                          alignItems: "center",
-                          justifyContent: "center",
+                          marginVertical: "5%",
                         }}
                       >
-                        <Text
+                        {filtered?.length > 0
+                          ? filtered.map((item, index) => {
+                              let findIndex = selectedFO.map((newItem) => {
+                                return filtered.findIndex(
+                                  (item) => item?.name === newItem?.name
+                                );
+                              });
+                              return (
+                                <NewOnBoardingDesign
+                                  mainOnPress={() => selectFO(item, index)}
+                                  findIndex={findIndex}
+                                  index={index}
+                                  item={item}
+                                  multiSelect={true}
+                                  nameorid={"name"}
+                                  search={true}
+                                  radio={true}
+                                />
+                              );
+                            })
+                          : allProfileValues?.familyOrigin.length > 0 &&
+                            allProfileValues?.familyOrigin.map(
+                              (item, index) => {
+                                let findIndex = selectedFO.map((newItem) => {
+                                  return allProfileValues?.familyOrigin.findIndex(
+                                    (item) => item?.name === newItem?.name
+                                  );
+                                });
+
+                                return (
+                                  <NewOnBoardingDesign
+                                    mainOnPress={() => selectFO(item, index)}
+                                    findIndex={findIndex}
+                                    index={index}
+                                    item={item}
+                                    multiSelect={true}
+                                    nameorid={"name"}
+                                    search={true}
+                                    radio={true}
+                                  />
+                                );
+                              }
+                            )}
+                      </ScrollView>
+                    </View>
+                    <View
+                      style={[
+                        styles.customScrollBarBackground,
+                        { height: "80%", marginTop: "5%" },
+                      ]}
+                    >
+                      <Animated.View
+                        style={[
+                          styles.customScrollBar,
+                          {
+                            height: scrollIndicatorSize,
+                            transform: [
+                              { translateY: scrollIndicatorPosition },
+                            ],
+                          },
+                        ]}
+                      />
+                    </View>
+                  </View>
+                </>
+              ) : type === "Community" ? (
+                <>
+                  <OnBoardingSearch
+                    onChangeText={(text) => search(text, "community")}
+                    array={userData?.Profile?.community}
+                    // currentIndex={userData?.Profile?.community}
+                    searchValue={searchValue}
+                    search={true}
+                    edit
+                    type={type}
+                  />
+                  <View style={styles.scrollContainer}>
+                    <View style={{ height: windowHeight * 0.6 }}>
+                      <ScrollView
+                        onContentSizeChange={onContentSizeChange}
+                        onLayout={onLayout}
+                        onScroll={Animated.event(
+                          [
+                            {
+                              nativeEvent: {
+                                contentOffset: { y: scrollIndicator },
+                              },
+                            },
+                          ],
+                          { useNativeDriver: false }
+                        )}
+                        scrollEventThrottle={16}
+                        showsVerticalScrollIndicator={false}
+                        style={{
+                          marginVertical: "5%",
+                        }}
+                      >
+                        {filtered?.length > 0
+                          ? filtered.map((item, index) => {
+                              let findIndex = selectedCommunity.map(
+                                (newItem) => {
+                                  return filtered.findIndex(
+                                    (item) => item?.name === newItem?.name
+                                  );
+                                }
+                              );
+                              return (
+                                <NewOnBoardingDesign
+                                  mainOnPress={() =>
+                                    selectCommunity(item, index)
+                                  }
+                                  findIndex={findIndex}
+                                  index={index}
+                                  item={item}
+                                  multiSelect={true}
+                                  nameorid={"name"}
+                                  search={true}
+                                  radio={true}
+                                />
+                              );
+                            })
+                          : allProfileValues?.community?.length > 0 &&
+                            allProfileValues?.community.map((item, index) => {
+                              let findIndex = selectedCommunity.map(
+                                (newItem) => {
+                                  return allProfileValues?.community.findIndex(
+                                    (item) => item?.name === newItem?.name
+                                  );
+                                }
+                              );
+                              return (
+                                <NewOnBoardingDesign
+                                  mainOnPress={() =>
+                                    selectCommunity(item, index)
+                                  }
+                                  findIndex={findIndex}
+                                  index={index}
+                                  item={item}
+                                  multiSelect={true}
+                                  nameorid={"name"}
+                                  search={true}
+                                  radio={true}
+                                />
+                              );
+                            })}
+                      </ScrollView>
+                    </View>
+                    <View
+                      style={[
+                        styles.customScrollBarBackground,
+                        { height: "80%", marginTop: "5%" },
+                      ]}
+                    >
+                      <Animated.View
+                        style={[
+                          styles.customScrollBar,
+                          {
+                            height: scrollIndicatorSize,
+                            transform: [
+                              { translateY: scrollIndicatorPosition },
+                            ],
+                          },
+                        ]}
+                      />
+                    </View>
+                  </View>
+                </>
+              ) : type === "Languages" ? (
+                <>
+                  <OnBoardingSearch
+                    onChangeText={(text) => search(text, "language")}
+                    array={userData?.UserLanguages}
+                    // currentIndex={currentIndex}
+                    searchValue={searchValue}
+                    search={true}
+                    edit
+                    type={type}
+                  />
+                  <View style={styles.scrollContainer}>
+                    <View style={{ height: windowHeight * 0.6 }}>
+                      <ScrollView
+                        onContentSizeChange={onContentSizeChange}
+                        onLayout={onLayout}
+                        onScroll={Animated.event(
+                          [
+                            {
+                              nativeEvent: {
+                                contentOffset: { y: scrollIndicator },
+                              },
+                            },
+                          ],
+                          { useNativeDriver: false }
+                        )}
+                        scrollEventThrottle={16}
+                        showsVerticalScrollIndicator={false}
+                        style={{
+                          marginVertical: "5%",
+                        }}
+                      >
+                        {filtered?.length > 0
+                          ? filtered.map((item, index) => {
+                              let findIndex = selectedLanguage.map(
+                                (newItem) => {
+                                  return filtered.findIndex(
+                                    (item) => item?.name === newItem?.name
+                                  );
+                                }
+                              );
+                              return (
+                                <NewOnBoardingDesign
+                                  mainOnPress={() =>
+                                    selectLanguage(item, index)
+                                  }
+                                  findIndex={findIndex}
+                                  index={index}
+                                  item={item}
+                                  multiSelect={true}
+                                  nameorid={"name"}
+                                  search={true}
+                                  radio={true}
+                                />
+                              );
+                            })
+                          : allProfileValues?.language.length > 0 &&
+                            allProfileValues?.language.map((item, index) => {
+                              let findIndex = selectedLanguage.map(
+                                (newItem) => {
+                                  return allProfileValues?.language.findIndex(
+                                    (item) => item?.name === newItem?.name
+                                  );
+                                }
+                              );
+                              return (
+                                <NewOnBoardingDesign
+                                  mainOnPress={() =>
+                                    selectLanguage(item, index)
+                                  }
+                                  findIndex={findIndex}
+                                  index={index}
+                                  item={item}
+                                  multiSelect={true}
+                                  nameorid={"name"}
+                                  search={true}
+                                  radio={true}
+                                />
+                              );
+                            })}
+                      </ScrollView>
+                    </View>
+                    <View
+                      style={[
+                        styles.customScrollBarBackground,
+                        { height: "80%", marginTop: "5%" },
+                      ]}
+                    >
+                      <Animated.View
+                        style={[
+                          styles.customScrollBar,
+                          {
+                            height: scrollIndicatorSize,
+                            transform: [
+                              { translateY: scrollIndicatorPosition },
+                            ],
+                          },
+                        ]}
+                      />
+                    </View>
+                  </View>
+                </>
+              ) : type === "Denomination" && edit ? (
+                <View style={styles.scrollContainer}>
+                  <View style={{ height: windowHeight * 0.6 }}>
+                    <ScrollView
+                      onContentSizeChange={onContentSizeChange}
+                      onLayout={onLayout}
+                      onScroll={Animated.event(
+                        [
+                          {
+                            nativeEvent: {
+                              contentOffset: { y: scrollIndicator },
+                            },
+                          },
+                        ],
+                        { useNativeDriver: false }
+                      )}
+                      scrollEventThrottle={16}
+                      showsVerticalScrollIndicator={false}
+                      style={{
+                        marginVertical: "5%",
+                      }}
+                    >
+                      {allProfileValues?.denomination[
+                        userData?.Profile?.religion
+                      ].length > 0 &&
+                        allProfileValues?.denomination[
+                          userData?.Profile?.religion
+                        ].map((item, index) => {
+                          let findIndex = allProfileValues?.denomination[
+                            userData?.Profile?.religion
+                          ]?.findIndex((item, index) => {
+                            return item?.name === selectedDenomination?.name;
+                          });
+                          return (
+                            <NewOnBoardingDesign
+                              mainOnPress={() =>
+                                selectDenomination(item, index)
+                              }
+                              findIndex={findIndex}
+                              index={index}
+                              item={item}
+                              multiSelect={false}
+                              nameorid={"name"}
+                              search={false}
+                              radio={true}
+                            />
+                          );
+                        })}
+                    </ScrollView>
+                  </View>
+                  <View
+                    style={[
+                      styles.customScrollBarBackground,
+                      { height: "80%", marginTop: "5%" },
+                    ]}
+                  >
+                    <Animated.View
+                      style={[
+                        styles.customScrollBar,
+                        {
+                          height: scrollIndicatorSize,
+                          transform: [{ translateY: scrollIndicatorPosition }],
+                        },
+                      ]}
+                    />
+                  </View>
+                </View>
+              ) : type === "Denomination" && preferenceEdit ? (
+                <View style={styles.scrollContainer}>
+                  <View style={{ maxHeight: windowHeight * 0.6 }}>
+                    <ScrollView
+                      onContentSizeChange={onContentSizeChange}
+                      onLayout={onLayout}
+                      onScroll={Animated.event(
+                        [
+                          {
+                            nativeEvent: {
+                              contentOffset: { y: scrollIndicator },
+                            },
+                          },
+                        ],
+                        { useNativeDriver: false }
+                      )}
+                      scrollEventThrottle={16}
+                      showsVerticalScrollIndicator={false}
+                      style={{
+                        marginVertical: "5%",
+                      }}
+                    >
+                      {allProfileValues?.denomination[
+                        userData?.UserPreference?.religion
+                      ].length > 0 ? (
+                        allProfileValues?.denomination[
+                          userData?.UserPreference?.religion
+                        ].map((item, index) => {
+                          let findIndex = allProfileValues?.denomination[
+                            userData?.UserPreference?.religion
+                          ]?.findIndex((item, index) => {
+                            return item?.name === selectedDenomination?.name;
+                          });
+                          return (
+                            <NewOnBoardingDesign
+                              mainOnPress={() =>
+                                selectDenomination(item, index)
+                              }
+                              findIndex={findIndex}
+                              index={index}
+                              item={item}
+                              multiSelect={false}
+                              nameorid={"name"}
+                              search={false}
+                              radio={true}
+                            />
+                          );
+                        })
+                      ) : (
+                        <View
                           style={{
-                            fontSize: 20,
-                            fontFamily: "Inter-Medium",
-                            color: colors.black,
+                            width: "100%",
+                            height: 200,
+                            alignItems: "center",
+                            justifyContent: "center",
                           }}
                         >
-                          Please Select Religion First
-                        </Text>
-                      </View>
-                    )}
-                  </ScrollView>
-                </View>
-                <View
-                  style={[
-                    styles.customScrollBarBackground,
-                    { height: "80%", marginTop: "5%" },
-                  ]}
-                >
-                  <Animated.View
+                          <Text
+                            style={{
+                              fontSize: 20,
+                              fontFamily: "Inter-Medium",
+                              color: colors.black,
+                            }}
+                          >
+                            Please Select Religion First
+                          </Text>
+                        </View>
+                      )}
+                    </ScrollView>
+                  </View>
+                  <View
                     style={[
-                      styles.customScrollBar,
-                      {
-                        height: scrollIndicatorSize,
-                        transform: [{ translateY: scrollIndicatorPosition }],
-                      },
+                      styles.customScrollBarBackground,
+                      { height: "80%", marginTop: "5%" },
                     ]}
+                  >
+                    <Animated.View
+                      style={[
+                        styles.customScrollBar,
+                        {
+                          height: scrollIndicatorSize,
+                          transform: [{ translateY: scrollIndicatorPosition }],
+                        },
+                      ]}
+                    />
+                  </View>
+                </View>
+              ) : type === "Education Level" ? (
+                elArray.length > 0 &&
+                elArray.map((item, index) => {
+                  let findIndex = elArray.findIndex((item, index) => {
+                    return item?.name === selectedEL?.name;
+                  });
+                  return (
+                    <NewOnBoardingDesign
+                      mainOnPress={() => selectEL(item, index)}
+                      findIndex={findIndex}
+                      index={index}
+                      item={item}
+                      multiSelect={false}
+                      nameorid={"name"}
+                      search={false}
+                      radio={true}
+                    />
+                  );
+                })
+              ) : type === "Occupation" ? (
+                <View style={styles.textinputView}>
+                  <TextInput
+                    style={styles.textinput}
+                    value={occupation}
+                    onChangeText={(text) => {
+                      setOccupation(text);
+                    }}
+                    placeholder={`Occupation Ex. Designer etc`}
+                    placeholderTextColor={"#9CA3AF"}
                   />
                 </View>
-              </View>
-            ) : type === "Education Level" ? (
-              elArray.length > 0 &&
-              elArray.map((item, index) => {
-                let findIndex = elArray.findIndex((item, index) => {
-                  return item?.name === selectedEL?.name;
-                });
-                return (
-                  <NewOnBoardingDesign
-                    mainOnPress={() => selectEL(item, index)}
-                    findIndex={findIndex}
-                    index={index}
-                    item={item}
-                    multiSelect={false}
-                    nameorid={"name"}
-                    search={false}
-                    radio={true}
+              ) : type === "Practicing Level" ? (
+                <View style={{ marginVertical: "5%" }}>
+                  <RenderSlider
+                    min={1}
+                    max={4}
+                    stepsAs={plArray}
+                    showSteps={true}
+                    showStepLabels={true}
+                    // prefName='Please make a selection:'
+                    customLabel={"practicingLevel"}
                   />
-                );
-              })
-            ) : type === "Occupation" ? (
-              <View style={styles.textinputView}>
-                <TextInput
-                  style={styles.textinput}
-                  value={occupation}
-                  onChangeText={(text) => {
-                    setOccupation(text);
-                  }}
-                  placeholder={`Occupation Ex. Designer etc`}
-                  placeholderTextColor={"#9CA3AF"}
-                />
-              </View>
-            ) : type === "Practicing Level" ? (
-              <View style={{ marginVertical: "5%" }}>
-                <RenderSlider
-                  min={1}
-                  max={4}
-                  stepsAs={plArray}
-                  showSteps={true}
-                  showStepLabels={true}
-                  // prefName='Please make a selection:'
-                  customLabel={"practicingLevel"}
-                />
-              </View>
-            ) : type === "Pray" ? (
-              prayArray.map((item, index) => {
-                let findIndex = prayArray.findIndex((item, index) => {
-                  return item?.name === selectedPray?.name;
-                });
-                return (
-                  <NewOnBoardingDesign
-                    mainOnPress={() => selectPray(item, index)}
-                    findIndex={findIndex}
-                    index={index}
-                    item={item}
-                    multiSelect={false}
-                    nameorid={"name"}
-                    search={false}
-                    radio={true}
-                  />
-                );
-              })
-            ) : type === "Drink" ? (
-              drinkArray.map((item, index) => {
-                let findIndex = drinkArray.findIndex((item, index) => {
-                  return item?.name === selectedDrink?.name;
-                });
-                return (
-                  <NewOnBoardingDesign
-                    mainOnPress={() => selectDrink(item, index)}
-                    findIndex={findIndex}
-                    index={index}
-                    item={item}
-                    multiSelect={false}
-                    nameorid={"name"}
-                    search={false}
-                    icon={true}
-                  />
-                );
-              })
-            ) : type === "Smoke" ? (
-              smokeArray.map((item, index) => {
-                let findIndex = selectedSmoke.map((newItem) => {
-                  return smokeArray.findIndex(
-                    (item) => item?.name === newItem?.name
+                </View>
+              ) : type === "Pray" ? (
+                prayArray.map((item, index) => {
+                  let findIndex = prayArray.findIndex((item, index) => {
+                    return item?.name === selectedPray?.name;
+                  });
+                  return (
+                    <NewOnBoardingDesign
+                      mainOnPress={() => selectPray(item, index)}
+                      findIndex={findIndex}
+                      index={index}
+                      item={item}
+                      multiSelect={false}
+                      nameorid={"name"}
+                      search={false}
+                      radio={true}
+                    />
                   );
-                });
-                return (
-                  <NewOnBoardingDesign
-                    mainOnPress={() => selectSmoke(item, index)}
-                    findIndex={findIndex}
-                    index={index}
-                    item={item}
-                    multiSelect={true}
-                    nameorid={"name"}
-                    search={false}
-                    icon={true}
-                  />
-                );
-              })
-            ) : type === "Diet" ? (
-              dietArray.map((item, index) => {
-                let findIndex = selectedDiet.map((newItem) => {
-                  return dietArray.findIndex(
-                    (item) => item?.name === newItem?.name
+                })
+              ) : type === "Drink" ? (
+                drinkArray.map((item, index) => {
+                  let findIndex = drinkArray.findIndex((item, index) => {
+                    return item?.name === selectedDrink?.name;
+                  });
+                  return (
+                    <NewOnBoardingDesign
+                      mainOnPress={() => selectDrink(item, index)}
+                      findIndex={findIndex}
+                      index={index}
+                      item={item}
+                      multiSelect={false}
+                      nameorid={"name"}
+                      search={false}
+                      icon={true}
+                    />
                   );
-                });
-                return (
-                  <NewOnBoardingDesign
-                    mainOnPress={() => selectDiet(item, index)}
-                    findIndex={findIndex}
-                    index={index}
-                    item={item}
-                    multiSelect={true}
-                    nameorid={"name"}
-                    search={false}
-                    icon={true}
+                })
+              ) : type === "Smoke" ? (
+                smokeArray.map((item, index) => {
+                  let findIndex = selectedSmoke.map((newItem) => {
+                    return smokeArray.findIndex(
+                      (item) => item?.name === newItem?.name
+                    );
+                  });
+                  return (
+                    <NewOnBoardingDesign
+                      mainOnPress={() => selectSmoke(item, index)}
+                      findIndex={findIndex}
+                      index={index}
+                      item={item}
+                      multiSelect={true}
+                      nameorid={"name"}
+                      search={false}
+                      icon={true}
+                    />
+                  );
+                })
+              ) : type === "Diet" ? (
+                dietArray.map((item, index) => {
+                  let findIndex = selectedDiet.map((newItem) => {
+                    return dietArray.findIndex(
+                      (item) => item?.name === newItem?.name
+                    );
+                  });
+                  return (
+                    <NewOnBoardingDesign
+                      mainOnPress={() => selectDiet(item, index)}
+                      findIndex={findIndex}
+                      index={index}
+                      item={item}
+                      multiSelect={true}
+                      nameorid={"name"}
+                      search={false}
+                      icon={true}
+                    />
+                  );
+                })
+              ) : type === "Marital History" ? (
+                mhArray.map((item, index) => {
+                  let findIndex = mhArray.findIndex((item, index) => {
+                    return item?.name === selectedMH?.name;
+                  });
+                  return (
+                    <NewOnBoardingDesign
+                      mainOnPress={() => selectMh(item, index)}
+                      findIndex={findIndex}
+                      index={index}
+                      item={item}
+                      multiSelect={false}
+                      nameorid={"name"}
+                      search={false}
+                      radio={true}
+                    />
+                  );
+                })
+              ) : type === "Marriage Timeline" ? (
+                <View style={{ marginVertical: "5%" }}>
+                  <RenderMarriageSlider
+                    min={1}
+                    max={4}
+                    stepsAs={mtArray}
+                    showSteps={true}
+                    showStepLabels={true}
+                    // prefName='Please make a selection:'
+                    customLabel={"marriageTimeline"}
                   />
-                );
-              })
-            ) : type === "Marital History" ? (
-              mhArray.map((item, index) => {
-                let findIndex = mhArray.findIndex((item, index) => {
-                  return item?.name === selectedMH?.name;
-                });
-                return (
-                  <NewOnBoardingDesign
-                    mainOnPress={() => selectMh(item, index)}
-                    findIndex={findIndex}
-                    index={index}
-                    item={item}
-                    multiSelect={false}
-                    nameorid={"name"}
-                    search={false}
-                    radio={true}
-                  />
-                );
-              })
-            ) : type === "Marriage Timeline" ? (
-              <View style={{ marginVertical: "5%" }}>
-                <RenderMarriageSlider
-                  min={1}
-                  max={4}
-                  stepsAs={mtArray}
-                  showSteps={true}
-                  showStepLabels={true}
-                  // prefName='Please make a selection:'
-                  customLabel={"marriageTimeline"}
-                />
-              </View>
-            ) : type === "Have Kids" ? (
-              ynArray.map((item, index) => {
-                let findIndex = ynArray.findIndex((item, index) => {
-                  return item?.name === selectedHK;
-                });
-                return (
-                  <NewOnBoardingDesign
-                    mainOnPress={() => selectHK(item, index)}
-                    findIndex={findIndex}
-                    index={index}
-                    item={item}
-                    multiSelect={false}
-                    nameorid={"name"}
-                    search={false}
-                    radio={true}
-                  />
-                );
-              })
-            ) : type === "Want Kids" ? (
-              ynArray.map((item, index) => {
-                let findIndex = ynArray.findIndex((item, index) => {
-                  return item?.name === selectedWK;
-                });
-                return (
-                  <NewOnBoardingDesign
-                    mainOnPress={() => selectWK(item, index)}
-                    findIndex={findIndex}
-                    index={index}
-                    item={item}
-                    multiSelect={false}
-                    nameorid={"name"}
-                    search={false}
-                    radio={true}
-                  />
-                );
-              })
-            ) : type === "Relocate" ? (
-              ynArray.map((item, index) => {
-                let findIndex = ynArray.findIndex((item, index) => {
-                  return item?.name === selectedRelocate;
-                });
-                return (
-                  <NewOnBoardingDesign
-                    mainOnPress={() => selectRelocate(item, index)}
-                    findIndex={findIndex}
-                    index={index}
-                    item={item}
-                    multiSelect={false}
-                    nameorid={"name"}
-                    search={false}
-                    radio={true}
-                  />
-                );
-              })
-            ) : null}
+                </View>
+              ) : type === "Have Kids" ? (
+                ynArray.map((item, index) => {
+                  let findIndex = ynArray.findIndex((item, index) => {
+                    return item?.name === selectedHK;
+                  });
+                  return (
+                    <NewOnBoardingDesign
+                      mainOnPress={() => selectHK(item, index)}
+                      findIndex={findIndex}
+                      index={index}
+                      item={item}
+                      multiSelect={false}
+                      nameorid={"name"}
+                      search={false}
+                      radio={true}
+                    />
+                  );
+                })
+              ) : type === "Want Kids" ? (
+                ynArray.map((item, index) => {
+                  let findIndex = ynArray.findIndex((item, index) => {
+                    return item?.name === selectedWK;
+                  });
+                  return (
+                    <NewOnBoardingDesign
+                      mainOnPress={() => selectWK(item, index)}
+                      findIndex={findIndex}
+                      index={index}
+                      item={item}
+                      multiSelect={false}
+                      nameorid={"name"}
+                      search={false}
+                      radio={true}
+                    />
+                  );
+                })
+              ) : type === "Relocate" ? (
+                ynArray.map((item, index) => {
+                  let findIndex = ynArray.findIndex((item, index) => {
+                    return item?.name === selectedRelocate;
+                  });
+                  return (
+                    <NewOnBoardingDesign
+                      mainOnPress={() => selectRelocate(item, index)}
+                      findIndex={findIndex}
+                      index={index}
+                      item={item}
+                      multiSelect={false}
+                      nameorid={"name"}
+                      search={false}
+                      radio={true}
+                    />
+                  );
+                })
+              ) : null}
+            </View>
           </View>
-        </SafeAreaView>
-      </KeyboardAwareScrollView>
+        </KeyboardAwareScrollView>
+      </SafeAreaView>
       <BottomButton
         bottomStyles={{ bottom: isKeyboardVisible && android ? 2 : 15 }}
         loading={buttonLoader}
