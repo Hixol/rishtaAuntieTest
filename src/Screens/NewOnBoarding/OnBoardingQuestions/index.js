@@ -29,7 +29,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 let filtered = [];
 
 const OnBoardingQuestions = ({ navigation }) => {
-  const { token } = useSelector((store) => store.userReducer);
+  const { token, userData } = useSelector((store) => store.userReducer);
   const {
     vibes,
     promptsPool,
@@ -1511,6 +1511,13 @@ const OnBoardingQuestions = ({ navigation }) => {
                     : null}
                 </Text>
               </View>
+            ) : !ppCheck && array[currentIndex]?.type === "Prompts Pool" ? (
+              <View style={styles.countView}>
+                <Text style={styles.countText}>
+                  {selectedPP?.length + " / "}
+                  {userData?.UserSetting?.isSubscribed ? "5" : "3"}
+                </Text>
+              </View>
             ) : null}
           </View>
 
@@ -1702,7 +1709,7 @@ const OnBoardingQuestions = ({ navigation }) => {
                         });
                       }}
                       placeholder={`Remember first impressions count 😉`}
-                      placeholderTextColor={"red"}
+                      placeholderTextColor={"#9CA3AF"}
                     />
                   </View>
                 </View>
@@ -1725,6 +1732,9 @@ const OnBoardingQuestions = ({ navigation }) => {
                   onValueChangeEnd={(number) =>
                     selectHeight((number / 30.48).toFixed(1))
                   }
+                  onValueChange={(number) => {
+                    console.log("NUMBer", number);
+                  }}
                   min={122}
                   max={245}
                   unit="ft"

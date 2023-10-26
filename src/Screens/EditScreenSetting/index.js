@@ -1110,7 +1110,7 @@ const EditScreenSetting = (props) => {
       props.navigation.goBack();
     }
   };
-
+  console.log("SELECTED PP", selectedPP?.length);
   return (
     <>
       <SafeAreaView
@@ -1184,6 +1184,13 @@ const EditScreenSetting = (props) => {
                     }}
                   >
                     {ppIndex + 1 + " / " + selectedPP?.length}
+                  </Text>
+                </View>
+              ) : !ppCheck && type === "Prompts Pool" ? (
+                <View style={styles.countView}>
+                  <Text style={[styles.countText]}>
+                    {selectedPP?.length + " / "}
+                    {userData?.UserSetting?.isSubscribed ? "5" : "3"}
                   </Text>
                 </View>
               ) : null}
@@ -2206,4 +2213,13 @@ const styles = StyleSheet.create({
     height: "95%",
     width: 6,
   },
+  countView: {
+    paddingHorizontal: "4%",
+    paddingVertical: "2%",
+    borderRadius: 7,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#23262F",
+  },
+  countText: { fontSize: 14, color: colors.white, fontFamily: "Inter-Regular" },
 });
