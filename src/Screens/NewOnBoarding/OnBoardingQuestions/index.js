@@ -1443,7 +1443,7 @@ const OnBoardingQuestions = ({ navigation }) => {
       />
     );
   };
-
+  console.log("PP CHECK NAD ANDROID", ppCheck, android);
   return loading ? (
     <View
       style={{
@@ -1461,10 +1461,10 @@ const OnBoardingQuestions = ({ navigation }) => {
         style={{ flex: 1, padding: 20, backgroundColor: colors.white }}
       >
         <KeyboardAwareScrollView
-          enableOnAndroid={ppCheck ? true : false}
-          extraScrollHeight={ppCheck ? 50 : 0}
+          enableOnAndroid={ppCheck && android ? true : false}
+          extraScrollHeight={ppCheck && android ? windowHeight*0.1 : 0}
           // style={{ flex: 1 }}
-          contentContainerStyle={{ flex: ppCheck ? 0 : 1 }}
+          contentContainerStyle={ppCheck && android ? null : {flex:1}}
           keyboardShouldPersistTaps={"handled"}
           showsVerticalScrollIndicator={false}
         >
