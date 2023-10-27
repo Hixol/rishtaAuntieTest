@@ -231,7 +231,10 @@ export default StyleSheet.create({
     bottom: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    width: '100%',
+    alignSelf:'center',
+    bottom:30,
+    // width: '100%', 
+    // zIndex:1,
   },
   btnView: {
     flexDirection: 'row',

@@ -339,25 +339,30 @@ const HomeOne = (props) => {
 
   useFocusEffect(
     useCallback(() => {
+      console.log("FOUND INDEX", foundIndex);
+
       dispatch({
         type: "SET_FOCUSED_SCREEN",
         payload: true,
       });
 
-      if (foundIndex != -1 && foundIndex < profilesList.length - 1) {
-        flatListRef.current?.scrollToIndex({
-          animated: true,
-          index: foundIndex + 1,
-        });
+      if (foundIndex !== -1 && foundIndex < profilesList.length - 1) {
+        console.log("if", foundIndex, discoverUserIndex);
+        let arr = [...profilesList];
+        let filtered = arr.filter((el) => el.id != discoverUserIndex);
+
+        setProfilesList(filtered);
+
+        // flatListRef.current?.scrollToIndex({
+        //   animated: true,
+        //   index: 1,
+        // });
       }
-      setProfilesList((prevState) =>
-        prevState.filter((el) => el.id != discoverUserIndex)
-      );
       dispatch({
         type: "SET_DISCOVER_INDEX",
         payload: null,
       });
-    }, [foundIndex])
+    }, [foundIndex !== -1])
   );
 
   useFocusEffect(
@@ -494,7 +499,6 @@ const HomeOne = (props) => {
         console.log("likeInteraction err", error);
       });
   };
-  console.log("VIBES", userData);
   return (
     <>
       {loading ? (

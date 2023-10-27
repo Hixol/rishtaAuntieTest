@@ -5,6 +5,7 @@ import AudioRecorderPlayer, {
   AVEncoderAudioQualityIOSType,
   AVEncodingOption,
   AVModeIOSOption,
+  OutputFormatAndroidType,
 } from 'react-native-audio-recorder-player';
 import appConfig from '../config/appConfig';
 import {ios} from '../utility/size';
@@ -25,6 +26,7 @@ export const useRecorder = () => {
       AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
       AudioSourceAndroid: AudioSourceAndroidType.MIC,
       AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
+      OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
       AVNumberOfChannelsKeyIOS: 2,
       AVFormatIDKeyIOS: AVEncodingOption.aac,
       AVModeIOS: AVModeIOSOption.videochat,
