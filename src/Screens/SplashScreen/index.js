@@ -13,12 +13,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import BadgeServices from "../../services/BadgeServices";
 import colors from "../../utility/colors";
 
-const SplashScreen = (props) => {
+const SplashScreen = props => {
   const dispatch = useDispatch();
   const {} = useRNIAP();
 
   const { token, status, mobileNumber, email, userData } = useSelector(
-    (store) => store.userReducer
+    store => store.userReducer
   );
 
   const {
@@ -63,6 +63,13 @@ const SplashScreen = (props) => {
             routes: [{ name: "WelcomeScreen" }],
           })
         );
+      } else if (mobileNumber != "" && status == null) {
+        props.navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: "FullNameScreen" }],
+          })
+        );
       } else if (mobileNumber != "" && status == undefined) {
         props.navigation.dispatch(
           CommonActions.reset({
@@ -101,7 +108,7 @@ const SplashScreen = (props) => {
 
   const getMyProfile = () => {
     ProfileServices.getMyProfile(token)
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
@@ -111,17 +118,17 @@ const SplashScreen = (props) => {
           callBadge();
         }
       })
-      .catch((err) => console.log("getMyProfile err", err));
+      .catch(err => console.log("getMyProfile err", err));
   };
 
   const callBadge = () => {
     BadgeServices.openApp(token)
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
         }
       })
-      .catch((err) => console.log("callBadge err", err));
+      .catch(err => console.log("callBadge err", err));
   };
 
   return (

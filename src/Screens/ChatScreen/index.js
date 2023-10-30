@@ -49,13 +49,13 @@ let limit = 50;
 let offset = 0; // offset starts like an array index and 0 will points to first page.
 let count = 0;
 
-const ChatScreen = (props) => {
+const ChatScreen = props => {
   const navProps = props.props;
   const { el } = navProps.route.params;
 
   const socket = useContext(SocketContext);
   const { Alerts, handleStatusCode } = useHelper();
-  const { token, userData } = useSelector((store) => store.userReducer);
+  const { token, userData } = useSelector(store => store.userReducer);
 
   const flatRef = useRef(null);
   const [msg, setMsg] = useState("");
@@ -117,10 +117,10 @@ const ChatScreen = (props) => {
       senderId: userData?.id,
       recipientId:
         el.type === "GROUP"
-          ? el.ChatMembers.map((el) => el.memberId)
+          ? el.ChatMembers.map(el => el.memberId)
           : el?.ChatMembers[0]?.memberId,
     };
-    socket.emit("message-read", obj, (res) => {
+    socket.emit("message-read", obj, res => {
       console.log("message-read emit: ", res);
     });
   };
@@ -134,7 +134,7 @@ const ChatScreen = (props) => {
         messageReplyId: replyMsg?.id,
         recipientId:
           el.type === "GROUP"
-            ? el.ChatMembers.map((el) => el.memberId)
+            ? el.ChatMembers.map(el => el.memberId)
             : el.ChatMembers[0]?.memberId,
         message: msgType == "TEXT_MESSAGE" ? msg : val,
         type: msgType,
@@ -147,17 +147,17 @@ const ChatScreen = (props) => {
         senderId: userData?.id,
         recipientId:
           el.type === "GROUP"
-            ? el.ChatMembers.map((el) => el.memberId)
+            ? el.ChatMembers.map(el => el.memberId)
             : el.ChatMembers[0]?.memberId,
         message: msgType == "TEXT_MESSAGE" ? msg : val,
         type: msgType,
       };
     }
 
-    socket.emit("message-send", obj, (res) => {
+    socket.emit("message-send", obj, res => {
       console.log("message-send res", obj, res);
       if (res.event == "message-send") {
-        setChatMessages((prevState) => ({
+        setChatMessages(prevState => ({
           ...prevState,
           rows: [
             ...prevState.rows,
@@ -220,17 +220,17 @@ const ChatScreen = (props) => {
 
   const getOpenendTicket = () => {
     ChatServices.getOpenendTicket(token)
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 201) {
           if (res.data.data == null) setIsTicketOpened(false);
           else setIsTicketOpened(true);
         }
       })
-      .catch((err) => Alerts("error", err?.message));
+      .catch(err => Alerts("error", err?.message));
   };
 
-  const createTicket = (description) => {
+  const createTicket = description => {
     ChatServices.createTicket(
       {
         chatHeadId: el.id,
@@ -238,20 +238,20 @@ const ChatScreen = (props) => {
       },
       token
     )
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 201) {
           setIsTicketOpened(true);
           Alerts("success", res.data.message);
         }
       })
-      .catch((err) => console.log("createTicket err:", err));
+      .catch(err => console.log("createTicket err:", err));
   };
 
   useEffect(() => {
     msgReadStatus();
 
-    userData?.UserMedia.map((media) => {
+    userData?.UserMedia.map(media => {
       if (media.sequence == 1) setUserFirstImage(media.url);
     });
 
@@ -277,7 +277,7 @@ const ChatScreen = (props) => {
   let clientTimer;
 
   useEffect(() => {
-    socket.on("message-receive", (res) => {
+    socket.on("message-receive", res => {
       console.log("message-receive on", res);
       if (Object.keys(res).length > 0) {
         let obj = {
@@ -293,7 +293,7 @@ const ChatScreen = (props) => {
         // });
 
         // append new msg
-        setChatMessages((prevState) => ({
+        setChatMessages(prevState => ({
           ...prevState,
           rows: [
             ...prevState.rows,
@@ -312,19 +312,19 @@ const ChatScreen = (props) => {
       }
     });
 
-    socket.on("is-online", (res) => {
+    socket.on("is-online", res => {
       console.log("is-online on: ", res);
       setUserStatus(res.isOnline);
     });
 
-    socket.on("go-online-or-offline", (res) => {
+    socket.on("go-online-or-offline", res => {
       if (res.isOnline) {
         getAllChatMessages(limit, offset);
       }
       setUserStatus(res.isOnline);
     });
 
-    socket.on("message-typing", (res) => {
+    socket.on("message-typing", res => {
       clearTimeout(clientTimer);
       if (Object.keys(res).length > 0) {
         setTypingStatus(true);
@@ -364,13 +364,13 @@ const ChatScreen = (props) => {
     //   }
     // });
 
-    socket.on("message-reaction", (res) => {
+    socket.on("message-reaction", res => {
       if (Object.keys(res).length > 0) {
         if (userData?.id != el?.ChatMembers[0]?.memberId) {
-          setChatMessages((prevState) => ({
+          setChatMessages(prevState => ({
             ...prevState,
             rows: [
-              prevState.rows.map((el) =>
+              prevState.rows.map(el =>
                 el.id == res.messageId
                   ? { ...el, MessageReactions: [{ emoji: res.emoji }] }
                   : el
@@ -386,7 +386,7 @@ const ChatScreen = (props) => {
     socket.emit("is-online", {
       recipientId:
         el.type === "GROUP"
-          ? el.ChatMembers.map((el) => el.memberId)
+          ? el.ChatMembers.map(el => el.memberId)
           : el?.ChatMembers[0]?.memberId,
     });
   };
@@ -399,14 +399,14 @@ const ChatScreen = (props) => {
         `limit=${limit}&offset=${offset * limit}`,
         token
       )
-        .then((res) => {
+        .then(res => {
           if (res.status >= 200 && res.status <= 299) {
             let data = res.data.data;
             count += data.rows.length;
             if (limit <= 50 && offset == 0) {
               setChatMessages(data);
             } else if (offset > 0) {
-              setChatMessages((prevState) => ({
+              setChatMessages(prevState => ({
                 ...prevState,
                 rows: [...prevState.rows, ...data?.rows],
               }));
@@ -433,7 +433,7 @@ const ChatScreen = (props) => {
             Alerts("error", "Something went wrong Please try again later");
           }
         })
-        .catch((err) => console.log("ChatMessages Err: ", err))
+        .catch(err => console.log("ChatMessages Err: ", err))
         .finally(() => setLoading(false));
     }
   };
@@ -443,7 +443,7 @@ const ChatScreen = (props) => {
       recipientId: userData?.id,
       isOnline: true,
     };
-    socket.emit("go-online-or-offline", obj, (res) => {
+    socket.emit("go-online-or-offline", obj, res => {
       console.log("go-online-or-offline emit: ", res);
     });
 
@@ -454,26 +454,26 @@ const ChatScreen = (props) => {
 
       directory
         .checkAudioPermission()
-        .then((res) => {
+        .then(res => {
           if (res) {
             directory
               .checkDirectory(config.audioPath)
-              .then((res) => {
+              .then(res => {
                 if (res) {
                 } else {
                   directory
                     .makeNewDirectory(config.audioPath)
-                    .then((res) => {
+                    .then(res => {
                       if (res) {
                       }
                     })
-                    .catch((err) => console.log("make Dir err: ", err));
+                    .catch(err => console.log("make Dir err: ", err));
                 }
               })
-              .catch((err) => console.log("check Dir err: ", err));
+              .catch(err => console.log("check Dir err: ", err));
           }
         })
-        .catch((err) => console.log("permission Err: ", err));
+        .catch(err => console.log("permission Err: ", err));
     }
 
     getAllChatMessages(limit, offset);
@@ -487,7 +487,7 @@ const ChatScreen = (props) => {
         recipientId: userData?.id,
         isOnline: false,
       };
-      socket.emit("go-online-or-offline", obj, (res) => {
+      socket.emit("go-online-or-offline", obj, res => {
         console.log("go-online-or-offline emit: ", res);
       });
     };
@@ -502,7 +502,7 @@ const ChatScreen = (props) => {
           compressImageQuality: 0.99,
           forceJpg: true,
         })
-          .then((el) => {
+          .then(el => {
             let obj = {
               name: el.path.split("/")[el.path.split("/").length - 1],
               type: el.mime,
@@ -510,7 +510,7 @@ const ChatScreen = (props) => {
             };
             chatSendMedia(obj);
           })
-          .catch((err) => console.log("gallery picker err:", err))
+          .catch(err => console.log("gallery picker err:", err))
           .finally(() => setMediaModal(state));
       }
     } catch (err) {
@@ -518,12 +518,12 @@ const ChatScreen = (props) => {
     }
   };
 
-  const handleGallery = (state) => {
+  const handleGallery = state => {
     if (ios) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.IOS.PHOTO_LIBRARY,
         "gallery",
-        (res) => {
+        res => {
           handleGalleryMedia(state, res);
         }
       );
@@ -534,7 +534,7 @@ const ChatScreen = (props) => {
         handlePermissions.checkMultiplePermissions(
           PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
           "gallery",
-          (res) => {
+          res => {
             handleGalleryMedia(state, res);
           }
         );
@@ -550,7 +550,7 @@ const ChatScreen = (props) => {
           quality: 0.4,
         };
 
-        await launchCamera(options, (res) => {
+        await launchCamera(options, res => {
           if (res.errorCode == "others") {
             Alerts(
               "error",
@@ -577,12 +577,12 @@ const ChatScreen = (props) => {
     }
   };
 
-  const handleCamera = (state) => {
+  const handleCamera = state => {
     if (ios) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.IOS.CAMERA,
         "camera",
-        (res) => {
+        res => {
           handleCameraMedia(state, res);
         }
       );
@@ -590,7 +590,7 @@ const ChatScreen = (props) => {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.ANDROID.CAMERA,
         "camera",
-        (res) => {
+        res => {
           handleCameraMedia(state, res);
         }
       );
@@ -605,7 +605,7 @@ const ChatScreen = (props) => {
           videoQuality: "high",
         };
 
-        await launchCamera(options, (res) => {
+        await launchCamera(options, res => {
           if (res.errorCode == "others") {
             Alerts(
               "error",
@@ -633,12 +633,12 @@ const ChatScreen = (props) => {
     }
   };
 
-  const handleVideo = (state) => {
+  const handleVideo = state => {
     if (ios) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.IOS.CAMERA,
         "camera",
-        (res) => {
+        res => {
           handleVideoMedia(state, res);
         }
       );
@@ -646,14 +646,14 @@ const ChatScreen = (props) => {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.ANDROID.CAMERA,
         "camera",
-        (res) => {
+        res => {
           handleVideoMedia(state, res);
         }
       );
     }
   };
 
-  const handleRemoveImage = (state) => {
+  const handleRemoveImage = state => {
     setMediaUri(null);
     setMediaModal(state);
   };
@@ -662,7 +662,7 @@ const ChatScreen = (props) => {
     setAction(true);
   };
 
-  const chatSendMedia = (obj) => {
+  const chatSendMedia = obj => {
     setLoader(true);
     let type = "";
     type = getTypeForApi(obj.type);
@@ -672,14 +672,14 @@ const ChatScreen = (props) => {
     formData.append("media", obj);
 
     ChatServices.sendChatMedia(formData, token)
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           setMediaUri(res.data.data);
           onSend(res.data.data, type);
         }
       })
-      .catch((err) => {
+      .catch(err => {
         console.log("chatSendMedia err:", err);
         setLoader(false);
       })
@@ -695,31 +695,31 @@ const ChatScreen = (props) => {
     setReportModal(false);
   };
 
-  const handleAlert = (state) => {
+  const handleAlert = state => {
     setMediaModal(state);
     setReportModal(state);
   };
 
-  const handleBlockAlert = (state) => {
+  const handleBlockAlert = state => {
     UserService.blockUser(el?.ChatMembers[0]?.memberId, token)
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           setIsBlocked(true);
           setBlockAlert(state);
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error);
       });
   };
 
-  const handleBlockedScreen = (state) => {
+  const handleBlockedScreen = state => {
     navProps.navigation.navigate("BlockedList");
     setBlockAlert(false);
   };
 
-  const onSendEmoji = (emo) => {
+  const onSendEmoji = emo => {
     let obj = {
       chatHeadId: el.id,
       senderId: selectedMsg?.senderId,
@@ -728,11 +728,11 @@ const ChatScreen = (props) => {
       emoji: `${emo}`,
     };
 
-    socket.emit("message-reaction", obj, (res) => {
-      setChatMessages((prevState) => ({
+    socket.emit("message-reaction", obj, res => {
+      setChatMessages(prevState => ({
         ...prevState,
         rows: [
-          prevState.rows.map((el) =>
+          prevState.rows.map(el =>
             el.id == selectedMsg?.id
               ? { ...el, MessageReactions: [{ emoji: res.emoji }] }
               : el
@@ -751,7 +751,7 @@ const ChatScreen = (props) => {
       chatHeadId: el.id,
       recipientId:
         el.type === "GROUP"
-          ? el.ChatMembers.map((el) => el.memberId)
+          ? el.ChatMembers.map(el => el.memberId)
           : el?.ChatMembers[0]?.memberId,
       typing: true,
     };
@@ -764,7 +764,7 @@ const ChatScreen = (props) => {
     }
   };
 
-  const onChangeText = (val) => {
+  const onChangeText = val => {
     if (val.length > 0) {
       checkTypingStatus();
     }
@@ -789,19 +789,19 @@ const ChatScreen = (props) => {
       messageId: selectedMsg?.id,
       userId: userData?.id,
     };
-    socket.emit("message-favourite", obj, (res) => {});
+    socket.emit("message-favourite", obj, res => {});
     setSelectedMsg(null);
   };
 
   const onReport = () => {
     ChatServices.chatReportMessage(selectedMsg?.id, token)
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           Alerts("success", res.data.message);
         }
       })
-      .catch((err) => console.log("chatReportMessage err:", err))
+      .catch(err => console.log("chatReportMessage err:", err))
       .finally(() => setSelectedMsg(null));
   };
 
@@ -819,7 +819,7 @@ const ChatScreen = (props) => {
     getAllChatMessages(limit, offset);
   };
 
-  const onLongPress = (item) => {
+  const onLongPress = item => {
     if (el?.type != "GROUP") setSelectedMsg(item);
   };
 
@@ -875,46 +875,59 @@ const ChatScreen = (props) => {
         <Avatar />
       </View>
 
-      <View style={styles.interactionImageContainer}>
-        {chatMessages?.firstInteraction?.resource?.type == "video" ? (
-          <View>
-            <Video
-              poster={chatMessages?.firstInteraction?.resource?.url}
+      {chatMessages?.firstInteraction?.resourceType == "PROFILE_PROMPT" ? (
+        <View style={styles.interactionPromptContainer}>
+          <Text style={[styles.promptsText, { textAlign: "left" }]}>
+            "{chatMessages?.firstInteraction?.resource.Question.title}"
+          </Text>
+          <Text
+            style={[styles.promptsText, { textAlign: "right", marginTop: 10 }]}
+          >
+            {chatMessages?.firstInteraction?.resource.answer}
+          </Text>
+        </View>
+      ) : chatMessages?.firstInteraction?.resourceType == "USER_MEDIA" ? (
+        <View style={styles.interactionImageContainer}>
+          {chatMessages?.firstInteraction?.resource?.type == "video" ? (
+            <View>
+              <Video
+                poster={chatMessages?.firstInteraction?.resource?.url}
+                source={{
+                  uri: chatMessages?.firstInteraction?.resource?.url,
+                }}
+                resizeMode="cover"
+                paused={pause}
+                repeat={true}
+                controls={false}
+                style={styles.video}
+              />
+              <Icons.FontAwesome5
+                name={pause ? "play" : "pause"}
+                size={20}
+                color={colors.primaryPink}
+                style={styles.playBtn}
+                onPress={() => setPause(!pause)}
+              />
+            </View>
+          ) : chatMessages?.firstInteraction?.resource?.type == "image" ? (
+            <FastImage
               source={{
-                uri: chatMessages?.firstInteraction?.resource?.url,
-              }}
-              resizeMode="cover"
-              paused={pause}
-              repeat={true}
-              controls={false}
-              style={styles.video}
-            />
-            <Icons.FontAwesome5
-              name={pause ? "play" : "pause"}
-              size={20}
-              color={colors.primaryPink}
-              style={styles.playBtn}
-              onPress={() => setPause(!pause)}
-            />
-          </View>
-        ) : chatMessages?.firstInteraction?.resource?.type == "image" ? (
-          <FastImage
-            source={{
-              uri: /your/.test(
-                checkInteractionStatement(
-                  userData?.id,
-                  chatMessages?.firstInteraction,
-                  el?.ChatMembers[0]?.User?.firstName
+                uri: /your/.test(
+                  checkInteractionStatement(
+                    userData?.id,
+                    chatMessages?.firstInteraction,
+                    el?.ChatMembers[0]?.User?.firstName
+                  )
                 )
-              )
-                ? userFirstImage
-                : el?.ChatMembers[0]?.User?.UserMedia[0]?.url,
-            }}
-            style={styles.interactionImage}
-            resizeMode="stretch"
-          />
-        ) : null}
-      </View>
+                  ? userFirstImage
+                  : el?.ChatMembers[0]?.User?.UserMedia[0]?.url,
+              }}
+              style={styles.interactionImage}
+              resizeMode="stretch"
+            />
+          ) : null}
+        </View>
+      ) : null}
       {/LIKE/.test(
         chatMessages?.firstInteraction?.type
       ) ? null : /VOICE_NOTE/.test(
@@ -1041,7 +1054,7 @@ const ChatScreen = (props) => {
                 ? noMatchMessages
                 : chatMessages?.rows?.sort((a, b) => b.id - a.id)
             }
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={item => item.id.toString()}
             onEndReached={loadMoreData}
             renderItem={matchReq ? renderMatchItem : renderItem}
             ListFooterComponent={
