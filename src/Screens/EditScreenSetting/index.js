@@ -217,6 +217,7 @@ const EditScreenSetting = (props) => {
           id: item?.Question?.id,
           title: item?.Question?.title,
           answer: item?.answer,
+          selected: true,
         });
       });
       setSelectedPP(arr);
@@ -505,7 +506,11 @@ const EditScreenSetting = (props) => {
       return item1?.id === item?.id;
     });
 
-    if (userData?.UserSetting?.isSubscribed && check === false) {
+    if (
+      userData?.UserSetting?.isSubscribed &&
+      check === false &&
+      arr.length < 5
+    ) {
       arr.push(item);
       setSelectedPP(arr);
     } else if (
@@ -885,18 +890,21 @@ const EditScreenSetting = (props) => {
               selectedPP[ppIndex]?.answer !== ""
             ) {
               let check;
+              console.log("SELECTED PP", selectedPP);
               selectedPP.map((el, ind) => {
-                check = userData?.ProfilePrompts?.map((item) => {
+                check = userData?.ProfilePrompts?.some((item, index) => {
                   return item?.Question?.id === el?.id;
                 });
+                console.log("CHECCK", check);
 
                 formData.append(`profilePrompts[${ind}][questionId]`, el?.id);
                 formData.append(`profilePrompts[${ind}][answer]`, el.answer);
                 formData.append(
                   `profilePrompts[${ind}][operation]`,
-                  check[ind] ? "update" : "add"
+                  !check && el?.selected ? "delete" : check ? "update" : "add"
                 );
               });
+              console.log("FORM DATA", formData);
               await updateUser(formData, token);
               setPPCheck(false);
             } else {
@@ -1110,7 +1118,7 @@ const EditScreenSetting = (props) => {
       props.navigation.goBack();
     }
   };
-  console.log("SELECTED PP", selectedPP?.length);
+  console.log("SELECTED PP", selectedPP, ppCheck);
   return (
     <>
       <SafeAreaView
@@ -1477,13 +1485,13 @@ const EditScreenSetting = (props) => {
                     unit="ft"
                     height={100}
                     width={windowWidth * 0.8}
-                    indicatorHeight={40}
+                    // indicatorHeight={40}
                     indicatorColor={colors.primaryPink}
                     shortStepHeight={20}
                     longStepHeight={50}
                     valueTextStyle={{ color: colors.primaryPink, fontSize: 20 }}
                     unitTextStyle={{ color: colors.primaryPink, fontSize: 17 }}
-                    step={2.55}
+                    step={5}
                     initialValue={92 / 30.48}
                   />
                 </View>

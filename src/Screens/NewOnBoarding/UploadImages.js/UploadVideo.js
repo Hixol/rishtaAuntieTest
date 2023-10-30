@@ -252,7 +252,7 @@ const UploadVideo = ({ navigation, route }) => {
                       Alerts("success", res?.data?.message);
                     })
                     .catch((e) => console.log("createNewProfile err", e))
-                    .finally(() => setLoading(false));
+                    .finally(() => {});
                 } else {
                   alerts("error", "Please upload video to continue");
                 }

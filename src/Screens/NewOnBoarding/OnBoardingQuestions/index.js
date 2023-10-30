@@ -129,6 +129,10 @@ const OnBoardingQuestions = ({ navigation }) => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
     const keyboardDidShowListener = Keyboard.addListener(
       "keyboardDidShow",
       () => {
@@ -146,7 +150,7 @@ const OnBoardingQuestions = ({ navigation }) => {
       keyboardDidHideListener.remove();
       keyboardDidShowListener.remove();
     };
-  }, []);
+  }, [ppCheck]);
 
   useEffect(() => {
     console.log("HELLO VIBES", vibes);
@@ -1462,7 +1466,7 @@ const OnBoardingQuestions = ({ navigation }) => {
       >
         <KeyboardAwareScrollView
           enableOnAndroid={ppCheck && android ? true : false}
-          extraScrollHeight={ppCheck && android ? windowHeight * 0.2 : 0}
+          extraScrollHeight={ppCheck && android ? windowHeight * 1.5 : 0}
           // style={{ flex: 1 }}
           contentContainerStyle={ppCheck && android ? null : { flex: 1 }}
           keyboardShouldPersistTaps={"handled"}
@@ -1746,7 +1750,7 @@ const OnBoardingQuestions = ({ navigation }) => {
                   longStepHeight={50}
                   valueTextStyle={{ color: colors.primaryPink, fontSize: 20 }}
                   unitTextStyle={{ color: colors.primaryPink, fontSize: 17 }}
-                  step={3.05}
+                  step={2.54}
                   initialValue={122 / 30.48}
                 />
               </View>

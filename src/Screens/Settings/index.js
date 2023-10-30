@@ -329,19 +329,18 @@ const Settings = (props) => {
               </View>
             </View>
           ) : null} */}
-          {userData?.Profile?.personalityType !== null &&
-          status === "COMPLETED" ? null : (
+          {userData?.Profile?.personalityType===null || status === "INCOMPLETE" ? (
             <View style={styles.actionItemsMainView}>
               <View style={styles.actionItemsView}>
                 <Text style={styles.actionItemsText}>Action Items</Text>
-                {status === "COMPLETED" ? null : (
+                {status === "INCOMPLETE" ? (
                   <SettingButton
                     onPress={() =>
                       props.navigation.navigate("OnBoardingQuestions")
                     }
                     title={"Complete my profile"}
                   />
-                )}
+                ) : null}
                 {userData.Profile.personalityType == "" ||
                   (userData.Profile.personalityType == null && (
                     <SettingButton
@@ -353,7 +352,7 @@ const Settings = (props) => {
                   ))}
               </View>
             </View>
-          )}
+          ) : null}
 
           <View style={styles.actionItemsMainView}>
             <View style={styles.actionItemsView}>
