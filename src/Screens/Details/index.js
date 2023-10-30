@@ -558,6 +558,7 @@ const DetailScreen = (props) => {
                         styles.poolQuestTxt,
                         {
                           marginTop: 15,
+                          marginLeft:6,
                         },
                       ]}
                     >

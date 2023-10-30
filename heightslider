@@ -17,6 +17,7 @@ export type RulerPickerTextProps = Pick<
   'color' | 'fontSize' | 'fontWeight'
 >;
 const { width: windowWidth } = Dimensions.get('window');
+let check
 export type RulerPickerProps = {
   /**
    * Width of the ruler picker
@@ -76,10 +77,12 @@ export type RulerPickerProps = {
    * @default 'black'
    */
   indicatorColor?: string;
+
   /**
    * Text style of the value
    */
   valueTextStyle?: RulerPickerTextProps;
+
   /**
    * Text style of the unit
    */
@@ -117,13 +120,13 @@ export const RulerPicker = ({
   max,
   step = 1,
   initialValue = min,
-  fractionDigits = 1,
+  fractionDigits = 2,
   unit = 'cm',
   indicatorHeight = 80,
-  gapBetweenSteps = 10,
+  gapBetweenSteps = 12,
   shortStepHeight = 20,
   longStepHeight = 40,
-  stepWidth = 1.8,
+  stepWidth = 1.1,
   indicatorColor = 'black',
   shortStepColor = 'lightgray',
   longStepColor = 'darkgray',
@@ -132,6 +135,7 @@ export const RulerPicker = ({
   decelerationRate = 'normal',
   onValueChange,
   onValueChangeEnd,
+  
 }: RulerPickerProps) => {
   const itemAmount = (max - min) / step;
   const arrData = Array.from({ length: itemAmount + 1 }, (_, index) => index);
@@ -143,6 +147,7 @@ export const RulerPicker = ({
   const scrollPosition = useRef(new Animated.Value(0)).current;
   const valueCallback: Animated.ValueListenerCallback = useCallback(
     ({ value }) => {
+      
       const newStep = calculateCurrentValue(
         value,
         stepWidth,
@@ -151,10 +156,45 @@ export const RulerPicker = ({
         max,
         step,
         fractionDigits
-      );
+        );
+        console.log('VALUE',newStep);
       if (prevValue.current !== newStep) {
+        function cmToFeetAndInches(cm) {
+          const totalInches = cm / 2.54;
+          const feet = Math.floor(totalInches / 12);
+          const inches = totalInches % 12;
+        
+          let inchesString;
+        
+          if (inches >= 10) {
+            inchesString = inches.toFixed(0);
+          } else if (inches >= 0 && inches < 10) {
+            inchesString = inches.toFixed(0);
+          }
+        
+          return feet + '.' + inchesString;
+        }
+        
+        // Example usage:
+        const centimeters = newStep; // Change this to your desired value
+         const result = cmToFeetAndInches(centimeters);
+        console.log('RESULT',result);
+
+
+
+
+
+
+
+
+
+
+
+
+        check= result
+
         onValueChange?.(newStep);
-        stepTextRef.current?.setNativeProps({ text: ((newStep / 30.48).toFixed(1).split('.')[0])+`'`+((newStep / 30.48).toFixed(1).split('.')[1])+`"`});
+        stepTextRef.current?.setNativeProps({ text: (result.split('.')[0])+`'`+(result.split('.')[1])+`"`});
       }
       prevValue.current = newStep;
     },
@@ -235,6 +275,8 @@ export const RulerPicker = ({
       step,
     ]
   );
+  console.log('CHECK',check ? JSON.stringify(check).split('.')[1]:null);
+  
   return (
     <View style={{ width, height }}>
       <AnimatedFlashList
@@ -292,10 +334,7 @@ export const RulerPicker = ({
         >
           <TextInput
             ref={stepTextRef}
-            defaultValue={
-             
-              initialValue.toFixed(1)
-            }
+            defaultValue={initialValue.toFixed(1)}
             style={[
               {
                 lineHeight:
@@ -324,8 +363,8 @@ export const RulerPicker = ({
           style={[
             {
               width: stepWidth,
-              height: indicatorHeight,
-              backgroundColor: indicatorColor,
+              height:check ? JSON.stringify(check).split('.')[1]==='0"' ? 65: indicatorHeight:indicatorHeight,
+              backgroundColor:indicatorColor
             },
           ]}
         />
