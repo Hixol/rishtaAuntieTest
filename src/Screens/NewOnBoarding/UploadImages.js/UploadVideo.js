@@ -25,8 +25,8 @@ const UploadVideo = ({ navigation, route }) => {
 
   const dispatch = useDispatch();
   const { handleLocation, Alerts, handleStatusCode } = useHelper();
-  const { coords } = useSelector((store) => store.chatReducer);
-  const { userData, token } = useSelector((store) => store.userReducer);
+  const { coords } = useSelector(store => store.chatReducer);
+  const { userData, token } = useSelector(store => store.userReducer);
   const {
     firstName,
     lastName,
@@ -36,7 +36,7 @@ const UploadVideo = ({ navigation, route }) => {
     video,
     religion,
     profilePictures,
-  } = useSelector((store) => store.NewOnBoardingReducer);
+  } = useSelector(store => store.NewOnBoardingReducer);
 
   const [videoUri, setVideoUri] = useState(null);
   const [mediaOptions, setMediaOptions] = useState(false);
@@ -49,7 +49,7 @@ const UploadVideo = ({ navigation, route }) => {
 
   useEffect(() => {
     if (edit) {
-      let find = userData?.UserMedia.filter((item) => {
+      let find = userData?.UserMedia.filter(item => {
         return item?.type === "video";
       });
       setVideoUri({
@@ -82,7 +82,7 @@ const UploadVideo = ({ navigation, route }) => {
           quality: 0.4,
         };
 
-        await launchCamera(options, (res) => {
+        await launchCamera(options, res => {
           if (res.errorCode == "others") {
             alerts(
               "error",
@@ -131,12 +131,12 @@ const UploadVideo = ({ navigation, route }) => {
     }
   };
 
-  const handleCamera = (state) => {
+  const handleCamera = state => {
     if (ios) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.IOS.CAMERA,
         "camera",
-        (res) => {
+        res => {
           handleCameraMedia(state, res);
         }
       );
@@ -144,7 +144,7 @@ const UploadVideo = ({ navigation, route }) => {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.ANDROID.CAMERA,
         "camera",
-        (res) => {
+        res => {
           handleCameraMedia(state, res);
         }
       );
@@ -159,7 +159,7 @@ const UploadVideo = ({ navigation, route }) => {
       formData1.append("video", video);
 
       OnBoardingServices.uploadVideo(formData1, token)
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             dispatch({
@@ -168,7 +168,7 @@ const UploadVideo = ({ navigation, route }) => {
             });
           }
         })
-        .catch((e) => console.log("uploadVideo err", e))
+        .catch(e => console.log("uploadVideo err", e))
         .finally(() => {
           setLoading(false);
           navigation.goBack();
@@ -186,7 +186,7 @@ const UploadVideo = ({ navigation, route }) => {
           setLoading(true);
           handleLocation();
 
-          let code = Countries.filter((item) => {
+          let code = Countries.filter(item => {
             return item?.en === coords?.country;
           });
           code = code[0]?.dialCode;
@@ -195,7 +195,7 @@ const UploadVideo = ({ navigation, route }) => {
           formData1.append("video", video);
 
           OnBoardingServices.uploadVideo(formData1, token)
-            .then((res) => {
+            .then(res => {
               handleStatusCode(res);
               if (res.status >= 200 && res.status <= 299) {
                 dispatch({
@@ -240,25 +240,31 @@ const UploadVideo = ({ navigation, route }) => {
                 if (token !== null) {
                   setLoading(true);
                   UserService.createNewProfile(formData, token)
-                    .then((res) => {
-                      clearNewRedux();
+                    .then(res => {
+                      handleStatusCode(res);
+                      if (res.status >= 200 && res.status <= 299) {
+                        clearNewRedux();
+                        Alerts("success", res?.data?.message);
 
-                      navigation.dispatch(
-                        CommonActions.reset({
-                          index: 0,
-                          routes: [{ name: "BottomTab" }],
-                        })
-                      );
-                      Alerts("success", res?.data?.message);
+                        navigation.dispatch(
+                          CommonActions.reset({
+                            index: 0,
+                            routes: [{ name: "BottomTab" }],
+                          })
+                        );
+                      }
                     })
-                    .catch((e) => console.log("createNewProfile err", e))
+                    .catch(e => {
+                      console.log("createNewProfile err", e);
+                      Alerts("error", e?.message.toString());
+                    })
                     .finally(() => {});
                 } else {
                   alerts("error", "Please upload video to continue");
                 }
               }
             })
-            .catch((err) => {
+            .catch(err => {
               console.log("uploadVideo err", err);
               Alerts("error", err?.message.toString());
             })
@@ -279,7 +285,7 @@ const UploadVideo = ({ navigation, route }) => {
           compressImageQuality: 0.5,
           forceJpg: true,
         })
-          .then((el) => {
+          .then(el => {
             if (el.height == 0 || el.width == 0) {
               alerts("error", "Please select jpeg/png/heif format images.");
             } else {
@@ -304,7 +310,7 @@ const UploadVideo = ({ navigation, route }) => {
               }
             }
           })
-          .catch((err) => {
+          .catch(err => {
             alerts("error", err.toString());
             console.log("gallery picker err:", err);
           })
@@ -318,12 +324,12 @@ const UploadVideo = ({ navigation, route }) => {
     }
   };
 
-  const handleGallery = (state) => {
+  const handleGallery = state => {
     if (ios) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.IOS.PHOTO_LIBRARY,
         "gallery",
-        (res) => {
+        res => {
           handleGalleryMedia(state, res);
         }
       );
@@ -334,14 +340,14 @@ const UploadVideo = ({ navigation, route }) => {
         handlePermissions.checkMultiplePermissions(
           PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
           "gallery",
-          (res) => {
+          res => {
             handleGalleryMedia(state, res);
           }
         );
       }
     }
   };
-  const handleAlert = (state) => {
+  const handleAlert = state => {
     setMediaOptions(state);
   };
 
