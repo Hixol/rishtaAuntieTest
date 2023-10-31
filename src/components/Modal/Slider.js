@@ -186,7 +186,7 @@ const SliderView = (props) => {
                         left:
                           sliderPosition.oneMarkerValue === 4
                             ? sliderPosition.oneMarkerLeftPosition - 100
-                            : sliderPosition.oneMarkerLeftPosition - 20,
+                            : sliderPosition.oneMarkerLeftPosition - 8,
                         top: 40,
                       }}
                     >
@@ -219,7 +219,7 @@ const SliderView = (props) => {
                         left:
                           sliderPosition.oneMarkerValue === 4
                             ? sliderPosition.oneMarkerLeftPosition - 30
-                            : sliderPosition.oneMarkerLeftPosition - 20,
+                            : sliderPosition.oneMarkerLeftPosition - 8,
                         top: 40,
                       }}
                     >
