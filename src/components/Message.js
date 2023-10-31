@@ -597,7 +597,7 @@ const Message = ({
               ]}
             >
               <FastImage
-                style={[styles.image, { borderTopLeftRadius: 0 }]}
+                style={[styles.image, { borderBottomLeftRadius: 0 }]}
                 source={{
                   uri: receivedMsg?.message,
                 }}
@@ -639,7 +639,7 @@ const Message = ({
             >
               <VideoThumbnail
                 uri={receivedMsg?.message}
-                borderCornerStyle={{ borderTopLeftRadius: 0 }}
+                borderCornerStyle={{ borderBottomLeftRadius: 0 }}
               />
             </Pressable>
             <MsgSeen
@@ -770,7 +770,7 @@ const Message = ({
                   textContainerStyle={{ display: "none" }}
                   containerStyle={[
                     styles.linkContainerStyle,
-                    { borderTopLeftRadius: 0 },
+                    { borderBottomLeftRadius: 0 },
                   ]}
                 />
               )}

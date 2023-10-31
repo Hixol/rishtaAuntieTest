@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { useSelector, useDispatch } from "react-redux";
-import { windowHeight } from "../../utility/size";
+import { windowHeight, windowWidth } from "../../utility/size";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useHelper } from "../../hooks/useHelper";
 
@@ -503,7 +503,11 @@ const UserDetailScreen = props => {
                     </View>
                   </View>
 
-                  <CardCarousel user={allDetails} />
+                  <View
+                    style={{ width: windowWidth * 0.92, alignSelf: "center" }}
+                  >
+                    <CardCarousel user={allDetails} />
+                  </View>
                   <View style={{ height: 20, width: "100%" }}></View>
                   <View>
                     {allDetails?.ProfilePrompts?.map(item => {

@@ -16,9 +16,9 @@ export default StyleSheet.create({
     padding: "2%",
     alignItems: "center",
     flexDirection: "row",
-    zindex: 1,
     justifyContent: "space-between",
     width: "100%",
+    zIndex: 3,
   },
   name: {
     fontSize: 24,

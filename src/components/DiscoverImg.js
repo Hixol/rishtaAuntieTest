@@ -68,7 +68,7 @@ const DiscoverImg = ({
     pausedButton === false ? setIsPausedButton(false) : setIsPausedButton(true);
   }, [userId, isFocused, check]);
 
-  Countries.filter((country) => {
+  Countries.filter(country => {
     if (country.en == item.country) {
       flagsLiving = country.code;
     }
@@ -313,6 +313,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
+    zIndex: 3,
   },
   imgFooter: {
     bottom: 0,
