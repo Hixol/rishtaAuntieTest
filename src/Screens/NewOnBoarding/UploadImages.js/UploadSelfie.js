@@ -39,7 +39,7 @@ const UploadSelfie = ({ navigation, route }) => {
     video,
     religion,
     profilePictures,
-  } = useSelector(store => store.NewOnBoardingReducer);
+  } = useSelector((store) => store.NewOnBoardingReducer);
 
   const isFocused = useIsFocused();
 
@@ -80,7 +80,7 @@ const UploadSelfie = ({ navigation, route }) => {
           cameraType: "front",
         };
 
-        await launchCamera(options, res => {
+        await launchCamera(options, (res) => {
           if (res.errorCode == "others") {
             alerts(
               "error",
@@ -115,12 +115,12 @@ const UploadSelfie = ({ navigation, route }) => {
     }
   };
 
-  const handleCamera = state => {
+  const handleCamera = (state) => {
     if (ios) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.IOS.CAMERA,
         "camera",
-        res => {
+        (res) => {
           setSelfieObj(null);
           setShowCamera(true);
         }
@@ -129,7 +129,7 @@ const UploadSelfie = ({ navigation, route }) => {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.ANDROID.CAMERA,
         "camera",
-        res => {
+        (res) => {
           setSelfieObj(null);
           setShowCamera(true);
         }
@@ -166,7 +166,7 @@ const UploadSelfie = ({ navigation, route }) => {
           if (faces.length > 0) {
             let obj = {
               name: image.uri.split("/").pop(),
-              type: image.uri.split(".").pop(),
+              type: `image/${image.uri.split(".").pop()}`,
               uri: image.uri,
             };
 
@@ -184,7 +184,7 @@ const UploadSelfie = ({ navigation, route }) => {
           if (faces.length > 0) {
             let obj = {
               name: image.path.split("/").pop(),
-              type: image.path.split(".").pop(),
+              type: `image/${image.path.split(".").pop()}`,
               uri: `file://${image.path}`,
             };
 
