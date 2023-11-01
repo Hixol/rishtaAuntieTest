@@ -185,9 +185,9 @@ const EditScreenSetting = (props) => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
+    // setLoading(true);
     setTimeout(() => {
-      setLoading(false);
+      // setLoading(false);
     }, 1000);
     const keyboardDidShowListener = Keyboard.addListener(
       "keyboardDidShow",
