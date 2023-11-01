@@ -1466,7 +1466,7 @@ const OnBoardingQuestions = ({ navigation }) => {
       >
         <KeyboardAwareScrollView
           enableOnAndroid={ppCheck && android ? true : false}
-          extraScrollHeight={ppCheck && android ? windowHeight * 1.5 : 0}
+          extraScrollHeight={ppCheck && android ? windowHeight * 150 : 0}
           // style={{ flex: 1 }}
           contentContainerStyle={ppCheck && android ? null : { flex: 1 }}
           keyboardShouldPersistTaps={"handled"}

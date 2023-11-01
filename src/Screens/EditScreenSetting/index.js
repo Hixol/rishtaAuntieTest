@@ -185,6 +185,10 @@ const EditScreenSetting = (props) => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
     const keyboardDidShowListener = Keyboard.addListener(
       "keyboardDidShow",
       () => {
@@ -202,7 +206,7 @@ const EditScreenSetting = (props) => {
       keyboardDidHideListener.remove();
       keyboardDidShowListener.remove();
     };
-  }, []);
+  }, [ppCheck]);
 
   useEffect(() => {
     if (type === "Tagline") {
@@ -1126,7 +1130,7 @@ const EditScreenSetting = (props) => {
       >
         <KeyboardAwareScrollView
           enableOnAndroid={ppCheck && android ? true : false}
-          extraScrollHeight={ppCheck && android ? windowHeight * 0.2 : 0}
+          extraScrollHeight={ppCheck && android ? windowHeight * 150 : 0}
           // style={{ flex: 1 }}
           contentContainerStyle={ppCheck && android ? null : { flex: 1 }}
           keyboardShouldPersistTaps={"handled"}
