@@ -4,12 +4,12 @@ import { StyleSheet, View } from "react-native";
 import StoryContainer from "./StoryContainer";
 import FastImage from "react-native-fast-image";
 
-const Stories = (props) => {
+const Stories = props => {
   const [currentUserIndex, setCurrentUserIndex] = useState(0);
   const modalScroll = useRef(null);
   const AllStories = [{ stories: props.images }];
 
-  const onStoryNext = (isScroll) => {
+  const onStoryNext = isScroll => {
     if (AllStories.length > 1) {
       const newIndex = currentUserIndex;
       setCurrentUserIndex(newIndex);
@@ -19,7 +19,7 @@ const Stories = (props) => {
     }
   };
 
-  const onStoryPrevious = (isScroll) => {
+  const onStoryPrevious = isScroll => {
     if (AllStories.length > 1) {
       const newIndex = currentUserIndex - 1;
       if (currentUserIndex > 0) {
@@ -50,7 +50,7 @@ const Stories = (props) => {
                 height: "100%",
                 overflow: "hidden",
               }}
-              source={require("../../assets/iconimages/opacity-01.png")}
+              source={require("../../assets/iconimages/opacity-02.png")}
             />
           </View>
           <StoryContainer

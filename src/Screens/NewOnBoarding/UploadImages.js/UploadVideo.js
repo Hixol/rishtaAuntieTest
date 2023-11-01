@@ -258,8 +258,9 @@ const UploadVideo = ({ navigation, route }) => {
                       console.log("createNewProfile err", e);
                       Alerts("error", e?.message.toString());
                     })
-                    .finally(() => {});
+                    .finally(() => setLoading(false));
                 } else {
+                  setLoading(false);
                   alerts("error", "Please upload video to continue");
                 }
               }
@@ -267,8 +268,8 @@ const UploadVideo = ({ navigation, route }) => {
             .catch(err => {
               console.log("uploadVideo err", err);
               Alerts("error", err?.message.toString());
-            })
-            .finally(() => setLoading(false));
+              setLoading(false);
+            });
         }
       } else {
         setShowAlert(true);

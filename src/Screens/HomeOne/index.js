@@ -17,6 +17,7 @@ import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import { android, userDevice, windowHeight } from "../../utility/size";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useHelper } from "../../hooks/useHelper";
+import { Button } from "react-native-elements";
 
 import styles from "./styles";
 import DiscoverImg from "../../components/DiscoverImg";
@@ -33,11 +34,12 @@ import pushNotificationService from "../../services/PushNotificationService";
 import ChatServices from "../../services/ChatServices";
 import ActionCard from "../../components/Cards/ActionCard";
 import ActionBottomModal from "../../components/Modal/ActionBottomModal";
+import FastImage from "react-native-fast-image";
 
 let limit = 15;
 let offset = 0;
 
-const HomeOne = (props) => {
+const HomeOne = props => {
   const [userId, setUserId] = useState();
   const [userName, setUserName] = useState();
   const [reverify, setReverify] = useState(false);
@@ -60,13 +62,36 @@ const HomeOne = (props) => {
   const dispatch = useDispatch();
   const { handlePlayerId, handleStatusCode, Alerts } = useHelper();
 
+  const renderOutProfiles = () => (
+    <View style={styles.outContainer}>
+      <Text style={styles.title}>Expand your horizons!</Text>
+      <Text style={styles.description}>
+        Oops! It looks like there aren't any users matching your current
+        preferences. Let's tailor your experience to find your perfect match.
+      </Text>
+      <Button
+        onPress={() => props.navigation.navigate("SearchPreferences")}
+        title="Edit search preferences"
+        icon={
+          <FastImage
+            resizeMode="contain"
+            source={require("../../assets/iconimages/heart-discover.png")}
+            style={styles.iconStyle}
+          />
+        }
+        titleStyle={styles.titleStyle}
+        buttonStyle={styles.buttonStyle}
+      />
+    </View>
+  );
+
   const loginInChat = (token, login) => {
     const userCredentials = {
       login: login,
       password: "12345678",
     };
     ConnectyCube.createSession(userCredentials)
-      .then((session) => {
+      .then(session => {
         handlePlayerId(token, session.id);
         ConnectyCube.chat
           .connect({
@@ -77,23 +102,23 @@ const HomeOne = (props) => {
             CallService.init();
             pushNotificationService.init();
           })
-          .catch((err) => console.log("error: ", err));
+          .catch(err => console.log("error: ", err));
       })
-      .catch((err) => console.log("createSession err:", err));
+      .catch(err => console.log("createSession err:", err));
   };
 
   const checkUserAlreadyExist = (token, login) => {
     let obj = { login: login };
     ConnectyCube.users
       .get(obj)
-      .then((res) => {
+      .then(res => {
         if (res?.user?.login != login) {
           createConnectyCubeSession(token, login);
         } else {
           loginInChat(token, login);
         }
       })
-      .catch((err) => {
+      .catch(err => {
         if (err?.code == 404) {
           console.log("ConnectyCube users err", err?.info?.errors[0]);
           createConnectyCubeSession(token, login);
@@ -105,7 +130,7 @@ const HomeOne = (props) => {
 
   const connectyCubeInitialization = (token, login) => {
     ChatServices.ccCred(token)
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           let data = res.data.data;
@@ -120,13 +145,13 @@ const HomeOne = (props) => {
           };
           ConnectyCube.init(CREDENTIALS, CONFIG);
           ConnectyCube.createSession()
-            .then((session) => {
+            .then(session => {
               checkUserAlreadyExist(token, login);
             })
-            .catch((err) => console.log("session", err));
+            .catch(err => console.log("session", err));
         }
       })
-      .catch((err) => console.log("cred err:", err));
+      .catch(err => console.log("cred err:", err));
   };
 
   const createConnectyCubeSession = (token, login) => {
@@ -136,40 +161,38 @@ const HomeOne = (props) => {
       login: login,
     };
     ConnectyCube.createSession()
-      .then((session) => {
-        ConnectyCube.users
-          .signup({ ...userProfile, ...session })
-          .then((res) => {
-            let userLoginCredentials = {
-              login: login,
-              password: "12345678",
-            };
-            ConnectyCube.createSession(userLoginCredentials).then((session) => {
-              ConnectyCube.login(userLoginCredentials)
-                .then((res) => {
-                  handlePlayerId(token, res.id);
-                  AsyncStorage.setItem("ccuid", `${res.id}`);
-                  ConnectyCube.chat
-                    .connect({
-                      userId: session.id,
-                      password: session.token,
-                    })
-                    .then(() => {
-                      CallService.init();
-                      pushNotificationService.init();
-                    })
-                    .catch((err) => console.log("cc chat err:", err));
-                })
-                .catch((err) => console.log("login err", err));
-            });
+      .then(session => {
+        ConnectyCube.users.signup({ ...userProfile, ...session }).then(res => {
+          let userLoginCredentials = {
+            login: login,
+            password: "12345678",
+          };
+          ConnectyCube.createSession(userLoginCredentials).then(session => {
+            ConnectyCube.login(userLoginCredentials)
+              .then(res => {
+                handlePlayerId(token, res.id);
+                AsyncStorage.setItem("ccuid", `${res.id}`);
+                ConnectyCube.chat
+                  .connect({
+                    userId: session.id,
+                    password: session.token,
+                  })
+                  .then(() => {
+                    CallService.init();
+                    pushNotificationService.init();
+                  })
+                  .catch(err => console.log("cc chat err:", err));
+              })
+              .catch(err => console.log("login err", err));
           });
+        });
       })
-      .catch((err) => console.log("createSession err:", err));
+      .catch(err => console.log("createSession err:", err));
   };
 
-  const personalityMatch = (type) => {
+  const personalityMatch = type => {
     PersonalityServices.matchPersonality(type, token)
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
@@ -178,7 +201,7 @@ const HomeOne = (props) => {
           });
         }
       })
-      .catch((err) => console.log("Personality match err", err));
+      .catch(err => console.log("Personality match err", err));
   };
 
   const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 70 });
@@ -192,13 +215,11 @@ const HomeOne = (props) => {
     discoverUserIndex,
     preferenceFilter,
     userData,
-  } = useSelector((store) => store.userReducer);
-  const { religion, vibes } = useSelector(
-    (store) => store.NewOnBoardingReducer
-  );
+  } = useSelector(store => store.userReducer);
+  const { religion, vibes } = useSelector(store => store.NewOnBoardingReducer);
 
   const isFocused = useIsFocused();
-  const handleBlockAlert = (state) => {
+  const handleBlockAlert = state => {
     setIsBlocked(true);
     setBlockAlert(state);
   };
@@ -210,12 +231,12 @@ const HomeOne = (props) => {
     getAllUser(limit, offset);
   };
 
-  const handleBlockedScreen = (state) => {
+  const handleBlockedScreen = state => {
     props.navigation.navigate("BlockedList");
     setBlockAlert(false);
   };
 
-  const handleReportAlert = (state) => {
+  const handleReportAlert = state => {
     props.navigation.navigate("ReportAccountScreen", {
       userId: userId,
       userName: userName,
@@ -223,7 +244,7 @@ const HomeOne = (props) => {
     setAction(false);
   };
 
-  const handleAlert = (state) => {
+  const handleAlert = state => {
     setAction(state);
   };
 
@@ -238,7 +259,7 @@ const HomeOne = (props) => {
   const getMyProfile = () => {
     if (token != null) {
       ProfileServices.getMyProfile(token)
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             let data = res?.data?.data;
@@ -265,7 +286,7 @@ const HomeOne = (props) => {
             }
           }
         })
-        .catch((err) => {
+        .catch(err => {
           if (err?.message.includes("Network")) {
             Alerts("error", err.message);
           } else {
@@ -283,7 +304,7 @@ const HomeOne = (props) => {
       status === "COMPLETED"
     ) {
       UserService.getAllUser(token, `limit=${limit}&offset=${offset * limit}`)
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             let data = res?.data?.data;
@@ -311,13 +332,13 @@ const HomeOne = (props) => {
               });
               setProfilesList(data?.profiles);
             } else if (!preferenceFilter && pagination) {
-              setProfilesList((prevState) => [...prevState, ...data?.profiles]);
+              setProfilesList(prevState => [...prevState, ...data?.profiles]);
             } else {
               setProfilesList(data?.profiles);
             }
           }
         })
-        .catch((err) => {
+        .catch(err => {
           if (err?.message.includes("Network")) {
             Alerts("error", err.message);
           } else {
@@ -335,29 +356,21 @@ const HomeOne = (props) => {
     }
   };
 
-  let foundIndex = profilesList.findIndex((el) => el.id == discoverUserIndex);
+  let foundIndex = profilesList.findIndex(el => el.id == discoverUserIndex);
 
   useFocusEffect(
     useCallback(() => {
-      console.log("FOUND INDEX", foundIndex);
-
       dispatch({
         type: "SET_FOCUSED_SCREEN",
         payload: true,
       });
 
       if (foundIndex !== -1 && foundIndex < profilesList.length - 1) {
-        console.log("if", foundIndex, discoverUserIndex);
-        let arr = [...profilesList];
-        let filtered = arr.filter((el) => el.id != discoverUserIndex);
-
-        setProfilesList(filtered);
-
-        // flatListRef.current?.scrollToIndex({
-        //   animated: true,
-        //   index: 1,
-        // });
+        setProfilesList(prevState =>
+          prevState.filter(el => el.id != discoverUserIndex)
+        );
       }
+
       dispatch({
         type: "SET_DISCOVER_INDEX",
         payload: null,
@@ -394,7 +407,7 @@ const HomeOne = (props) => {
     setUserMediaImage(null);
     setUserMediaVideo(null);
     for (var i = 0; i < viewableItems?.length; i++) {
-      viewableItems[i]?.item?.UserMedia?.map((item) => {
+      viewableItems[i]?.item?.UserMedia?.map(item => {
         if (item?.type == "video" && item?.sequence == null) {
           setUserMediaVideo(item);
         } else if (item?.type == "image" && item?.sequence == 1) {
@@ -470,7 +483,7 @@ const HomeOne = (props) => {
     };
   }, [imageModal, action]);
 
-  const onHeartPress = (id) => {
+  const onHeartPress = id => {
     UserService.likeInteraction(
       {
         resourceId:
@@ -480,12 +493,10 @@ const HomeOne = (props) => {
       },
       token
     )
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
-          setProfilesList((prevState) =>
-            prevState.filter((el) => el.id !== id)
-          );
+          setProfilesList(prevState => prevState.filter(el => el.id !== id));
 
           Alerts(
             "success",
@@ -495,10 +506,11 @@ const HomeOne = (props) => {
           );
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.log("likeInteraction err", error);
       });
   };
+
   return (
     <>
       {loading ? (
@@ -507,6 +519,8 @@ const HomeOne = (props) => {
           style={{ alignSelf: "center", flex: 1 }}
           size={"large"}
         />
+      ) : totalProfiles === 0 && remainingProfiles > 0 ? (
+        renderOutProfiles()
       ) : (
         <SafeAreaView style={styles.container}>
           {
@@ -538,13 +552,6 @@ const HomeOne = (props) => {
                 btnText="Upgrade"
                 onPress={() => props.navigation.navigate("Paywall")}
               />
-            ) : totalProfiles === 0 && remainingProfiles > 0 ? (
-              <VerificationPendingCard
-                heading="Profiles"
-                tagline="Out of profiles"
-                btnText="Referesh"
-                onPress={() => getAllUser(limit, offset)}
-              />
             ) : skeleton ? (
               <DiscoverSkeleton tabBarHeight={tabBarHeight} />
             ) : profilesList.length > 0 ? (
@@ -563,10 +570,10 @@ const HomeOne = (props) => {
                 data={profilesList}
                 onEndReachedThreshold={0.5}
                 onEndReached={loadMoreData}
-                keyExtractor={(item) => item.id}
+                keyExtractor={item => item.id}
                 renderItem={({ item }) => {
                   let sortedImage = [...item?.UserMedia]
-                    .filter((media) => media.type != "video")
+                    .filter(media => media.type != "video")
                     .sort((a, b) => a.sequence - b.sequence)[0].url;
 
                   return (
@@ -577,7 +584,7 @@ const HomeOne = (props) => {
                         userId={userId}
                         images={sortedImage}
                         check={check}
-                        video={item?.UserMedia?.filter((el) => {
+                        video={item?.UserMedia?.filter(el => {
                           return el?.type == "video";
                         })}
                         paused={true}

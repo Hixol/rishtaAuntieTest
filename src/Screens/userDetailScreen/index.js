@@ -377,7 +377,10 @@ const UserDetailScreen = props => {
                           color={colors.textGrey1}
                         />
                         <Text style={styles.location}>
-                          {allDetails?.city}, {allDetails?.country}{" "}
+                          {allDetails?.city},{" "}
+                          {allDetails?.country == "United States"
+                            ? allDetails?.address
+                            : allDetails?.country}
                         </Text>
                       </View>
                     </View>
@@ -417,8 +420,11 @@ const UserDetailScreen = props => {
                           >
                             {allDetails ? allDetails?.city : null}
                             {allDetails
-                              ? allDetails?.country !== "Not Specified"
-                                ? [", " + allDetails?.country]
+                              ? allDetails?.country !== "Not Specified" &&
+                                allDetails?.country != "United States"
+                                ? ", " + allDetails?.country
+                                : allDetails?.country == "United States"
+                                ? ", " + allDetails?.address
                                 : null
                               : null}
                           </Text>

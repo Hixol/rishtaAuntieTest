@@ -138,7 +138,7 @@ const DiscoverImg = ({
                     height: "100%",
                     overflow: "hidden",
                   }}
-                  source={require("../assets/iconimages/opacity-01.png")}
+                  source={require("../assets/iconimages/opacity-02.png")}
                 />
               </View>
               <Video
@@ -211,7 +211,7 @@ const DiscoverImg = ({
                   height: "100%",
                   overflow: "hidden",
                 }}
-                source={require("../assets/iconimages/opacity-01.png")}
+                source={require("../assets/iconimages/opacity-02.png")}
               />
             </View>
             <FastImage
@@ -292,7 +292,8 @@ const DiscoverImg = ({
                 color={colors.textGrey1}
               />
               <Text style={[styles.name, { width: "60%" }]}>
-                {item.city}, {item.country}
+                {item.city},{" "}
+                {item.country == "United States" ? item.address : item.country}
               </Text>
             </View>
           </View>
