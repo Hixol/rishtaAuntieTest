@@ -776,6 +776,7 @@ const HomeOne = props => {
           ) : null}
           {action ? (
             <ActionBottomModal
+              discover
               user={{
                 userId,
                 userName: userName,

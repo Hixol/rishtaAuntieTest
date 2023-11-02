@@ -795,6 +795,7 @@ const DetailScreen = props => {
         </GestureHandlerRootView>
       ) : action ? (
         <ActionBottomModal
+          discover
           user={{
             userId,
             userName: userDetails?.firstName,

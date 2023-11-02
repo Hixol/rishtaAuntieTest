@@ -33,6 +33,7 @@ import axios from "axios";
 import { CommonActions } from "@react-navigation/native";
 
 const ActionBottomModal = ({
+  discover,
   onDismiss,
   fav,
   toggle,
@@ -42,7 +43,7 @@ const ActionBottomModal = ({
   deleteAcc,
 }) => {
   const dispatch = useDispatch();
-  const { token, userData } = useSelector((store) => store.userReducer);
+  const { token, userData } = useSelector(store => store.userReducer);
   const {
     Alerts,
     navigation,
@@ -63,7 +64,14 @@ const ActionBottomModal = ({
   const [deleteText, setDeleteText] = useState("false");
 
   const snapPoints = useMemo(
-    () => (deleteAcc ? ["40%"] : adjustHeight ? ["31%"] : ["29%"]),
+    () =>
+      deleteAcc
+        ? ["40%"]
+        : adjustHeight
+        ? ["31%"]
+        : discover
+        ? ["23%"]
+        : ["29%"],
     [adjustHeight]
   );
 
@@ -92,7 +100,7 @@ const ActionBottomModal = ({
     }
   }, [toggle]);
 
-  const handleSheetChanges = (index) => {
+  const handleSheetChanges = index => {
     if (index == -1) {
       setType("");
       setSubmitted(null);
@@ -102,16 +110,16 @@ const ActionBottomModal = ({
 
   const handleUnmatchUser = () => {
     UserService.unmatchUser(user.userId, token)
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           setSubmitted(["22%"]);
         }
       })
-      .catch((err) => Alerts("error", err?.message.toString()));
+      .catch(err => Alerts("error", err?.message.toString()));
   };
 
-  const reportUser = (flag) => {
+  const reportUser = flag => {
     if (reason == "") {
       Alerts("error", "Please choose a suitable option!");
     } else if (description == "") {
@@ -121,7 +129,7 @@ const ActionBottomModal = ({
         reason: reason,
         description: description,
       })
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             if (showToast && flag) {
@@ -145,7 +153,7 @@ const ActionBottomModal = ({
             });
           }
         })
-        .catch((error) => console.log(error))
+        .catch(error => console.log(error))
         .finally(() => {
           setSubmitted(["32%"]);
           setReason("");
@@ -166,14 +174,14 @@ const ActionBottomModal = ({
     }
   };
 
-  const handleBlockUser = (flag) => {
+  const handleBlockUser = flag => {
     if (reason == "") {
       Alerts("error", "Please give reason!");
     } else {
       UserService.blockUser(user.userId, token, {
         reason,
       })
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             if (showToast && flag) {
@@ -195,7 +203,7 @@ const ActionBottomModal = ({
             });
           }
         })
-        .catch((err) => Alerts("error", err?.message.toString()))
+        .catch(err => Alerts("error", err?.message.toString()))
         .finally(() => {
           setSubmitted(["32%"]);
           setReason("");
@@ -205,7 +213,7 @@ const ActionBottomModal = ({
     }
   };
 
-  const handleNavigate = (screen) => {
+  const handleNavigate = screen => {
     setType("");
     setSubmitted(null);
     setAction(false);
@@ -253,7 +261,7 @@ const ActionBottomModal = ({
     </View>
   );
 
-  const renderBlockSubmission = (type) => (
+  const renderBlockSubmission = type => (
     <>
       {type == "block" ? (
         <Text style={styles.heading}>You have blocked {user.userName}</Text>
@@ -386,20 +394,22 @@ const ActionBottomModal = ({
           />
         </Pressable>
       ) : (
-        <Pressable
-          onPress={() => {
-            setType("unmatch");
-            handleUnmatchUser();
-          }}
-          style={styles.row}
-        >
-          <Text style={styles.optionTxt}>Unmatch User</Text>
-          <Icons.Feather
-            name="arrow-right"
-            size={18}
-            color={colors.blackBlue}
-          />
-        </Pressable>
+        !discover && (
+          <Pressable
+            onPress={() => {
+              setType("unmatch");
+              handleUnmatchUser();
+            }}
+            style={styles.row}
+          >
+            <Text style={styles.optionTxt}>Unmatch User</Text>
+            <Icons.Feather
+              name="arrow-right"
+              size={18}
+              color={colors.blackBlue}
+            />
+          </Pressable>
+        )
       )}
 
       <Divider width={1} color="#F3F4F6" />
@@ -432,7 +442,7 @@ const ActionBottomModal = ({
 
       axios
         .request(config)
-        .then((res) => {
+        .then(res => {
           if (res?.status >= 200 && res?.status <= 299) {
             alerts("success", "User Deleted Successfully");
             dispatch({
@@ -455,7 +465,7 @@ const ActionBottomModal = ({
             );
           }
         })
-        .catch((e) => {
+        .catch(e => {
           console.log("deleteUser err", e);
         });
     }
