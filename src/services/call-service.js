@@ -1,11 +1,15 @@
-import ConnectyCube from 'react-native-connectycube';
-import InCallManager from 'react-native-incall-manager';
-import Sound from 'react-native-sound';
-import {getApplicationName} from 'react-native-device-info';
-import RNCallKeep, {CONSTANTS as CK_CONSTANTS} from 'react-native-callkeep';
-import RNUserdefaults from 'react-native-user-defaults';
+import ConnectyCube from "react-native-connectycube";
+import InCallManager from "react-native-incall-manager";
+import Sound from "react-native-sound";
+import { getApplicationName } from "react-native-device-info";
+import RNCallKeep, { CONSTANTS as CK_CONSTANTS } from "react-native-callkeep";
+import RNUserdefaults from "react-native-user-defaults";
 
-import {showToast, getUserById, getCallRecipientString} from '../utility/utils';
+import {
+  showToast,
+  getUserById,
+  getCallRecipientString,
+} from "../utility/utils";
 import {
   addOrUpdateStreams,
   removeStream,
@@ -14,25 +18,25 @@ import {
   acceptCall,
   earlyAcceptCall,
   muteMicrophone,
-} from '../store/actions';
-import {Platform} from 'react-native';
-import {alerts} from '../utility/regex';
-import ChatServices from './ChatServices';
-import moment from 'moment';
+} from "../store/actions";
+import { Platform } from "react-native";
+import { alerts } from "../utility/regex";
+import ChatServices from "./ChatServices";
+import moment from "moment";
 
-const LOCAL_STREAM_USER_ID = 'localStream';
+const LOCAL_STREAM_USER_ID = "localStream";
 let store;
 
 class CallService {
-  static MEDIA_OPTIONS = {audio: true, video: {facingMode: 'user'}};
-  static MEDIA_OPTIONS_AUDIO = {audio: true};
+  static MEDIA_OPTIONS = { audio: true, video: { facingMode: "user" } };
+  static MEDIA_OPTIONS_AUDIO = { audio: true };
   static CALL_TYPE = {
-    voice: 'VOICE_CALL',
-    video: 'VIDEO_CALL',
+    voice: "VOICE_CALL",
+    video: "VIDEO_CALL",
   };
   static LOG_TYPE = {
-    missed: 'MISSED_CALL',
-    received: 'RECEIVED_CALL',
+    missed: "MISSED_CALL",
+    received: "RECEIVED_CALL",
   };
 
   mediaDevices = [];
@@ -43,12 +47,12 @@ class CallService {
 
   constructor() {
     this._outgoingCallSound = new Sound(
-      require('../assets/sounds/dialing.mp3'),
+      require("../assets/sounds/dialing.mp3")
     );
     this._incomingCallSound = new Sound(
-      require('../assets/sounds/calling.mp3'),
+      require("../assets/sounds/calling.mp3")
     );
-    this._endCallSound = new Sound(require('../assets/sounds/end_call.mp3'));
+    this._endCallSound = new Sound(require("../assets/sounds/end_call.mp3"));
     this.token = null;
     this.otherUserId = null;
     this.startDate = 0;
@@ -77,7 +81,7 @@ class CallService {
   }
 
   initCallKit() {
-    if (Platform.OS !== 'ios') {
+    if (Platform.OS !== "ios") {
       return;
     }
 
@@ -91,18 +95,18 @@ class CallService {
     RNCallKeep.setup(options)
       .then(() => {})
       .catch(err => {
-        console.error('[CallKitService][setup] Error:', err.message);
+        console.error("[CallKitService][setup] Error:", err.message);
       });
 
     // Add RNCallKeep Events
-    RNCallKeep.addEventListener('answerCall', this.onAnswerCallAction);
-    RNCallKeep.addEventListener('endCall', this.onEndCallAction);
+    RNCallKeep.addEventListener("answerCall", this.onAnswerCallAction);
+    RNCallKeep.addEventListener("endCall", this.onEndCallAction);
     RNCallKeep.addEventListener(
-      'didPerformSetMutedCallAction',
-      this.onToggleMute,
+      "didPerformSetMutedCallAction",
+      this.onToggleMute
     );
-    RNCallKeep.addEventListener('didChangeAudioRoute', this.onChangeAudioRoute);
-    RNCallKeep.addEventListener('didLoadWithEvents', this.onLoadWithEvents);
+    RNCallKeep.addEventListener("didChangeAudioRoute", this.onChangeAudioRoute);
+    RNCallKeep.addEventListener("didLoadWithEvents", this.onLoadWithEvents);
   }
 
   get callSession() {
@@ -130,28 +134,27 @@ class CallService {
   }
 
   async startCall(usersIds, type, options = {}) {
-    console.log('options', options);
     const session = ConnectyCube.videochat.createNewSession(
       usersIds,
       type,
-      options,
+      options
     );
     store.dispatch(setCallSession(session));
 
     await this.setMediaDevices();
 
     const stream = await this.callSession.getUserMedia(
-      type == 2 ? CallService.MEDIA_OPTIONS_AUDIO : CallService.MEDIA_OPTIONS,
+      type == 2 ? CallService.MEDIA_OPTIONS_AUDIO : CallService.MEDIA_OPTIONS
     );
 
     // store streams
-    const streams = [{userId: LOCAL_STREAM_USER_ID, stream: stream}];
-    for (uId of usersIds) {
-      streams.push({userId: uId, stream: null});
+    const streams = [{ userId: LOCAL_STREAM_USER_ID, stream: stream }];
+    for (const uId of usersIds) {
+      streams.push({ userId: uId, stream: null });
     }
     store.dispatch(addOrUpdateStreams(streams));
 
-    this.callSession.call({options});
+    this.callSession.call({ options });
 
     const userName = `${this.currentUser.firstName} ${this.currentUser.lastName}`;
     const receivedNames = await getCallRecipientString(usersIds);
@@ -161,11 +164,11 @@ class CallService {
       this.callSession.ID,
       userName,
       receivedNames,
-      'generic',
-      type === 'video',
+      "generic",
+      type === "video"
     );
 
-    this.playSound('outgoing');
+    this.playSound("outgoing");
 
     return session;
   }
@@ -183,19 +186,19 @@ class CallService {
     const stream = await this.callSession.getUserMedia(
       this.callSession.callType == 2
         ? CallService.MEDIA_OPTIONS_AUDIO
-        : CallService.MEDIA_OPTIONS,
+        : CallService.MEDIA_OPTIONS
     );
 
     // store streams
-    const streams = [{userId: LOCAL_STREAM_USER_ID, stream: stream}];
+    const streams = [{ userId: LOCAL_STREAM_USER_ID, stream: stream }];
     const opponentsIds = [
       this.callSession.initiatorID,
       ...this.callSession.opponentsIDs.filter(
-        oid => oid !== this.callSession.currentUserID,
+        oid => oid !== this.callSession.currentUserID
       ),
     ];
-    for (uId of opponentsIds) {
-      streams.push({userId: uId, stream: null});
+    for (const uId of opponentsIds) {
+      streams.push({ userId: uId, stream: null });
     }
     store.dispatch(addOrUpdateStreams(streams));
 
@@ -218,7 +221,7 @@ class CallService {
       this.callSession.stop(options);
       ConnectyCube.videochat.clearSession(this.callSession.ID);
 
-      this.playSound('end');
+      this.playSound("end");
 
       if (!skipCallKit) {
         // report to Call Kit (iOS only)
@@ -259,9 +262,9 @@ class CallService {
 
   muteMicrophone(isMute, skipCallKit = false) {
     if (isMute) {
-      this.callSession?.mute('audio');
+      this.callSession?.mute("audio");
     } else {
-      this.callSession?.unmute('audio');
+      this.callSession?.unmute("audio");
     }
 
     store.dispatch(muteMicrophone(isMute));
@@ -273,7 +276,7 @@ class CallService {
 
   switchCamera() {
     const localStream = this.streams.filter(
-      s => s.userId === LOCAL_STREAM_USER_ID,
+      s => s.userId === LOCAL_STREAM_USER_ID
     )[0];
     localStream.stream.getVideoTracks().forEach(track => track._switchCamera());
   }
@@ -282,15 +285,15 @@ class CallService {
 
   playSound(type) {
     switch (type) {
-      case 'outgoing':
+      case "outgoing":
         this._outgoingCallSound.setNumberOfLoops(-1);
         this._outgoingCallSound.play();
         break;
-      case 'incoming':
+      case "incoming":
         this._incomingCallSound.setNumberOfLoops(-1);
         this._incomingCallSound.play();
         break;
-      case 'end':
+      case "end":
         this._endCallSound.play();
         break;
 
@@ -318,7 +321,7 @@ class CallService {
 
   // Use startCall to ask the system to start a call - Initiate an outgoing call from this point
   reportStartCall(callUUID, handle, contactIdentifier, handleType, hasVideo) {
-    if (Platform.OS !== 'ios') {
+    if (Platform.OS !== "ios") {
       return;
     }
 
@@ -328,12 +331,12 @@ class CallService {
       handle,
       contactIdentifier,
       handleType,
-      hasVideo,
+      hasVideo
     );
   }
 
   reportAcceptCall(callUUID) {
-    if (Platform.OS !== 'ios') {
+    if (Platform.OS !== "ios") {
       return;
     }
 
@@ -342,7 +345,7 @@ class CallService {
   }
 
   reportRejectCall(callUUID) {
-    if (Platform.OS !== 'ios') {
+    if (Platform.OS !== "ios") {
       return;
     }
 
@@ -350,7 +353,7 @@ class CallService {
   }
 
   reportEndCall(callUUID) {
-    if (Platform.OS !== 'ios') {
+    if (Platform.OS !== "ios") {
       return;
     }
 
@@ -358,7 +361,7 @@ class CallService {
   }
 
   reportMutedCall(callUUID, isMuted) {
-    if (Platform.OS !== 'ios') {
+    if (Platform.OS !== "ios") {
       return;
     }
 
@@ -366,7 +369,7 @@ class CallService {
   }
 
   reportEndCallWithoutUserInitiating(callUUID, reason) {
-    if (Platform.OS !== 'ios') {
+    if (Platform.OS !== "ios") {
       return;
     }
 
@@ -380,25 +383,24 @@ class CallService {
   onPostCallLog(payload, token) {
     ChatServices.postCallLog(payload, token)
       .then(res => {
-        console.log('postCallLog res:', res);
         if (res.status >= 200 && res.status <= 299) {
         } else if (res.status >= 300 && res.status <= 399) {
           alerts(
-            'error',
-            'You need to perform further actions to complete the request!',
+            "error",
+            "You need to perform further actions to complete the request!"
           );
         } else if (res.status >= 400 && res.status <= 499) {
-          alerts('error', res.data?.error?.message);
+          alerts("error", res.data?.error?.message);
         } else if (res.status >= 500 && res.status <= 599) {
           alerts(
-            'error',
-            'Internal server error! Your server is probably down.',
+            "error",
+            "Internal server error! Your server is probably down."
           );
         } else {
-          alerts('error', 'Something went wrong. Please try again later!');
+          alerts("error", "Something went wrong. Please try again later!");
         }
       })
-      .catch(err => console.log('postCallLog err:', err));
+      .catch(err => console.log("postCallLog err:", err));
   }
 
   async _onCallListener(session, extension) {
@@ -407,11 +409,11 @@ class CallService {
 
     // if already on a call
     if (this.callSession && !this.isDummySession) {
-      this.rejectCall(session, {already_on_call: true});
+      this.rejectCall(session, { already_on_call: true });
       return;
     }
 
-    this.playSound('incoming');
+    this.playSound("incoming");
 
     if (this.isEarlyAccepted && !this.isAccepted) {
       setTimeout(() => {
@@ -428,15 +430,15 @@ class CallService {
       this.stopSounds();
     }
 
-    getUserById(userId, 'full_name').then(res => {
+    getUserById(userId, "full_name").then(res => {
       showToast(`${res.firstName} has accepted the call`);
     });
   }
 
   async _onRejectCallListener(session, userId, extension) {
-    store.dispatch(removeStream({userId}));
+    store.dispatch(removeStream({ userId }));
 
-    getUserById(userId, 'full_name').then(res => {
+    getUserById(userId, "full_name").then(res => {
       const message = extension.already_on_call
         ? `${res.firstName} is busy (already on a call)`
         : `${res.firstName} rejected the call request`;
@@ -455,11 +457,11 @@ class CallService {
   async _onStopCallListener(session, userId, extension) {
     this.stopSounds();
 
-    getUserById(userId, 'full_name').then(res => {
+    getUserById(userId, "full_name").then(res => {
       showToast(`${res.firstName} has left the call`);
     });
 
-    store.dispatch(removeStream({userId}));
+    store.dispatch(removeStream({ userId }));
     if (this.streams.length <= 1) {
       store.dispatch(resetActiveCall());
 
@@ -467,7 +469,7 @@ class CallService {
       //
       this.reportEndCallWithoutUserInitiating(
         session.ID,
-        CK_CONSTANTS.END_CALL_REASONS.REMOTE_ENDED,
+        CK_CONSTANTS.END_CALL_REASONS.REMOTE_ENDED
       );
     }
 
@@ -479,7 +481,7 @@ class CallService {
       otherUserId: this.otherUserId,
       duration: this.startDate == 0 ? 0 : seconds,
       callType:
-        CallService.CALL_TYPE[session.callType == 2 ? 'voice' : 'video'],
+        CallService.CALL_TYPE[session.callType == 2 ? "voice" : "video"],
       logType:
         this.startDate == 0
           ? CallService.LOG_TYPE.missed
@@ -491,7 +493,7 @@ class CallService {
         return () => {
           if (!this.executed) {
             this.executed = true;
-            console.log('[RECEIVED] Function ran once!');
+            console.log("[RECEIVED] Function ran once!");
             this.onPostCallLog(obj, this.token);
           }
         };
@@ -502,16 +504,16 @@ class CallService {
   }
 
   async _onUserNotAnswerListener(session, userId) {
-    getUserById(userId, 'full_name').then(res => {
+    getUserById(userId, "full_name").then(res => {
       showToast(`${res.firstName} did not answer`);
     });
-    store.dispatch(removeStream({userId}));
+    store.dispatch(removeStream({ userId }));
 
     let obj = {
       otherUserId: this.otherUserId,
       duration: 0,
       callType:
-        CallService.CALL_TYPE[session.callType == 2 ? 'voice' : 'video'],
+        CallService.CALL_TYPE[session.callType == 2 ? "voice" : "video"],
       logType: CallService.LOG_TYPE.missed,
     };
 
@@ -520,7 +522,7 @@ class CallService {
         return () => {
           if (!this.executed) {
             this.executed = true;
-            console.log('[MISSED] Function ran once!');
+            console.log("[MISSED] Function ran once!");
             this.onPostCallLog(obj, this.token);
           }
         };
@@ -531,7 +533,7 @@ class CallService {
   }
 
   async _onRemoteStreamListener(session, userId, stream) {
-    store.dispatch(addOrUpdateStreams([{userId, stream}]));
+    store.dispatch(addOrUpdateStreams([{ userId, stream }]));
   }
 
   onAnswerCallAction = data => {
@@ -543,7 +545,7 @@ class CallService {
   };
 
   onEndCallAction = async data => {
-    let {callUUID} = data;
+    let { callUUID } = data;
 
     if (this.callSession) {
       if (this.isAccepted) {
@@ -553,12 +555,12 @@ class CallService {
       }
     } else {
       const voipIncomingCallSessions = await RNUserdefaults.get(
-        'voipIncomingCallSessions',
+        "voipIncomingCallSessions"
       );
       if (voipIncomingCallSessions) {
         const sessionInfo = voipIncomingCallSessions[callUUID];
         if (sessionInfo) {
-          const initiatorId = sessionInfo['initiatorId'];
+          const initiatorId = sessionInfo["initiatorId"];
 
           // most probably this is a call reject, so let's reject it via HTTP API
           ConnectyCube.videochat
@@ -574,7 +576,7 @@ class CallService {
   };
 
   onToggleMute = data => {
-    let {muted} = data;
+    let { muted } = data;
     this.muteMicrophone(muted, true);
   };
 
@@ -588,13 +590,13 @@ class CallService {
     let callDataToReject = null;
 
     for (let event of events) {
-      const {name, data} = event;
-      if (name === 'RNCallKeepDidDisplayIncomingCall') {
+      const { name, data } = event;
+      if (name === "RNCallKeepDidDisplayIncomingCall") {
         callDataToAdd = data;
         callDataToAnswer = null;
         callDataToReject = null;
       }
-      if (name === 'RNCallKeepPerformAnswerCallAction') {
+      if (name === "RNCallKeepPerformAnswerCallAction") {
         callDataToReject = null;
         callDataToAnswer = data;
       }
