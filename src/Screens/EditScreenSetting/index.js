@@ -27,13 +27,13 @@ import DropDownView from "../../components/Modal/DropDown";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 let filtered = [];
-const EditScreenSetting = (props) => {
+const EditScreenSetting = props => {
   const { allVibes, allPrompts, allProfileValues, promptsPool } = useSelector(
-    (store) => store.NewOnBoardingReducer
+    store => store.NewOnBoardingReducer
   );
   const { updateUser, updateUserPreference } = useHelper();
   const proMem = userData?.UserSetting?.isSubscribed;
-  const { userData, token } = useSelector((store) => store.userReducer);
+  const { userData, token } = useSelector(store => store.userReducer);
   const { edit, type, index, ask, line, preferenceEdit } = props?.route?.params;
   const [tagline, setTagline] = useState("");
   const [selctedVibe, setSelectedVibe] = useState([]);
@@ -216,7 +216,7 @@ const EditScreenSetting = (props) => {
     } else if (type === "Prompts Pool") {
       let copy = [...userData?.ProfilePrompts];
       let arr = [];
-      copy.map((item) => {
+      copy.map(item => {
         return arr.push({
           id: item?.Question?.id,
           title: item?.Question?.title,
@@ -264,7 +264,7 @@ const EditScreenSetting = (props) => {
           ? userData?.UserPreference?.languagesSpoken
           : null;
         if (copy !== null && copy?.length > 0) {
-          copy = copy.map((languageObj) => {
+          copy = copy.map(languageObj => {
             return { name: languageObj.language };
           });
           setSelectedLanguage(copy);
@@ -353,7 +353,7 @@ const EditScreenSetting = (props) => {
           ? userData?.UserPreference?.smoking
           : null;
         if (copy !== null && copy?.length > 0) {
-          copy = copy.map((smokeObj) => {
+          copy = copy.map(smokeObj => {
             return {
               name: smokeObj?.choice,
               icon:
@@ -386,7 +386,7 @@ const EditScreenSetting = (props) => {
           ? userData?.UserPreference?.dietChoices
           : null;
         if (copy !== null && copy?.length > 0) {
-          copy = copy.map((dietobject) => {
+          copy = copy.map(dietobject => {
             return {
               name: dietobject?.choice,
               icon:
@@ -491,14 +491,14 @@ const EditScreenSetting = (props) => {
 
   const selectVibe = (item, index) => {
     let arr = [...selctedVibe];
-    let check = arr.some((item1) => {
+    let check = arr.some(item1 => {
       return item1 === item?.name;
     });
     if (arr.length < 8 && check === false) {
       arr.push(item?.name);
       setSelectedVibe(arr);
     } else if (check === true) {
-      let filtered = arr.filter((item1) => {
+      let filtered = arr.filter(item1 => {
         return item1 !== item?.name;
       });
       setSelectedVibe(filtered);
@@ -506,7 +506,7 @@ const EditScreenSetting = (props) => {
   };
   const selectPP = (item, index) => {
     let arr = [...selectedPP];
-    let check = arr.some((item1) => {
+    let check = arr.some(item1 => {
       return item1?.id === item?.id;
     });
 
@@ -525,19 +525,19 @@ const EditScreenSetting = (props) => {
       arr.push(item);
       setSelectedPP(arr);
     } else if (check === true) {
-      let filtered = arr.filter((item1) => {
+      let filtered = arr.filter(item1 => {
         return item1?.id !== item?.id;
       });
       setSelectedPP(filtered);
     }
   };
-  const selectHeight = (number) => {
+  const selectHeight = number => {
     setSelectedHeight(number);
   };
   const search = (text, type, currentIndex) => {
     setSearchValue(text);
     if (text?.length > 2) {
-      let filtered1 = allProfileValues?.[type].filter((item) => {
+      let filtered1 = allProfileValues?.[type].filter(item => {
         return item?.name.includes(text);
       });
       if (filtered1.length > 0) {
@@ -553,11 +553,11 @@ const EditScreenSetting = (props) => {
     } else {
       let arr = [...selectedFO];
 
-      let check2 = arr.some((item1) => {
+      let check2 = arr.some(item1 => {
         return item1?.name === item?.name;
       });
 
-      let check = arr.some((item1) => {
+      let check = arr.some(item1 => {
         return item1?.name === "Not Specified";
       });
       if (check && item?.name !== "Not Specified") {
@@ -580,7 +580,7 @@ const EditScreenSetting = (props) => {
         arr.push(item);
         setSelectedFO(arr);
       } else if (!check && item?.name !== "Not Specified" && check2) {
-        let filtered = arr.filter((item1) => {
+        let filtered = arr.filter(item1 => {
           return item1?.name !== item?.name;
         });
         setSelectedFO(filtered);
@@ -593,11 +593,11 @@ const EditScreenSetting = (props) => {
     } else {
       let arr = [...selectedLanguage];
 
-      let check2 = arr.some((item1) => {
+      let check2 = arr.some(item1 => {
         return item1?.name === item?.name;
       });
 
-      let check = arr.some((item1) => {
+      let check = arr.some(item1 => {
         return item1?.name === "Other";
       });
       if (check && item?.name !== "Other") {
@@ -615,7 +615,7 @@ const EditScreenSetting = (props) => {
         arr.push(item);
         setSelectedLanguage(arr);
       } else if (!check && item?.name !== "Other" && check2) {
-        let filtered = arr.filter((item1) => {
+        let filtered = arr.filter(item1 => {
           return item1?.name !== item?.name;
         });
         setSelectedLanguage(filtered);
@@ -666,11 +666,11 @@ const EditScreenSetting = (props) => {
     } else {
       let arr = [...selectedCommunity];
 
-      let check2 = arr.some((item1) => {
+      let check2 = arr.some(item1 => {
         return item1?.name === item?.name;
       });
 
-      let check = arr.some((item1) => {
+      let check = arr.some(item1 => {
         return item1?.name === "Not Specified";
       });
       if (check && item?.name !== "Not Specified") {
@@ -688,7 +688,7 @@ const EditScreenSetting = (props) => {
         arr.push(item);
         setSelectedCommunity(arr);
       } else if (!check && item?.name !== "Not Specified" && check2) {
-        let filtered = arr.filter((item1) => {
+        let filtered = arr.filter(item1 => {
           return item1?.name !== item?.name;
         });
         setSelectedCommunity(filtered);
@@ -722,7 +722,7 @@ const EditScreenSetting = (props) => {
         enableLabel={true}
         customLabel={customLabel}
         bg="transparent"
-        multiSliderValuesChange={(val) => {
+        multiSliderValuesChange={val => {
           handleSliderValue(customLabel, val);
         }}
       />
@@ -752,7 +752,7 @@ const EditScreenSetting = (props) => {
         enableLabel={true}
         customLabel={customLabel}
         bg="transparent"
-        multiSliderValuesChange={(val) => {
+        multiSliderValuesChange={val => {
           handleSliderMarriageValue(customLabel, val);
         }}
       />
@@ -776,11 +776,11 @@ const EditScreenSetting = (props) => {
     } else {
       let arr = [...selectedSmoke];
 
-      let check2 = arr.some((item1) => {
+      let check2 = arr.some(item1 => {
         return item1?.name === item?.name;
       });
 
-      let check = arr.some((item1) => {
+      let check = arr.some(item1 => {
         return item1?.name === "None";
       });
       if (check && item?.name !== "None") {
@@ -798,7 +798,7 @@ const EditScreenSetting = (props) => {
         arr.push(item);
         setSelectedSmoke(arr);
       } else if (!check && item?.name !== "None" && check2) {
-        let filtered = arr.filter((item1) => {
+        let filtered = arr.filter(item1 => {
           return item1?.name !== item?.name;
         });
         setSelectedSmoke(filtered);
@@ -811,11 +811,11 @@ const EditScreenSetting = (props) => {
     } else {
       let arr = [...selectedDiet];
 
-      let check2 = arr.some((item1) => {
+      let check2 = arr.some(item1 => {
         return item1?.name === item?.name;
       });
 
-      let check = arr.some((item1) => {
+      let check = arr.some(item1 => {
         return item1?.name === "Anything";
       });
       if (check && item?.name !== "Anything") {
@@ -833,7 +833,7 @@ const EditScreenSetting = (props) => {
         arr.push(item);
         setSelectedDiet(arr);
       } else if (!check && item?.name !== "Anything" && check2) {
-        let filtered = arr.filter((item1) => {
+        let filtered = arr.filter(item1 => {
           return item1?.name !== item?.name;
         });
         setSelectedDiet(filtered);
@@ -852,17 +852,17 @@ const EditScreenSetting = (props) => {
   const selectRelocate = (item, index) => {
     setSelectedRelocate(item?.name);
   };
-  const Distance = (value) => {
+  const Distance = value => {
     setDistance(value);
   };
-  const DistanceSlider = (value) => {
+  const DistanceSlider = value => {
     setDistanceSlider(value);
   };
-  const HeightSliderValuesChange = (values) => {
+  const HeightSliderValuesChange = values => {
     setHeightSlider(values);
   };
-  const AgeSliderValuesChange = (value) => {
-    value = value.map((item) => {
+  const AgeSliderValuesChange = value => {
+    value = value.map(item => {
       return parseInt(item);
     });
 
@@ -884,7 +884,7 @@ const EditScreenSetting = (props) => {
               selectedPP[ppIndex]?.answer &&
               selectedPP[ppIndex]?.answer !== ""
             ) {
-              setPPIndex((prev) => prev + 1);
+              setPPIndex(prev => prev + 1);
             } else {
               alerts("error", "Please write your answer");
             }
@@ -1026,12 +1026,12 @@ const EditScreenSetting = (props) => {
       let filteredCommuntiy;
       let filteredFO;
       if (type === "Community") {
-        filteredCommuntiy = selectedCommunity?.filter((item) => {
+        filteredCommuntiy = selectedCommunity?.filter(item => {
           return item?.name !== null;
         });
       }
       if (type === "Family Origin") {
-        filteredFO = selectedFO?.filter((item) => {
+        filteredFO = selectedFO?.filter(item => {
           return item?.name !== null;
         });
       }
@@ -1130,7 +1130,7 @@ const EditScreenSetting = (props) => {
       >
         <KeyboardAwareScrollView
           enableOnAndroid={ppCheck && android ? true : false}
-          extraScrollHeight={ppCheck && android ? windowHeight * 150 : 0}
+          extraScrollHeight={ppCheck && android ? 150 : 0}
           // style={{ flex: 1 }}
           contentContainerStyle={ppCheck && android ? null : { flex: 1 }}
           keyboardShouldPersistTaps={"handled"}
@@ -1320,7 +1320,7 @@ const EditScreenSetting = (props) => {
                   <TextInput
                     style={styles.textinput}
                     value={tagline}
-                    onChangeText={(text) => {
+                    onChangeText={text => {
                       setTagline(text);
                     }}
                     placeholder={`Remember first impressions count 😉`}
@@ -1348,9 +1348,9 @@ const EditScreenSetting = (props) => {
                   >
                     {allVibes.length > 0 &&
                       allVibes.map((item, index) => {
-                        let findIndex = selctedVibe?.map((newItem) => {
+                        let findIndex = selctedVibe?.map(newItem => {
                           return allVibes.findIndex(
-                            (item) => item.name === newItem
+                            item => item.name === newItem
                           );
                         });
                         return (
@@ -1400,9 +1400,9 @@ const EditScreenSetting = (props) => {
                     >
                       {allPrompts.length > 0 &&
                         allPrompts.map((item, index) => {
-                          let findIndex = selectedPP.map((newItem) => {
+                          let findIndex = selectedPP.map(newItem => {
                             return allPrompts.findIndex(
-                              (item) => item?.id === newItem?.id
+                              item => item?.id === newItem?.id
                             );
                           });
 
@@ -1463,7 +1463,7 @@ const EditScreenSetting = (props) => {
                             ? selectedPP[ppIndex]?.answer
                             : ""
                         }
-                        onChangeText={(text) => {
+                        onChangeText={text => {
                           let copy = [...selectedPP];
                           copy[ppIndex] = {
                             ...copy[ppIndex],
@@ -1481,7 +1481,7 @@ const EditScreenSetting = (props) => {
                 <View style={styles.rulerView}>
                   <RulerPicker
                     value={selectedHeight / 30.48}
-                    onValueChangeEnd={(number) =>
+                    onValueChangeEnd={number =>
                       selectHeight((number / 30.48).toFixed(1))
                     }
                     min={92}
@@ -1502,7 +1502,7 @@ const EditScreenSetting = (props) => {
               ) : type === "Family Origin" ? (
                 <>
                   <OnBoardingSearch
-                    onChangeText={(text) => search(text, "familyOrigin")}
+                    onChangeText={text => search(text, "familyOrigin")}
                     array={allProfileValues?.familyOrigin}
                     // currentIndex={currentIndex}
                     searchValue={searchValue}
@@ -1533,9 +1533,9 @@ const EditScreenSetting = (props) => {
                       >
                         {filtered?.length > 0
                           ? filtered.map((item, index) => {
-                              let findIndex = selectedFO.map((newItem) => {
+                              let findIndex = selectedFO.map(newItem => {
                                 return filtered.findIndex(
-                                  (item) => item?.name === newItem?.name
+                                  item => item?.name === newItem?.name
                                 );
                               });
                               return (
@@ -1554,9 +1554,9 @@ const EditScreenSetting = (props) => {
                           : allProfileValues?.familyOrigin.length > 0 &&
                             allProfileValues?.familyOrigin.map(
                               (item, index) => {
-                                let findIndex = selectedFO.map((newItem) => {
+                                let findIndex = selectedFO.map(newItem => {
                                   return allProfileValues?.familyOrigin.findIndex(
-                                    (item) => item?.name === newItem?.name
+                                    item => item?.name === newItem?.name
                                   );
                                 });
 
@@ -1599,7 +1599,7 @@ const EditScreenSetting = (props) => {
               ) : type === "Community" ? (
                 <>
                   <OnBoardingSearch
-                    onChangeText={(text) => search(text, "community")}
+                    onChangeText={text => search(text, "community")}
                     array={userData?.Profile?.community}
                     // currentIndex={userData?.Profile?.community}
                     searchValue={searchValue}
@@ -1630,13 +1630,11 @@ const EditScreenSetting = (props) => {
                       >
                         {filtered?.length > 0
                           ? filtered.map((item, index) => {
-                              let findIndex = selectedCommunity.map(
-                                (newItem) => {
-                                  return filtered.findIndex(
-                                    (item) => item?.name === newItem?.name
-                                  );
-                                }
-                              );
+                              let findIndex = selectedCommunity.map(newItem => {
+                                return filtered.findIndex(
+                                  item => item?.name === newItem?.name
+                                );
+                              });
                               return (
                                 <NewOnBoardingDesign
                                   mainOnPress={() =>
@@ -1654,13 +1652,11 @@ const EditScreenSetting = (props) => {
                             })
                           : allProfileValues?.community?.length > 0 &&
                             allProfileValues?.community.map((item, index) => {
-                              let findIndex = selectedCommunity.map(
-                                (newItem) => {
-                                  return allProfileValues?.community.findIndex(
-                                    (item) => item?.name === newItem?.name
-                                  );
-                                }
-                              );
+                              let findIndex = selectedCommunity.map(newItem => {
+                                return allProfileValues?.community.findIndex(
+                                  item => item?.name === newItem?.name
+                                );
+                              });
                               return (
                                 <NewOnBoardingDesign
                                   mainOnPress={() =>
@@ -1701,7 +1697,7 @@ const EditScreenSetting = (props) => {
               ) : type === "Languages" ? (
                 <>
                   <OnBoardingSearch
-                    onChangeText={(text) => search(text, "language")}
+                    onChangeText={text => search(text, "language")}
                     array={userData?.UserLanguages}
                     // currentIndex={currentIndex}
                     searchValue={searchValue}
@@ -1732,13 +1728,11 @@ const EditScreenSetting = (props) => {
                       >
                         {filtered?.length > 0
                           ? filtered.map((item, index) => {
-                              let findIndex = selectedLanguage.map(
-                                (newItem) => {
-                                  return filtered.findIndex(
-                                    (item) => item?.name === newItem?.name
-                                  );
-                                }
-                              );
+                              let findIndex = selectedLanguage.map(newItem => {
+                                return filtered.findIndex(
+                                  item => item?.name === newItem?.name
+                                );
+                              });
                               return (
                                 <NewOnBoardingDesign
                                   mainOnPress={() =>
@@ -1756,13 +1750,11 @@ const EditScreenSetting = (props) => {
                             })
                           : allProfileValues?.language.length > 0 &&
                             allProfileValues?.language.map((item, index) => {
-                              let findIndex = selectedLanguage.map(
-                                (newItem) => {
-                                  return allProfileValues?.language.findIndex(
-                                    (item) => item?.name === newItem?.name
-                                  );
-                                }
-                              );
+                              let findIndex = selectedLanguage.map(newItem => {
+                                return allProfileValues?.language.findIndex(
+                                  item => item?.name === newItem?.name
+                                );
+                              });
                               return (
                                 <NewOnBoardingDesign
                                   mainOnPress={() =>
@@ -1978,7 +1970,7 @@ const EditScreenSetting = (props) => {
                   <TextInput
                     style={styles.textinput}
                     value={occupation}
-                    onChangeText={(text) => {
+                    onChangeText={text => {
                       setOccupation(text);
                     }}
                     placeholder={`Occupation Ex. Designer etc`}
@@ -2035,9 +2027,9 @@ const EditScreenSetting = (props) => {
                 })
               ) : type === "Smoke" ? (
                 smokeArray.map((item, index) => {
-                  let findIndex = selectedSmoke.map((newItem) => {
+                  let findIndex = selectedSmoke.map(newItem => {
                     return smokeArray.findIndex(
-                      (item) => item?.name === newItem?.name
+                      item => item?.name === newItem?.name
                     );
                   });
                   return (
@@ -2055,9 +2047,9 @@ const EditScreenSetting = (props) => {
                 })
               ) : type === "Diet" ? (
                 dietArray.map((item, index) => {
-                  let findIndex = selectedDiet.map((newItem) => {
+                  let findIndex = selectedDiet.map(newItem => {
                     return dietArray.findIndex(
-                      (item) => item?.name === newItem?.name
+                      item => item?.name === newItem?.name
                     );
                   });
                   return (

@@ -29,7 +29,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 let filtered = [];
 
 const OnBoardingQuestions = ({ navigation }) => {
-  const { token, userData } = useSelector((store) => store.userReducer);
+  const { token, userData } = useSelector(store => store.userReducer);
   const {
     vibes,
     promptsPool,
@@ -53,7 +53,7 @@ const OnBoardingQuestions = ({ navigation }) => {
     wantKids,
     relocate,
     tagline1,
-  } = useSelector((store) => store.NewOnBoardingReducer);
+  } = useSelector(store => store.NewOnBoardingReducer);
   let roundedHeight = height;
   const dispatch = useDispatch();
   const [completeScrollBarHeight, setCompleteScrollBarHeight] = useState(1);
@@ -562,11 +562,11 @@ const OnBoardingQuestions = ({ navigation }) => {
     setLoading(true);
     let copyarr = [...array];
     OnBoardingServices.vibesListing()
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           let sortedData = res?.data?.data
-            .map((x) => ({ name: x?.name, id: x?.id }))
+            .map(x => ({ name: x?.name, id: x?.id }))
             .sort((a, b) => {
               if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
               if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
@@ -588,7 +588,7 @@ const OnBoardingQuestions = ({ navigation }) => {
           };
 
           UserService.getQuestions()
-            .then((res) => {
+            .then(res => {
               handleStatusCode(res);
               if (res.status >= 200 && res.status <= 299) {
                 let sortedData = res.data.data.sort((a, b) => {
@@ -602,7 +602,7 @@ const OnBoardingQuestions = ({ navigation }) => {
                   type: "allPrompts",
                   payload: sortedData,
                 });
-                let findIndex = copyarr.findIndex((item) => {
+                let findIndex = copyarr.findIndex(item => {
                   return item?.type === "Prompts Pool";
                 });
                 copyarr[findIndex] = {
@@ -621,10 +621,10 @@ const OnBoardingQuestions = ({ navigation }) => {
                 // );
               }
             })
-            .catch((err) => console.log("getQuestions err", err));
+            .catch(err => console.log("getQuestions err", err));
         }
       })
-      .catch((err) => console.log("vibesListing err", err));
+      .catch(err => console.log("vibesListing err", err));
 
     OnBoardingServices.profileValues(
       encodeURI(
@@ -638,7 +638,7 @@ const OnBoardingQuestions = ({ navigation }) => {
         ])
       )
     )
-      .then(async (res) => {
+      .then(async res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
@@ -648,24 +648,24 @@ const OnBoardingQuestions = ({ navigation }) => {
 
           let data = res?.data?.data;
 
-          let find = copyarr.findIndex((item) => {
+          let find = copyarr.findIndex(item => {
             return item?.type === "Family Origin";
           });
-          let findCommunityIndex = copyarr.findIndex((item) => {
+          let findCommunityIndex = copyarr.findIndex(item => {
             return item?.type === "Community";
           });
-          let findLanguageIndex = copyarr.findIndex((item) => {
+          let findLanguageIndex = copyarr.findIndex(item => {
             return item?.type === "Language";
           });
-          let findReligionIndex = copyarr.findIndex((item) => {
+          let findReligionIndex = copyarr.findIndex(item => {
             return item?.type === "Religion";
           });
-          let findDenominationIndex = copyarr.findIndex((item) => {
+          let findDenominationIndex = copyarr.findIndex(item => {
             return item?.type === "Denomination";
           });
 
           let religionArray = await Object.keys(data?.denomination)
-            .map((x) => ({ name: x }))
+            .map(x => ({ name: x }))
             .sort((a, b) => {
               if (a.name < b.name) return -1;
               if (a.name > b.name) return 1;
@@ -698,13 +698,13 @@ const OnBoardingQuestions = ({ navigation }) => {
           setArray(copyarr);
         }
       })
-      .catch((err) => console.log("profileValues err", err))
+      .catch(err => console.log("profileValues err", err))
       .finally(() => setLoading(false));
   }, []);
 
   const selectVibe = (item, index) => {
     let arr = [...selctedVibe];
-    let check = arr.some((item1) => {
+    let check = arr.some(item1 => {
       return item1?.id === item?.id;
     });
     if (arr.length < 8 && check === false) {
@@ -716,7 +716,7 @@ const OnBoardingQuestions = ({ navigation }) => {
         payload: arr,
       });
     } else if (check === true) {
-      let filtered = arr.filter((item1) => {
+      let filtered = arr.filter(item1 => {
         return item1?.id !== item?.id;
       });
       setSelectedVibe(filtered);
@@ -728,7 +728,7 @@ const OnBoardingQuestions = ({ navigation }) => {
   };
   const selectPP = (item, index) => {
     let arr = [...selectedPP];
-    let check = arr.some((item1) => {
+    let check = arr.some(item1 => {
       return item1?.id === item?.id;
     });
     if (arr.length < 3 && check === false) {
@@ -739,7 +739,7 @@ const OnBoardingQuestions = ({ navigation }) => {
         payload: arr,
       });
     } else if (check === true) {
-      let filtered = arr.filter((item1) => {
+      let filtered = arr.filter(item1 => {
         return item1?.id !== item?.id;
       });
       setSelectedPP(filtered);
@@ -792,7 +792,7 @@ const OnBoardingQuestions = ({ navigation }) => {
     // }
   };
 
-  const selectHeight = (number) => {
+  const selectHeight = number => {
     console.log("NUMBER", number);
     setSelectedHeight(number);
     dispatch({
@@ -804,11 +804,11 @@ const OnBoardingQuestions = ({ navigation }) => {
   const selectFO = (item, index) => {
     let arr = [...selectedFO];
 
-    let check2 = arr.some((item1) => {
+    let check2 = arr.some(item1 => {
       return item1?.name === item?.name;
     });
 
-    let check = arr.some((item1) => {
+    let check = arr.some(item1 => {
       return item1?.name === "Not Specified";
     });
     if (check && item?.name !== "Not Specified") {
@@ -847,7 +847,7 @@ const OnBoardingQuestions = ({ navigation }) => {
         payload: arr,
       });
     } else if (!check && item?.name !== "Not Specified" && check2) {
-      let filtered = arr.filter((item1) => {
+      let filtered = arr.filter(item1 => {
         return item1?.name !== item?.name;
       });
       setSelectedFO(filtered);
@@ -860,11 +860,11 @@ const OnBoardingQuestions = ({ navigation }) => {
   const selectCommunity = (item, index) => {
     let arr = [...selectedCommunity];
 
-    let check2 = arr.some((item1) => {
+    let check2 = arr.some(item1 => {
       return item1?.name === item?.name;
     });
 
-    let check = arr.some((item1) => {
+    let check = arr.some(item1 => {
       return item1?.name === "Not Specified";
     });
     if (check && item?.name !== "Not Specified") {
@@ -898,7 +898,7 @@ const OnBoardingQuestions = ({ navigation }) => {
         payload: arr,
       });
     } else if (!check && item?.name !== "Not Specified" && check2) {
-      let filtered = arr.filter((item1) => {
+      let filtered = arr.filter(item1 => {
         return item1?.name !== item?.name;
       });
       setSelectedCommunity(filtered);
@@ -911,11 +911,11 @@ const OnBoardingQuestions = ({ navigation }) => {
   const selectLanguage = (item, index) => {
     let arr = [...selectedLanguage];
 
-    let check2 = arr.some((item1) => {
+    let check2 = arr.some(item1 => {
       return item1?.name === item?.name;
     });
 
-    let check = arr.some((item1) => {
+    let check = arr.some(item1 => {
       return item1?.name === "Other";
     });
     if (check && item?.name !== "Other") {
@@ -949,7 +949,7 @@ const OnBoardingQuestions = ({ navigation }) => {
         payload: arr,
       });
     } else if (!check && item?.name !== "Other" && check2) {
-      let filtered = arr.filter((item1) => {
+      let filtered = arr.filter(item1 => {
         return item1?.name !== item?.name;
       });
       setSelectedLanguage(filtered);
@@ -994,11 +994,11 @@ const OnBoardingQuestions = ({ navigation }) => {
   const selectSmoke = (item, index) => {
     let arr = [...selectedSmoke];
 
-    let check2 = arr.some((item1) => {
+    let check2 = arr.some(item1 => {
       return item1?.name === item?.name;
     });
 
-    let check = arr.some((item1) => {
+    let check = arr.some(item1 => {
       return item1?.name === "None";
     });
     if (check && item?.name !== "None") {
@@ -1032,7 +1032,7 @@ const OnBoardingQuestions = ({ navigation }) => {
         payload: arr,
       });
     } else if (!check && item?.name !== "None" && check2) {
-      let filtered = arr.filter((item1) => {
+      let filtered = arr.filter(item1 => {
         return item1?.name !== item?.name;
       });
       setSelectedSmoke(filtered);
@@ -1045,11 +1045,11 @@ const OnBoardingQuestions = ({ navigation }) => {
   const selectDiet = (item, index) => {
     let arr = [...selectedDiet];
 
-    let check2 = arr.some((item1) => {
+    let check2 = arr.some(item1 => {
       return item1?.name === item?.name;
     });
 
-    let check = arr.some((item1) => {
+    let check = arr.some(item1 => {
       return item1?.name === "Anything";
     });
     if (check && item?.name !== "Anything") {
@@ -1083,7 +1083,7 @@ const OnBoardingQuestions = ({ navigation }) => {
         payload: arr,
       });
     } else if (!check && item?.name !== "Anything" && check2) {
-      let filtered = arr.filter((item1) => {
+      let filtered = arr.filter(item1 => {
         return item1?.name !== item?.name;
       });
       setSelectedDiet(filtered);
@@ -1211,7 +1211,7 @@ const OnBoardingQuestions = ({ navigation }) => {
             promptsPool[ppIndex]?.answer &&
             promptsPool[ppIndex]?.answer !== ""
           ) {
-            setPPIndex((prev) => prev + 1);
+            setPPIndex(prev => prev + 1);
           } else {
             alerts("error", "Please write your answer");
           }
@@ -1221,7 +1221,7 @@ const OnBoardingQuestions = ({ navigation }) => {
             promptsPool[ppIndex]?.answer !== ""
           ) {
             setPPCheck(false);
-            setCurrentIndex((prev) => prev + 1);
+            setCurrentIndex(prev => prev + 1);
           } else {
             alerts("error", "Please write your answer");
           }
@@ -1305,7 +1305,7 @@ const OnBoardingQuestions = ({ navigation }) => {
         formData.append("height", height);
         formData.append("familyOrigin", familyOrigin[0]?.name);
         formData.append("community", community[0]?.name);
-        language.map((el) => {
+        language.map(el => {
           formData.append(`languages[]`, el?.name);
         });
         formData.append("denomination", denomination?.name);
@@ -1340,7 +1340,7 @@ const OnBoardingQuestions = ({ navigation }) => {
         });
         console.log("FORM DATA", formData);
         UserService.updateNewProfile(formData, token)
-          .then((res) => {
+          .then(res => {
             console.log("HELLO RES", res);
             if (res?.status >= 200 && res?.status <= 299) {
               Alerts("success", "Profile updated successfully");
@@ -1353,7 +1353,7 @@ const OnBoardingQuestions = ({ navigation }) => {
               Alerts("error", res?.data?.error?.message);
             }
           })
-          .catch((e) => {
+          .catch(e => {
             // Alerts('Error', e?.data?.error?.message);
             console.log("updateNewProfile err", e);
           })
@@ -1361,7 +1361,7 @@ const OnBoardingQuestions = ({ navigation }) => {
             setButtonLoader(false);
           });
       } else {
-        setCurrentIndex((prev) => prev + 1);
+        setCurrentIndex(prev => prev + 1);
         filtered = [];
         setSearchValue("");
       }
@@ -1373,7 +1373,7 @@ const OnBoardingQuestions = ({ navigation }) => {
     if (text?.length > 2) {
       filtered = [...array];
       let copyArray = [...array];
-      let filtered1 = array[currentIndex]?.options.filter((item) => {
+      let filtered1 = array[currentIndex]?.options.filter(item => {
         return item?.name.includes(text);
       });
       if (filtered1.length > 0) {
@@ -1411,7 +1411,7 @@ const OnBoardingQuestions = ({ navigation }) => {
         enableLabel={true}
         customLabel={customLabel}
         bg="transparent"
-        multiSliderValuesChange={(val) => {
+        multiSliderValuesChange={val => {
           handleSliderValue(customLabel, val);
         }}
       />
@@ -1441,7 +1441,7 @@ const OnBoardingQuestions = ({ navigation }) => {
         enableLabel={true}
         customLabel={customLabel}
         bg="transparent"
-        multiSliderValuesChange={(val) => {
+        multiSliderValuesChange={val => {
           handleSliderMarriageValue(customLabel, val);
         }}
       />
@@ -1466,7 +1466,7 @@ const OnBoardingQuestions = ({ navigation }) => {
       >
         <KeyboardAwareScrollView
           enableOnAndroid={ppCheck && android ? true : false}
-          extraScrollHeight={ppCheck && android ? windowHeight * 150 : 0}
+          extraScrollHeight={ppCheck && android ? 150 : 0}
           // style={{ flex: 1 }}
           contentContainerStyle={ppCheck && android ? null : { flex: 1 }}
           keyboardShouldPersistTaps={"handled"}
@@ -1479,16 +1479,16 @@ const OnBoardingQuestions = ({ navigation }) => {
                 !ppCheck &&
                 array[currentIndex]?.type !== "Height"
               ) {
-                setCurrentIndex((prev) => prev - 1);
+                setCurrentIndex(prev => prev - 1);
               } else if (currentIndex > 0 && ppCheck) {
                 if (ppIndex === 0 && ppCheck) {
                   setPPIndex(0);
                   setPPCheck(false);
                 } else {
-                  setPPIndex((prev) => prev - 1);
+                  setPPIndex(prev => prev - 1);
                 }
               } else if (array[currentIndex]?.type === "Height") {
-                setCurrentIndex((prev) => prev - 1);
+                setCurrentIndex(prev => prev - 1);
                 setPPCheck(true);
                 setPPIndex(selectedPP?.length - 1);
               } else {
@@ -1584,9 +1584,9 @@ const OnBoardingQuestions = ({ navigation }) => {
                   >
                     {array[currentIndex]?.options?.length > 0 &&
                       array[currentIndex]?.options.map((item, index) => {
-                        let findIndex = selctedVibe.map((newItem) => {
+                        let findIndex = selctedVibe.map(newItem => {
                           return array[currentIndex]?.options.findIndex(
-                            (item) => item.id === newItem.id
+                            item => item.id === newItem.id
                           );
                         });
                         return (
@@ -1637,9 +1637,9 @@ const OnBoardingQuestions = ({ navigation }) => {
                   >
                     {array[currentIndex]?.options?.length > 0 &&
                       array[currentIndex]?.options.map((item, index) => {
-                        let findIndex = selectedPP.map((newItem) => {
+                        let findIndex = selectedPP.map(newItem => {
                           return array[currentIndex]?.options.findIndex(
-                            (item) => item?.id === newItem?.id
+                            item => item?.id === newItem?.id
                           );
                         });
 
@@ -1700,7 +1700,7 @@ const OnBoardingQuestions = ({ navigation }) => {
                           ? selectedPP[ppIndex]?.answer
                           : ""
                       }
-                      onChangeText={(text) => {
+                      onChangeText={text => {
                         let copy = [...selectedPP];
                         copy[ppIndex] = {
                           ...copy[ppIndex],
@@ -1733,10 +1733,10 @@ const OnBoardingQuestions = ({ navigation }) => {
               >
                 <RulerPicker
                   value={selectedHeight / 30.48}
-                  onValueChangeEnd={(number) =>
+                  onValueChangeEnd={number =>
                     selectHeight((number / 30.48).toFixed(1))
                   }
-                  onValueChange={(number) => {
+                  onValueChange={number => {
                     console.log("NUMBer", number);
                   }}
                   min={122}
@@ -1757,7 +1757,7 @@ const OnBoardingQuestions = ({ navigation }) => {
             ) : array[currentIndex]?.type === "Family Origin" ? (
               <>
                 <OnBoardingSearch
-                  onChangeText={(text) =>
+                  onChangeText={text =>
                     search(text, array[currentIndex]?.type, currentIndex)
                   }
                   array={array}
@@ -1788,9 +1788,9 @@ const OnBoardingQuestions = ({ navigation }) => {
                     >
                       {filtered?.length > 0
                         ? filtered[currentIndex]?.options.map((item, index) => {
-                            let findIndex = selectedFO.map((newItem) => {
+                            let findIndex = selectedFO.map(newItem => {
                               return filtered[currentIndex]?.options.findIndex(
-                                (item) => item?.name === newItem?.name
+                                item => item?.name === newItem?.name
                               );
                             });
                             return (
@@ -1808,9 +1808,9 @@ const OnBoardingQuestions = ({ navigation }) => {
                           })
                         : array[currentIndex]?.options?.length > 0 &&
                           array[currentIndex]?.options.map((item, index) => {
-                            let findIndex = selectedFO.map((newItem) => {
+                            let findIndex = selectedFO.map(newItem => {
                               return array[currentIndex]?.options.findIndex(
-                                (item) => item?.name === newItem?.name
+                                item => item?.name === newItem?.name
                               );
                             });
                             return (
@@ -1849,7 +1849,7 @@ const OnBoardingQuestions = ({ navigation }) => {
             ) : array[currentIndex]?.type === "Community" ? (
               <>
                 <OnBoardingSearch
-                  onChangeText={(text) =>
+                  onChangeText={text =>
                     search(text, array[currentIndex]?.type, currentIndex)
                   }
                   array={array}
@@ -1880,9 +1880,9 @@ const OnBoardingQuestions = ({ navigation }) => {
                     >
                       {filtered?.length > 0
                         ? filtered[currentIndex]?.options.map((item, index) => {
-                            let findIndex = selectedCommunity.map((newItem) => {
+                            let findIndex = selectedCommunity.map(newItem => {
                               return filtered[currentIndex]?.options.findIndex(
-                                (item) => item?.name === newItem?.name
+                                item => item?.name === newItem?.name
                               );
                             });
                             return (
@@ -1900,9 +1900,9 @@ const OnBoardingQuestions = ({ navigation }) => {
                           })
                         : array[currentIndex]?.options?.length > 0 &&
                           array[currentIndex]?.options.map((item, index) => {
-                            let findIndex = selectedCommunity.map((newItem) => {
+                            let findIndex = selectedCommunity.map(newItem => {
                               return array[currentIndex]?.options.findIndex(
-                                (item) => item?.name === newItem?.name
+                                item => item?.name === newItem?.name
                               );
                             });
                             return (
@@ -1941,7 +1941,7 @@ const OnBoardingQuestions = ({ navigation }) => {
             ) : array[currentIndex]?.type === "Language" ? (
               <>
                 <OnBoardingSearch
-                  onChangeText={(text) =>
+                  onChangeText={text =>
                     search(text, array[currentIndex]?.type, currentIndex)
                   }
                   array={array}
@@ -1972,9 +1972,9 @@ const OnBoardingQuestions = ({ navigation }) => {
                     >
                       {filtered?.length > 0
                         ? filtered[currentIndex]?.options.map((item, index) => {
-                            let findIndex = selectedLanguage.map((newItem) => {
+                            let findIndex = selectedLanguage.map(newItem => {
                               return filtered[currentIndex]?.options.findIndex(
-                                (item) => item?.name === newItem?.name
+                                item => item?.name === newItem?.name
                               );
                             });
                             return (
@@ -1992,9 +1992,9 @@ const OnBoardingQuestions = ({ navigation }) => {
                           })
                         : array[currentIndex]?.options?.length > 0 &&
                           array[currentIndex]?.options.map((item, index) => {
-                            let findIndex = selectedLanguage.map((newItem) => {
+                            let findIndex = selectedLanguage.map(newItem => {
                               return array[currentIndex]?.options.findIndex(
-                                (item) => item?.name === newItem?.name
+                                item => item?.name === newItem?.name
                               );
                             });
                             return (
@@ -2067,7 +2067,7 @@ const OnBoardingQuestions = ({ navigation }) => {
                   numberOfLines={1}
                   style={styles.textinput}
                   value={occupation}
-                  onChangeText={(text) => {
+                  onChangeText={text => {
                     setOccupation(text);
                     dispatch({
                       type: "occupation1",
@@ -2183,9 +2183,9 @@ const OnBoardingQuestions = ({ navigation }) => {
             ) : array[currentIndex]?.type === "Smoke" ? (
               <ScrollView style={{ marginVertical: "5%" }}>
                 {array[currentIndex]?.options.map((item, index) => {
-                  let findIndex = selectedSmoke.map((newItem) => {
+                  let findIndex = selectedSmoke.map(newItem => {
                     return array[currentIndex]?.options.findIndex(
-                      (item) => item?.name === newItem?.name
+                      item => item?.name === newItem?.name
                     );
                   });
                   return (
@@ -2205,9 +2205,9 @@ const OnBoardingQuestions = ({ navigation }) => {
             ) : array[currentIndex]?.type === "Diet" ? (
               <ScrollView style={{ marginVertical: "5%" }}>
                 {array[currentIndex]?.options.map((item, index) => {
-                  let findIndex = selectedDiet.map((newItem) => {
+                  let findIndex = selectedDiet.map(newItem => {
                     return array[currentIndex]?.options.findIndex(
-                      (item) => item?.name === newItem?.name
+                      item => item?.name === newItem?.name
                     );
                   });
                   return (
@@ -2337,7 +2337,7 @@ const OnBoardingQuestions = ({ navigation }) => {
                 <TextInput
                   style={styles.textinput}
                   value={tagline}
-                  onChangeText={(text) => {
+                  onChangeText={text => {
                     setTagline(text);
                     dispatch({
                       type: "tagline1",
