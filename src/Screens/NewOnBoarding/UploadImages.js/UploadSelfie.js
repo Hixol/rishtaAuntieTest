@@ -25,6 +25,7 @@ import Icons from "../../../utility/icons";
 import colors from "../../../utility/colors";
 import FastImage from "react-native-fast-image";
 import BottomButton from "../../../components/buttons/BottomButton";
+import { Svg, Defs, Rect, Mask, Circle } from "react-native-svg";
 
 const UploadSelfie = ({ navigation, route }) => {
   const dispatch = useDispatch();
@@ -39,7 +40,7 @@ const UploadSelfie = ({ navigation, route }) => {
     video,
     religion,
     profilePictures,
-  } = useSelector((store) => store.NewOnBoardingReducer);
+  } = useSelector(store => store.NewOnBoardingReducer);
 
   const isFocused = useIsFocused();
 
@@ -61,6 +62,32 @@ const UploadSelfie = ({ navigation, route }) => {
   const devices = useCameraDevices();
   const device = devices[cameraMode];
 
+  const OvalMask = () => (
+    <Svg height="100%" width="100%" style={{ position: "absolute" }}>
+      <Defs>
+        <Mask id="mask" x="0" y="0" height="100%" width="100%">
+          <Rect height="100%" width="100%" fill="#fff" />
+          <Circle
+            r="19.7%"
+            cx="50%"
+            cy={ios ? "30%" : "27%"}
+            fill="black"
+            scaleY={1.2}
+            strokeWidth={2}
+            stroke={colors.textGrey1}
+          />
+        </Mask>
+      </Defs>
+      <Rect
+        height="100%"
+        width="100%"
+        fill="rgba(97, 16, 65, 0.3)"
+        mask="url(#mask)"
+        fill-opacity="0"
+      />
+    </Svg>
+  );
+
   useEffect(() => {
     if (selfie !== null) {
       setImageUri({
@@ -80,7 +107,7 @@ const UploadSelfie = ({ navigation, route }) => {
           cameraType: "front",
         };
 
-        await launchCamera(options, (res) => {
+        await launchCamera(options, res => {
           if (res.errorCode == "others") {
             alerts(
               "error",
@@ -115,12 +142,12 @@ const UploadSelfie = ({ navigation, route }) => {
     }
   };
 
-  const handleCamera = (state) => {
+  const handleCamera = state => {
     if (ios) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.IOS.CAMERA,
         "camera",
-        (res) => {
+        res => {
           setSelfieObj(null);
           setShowCamera(true);
         }
@@ -129,7 +156,7 @@ const UploadSelfie = ({ navigation, route }) => {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.ANDROID.CAMERA,
         "camera",
-        (res) => {
+        res => {
           setSelfieObj(null);
           setShowCamera(true);
         }
@@ -174,6 +201,7 @@ const UploadSelfie = ({ navigation, route }) => {
             setImageUri({
               uri: image.uri,
             });
+            setShowCamera(false);
           } else {
             alerts("error", "No face detected");
           }
@@ -192,6 +220,7 @@ const UploadSelfie = ({ navigation, route }) => {
             setImageUri({
               uri: `file://${image.path}`,
             });
+            setShowCamera(false);
           } else {
             alerts("error", "No face detected");
           }
@@ -221,14 +250,14 @@ const UploadSelfie = ({ navigation, route }) => {
 
   return cameraRef != null && showCamera ? (
     <View style={styles.cameraBg}>
-      <View style={styles.oval}>
-        {selfieObj ? (
-          <FastImage
-            source={{ uri: selfieObj.uri }}
-            resizeMode="cover"
-            style={styles.camera}
-          />
-        ) : ios ? (
+      {selfieObj ? (
+        <FastImage
+          source={{ uri: selfieObj.uri }}
+          resizeMode="cover"
+          style={styles.camera}
+        />
+      ) : ios ? (
+        <>
           <RNCamera
             ref={cameraRef}
             style={styles.camera}
@@ -236,8 +265,12 @@ const UploadSelfie = ({ navigation, route }) => {
             type={cameraMode}
             captureAudio={false}
             flashMode={flashMode}
-          />
-        ) : (
+          >
+            <OvalMask />
+          </RNCamera>
+        </>
+      ) : (
+        <>
           <Camera
             ref={cameraRef}
             style={styles.camera}
@@ -249,8 +282,10 @@ const UploadSelfie = ({ navigation, route }) => {
             torch={flashMode}
             frameProcessorFps={5}
           />
-        )}
-      </View>
+          <OvalMask />
+        </>
+      )}
+
       <Icons.Ionicons
         onPress={() => setShowCamera(false)}
         name="close"
