@@ -12,9 +12,10 @@ import moment from "moment";
 import HeaderContainer from "../../components/containers/headerContainer";
 import FastImage from "react-native-fast-image";
 import BadgeServices from "../../services/BadgeServices";
+import colors from "../../utility/colors";
 
-const MyInsight = (props) => {
-  const { token, userData } = useSelector((store) => store.userReducer);
+const MyInsight = props => {
+  const { token, userData } = useSelector(store => store.userReducer);
   const { Alerts, handleStatusCode } = useHelper();
   const [loading, setLoading] = useState(false);
   const [insight, setInsight] = useState({});
@@ -43,7 +44,7 @@ const MyInsight = (props) => {
   const getMyInsight = () => {
     setLoading(true);
     UserService.myInsight(token)
-      .then((res) => {
+      .then(res => {
         console.log("🚀 myInsight res:", res);
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
@@ -51,7 +52,7 @@ const MyInsight = (props) => {
           getUserBadge();
         }
       })
-      .catch((err) => {
+      .catch(err => {
         console.log("myInsight err:", err);
       })
       .finally(() => setLoading(false));
@@ -60,7 +61,7 @@ const MyInsight = (props) => {
   const getUserBadge = () => {
     setLoading(true);
     BadgeServices.getUserBadges(userData?.id, token)
-      .then((res) => {
+      .then(res => {
         console.log("getUserBadges res", res);
         if (res.status >= 200 && res.status <= 299) {
           setBadges(res.data.data);
@@ -84,7 +85,7 @@ const MyInsight = (props) => {
           Alerts("error", "Something went wrong. Please try again later!");
         }
       })
-      .catch((err) => console.log("getUserBadges err:", err))
+      .catch(err => console.log("getUserBadges err:", err))
       .finally(() => setLoading(false));
   };
 
@@ -100,8 +101,20 @@ const MyInsight = (props) => {
         gobackButtonPress={() => props.navigation.goBack()}
         goback={"arrow-back"}
         backButton
-        Icon
+        btnWithTitle
+        screenTitle="Insights"
+        titleStyle={{
+          width: "45%",
+          alignItems: "flex-end",
+          fontSize: 22,
+          fontFamily: "Inter-Bold",
+          color: colors.blackBlue,
+        }}
       />
+
+      <Text style={styles.tagline}>
+        Users you match with can see your insights. Play it smart. 😉
+      </Text>
       <View style={styles.paddingContainer}>
         <Text style={styles.title}>Insights</Text>
         {insight != null && Object.keys(insight).length > 0 && (
@@ -120,7 +133,7 @@ const MyInsight = (props) => {
         )}
 
         {badges.length > 0 &&
-          badges.map((el) =>
+          badges.map(el =>
             insightsArr.map((item, index) => {
               if (el.name == item.title) {
                 return (

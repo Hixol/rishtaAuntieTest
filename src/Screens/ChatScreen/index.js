@@ -44,6 +44,7 @@ import Icons from "../../utility/icons";
 import Video from "react-native-video";
 import ActionBottomModal from "../../components/Modal/ActionBottomModal";
 import WaveForm from "react-native-audiowaveform";
+import permisisonsService from "../../services/permissions-service";
 
 let limit = 50;
 let offset = 0; // offset starts like an array index and 0 will points to first page.
@@ -256,6 +257,8 @@ const ChatScreen = props => {
     });
 
     if (el.type === "GROUP") getOpenendTicket();
+
+    permisisonsService.checkAndRequestDrawOverlaysPermission();
   }, []);
 
   useEffect(() => {

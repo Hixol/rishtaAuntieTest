@@ -18,6 +18,7 @@ import Icons from "../../utility/icons";
 import SettingHeader from "../../components/containers/settingHeader";
 import FastImage from "react-native-fast-image";
 import ActionBottomModal from "../../components/Modal/ActionBottomModal";
+import pushNotificationsService from "../../services/PushNotificationService";
 
 const ModalDataArray = [
   {
@@ -58,7 +59,7 @@ const ModalDataArray = [
   },
 ];
 
-const MySetting = (props) => {
+const MySetting = props => {
   const [modalVisible, setModalVisible] = useState(false);
   const [action, setAction] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
@@ -66,7 +67,7 @@ const MySetting = (props) => {
   const socket = useContext(SocketContext);
   const dispatch = useDispatch();
   const { handleStatusCode } = useHelper();
-  const { token, email, settings } = useSelector((store) => store.userReducer);
+  const { token, email, settings } = useSelector(store => store.userReducer);
 
   const onToggleSwitch = (type, val) => {
     switch (type) {
@@ -91,14 +92,13 @@ const MySetting = (props) => {
   };
 
   const logOut = async () => {
+    pushNotificationsService.deleteSubscription();
     if (email != "") {
       dispatch({
         type: "USER_EMAIL",
         payload: "",
       });
-      Auth.signOut()
-        .then((res) => console.log("signOut res:", res))
-        .catch((err) => console.log("signOut err:", err));
+      Auth.signOut().catch(err => console.log("auth signOut err:", err));
     }
     dispatch({
       type: "AUTH_TOKEN",
@@ -147,12 +147,12 @@ const MySetting = (props) => {
 
     if (token != null) {
       ProfileServices.updateUserSettings(urlencoded, token)
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.data.status >= 200 && res.data.status <= 299) {
           }
         })
-        .catch((err) => console.log("updateUserSettings err", err));
+        .catch(err => console.log("updateUserSettings err", err));
     }
   };
 
