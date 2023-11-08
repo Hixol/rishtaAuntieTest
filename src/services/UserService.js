@@ -10,6 +10,7 @@ class UserService extends Resources {
     updateNewProfile: "/user",
     signUpSocial: "/auth/signup/social",
     verifyOtp: "/auth/verify-code",
+    logout: "/auth/logout",
     getVibes: "/user/vibes",
     getQuestions: "/user/questions",
     deleteAccount: `/user`,
@@ -65,21 +66,26 @@ class UserService extends Resources {
     }
   }
 
-  login = (payload) => {
+  login = payload => {
     return ApiManager.post(this.routes.login, payload);
   };
 
-  signUp = (payload) => {
+  signUp = payload => {
     return ApiManager.post(this.routes.signUp, payload);
   };
 
-  signUpSocial = (payload) => {
+  signUpSocial = payload => {
     return ApiManager.post(this.routes.signUpSocial, payload);
   };
 
-  verifyOtp = (payload) => {
+  verifyOtp = payload => {
     return ApiManager.post(this.routes.verifyOtp, payload);
   };
+
+  logout = token => {
+    return ApiManager.patch(this.routes.logout, {}, token);
+  };
+
   deleteAccount = (id, token) => {
     console.log("TOKEN INSIDE", token, id);
 
@@ -128,13 +134,13 @@ class UserService extends Resources {
   getAllTheirMatchRequest = (token, payload) => {
     return ApiManager.get(this.routes.getAllTheirMatchRequest, payload, token);
   };
-  getOneUser = (id) => {
+  getOneUser = id => {
     return ApiManager.get(this.routes.getOneUser, id);
   };
   getOtherUser = (id, token) => {
     return ApiManager.get(this.routes.getOtherUser, id, token);
   };
-  blockList = (token) => {
+  blockList = token => {
     return ApiManager.get(this.routes.blockList, "", token);
   };
   unblockUser = (payload, token) => {
@@ -145,7 +151,7 @@ class UserService extends Resources {
       token
     );
   };
-  myInsight = (token) => {
+  myInsight = token => {
     return ApiManager.get(this.routes.myInsight, "", token);
   };
 
@@ -247,7 +253,7 @@ class UserService extends Resources {
     return ApiManager.post(this.routes.chatInfo, payload, false, token);
   };
 
-  callLog = (token) => {
+  callLog = token => {
     return ApiManager.get(this.routes.callLog, null, token);
   };
 
@@ -255,7 +261,7 @@ class UserService extends Resources {
     return ApiManager.post(this.routes.changePassword, payload, false, token);
   };
 
-  resetPassword = (payload) => {
+  resetPassword = payload => {
     return ApiManager.post(this.routes.resetPassword, payload);
   };
 
@@ -263,7 +269,7 @@ class UserService extends Resources {
     return ApiManager.patch(this.routes.updateCurrentLocation, payload, token);
   };
 
-  applyReset = (token) => {
+  applyReset = token => {
     return ApiManager.delete(this.routes.applyReset, null, token);
   };
   createNewProfile = (payload, token) => {

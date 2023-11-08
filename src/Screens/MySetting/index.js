@@ -7,8 +7,11 @@ import { SocketContext } from "../../context/SocketContext";
 import { useHelper } from "../../hooks/useHelper";
 import { version } from "../../../package.json";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { UserService } from "../../services";
+
 import styles from "./styles";
 import colors from "../../utility/colors";
+import ConnectyCube from "react-native-connectycube";
 import HeaderContainer from "../../components/containers/headerContainer";
 import BasicPrivacySetting from "../../components/containers/BasicPrivacySetting";
 import LoginMethodModalOptions from "../../components/Modal/LoginMethodModalOptions";
@@ -93,6 +96,10 @@ const MySetting = props => {
 
   const logOut = async () => {
     pushNotificationsService.deleteSubscription();
+    ConnectyCube.chat.disconnect();
+    await ConnectyCube.destroySession();
+    await UserService.logout(token);
+
     if (email != "") {
       dispatch({
         type: "USER_EMAIL",
