@@ -29,13 +29,14 @@ import IAPServices from "../../services/IAPServices";
 import Loader from "../../components/Loader";
 import SettingButton from "../../components/buttons/SettingButton";
 import BoostUpgradeCard from "../../components/Cards/BoostUpgradeCard";
+import Icons from "../../utility/icons";
 
-const Settings = (props) => {
+const Settings = props => {
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const { Alerts, handleStatusCode } = useHelper();
-  const { token, userData, status } = useSelector((store) => store.userReducer);
-  const { denomination } = useSelector((store) => store.profileReducer);
+  const { token, userData, status } = useSelector(store => store.userReducer);
+  const { denomination } = useSelector(store => store.profileReducer);
 
   const proMember = userData?.UserSetting?.isSubscribed;
 
@@ -86,7 +87,7 @@ const Settings = (props) => {
     React.useCallback(() => {
       if (token != null) {
         ProfileServices.getMyProfile(token)
-          .then((res) => {
+          .then(res => {
             handleStatusCode(res);
             if (res.status >= 200 && res.status <= 299) {
               let data = res?.data?.data;
@@ -153,7 +154,7 @@ const Settings = (props) => {
                   ])
                 )
               )
-                .then((res) => {
+                .then(res => {
                   handleStatusCode(res);
                   if (res.status >= 200 && res.status <= 299) {
                     let data = res?.data?.data;
@@ -163,16 +164,16 @@ const Settings = (props) => {
                     });
                   }
                 })
-                .catch((err) => console.log("profileValues err", err));
+                .catch(err => console.log("profileValues err", err));
             }
           })
-          .catch((err) => console.log("getMyProfile err", err));
+          .catch(err => console.log("getMyProfile err", err));
 
         if (denomination.length > 0) {
           dispatch({
             type: "PROFILE_DEN_VALUES",
             payload: denomination[userData?.Profile?.religion]?.map(
-              (x) => x.name
+              x => x.name
             ),
           });
         }
@@ -182,18 +183,18 @@ const Settings = (props) => {
     }, [isFocused])
   );
 
-  const handleQuiz = (state) => {
+  const handleQuiz = state => {
     setMediaOptions(state);
     props.navigation.navigate("PersonalityQuiz");
   };
 
-  const handleAlert = (state) => {
+  const handleAlert = state => {
     setMediaOptions(state);
   };
 
   const handleEnableSpotlight = () => [
     IAPServices.enableSpotlight(token)
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           Alerts("success", res.data.message);
@@ -210,25 +211,25 @@ const Settings = (props) => {
           });
         }
       })
-      .catch((err) => Alerts("error", err?.message)),
+      .catch(err => Alerts("error", err?.message)),
   ];
 
   const createContactSupport = () => {
     ChatServices.contactSupport(token)
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 201) {
           getChatHeads();
         }
       })
-      .catch((err) => Alerts("error", err?.message))
+      .catch(err => Alerts("error", err?.message))
       .finally(() => setLoading(false));
   };
 
   const getChatHeads = () => {
     setLoading(true);
     ChatServices.chatHead(token)
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           let typeFlag = false;
@@ -242,7 +243,7 @@ const Settings = (props) => {
           }
 
           if (typeFlag) {
-            data.map((el) => {
+            data.map(el => {
               if (el.type === "GROUP") {
                 props.navigation.navigate("BottomTab", {
                   screen: "UserChatList",
@@ -262,13 +263,13 @@ const Settings = (props) => {
           }
         }
       })
-      .catch((err) => Alerts("error", err?.message))
+      .catch(err => Alerts("error", err?.message))
       .finally(() => setLoading(false));
   };
 
-  const handleUrl = (endpoint) =>
+  const handleUrl = endpoint =>
     Linking.openURL(`https://rishtaauntie.app/${endpoint}/`);
-  console.log("USERATA", userData, status);
+
   return (
     <SafeAreaView style={styles.container}>
       <HeaderContainer Icon />
@@ -329,7 +330,8 @@ const Settings = (props) => {
               </View>
             </View>
           ) : null} */}
-          {userData?.Profile?.personalityType===null || status === "INCOMPLETE" ? (
+          {userData?.Profile?.personalityType === null ||
+          status === "INCOMPLETE" ? (
             <View style={styles.actionItemsMainView}>
               <View style={styles.actionItemsView}>
                 <Text style={styles.actionItemsText}>Action Items</Text>
@@ -399,9 +401,15 @@ const Settings = (props) => {
                 >
                   {userData?.firstName + " " + userData?.lastName}
                 </Text>
-                {status === "INCOMPLETE" ? (
-                  <View style={{ width: "10%", backgroundColor: "red" }}></View>
-                ) : (
+
+                <Icons.EvilIcons
+                  onPress={() => props.navigation.navigate("ViewProfile")}
+                  name="user"
+                  size={36}
+                  color={colors.primaryPink}
+                  style={{ bottom: 2.5 }}
+                />
+                {status !== "INCOMPLETE" ? (
                   <TouchableOpacity
                     onPress={() => {
                       props.navigation.navigate("EditProfileScreen");
@@ -414,7 +422,7 @@ const Settings = (props) => {
                       source={require("../../assets/iconimages/editoutline.png")}
                     />
                   </TouchableOpacity>
-                )}
+                ) : null}
               </View>
               <SettingButton
                 onPress={() => props.navigation.navigate("MyInsight")}

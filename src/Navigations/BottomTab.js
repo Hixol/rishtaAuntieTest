@@ -9,19 +9,19 @@ import Settings from "../Screens/Settings";
 import Discover from "../Screens/Discover";
 import colors from "../utility/colors";
 import UserChatList from "../Screens/userChatList";
-import ViewEditProfile from "../Screens/ViewEditProfile";
 import Blog from "../Screens/Blog";
 import Interactions from "../Screens/Interactions";
 import MyVibes from "../Screens/myVibes";
 import ProfilePrompts from "../Screens/ProfilePrompts";
 import FastImage from "react-native-fast-image";
 import ChatTabView from "../Screens/ChatTabView";
+import ViewProfile from "../Screens/ViewProfile";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-const SettingsStack = (props) => {
-  const { userData } = useSelector((store) => store.userReducer);
+const SettingsStack = props => {
+  const { userData } = useSelector(store => store.userReducer);
   const proMember = userData?.UserSetting?.isSubscribed;
 
   return (
@@ -58,10 +58,11 @@ const SettingsStack = (props) => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="ViewEditProfile"
-        component={ViewEditProfile}
+        name="ViewProfile"
+        component={ViewProfile}
         options={{
-          headerBackVisible: false,
+          headerTintColor: colors.blackBlue,
+          headerBackTitleVisible: false,
         }}
       />
       <Stack.Screen
@@ -91,8 +92,8 @@ const UserChatListStack = () => {
   );
 };
 
-const Tabs = (props) => {
-  const CustomTabButton = (props) => (
+const Tabs = props => {
+  const CustomTabButton = props => (
     <TouchableOpacity
       {...props}
       style={
@@ -143,7 +144,7 @@ const Tabs = (props) => {
           ),
         }}
         listeners={({ navigation, route }) => ({
-          tabPress: (e) => navigation.navigate("HomeOne"),
+          tabPress: e => navigation.navigate("HomeOne"),
         })}
       />
       <Tab.Screen
