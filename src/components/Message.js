@@ -409,7 +409,7 @@ const Message = ({
                 resizeMode={"contain"}
                 controls={false}
                 paused={pausePlay}
-                repeat={false}
+                repeat={true}
                 ignoreSilentSwitch={"ignore"}
                 playInBackground={false}
                 onProgress={e => onProgress(e)}
@@ -684,7 +684,7 @@ const Message = ({
                 resizeMode={"contain"}
                 controls={false}
                 paused={pausePlay}
-                repeat={false}
+                repeat={true}
                 ignoreSilentSwitch={"ignore"}
                 playInBackground={false}
                 onProgress={e => onProgress(e)}
@@ -709,7 +709,10 @@ const Message = ({
                     maximumValue={100}
                     style={{ height: "100%" }}
                     trackStyle={{ backgroundColor: colors.black }}
-                    thumbStyle={styles.thumbStyle}
+                    thumbStyle={[
+                      styles.thumbStyle,
+                      { backgroundColor: colors.primaryPink },
+                    ]}
                     onSlidingComplete={e => onSlidingComplete(e)}
                   />
                 </View>
@@ -803,8 +806,8 @@ const styles = StyleSheet.create({
   questionMsg: {
     maxWidth: "78%",
     backgroundColor: colors.msgGrey,
-    paddingVertical: "2%",
-    paddingHorizontal: "4%",
+    paddingVertical: "3%",
+    paddingHorizontal: "6%",
     marginVertical: "1%",
     marginHorizontal: "2%",
     alignSelf: "flex-start",
@@ -814,8 +817,8 @@ const styles = StyleSheet.create({
   answerMsg: {
     maxWidth: "78%",
     backgroundColor: colors.primaryPink,
-    paddingVertical: "2%",
-    paddingHorizontal: "4%",
+    paddingVertical: "3%",
+    paddingHorizontal: "6%",
     marginVertical: "3%",
     marginHorizontal: "2%",
     alignSelf: "flex-end",
@@ -904,7 +907,7 @@ const styles = StyleSheet.create({
   thumbStyle: {
     width: 12,
     height: 12,
-    backgroundColor: colors.primaryPink,
+    backgroundColor: colors.blackBlue,
   },
   msgSeen: {
     flexDirection: "row",

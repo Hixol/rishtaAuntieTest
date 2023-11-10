@@ -76,7 +76,7 @@ const ChatScreen = props => {
   const [userStatus, setUserStatus] = useState(false);
   const [typingStatus, setTypingStatus] = useState(false);
   const [loader, setLoader] = useState(false);
-  const [pause, setPause] = useState(false);
+  const [pause, setPause] = useState(true);
   const [msgRead, setMsgRead] = useState("");
   const [matchReq, setMatchReq] = useState(null);
   const [isTicketOpened, setIsTicketOpened] = useState(false);
@@ -91,7 +91,7 @@ const ChatScreen = props => {
     pauseView,
     audioUri,
     setAudioUri,
-  } = useRecorder();
+  } = useRecorder(true);
 
   const noMatchMessages = [
     { id: 1, msg: "You have no active matches right now 🙁" },
@@ -1186,7 +1186,7 @@ const ChatScreen = props => {
                   onPress={onPressSend}
                 >
                   {loader ? (
-                    <Loader />
+                    <Loader size="small" color={colors.white} />
                   ) : (
                     <FastImage
                       source={

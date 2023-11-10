@@ -55,7 +55,7 @@ const HomeOne = props => {
   const [imageModal, setImageModal] = useState(false);
   const [modalType, setModalType] = useState("");
   const tabBarHeight = useBottomTabBarHeight();
-  const [skeleton, setSkeleton] = useState(false);
+  const [skeleton, setSkeleton] = useState(true);
   const [index, setIndex] = useState();
   const [check, setCheck] = useState(false);
   const flatListRef = useRef(null);
@@ -519,6 +519,8 @@ const HomeOne = props => {
           style={{ alignSelf: "center", flex: 1 }}
           size={"large"}
         />
+      ) : skeleton ? (
+        <DiscoverSkeleton tabBarHeight={tabBarHeight} />
       ) : totalProfiles === 0 && remainingProfiles > 0 ? (
         renderOutProfiles()
       ) : (
@@ -552,8 +554,6 @@ const HomeOne = props => {
                 btnText="Upgrade"
                 onPress={() => props.navigation.navigate("Paywall")}
               />
-            ) : skeleton ? (
-              <DiscoverSkeleton tabBarHeight={tabBarHeight} />
             ) : profilesList.length > 0 ? (
               <FlatList
                 scrollEnabled={check ? false : true}
