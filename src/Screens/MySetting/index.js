@@ -21,7 +21,6 @@ import Icons from "../../utility/icons";
 import SettingHeader from "../../components/containers/settingHeader";
 import FastImage from "react-native-fast-image";
 import ActionBottomModal from "../../components/Modal/ActionBottomModal";
-import pushNotificationsService from "../../services/PushNotificationService";
 
 const ModalDataArray = [
   {
@@ -95,7 +94,6 @@ const MySetting = props => {
   };
 
   const logOut = async () => {
-    pushNotificationsService.deleteSubscription();
     ConnectyCube.chat.disconnect();
     await ConnectyCube.destroySession();
     await UserService.logout(token);

@@ -10,10 +10,10 @@ import colors from "../../utility/colors";
 import SettingHeader from "../../components/containers/settingHeader";
 import FastImage from "react-native-fast-image";
 
-const EditProfileScreen = (props) => {
+const EditProfileScreen = props => {
   const dispatch = useDispatch();
   const {} = useHelper();
-  const { userData } = useSelector((store) => store.userReducer);
+  const { userData } = useSelector(store => store.userReducer);
 
   const changeOption = [
     {
@@ -202,30 +202,29 @@ const EditProfileScreen = (props) => {
 
   useEffect(() => {
     OnBoardingServices.vibesListing()
-      .then((res) => {
+      .then(res => {
         if (res.status >= 200 && res.status <= 299) {
           let sortedData = res?.data?.data
-            .map((x) => ({ name: x?.name, id: x?.id }))
+            .map(x => ({ name: x?.name, id: x?.id }))
             .sort((a, b) => {
               if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
               if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
               return 0;
             });
-          console.log("sortedData", sortedData);
+
           dispatch({
             type: "allVibes",
             payload: sortedData,
           });
 
           UserService.getQuestions()
-            .then((res) => {
+            .then(res => {
               if (res.status >= 200 && res.status <= 299) {
                 let sortedData = res.data.data.sort((a, b) => {
                   if (a.title.toLowerCase() < b.title.toLowerCase()) return -1;
                   if (a.title.toLowerCase() > b.title.toLowerCase()) return 1;
                   return 0;
                 });
-                console.log("SORTEDDATA123", sortedData, res?.data?.data);
 
                 dispatch({
                   type: "allPrompts",
@@ -233,10 +232,10 @@ const EditProfileScreen = (props) => {
                 });
               }
             })
-            .catch((err) => console.log("getQuestions err", err));
+            .catch(err => console.log("getQuestions err", err));
         }
       })
-      .catch((err) => console.log("vibesListing err", err));
+      .catch(err => console.log("vibesListing err", err));
 
     OnBoardingServices.profileValues(
       encodeURI(
@@ -250,7 +249,7 @@ const EditProfileScreen = (props) => {
         ])
       )
     )
-      .then(async (res) => {
+      .then(async res => {
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
             type: "allProfileValues",
@@ -258,7 +257,7 @@ const EditProfileScreen = (props) => {
           });
         }
       })
-      .catch((err) => console.log("profileValues err", err))
+      .catch(err => console.log("profileValues err", err))
       .finally(() => {});
   }, []);
 

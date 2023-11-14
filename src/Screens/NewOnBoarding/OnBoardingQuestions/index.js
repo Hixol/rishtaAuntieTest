@@ -572,7 +572,7 @@ const OnBoardingQuestions = ({ navigation }) => {
               if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
               return 0;
             });
-          console.log("sortedData", sortedData);
+
           dispatch({
             type: "allVibes",
             payload: sortedData,
@@ -596,7 +596,6 @@ const OnBoardingQuestions = ({ navigation }) => {
                   if (a.title.toLowerCase() > b.title.toLowerCase()) return 1;
                   return 0;
                 });
-                console.log("SORTEDDATA123", sortedData, res?.data?.data);
 
                 dispatch({
                   type: "allPrompts",

@@ -1,15 +1,16 @@
-import React from 'react';
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {showToast} from '../../utility/utils';
-import {useSelector} from 'react-redux';
+import React from "react";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { showToast } from "../../utility/utils";
+import { useSelector } from "react-redux";
 
-import Icons from '../../utility/icons';
-import colors from '../../utility/colors';
-import FastImage from 'react-native-fast-image';
-import CallService from '../../services/call-service';
-import ConnectyCube from 'react-native-connectycube';
-import PushNotificationsService from '../../services/PushNotificationService';
+import Icons from "../../utility/icons";
+import configureStore from "../../store";
+import colors from "../../utility/colors";
+import FastImage from "react-native-fast-image";
+import CallService from "../../services/call-service";
+import ConnectyCube from "react-native-connectycube";
+import PushNotificationsService from "../../services/PushNotificationService";
 
 const ChatHeaderContainer = ({
   backPress,
@@ -24,11 +25,13 @@ const ChatHeaderContainer = ({
   optionsPress,
 }) => {
   const navigation = useNavigation();
-  const {token} = useSelector(store => store.userReducer);
+  const { store } = configureStore();
+  const { token } = useSelector(store => store.userReducer);
 
-  const startCall = async (callType = 'video') => {
+  const startCall = async (callType = "video") => {
+    CallService.getStore(store);
     if (user.UserSetting.ccuid == null) {
-      showToast('User does not have a valid connectycube id');
+      showToast("User does not have a valid connectycube id");
       return;
     }
 
@@ -36,10 +39,10 @@ const ChatHeaderContainer = ({
 
     const callSession = await CallService.startCall(
       selectedOpponentsIds,
-      callType == 'video'
+      callType == "video"
         ? ConnectyCube.videochat.CallType.VIDEO
         : ConnectyCube.videochat.CallType.AUDIO,
-      {token, callType, userId: user.id},
+      { token, callType, userId: user.id }
     );
 
     const pushParams = {
@@ -47,17 +50,17 @@ const ChatHeaderContainer = ({
       ios_voip: 1,
       handle: user.firstName,
       initiatorId: callSession.initiatorID,
-      opponentsIds: selectedOpponentsIds.join(','),
+      opponentsIds: selectedOpponentsIds.join(","),
       uuid: callSession.ID,
       callType,
     };
 
     PushNotificationsService.sendPushNotification(
       selectedOpponentsIds,
-      pushParams,
+      pushParams
     );
 
-    navigation.navigate('VideoScreen', {
+    navigation.navigate("VideoScreen", {
       initiatorName: user,
     });
   };
@@ -92,14 +95,17 @@ const ChatHeaderContainer = ({
       <View style={styles.row}>
         {selected ? (
           <>
-            <TouchableOpacity onPress={starCallback} style={{marginRight: 14}}>
+            <TouchableOpacity
+              onPress={starCallback}
+              style={{ marginRight: 14 }}
+            >
               <Icons.MaterialCommunityIcons
                 name="star"
                 size={24}
                 color={colors.blackBlue}
               />
             </TouchableOpacity>
-            {type === 'GROUP' ? null : (
+            {type === "GROUP" ? null : (
               <TouchableOpacity onPress={reportCallback}>
                 <Icons.MaterialCommunityIcons
                   name="message-alert"
@@ -111,25 +117,25 @@ const ChatHeaderContainer = ({
           </>
         ) : (
           <>
-            {type === 'GROUP' ? null : (
+            {type === "GROUP" ? null : (
               <>
-                <TouchableOpacity onPress={() => startCall('voice')}>
+                <TouchableOpacity onPress={() => startCall("voice")}>
                   <FastImage
-                    source={require('../../assets/iconimages/call-01.png')}
-                    style={{width: 40, height: 18}}
+                    source={require("../../assets/iconimages/call-01.png")}
+                    style={{ width: 40, height: 18 }}
                     resizeMode="contain"
                   />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => startCall('video')}>
+                <TouchableOpacity onPress={() => startCall("video")}>
                   <FastImage
-                    source={require('../../assets/iconimages/video-call-01.png')}
-                    style={{width: 50, height: 16}}
+                    source={require("../../assets/iconimages/video-call-01.png")}
+                    style={{ width: 50, height: 16 }}
                     resizeMode="contain"
                   />
                 </TouchableOpacity>
               </>
             )}
-            {type === 'GROUP' ? null : (
+            {type === "GROUP" ? null : (
               <TouchableOpacity onPress={optionsPress}>
                 <Icons.Ionicons
                   name="ellipsis-vertical-sharp"
@@ -147,18 +153,18 @@ const ChatHeaderContainer = ({
 
 const styles = StyleSheet.create({
   headerView: {
-    width: '100%',
+    width: "100%",
     backgroundColor: colors.white,
-    paddingHorizontal: '3%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    paddingHorizontal: "3%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   userName: {
     fontSize: 20,
     marginLeft: 5,
     color: colors.blackBlue,
-    fontFamily: 'Inter-Bold',
+    fontFamily: "Inter-Bold",
   },
   status: {
     fontSize: 15,
@@ -168,28 +174,28 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 50 / 2,
-    marginHorizontal: '5%',
-    overflow: 'hidden',
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginHorizontal: "5%",
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   logo: {
-    width: '85%',
-    height: '85%',
+    width: "85%",
+    height: "85%",
   },
   leftContainerView: {
-    flexDirection: 'row',
-    width: '62%',
-    paddingVertical: '2%',
-    alignItems: 'center',
+    flexDirection: "row",
+    width: "62%",
+    paddingVertical: "2%",
+    alignItems: "center",
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
 });
 export default ChatHeaderContainer;

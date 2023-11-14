@@ -894,7 +894,7 @@ const EditScreenSetting = props => {
               selectedPP[ppIndex]?.answer !== ""
             ) {
               let check;
-              console.log("SELECTED PP", selectedPP);
+
               selectedPP.map((el, ind) => {
                 check = userData?.ProfilePrompts?.some((item, index) => {
                   return item?.Question?.id === el?.id;
@@ -1122,7 +1122,7 @@ const EditScreenSetting = props => {
       props.navigation.goBack();
     }
   };
-  console.log("SELECTED PP", selectedPP, ppCheck);
+
   return (
     <>
       <SafeAreaView
