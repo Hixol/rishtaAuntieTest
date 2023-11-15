@@ -152,7 +152,7 @@ const UploadVideo = ({ navigation, route }) => {
   };
 
   const continuePress = async () => {
-    if (edit) {
+    if (edit && videoUri != null) {
       setLoading(true);
 
       let formData1 = new FormData();
@@ -353,6 +353,12 @@ const UploadVideo = ({ navigation, route }) => {
   };
 
   const handleRemoveImage = () => {
+    dispatch({
+      type: "video",
+      payload: null,
+    });
+    setVideoObj(null);
+    setVideoUri(null);
     setShowAlert(false);
   };
 
@@ -660,7 +666,7 @@ const UploadVideo = ({ navigation, route }) => {
       <BottomButton
         loading={loading}
         text={
-          edit
+          edit && videoUri
             ? "Update"
             : videoObj || video
             ? "View profiles now"
