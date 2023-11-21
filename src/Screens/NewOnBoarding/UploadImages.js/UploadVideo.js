@@ -166,6 +166,7 @@ const UploadVideo = ({ navigation, route }) => {
               type: "SET_VIDEO_FLAG",
               payload: true,
             });
+            alerts("success", res.data.message);
           }
         })
         .catch(e => console.log("uploadVideo err", e))

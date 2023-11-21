@@ -15,13 +15,13 @@ import BasicPrivacySetting from "../../components/containers/BasicPrivacySetting
 import Button from "../../components/buttons/Button";
 import SettingHeader from "../../components/containers/settingHeader";
 
-const SearchPreferences = (props) => {
+const SearchPreferences = props => {
   const isFocused = useIsFocused();
   const value = props?.route?.params?.preferences;
 
   const dispatch = useDispatch();
   const { handleDisablePremium, handleStatusCode } = useHelper();
-  const { token, userData } = useSelector((store) => store.userReducer);
+  const { token, userData } = useSelector(store => store.userReducer);
 
   const [premiumPrivacySetting, setPremiumPrivacySetting] = useState(
     userData?.UserSetting?.isSubscribed
@@ -165,12 +165,12 @@ const SearchPreferences = (props) => {
 
   const resetFeature = () => {
     UserService.applyReset(token)
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
         }
       })
-      .catch((err) => console.log("applyReset err:", err));
+      .catch(err => console.log("applyReset err:", err));
   };
 
   const handleUpgrade = () => {
@@ -192,7 +192,7 @@ const SearchPreferences = (props) => {
         ])
       )
     )
-      .then(async (res) => {
+      .then(async res => {
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
             type: "allProfileValues",
@@ -200,7 +200,7 @@ const SearchPreferences = (props) => {
           });
         }
       })
-      .catch((err) => console.log("profileValues err", err))
+      .catch(err => console.log("profileValues err", err))
       .finally(() => {});
   }, []);
 
@@ -208,7 +208,7 @@ const SearchPreferences = (props) => {
     React.useCallback(() => {
       if (token != null) {
         setPremiumPrivacySetting(userData?.UserSetting?.isSubscribed);
-        ProfileServices.getMyProfile(token).then((res) => {
+        ProfileServices.getMyProfile(token).then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             let data = res?.data?.data;
@@ -269,7 +269,7 @@ const SearchPreferences = (props) => {
                     toggleOptionTextStyle={{
                       color: "#374151",
                       fontSize: 14,
-                      FontFamily: "Inter-Medium",
+                      fontFamily: "Inter-Medium",
                     }}
                     toggleOptionText={i.preferenceName}
                     toggleViewStyle={{ paddingBottom: "2%" }}
@@ -338,7 +338,7 @@ const SearchPreferences = (props) => {
                       ? "#374151"
                       : colors.PremiumGrey,
                     fontSize: 14,
-                    FontFamily: "Inter-Medium",
+                    fontFamily: "Inter-Medium",
                   }}
                   toggleOptionText={i.preferenceName}
                   toggleViewStyle={{ paddingBottom: "2%" }}
