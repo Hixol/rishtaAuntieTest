@@ -1,199 +1,137 @@
-import React, {useState} from 'react';
-import {View, Text, Pressable, ScrollView} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {useRNIAP} from '../../hooks/useRNIAP';
-import {android, ios} from '../../utility/size';
+import React, { useState } from "react";
+import { View, Text, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useRNIAP } from "../../hooks/useRNIAP";
+import { ios } from "../../utility/size";
+import { Button } from "react-native-elements";
+import { alerts } from "../../utility/regex";
 
-import HeaderContainer from '../../components/containers/headerContainer';
-import styles from './styles';
-import Loader from '../../components/Loader';
-import colors from '../../utility/colors';
-import Icons from '../../utility/icons';
+import styles from "./styles";
+import Loader from "../../components/Loader";
+import colors from "../../utility/colors";
+import PackageCard from "../../components/Cards/PackageCard";
+import FastImage from "react-native-fast-image";
+import ToggleSwitch from "toggle-switch-react-native";
 
-const PayWall = ({navigation}) => {
+const accessToItems = [
+  {
+    id: 1,
+    title: "Unlimited Connections: ",
+    desc: "More chats, more chances.",
+  },
+  {
+    id: 2,
+    title: "Ad-Free Browsing: ",
+    desc: "Focus on finding the one, without distractions.",
+  },
+  {
+    id: 3,
+    title: "Precision Search: ",
+    desc: "Filter for your perfect match down to the detail.",
+  },
+  {
+    id: 4,
+    title: "Privacy First: ",
+    desc: "Enhanced features to date at your comfort.",
+  },
+];
+
+const PayWall = ({ navigation }) => {
   const {
     loading,
     disableBtn,
-    productList,
     subscriptionList,
-    handlePurchase,
     handleSubscribe,
     handleRequestSubscriptionIOS,
-  } = useRNIAP(true);
+  } = useRNIAP();
 
   const billingPeriod = {
-    P1M: 'Monthly',
-    P6M: '6 Month',
-    P1Y: 'Yearly',
+    P1M: "Monthly",
+    P6M: "6 Month",
+    P1Y: "Yearly",
   };
 
-  const packagePoints = [
-    'Chat Insights',
-    'Premium Privacies',
-    'Profiles Remaining',
-    'Premium Preferences',
-  ];
+  const [toggle, setToggle] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
-  const [selectedId, setSelectedId] = useState(null);
-
-  const handlePurchasePackage = productId => {
-    setSelectedId(productId);
-    handlePurchase(productId);
-  };
-
-  const handlePurchaseSub = (productId, offerToken = null) => {
-    setSelectedId(productId);
-    if (ios) {
-      handleRequestSubscriptionIOS(productId);
+  const handlePurchaseSub = () => {
+    if (selectedItem) {
+      if (ios) {
+        handleRequestSubscriptionIOS(selectedItem.productId);
+      } else {
+        handleSubscribe(
+          selectedItem.productId,
+          selectedItem.subscriptionOfferDetails[0].offerToken
+        );
+      }
     } else {
-      handleSubscribe(productId, offerToken);
+      alerts("error", "Please choose a subscription.");
     }
   };
 
-  const styleFlags = {
-    borderWidth: selectedId != null ? 1 : 0,
-    borderColor: ios
-      ? /product_002|sub_no_1|sub_no_2/.test(selectedId)
-      : /product_001|sub_no_1/.test(selectedId)
-      ? colors.orange
-      : ios
-      ? /sub_no_2/.test(selectedId)
-      : /product_003|sub_no_2/.test(selectedId)
-      ? colors.cleanBlue
-      : colors.primaryPink,
-  };
+  const AccessItem = ({ item }) => (
+    <View style={styles.row}>
+      <FastImage
+        resizeMode="contain"
+        style={styles.checkImage}
+        source={require("../../assets/iconimages/check.png")}
+      />
+      <Text style={styles.para2}>
+        <Text style={styles.para2Heading}>{item.title}</Text>
+        {item.desc}
+      </Text>
+    </View>
+  );
 
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <HeaderContainer
-        goback={'arrow-back'}
-        backButton
-        Icon
-        gobackButtonPress={() => navigation.goBack()}
-      />
+    <SafeAreaView style={styles.container}>
       {loading ? (
         <Loader />
       ) : (
         <>
-          <ScrollView contentContainerStyle={{flexGrow: 1}}>
-            {productList.length > 0 && (
-              <View style={styles.headingWrap}>
-                <Text style={styles.h3}>Spotlight</Text>
-              </View>
-            )}
+          <ScrollView contentContainerStyle={styles.contentStyle}>
+            <Text style={styles.para1}>
+              Unlock full access to love using Rishta Auntie Gold!
+            </Text>
 
-            <View style={styles.container}>
-              {productList.length > 0 &&
-                productList.map((el, index) => (
-                  <Pressable
-                    disabled={disableBtn}
-                    key={el.productId}
-                    onPressIn={() => handlePurchasePackage(el.productId)}
-                    style={[
-                      styles.topContainer,
-                      selectedId == el.productId && styleFlags,
-                    ]}>
-                    <View>
-                      <Text style={styles.title}>
-                        {ios ? el.title : el.name}
-                      </Text>
-                      <View key={index} style={styles.row}>
-                        <Icons.Octicons
-                          name="check-circle"
-                          size={12}
-                          color={colors.primaryPink}
-                        />
-                        <Text style={[styles.txt, styles.ml]}>
-                          10 Spotlights
-                        </Text>
-                      </View>
-                      {el.description ? (
-                        <Text style={styles.txt}>{el.description}</Text>
-                      ) : null}
-                    </View>
-                    <Text style={[styles.txt, {color: colors.primaryPink}]}>
-                      {ios
-                        ? el.localizedPrice
-                        : el.oneTimePurchaseOfferDetails.formattedPrice}
-                    </Text>
-                  </Pressable>
-                ))}
+            {accessToItems.map(el => (
+              <AccessItem key={el.id} item={el} />
+            ))}
 
-              {subscriptionList.length > 0 && (
-                <View style={[styles.headingWrap, {marginTop: 0}]}>
-                  <Text style={styles.h3}>Choose a plan</Text>
-                  <View style={[styles.row, styles.mt]}>
-                    <Icons.Ionicons name="star" size={14} color={colors.gold} />
-                    <Text style={[styles.premiumTxt, styles.ml]}>
-                      Go Premium
-                    </Text>
-                  </View>
-                </View>
-              )}
-              {subscriptionList.length > 0 &&
-                subscriptionList.map((el, index) => (
-                  <Pressable
-                    disabled={disableBtn}
-                    key={el.productId}
-                    onPressIn={() => {
-                      handlePurchaseSub(
-                        el.productId,
-                        android && el?.subscriptionOfferDetails[0].offerToken,
-                      );
-                    }}
-                    style={[
-                      styles.topContainer,
-                      selectedId == el.productId && styleFlags,
-                    ]}>
-                    <View>
-                      <Text style={styles.title}>
-                        {ios ? el.title : el.name}
-                      </Text>
-                      {packagePoints.map((el, index) => (
-                        <View key={index} style={styles.row}>
-                          <Icons.Octicons
-                            name="check-circle"
-                            size={12}
-                            color={colors.primaryPink}
-                          />
-                          <Text style={[styles.txt, styles.ml]}>{el}</Text>
+            <View style={styles.space} />
 
-                          {el.description ? (
-                            <Text style={[styles.txt, styles.mt]}>
-                              {el.description}
-                            </Text>
-                          ) : null}
+            {subscriptionList.length > 0 &&
+              subscriptionList.map((el, index) => (
+                <PackageCard
+                  arr={subscriptionList}
+                  item={el}
+                  key={el.productId}
+                  onPress={() => setSelectedItem(el)}
+                  boxBgStyle={
+                    selectedItem?.productId == el.productId && styles.boxBg
+                  }
+                />
+              ))}
 
-                        </View>
-                      ))}
-                      {el.description ? (
-                        <Text style={[styles.txt, styles.mt]}>
-                          {el.description}
-                        </Text>
-                      ) : null}
-                    </View>
-                    {ios ? (
-                      <Text style={[styles.txt, {color: colors.primaryPink}]}>
-                        {el.localizedPrice}/{el.subscriptionPeriodUnitIOS}
-                      </Text>
-                    ) : (
-                      <Text style={[styles.txt, {color: colors.primaryPink}]}>
-                        {
-                          el.subscriptionOfferDetails[0].pricingPhases
-                            .pricingPhaseList[0].formattedPrice
-                        }
-                        /
-                        {
-                          billingPeriod[
-                            el.subscriptionOfferDetails[0].pricingPhases
-                              .pricingPhaseList[0].billingPeriod
-                          ]
-                        }
-                      </Text>
-                    )}
-                  </Pressable>
-                ))}
+            <View style={styles.row1}>
+              <Text style={styles.autoTxt}>
+                Auto recurring. Cancel anytime.
+              </Text>
+              <ToggleSwitch
+                size="small"
+                isOn={toggle}
+                onColor={colors.primaryPink}
+                offColor={colors.mediumGrey}
+                onToggle={setToggle}
+              />
             </View>
+
+            <Button
+              onPress={handlePurchaseSub}
+              title="Upgrade now"
+              buttonStyle={styles.btn}
+              titleStyle={styles.btnTitle}
+            />
           </ScrollView>
         </>
       )}
