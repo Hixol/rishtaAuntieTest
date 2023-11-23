@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { useRNIAP } from "../../hooks/useRNIAP";
+import { ios } from "../../utility/size";
 import { Button } from "react-native-elements";
 import { alerts } from "../../utility/regex";
 
@@ -30,6 +34,7 @@ const accessToItems = [
 ];
 
 const PayWallSpots = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
   const { loading, disableBtn, productList, handlePurchase } = useRNIAP();
 
   const [selectedItem, setSelectedItem] = useState(null);
@@ -50,7 +55,7 @@ const PayWallSpots = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, ios && { marginTop: -insets.top }]}>
       {loading ? (
         <Loader />
       ) : (

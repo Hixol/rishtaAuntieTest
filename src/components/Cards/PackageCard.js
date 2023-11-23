@@ -6,7 +6,7 @@ import colors from "../../utility/colors";
 
 const PackageCard = ({ arr, item, boxBgStyle, onPress }) => {
   const handleMonth = () => {
-    if (item.productType == "subs") {
+    if (item.productType == "subs" || item.type == "subs") {
       if (ios) {
         return item.title.split(" ")[0];
       } else {
@@ -22,7 +22,7 @@ const PackageCard = ({ arr, item, boxBgStyle, onPress }) => {
   };
 
   const handleDurationText = title => {
-    if (item.productType == "subs") {
+    if (item.productType == "subs" || item.type == "subs") {
       if (handleMonth() == "12") return " annually";
       else if (title.includes("1")) return "/month";
       else if (title.includes("3")) return " every 3 months";
@@ -30,18 +30,26 @@ const PackageCard = ({ arr, item, boxBgStyle, onPress }) => {
   };
 
   const handleStripPrice = item => {
-    if (item.productType == "subs") {
-      return parseInt(
-        item.subscriptionOfferDetails[0].pricingPhases.pricingPhaseList[0].formattedPrice
-          .replace(/[^0-9\.-]+/g, "")
-          .split(".")[0]
-      );
+    if (item.productType == "subs" || item.type == "subs") {
+      if (ios) {
+        return item.price;
+      } else {
+        return parseInt(
+          item.subscriptionOfferDetails[0].pricingPhases.pricingPhaseList[0].formattedPrice
+            .replace(/[^0-9\.-]+/g, "")
+            .split(".")[0]
+        );
+      }
     } else {
-      return parseInt(
-        item.oneTimePurchaseOfferDetails.formattedPrice
-          .replace(/[^0-9\.-]+/g, "")
-          .split(".")[0]
-      );
+      if (ios) {
+        return item.price;
+      } else {
+        return parseInt(
+          item.oneTimePurchaseOfferDetails.formattedPrice
+            .replace(/[^0-9\.-]+/g, "")
+            .split(".")[0]
+        );
+      }
     }
   };
 
@@ -52,7 +60,7 @@ const PackageCard = ({ arr, item, boxBgStyle, onPress }) => {
     basePrice = handleStripPrice(arr[0]);
 
     // SUBS
-    if (item.productType == "subs") {
+    if (item.productType == "subs" || item.type == "subs") {
       if (title.includes("3") && basePrice > 0) {
         let priceIn3Month = basePrice * 3;
         let div = (priceIn3Month - handleStripPrice(arr[1])) / priceIn3Month;
@@ -81,8 +89,11 @@ const PackageCard = ({ arr, item, boxBgStyle, onPress }) => {
   const renderDiscount = () => {
     if (handleMonth() != "1") {
       let per = handleCalculateSavingOfPackage(ios ? item.title : item.name);
-      if (item.productType == "subs") return `${per}% OFF`;
-      else return `Save ${per}%`;
+      if (per > 0) {
+        if (item.productType == "subs" || item.type == "subs")
+          return `${per}% OFF`;
+        else return `Save ${per}%`;
+      }
     }
   };
 
@@ -165,6 +176,7 @@ const styles = StyleSheet.create({
     width: "70%",
     fontSize: 14,
     color: colors.textGrey1,
+    marginVertical: ios ? "1%" : 0,
     fontFamily: "Inter-Regular",
   },
   boxPrice: {

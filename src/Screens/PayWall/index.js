@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { useRNIAP } from "../../hooks/useRNIAP";
 import { ios } from "../../utility/size";
 import { Button } from "react-native-elements";
@@ -51,6 +54,7 @@ const PayWall = ({ navigation }) => {
     P1Y: "Yearly",
   };
 
+  const insets = useSafeAreaInsets();
   const [toggle, setToggle] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
@@ -84,7 +88,7 @@ const PayWall = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, ios && { marginTop: -insets.top }]}>
       {loading ? (
         <Loader />
       ) : (
@@ -113,7 +117,7 @@ const PayWall = ({ navigation }) => {
                 />
               ))}
 
-            <View style={styles.row1}>
+            {/* <View style={styles.row1}>
               <Text style={styles.autoTxt}>
                 Auto recurring. Cancel anytime.
               </Text>
@@ -124,7 +128,7 @@ const PayWall = ({ navigation }) => {
                 offColor={colors.mediumGrey}
                 onToggle={setToggle}
               />
-            </View>
+            </View> */}
 
             <Button
               onPress={handlePurchaseSub}

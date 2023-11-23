@@ -19,14 +19,16 @@ import { alerts } from "../utility/regex";
 import IAPServices from "../services/IAPServices";
 
 const product_skus = Platform.select({
-  ios: ["product_002"],
+  ios: ["Spotlight_001", "Spotlight_003", "Spotlight_005"],
   android: ["product_001", "product_003", "product_005"],
 });
 
 const subscription_skus = Platform.select({
-  ios: ["sub_no_1", "sub_no_2"],
+  ios: ["sub_no_1", "sub_no_2", "sub_no_3"],
   android: ["sub_no_1", "sub_no_2", "sub_no_3"],
 });
+
+const titleIcons = ["🌙 ", "💫 ", "🌟 "];
 
 let executedOnce = false;
 let purchaseUpdateSubscription;
@@ -84,7 +86,12 @@ export const useRNIAP = () => {
             console.log("[EXECUTED ONCE] Function ran once!");
 
             // SPOTLIGHT
-            if (ios && purchase.productId == "product_002") {
+            if (
+              ios &&
+              /Spotlight_001|Spotlight_003|Spotlight_005/.test(
+                purchase.productId
+              )
+            ) {
               handleBuySpotlight(purchase);
             } else if (
               android &&
@@ -94,7 +101,7 @@ export const useRNIAP = () => {
             }
 
             // SUBSCRIPTION
-            if (ios && /sub_no_1|sub_no_2/.test(purchase.productId)) {
+            if (ios && /sub_no_1|sub_no_2|sub_no_3/.test(purchase.productId)) {
               handleBuySubscription(purchase);
             } else if (
               android &&
@@ -129,7 +136,15 @@ export const useRNIAP = () => {
     getProducts({ skus: product_skus })
       .then(async res => {
         console.log("getProducts res: ", products);
-        if (products.length > 0) setProductList(products);
+        if (products.length > 0 && ios) {
+          const iosProducts = products.map((el, index) => {
+            return {
+              ...el,
+              title: titleIcons[index] + el.title,
+            };
+          });
+          setProductList(iosProducts);
+        } else setProductList(products);
 
         handleGetSubscriptions();
       })
