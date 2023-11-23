@@ -14,17 +14,6 @@ export default StyleSheet.create({
     borderColor: colors.primaryPink,
     backgroundColor: colors.primaryPinkOpacity,
   },
-  row: {
-    flexDirection: "row",
-  },
-  row1: {
-    width: "93%",
-    marginTop: "5%",
-    alignSelf: "center",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
   para1: {
     fontSize: 16,
     lineHeight: 25,
@@ -41,23 +30,11 @@ export default StyleSheet.create({
   para2: {
     fontSize: 16,
     lineHeight: 25,
-    flexShrink: 1,
     color: colors.blackBlue,
     fontFamily: "Inter-Regular",
   },
   space: {
     marginTop: "4%",
-  },
-  checkImage: {
-    height: 19,
-    width: 19,
-    marginTop: 4,
-    marginRight: 7,
-  },
-  autoTxt: {
-    fontSize: 14,
-    color: colors.slateGrey,
-    fontFamily: "Inter-Medium",
   },
   btn: {
     width: "93%",

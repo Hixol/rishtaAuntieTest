@@ -21,7 +21,7 @@ const HeaderContainer = props => {
             <Icons.Ionicons
               name={props.goback}
               size={30}
-              color={colors.darkBlue}
+              color={colors.blackBlue}
             />
           </TouchableOpacity>
           <View
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     paddingVertical: "3%",
-    paddingHorizontal: "5%",
+    paddingHorizontal: "3%",
     backgroundColor: "#ffffff",
     alignItems: "center",
   },

@@ -285,7 +285,7 @@ const SearchPreferences = props => {
                     toggleOptionTextStyle={{
                       color: "#374151",
                       fontSize: 14,
-                      FontFamily: "Inter-Medium",
+                      fontFamily: "Inter-Medium",
                     }}
                     toggleOptionText={i.preferenceName}
                     toggleViewStyle={{ paddingBottom: "2%" }}
@@ -354,7 +354,7 @@ const SearchPreferences = props => {
                       ? "#374151"
                       : colors.PremiumGrey,
                     fontSize: 14,
-                    FontFamily: "Inter-Medium",
+                    fontFamily: "Inter-Medium",
                   }}
                   toggleOptionText={i.preferenceName}
                   toggleViewStyle={{ paddingBottom: "2%" }}
