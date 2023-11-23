@@ -395,6 +395,7 @@ export const useHelper = props => {
       };
     }
 
+    console.log("BODy", body);
     await UserService.searchUserPreference(body, token)
       .then(async res => {
         handleStatusCode(res);

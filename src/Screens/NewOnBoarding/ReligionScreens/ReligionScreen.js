@@ -36,8 +36,8 @@ const ReligionScreen = ({ navigation, route }) => {
     {
       id: 1,
       type: "Religion",
-      question: `What is your religion?`,
-      ask: "Please Select one of the religion",
+      question: `Find matches with similar religious views?`,
+      ask: "Match with shared beliefs",
       options: [],
       search: true,
       multiSelect: false,
@@ -210,8 +210,8 @@ const ReligionScreen = ({ navigation, route }) => {
         {/* <Text style={styles.type}>{array[currentIndex]?.type}</Text> */}
       </View>
 
+      <Text style={styles.ask}>{array[currentIndex]?.ask}</Text>
       <Text style={styles.question}>{array[currentIndex]?.question}</Text>
-      {/* <Text style={styles.ask}>{array[currentIndex]?.ask}</Text> */}
       <View style={{ width: "100%", height: "80%" }}>
         {array[currentIndex]?.type === "Religion" ? (
           <>
@@ -358,13 +358,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: colors.black,
     fontFamily: "Inter-Bold",
-    marginVertical: "2%",
+    marginVertical: "3%",
     maxWidth: "90%",
   },
   ask: {
     fontSize: 16,
     color: colors.black,
-    fontFamily: "Inter-light",
+    fontFamily: "Inter-Medium",
     marginVertical: "1%",
     maxWidth: "90%",
   },

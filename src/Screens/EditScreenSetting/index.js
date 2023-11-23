@@ -13,7 +13,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useHelper } from "../../hooks/useHelper";
 import { alerts } from "../../utility/regex";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RulerPicker } from "react-native-ruler-picker";
 import { android, ios, windowWidth, windowHeight } from "../../utility/size";
 
@@ -28,10 +28,10 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 
 let filtered = [];
 const EditScreenSetting = props => {
-  const { allVibes, allPrompts, allProfileValues, promptsPool } = useSelector(
-    store => store.NewOnBoardingReducer
-  );
+  const { allVibes, allPrompts, allProfileValues, promptsPool, distance1 } =
+    useSelector(store => store.NewOnBoardingReducer);
   const { updateUser, updateUserPreference } = useHelper();
+  const dispatch = useDispatch();
   const proMem = userData?.UserSetting?.isSubscribed;
   const { userData, token } = useSelector(store => store.userReducer);
   const { edit, type, index, ask, line, preferenceEdit } = props?.route?.params;
@@ -44,12 +44,7 @@ const EditScreenSetting = props => {
   const [selectedWK, setSelectedWK] = useState(null);
   const [selectedRelocate, setSelectedRelocate] = useState(null);
   const [distance, setDistance] = useState(null);
-  let [distanceSlider, setDistanceSlider] = useState(
-    userData?.UserPreference?.distance === "range" &&
-      userData?.UserPreference?.distance !== null
-      ? parseInt(userData?.UserPreference?.distance)
-      : parseInt(userData?.UserPreference?.distance)
-  );
+  let [distanceSlider, setDistanceSlider] = useState();
   const [selectedDrink, setSelectedDrink] = useState(null);
   const [selectedSmoke, setSelectedSmoke] = useState([]);
   const [selectedDiet, setSelectedDiet] = useState([]);
@@ -61,8 +56,11 @@ const EditScreenSetting = props => {
   const [searchValue, setSearchValue] = useState("");
   const [occupation, setOccupation] = useState("");
   const [selectedHeight, setSelectedHeight] = useState(null);
+  const [selectedHeightFrom, setSelectedHeightFrom] = useState(null);
+  const [selectedHeightTo, setSelectedHeightTo] = useState(null);
+  const [selectedDistance, setSelectedDistance] = useState(null);
 
-  const distanceList = ["unlimited", "nationwide", "range"];
+  const distanceList = ["Unlimited", "Nationwide", "Set Distance"];
   const [heightSlider, setHeightSlider] = useState(
     (userData?.UserPreference?.heightFrom === null &&
       userData?.UserPreference?.heightTo === null) ||
@@ -88,6 +86,12 @@ const EditScreenSetting = props => {
     { name: "Doctorate" },
     { name: "Masters" },
   ]);
+  const [distanceOptions, setDistanceOptions] = useState([
+    { name: "Unlimited" },
+    { name: "Nationwide" },
+    { name: "Set Distance" },
+  ]);
+
   const [plArray, setPlArray] = useState([
     { index: 0, stepLabel: "Rarely Religious" },
     { index: 1, stepLabel: "Somewhat Religious" },
@@ -488,6 +492,18 @@ const EditScreenSetting = props => {
       }
     }
   }, []);
+  useEffect(() => {
+    if (
+      (userData?.UserPreference?.distance === "Unlimited" ||
+        userData?.UserPreference?.distance === "Nationwide") &&
+      userData?.UserPreference?.distance !== null
+    ) {
+      setDistance(userData?.UserPreference?.distance);
+    } else {
+      setDistance("Set Distance");
+      setDistanceSlider(parseInt(userData?.UserPreference?.distance));
+    }
+  }, []);
 
   const selectVibe = (item, index) => {
     let arr = [...selctedVibe];
@@ -533,6 +549,12 @@ const EditScreenSetting = props => {
   };
   const selectHeight = number => {
     setSelectedHeight(number);
+  };
+  const selectHeightFrom = number => {
+    setSelectedHeightFrom(number);
+  };
+  const selectHeightTo = number => {
+    setSelectedHeightTo(number);
   };
   const search = (text, type, currentIndex) => {
     setSearchValue(text);
@@ -843,6 +865,13 @@ const EditScreenSetting = props => {
   const selectMh = (item, index) => {
     setSelectedMH(item);
   };
+  const selectDistance = (item, index) => {
+    setDistance(item);
+    dispatch({
+      type: "distance1",
+      payload: distance,
+    });
+  };
   const selectHK = (item, index) => {
     setSelectedHK(item?.name);
   };
@@ -1043,7 +1072,7 @@ const EditScreenSetting = props => {
         case "Distance":
           sendType = "distance";
           value =
-            distance === "range"
+            distance === "Set Distance"
               ? distanceSlider.toString()
               : distance === null
               ? "unlimited"
@@ -1052,7 +1081,8 @@ const EditScreenSetting = props => {
         case "Height":
           sendType = "heightFrom";
           type2 = "heightTo";
-          value = [heightSlider[0], heightSlider[1]];
+          value = [selectedHeightFrom, selectedHeightTo];
+
           break;
         case "Age":
           sendType = "ageFrom";
@@ -1113,14 +1143,40 @@ const EditScreenSetting = props => {
           value = selectedRelocate === "Yes" ? true : false;
           break;
       }
-      await updateUserPreference(
-        token,
-        sendType,
-        value === undefined || value === null ? null : value,
-        type2
-      );
-      props.navigation.goBack();
+      if (selectedHeightFrom > selectedHeightTo) {
+        alerts("error", "Height From should be less than Height To");
+      } else {
+        await updateUserPreference(
+          token,
+          sendType,
+          value === undefined || value === null ? null : value,
+          type2
+        );
+        props.navigation.goBack();
+      }
     }
+  };
+  console.log(
+    "SELECTED HEIGHT FROM",
+    userData,
+    selectedHeightTo,
+    distanceSlider
+  );
+
+  const calculateInches = async number => {
+    const totalInches = number / 2.54;
+    const feet = Math.floor(totalInches / 12);
+    const inches = (await totalInches) % 12;
+
+    let inchesString;
+
+    if (inches >= 10) {
+      inchesString = await inches.toFixed(0);
+    } else if (inches >= 0 && inches < 10) {
+      inchesString = await inches.toFixed(0);
+    }
+
+    return feet + "." + inchesString;
   };
 
   return (
@@ -1175,7 +1231,7 @@ const EditScreenSetting = props => {
                   color: "#23262F",
                 }}
               >
-                {type}
+                {line}
               </Text>
               {type === "Prompts Pool" && ppCheck ? (
                 <View
@@ -1234,67 +1290,202 @@ const EditScreenSetting = props => {
               }}
             >
               {type === "Distance" ? (
-                <View>
-                  <DropDownView
-                    // preferenceName={'Distance'}
-                    onValueChange={Distance}
-                    SelectDropdown
-                    defaultValue={
-                      userData?.UserPreference?.distance === "unlimited" ||
-                      userData?.UserPreference?.distance === "nationwide"
-                        ? userData?.UserPreference?.distance
-                        : distance
-                    }
-                    DropDownPlaceholder={userData?.UserPreference?.distance}
-                    data={distanceList}
-                    // textWithIconView
-                    // preferenceIcon={require('../../assets/iconimages/location.png')}
-                  />
-                  {distance === "range" ? (
-                    <SliderView
-                      sp={{
-                        alignItems: "center",
-                        justifyContent: "center",
-                        marginTop: "5%",
-                      }}
-                      multiSliderValue={[
+                <>
+                  {distanceList.map((item, index) => {
+                    let findIndex = distanceList.findIndex((item, index) => {
+                      return item === distance;
+                    });
+
+                    return (
+                      <NewOnBoardingDesign
+                        mainOnPress={() => selectDistance(item, index)}
+                        findIndex={findIndex}
+                        index={index}
+                        item={item}
+                        multiSelect={false}
+                        nameorid={"name"}
+                        search={false}
+                        radio={true}
+                      />
+                    );
+                  })}
+                  <View>
+                    {/* <DropDownView
+                      // preferenceName={'Distance'}
+                      onValueChange={Distance}
+                      SelectDropdown
+                      defaultValue={
                         userData?.UserPreference?.distance === "unlimited" ||
                         userData?.UserPreference?.distance === "nationwide"
-                          ? 0
-                          : parseInt(userData?.UserPreference?.distance),
-                      ]}
-                      multiSliderValuesChange={DistanceSlider}
-                      min={0}
-                      max={2000}
-                      preferenceName={"Distance"}
-                      customLabel="mi"
-                      enableLabel={true}
-                      step={1}
-                    />
-                  ) : null}
-                </View>
+                          ? userData?.UserPreference?.distance
+                          : distance
+                      }
+                      DropDownPlaceholder={userData?.UserPreference?.distance}
+                      data={distanceList}
+                      // textWithIconView
+                      // preferenceIcon={require('../../assets/iconimages/location.png')}
+                    /> */}
+                    {distance === "Set Distance" ? (
+                      <SliderView
+                        sp={{
+                          alignItems: "center",
+                          justifyContent: "center",
+                          marginTop: "5%",
+                        }}
+                        multiSliderValue={[
+                          userData?.UserPreference?.distance === "Unlimited" ||
+                          userData?.UserPreference?.distance === "Nationwide"
+                            ? 0
+                            : parseInt(userData?.UserPreference?.distance),
+                        ]}
+                        multiSliderValuesChange={DistanceSlider}
+                        min={0}
+                        max={2000}
+                        // preferenceName={"Distance"}
+                        customLabel="mi"
+                        enableLabel={true}
+                        step={1}
+                      />
+                    ) : null}
+                  </View>
+                </>
               ) : type === "Height" && preferenceEdit ? (
-                <SliderView
-                  sp={{ marginVertical: "1%" }}
-                  searchPreferences
-                  textWithoutIconView
-                  multiSliderValue={
-                    heightSlider[0] !== null && heightSlider[1] !== null
-                      ? [heightSlider[0], heightSlider[1]]
-                      : [4, 10]
-                  }
-                  isMarkersSeparated={true}
-                  showSteps={true}
-                  multiSliderValuesChange={HeightSliderValuesChange}
-                  min={4}
-                  max={10}
-                  preferenceName={"Height"}
-                  customLabel="feet"
-                  enableLabel={true}
-                  step={0.1}
-                  bg={{ color: "red" }}
-                />
-              ) : type === "Age" && preferenceEdit ? (
+                <>
+                  <View
+                    style={{
+                      width: "100%",
+                      borderWidth: 0.7,
+                      alignSelf: "center",
+                      borderColor: "#EBECEF",
+                      marginTop: 5,
+                    }}
+                  ></View>
+                  <Text
+                    style={{
+                      marginTop: "5%",
+                      fontSize: 14,
+                      fontFamily: "Inter-Medium",
+                    }}
+                  >
+                    From
+                  </Text>
+                  <View
+                    style={{
+                      width: "100%",
+                      marginTop: "5%",
+                      backgroundColor: "#F9FAFB",
+                      // paddingVertical: "5%",
+                      borderRadius: 10,
+                      height: windowHeight * 0.2,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <RulerPicker
+                      value={selectedHeightFrom / 30.48}
+                      onValueChangeEnd={async number => {
+                        let res = await calculateInches(number);
+                        console.log("RES", res);
+                        selectHeightFrom(res);
+                      }}
+                      onValueChange={number => {
+                        console.log("NUMBer", number);
+                      }}
+                      min={122}
+                      max={245}
+                      unit="ft"
+                      height={100}
+                      width={windowWidth * 0.8}
+                      indicatorHeight={40}
+                      indicatorColor={colors.primaryPink}
+                      shortStepHeight={20}
+                      longStepHeight={50}
+                      valueTextStyle={{
+                        color: colors.primaryPink,
+                        fontSize: 20,
+                      }}
+                      unitTextStyle={{
+                        color: colors.primaryPink,
+                        fontSize: 17,
+                      }}
+                      step={2.54}
+                      initialValue={122 / 30.48}
+                    />
+                  </View>
+                  <Text
+                    style={{
+                      marginTop: "5%",
+                      fontSize: 14,
+                      fontFamily: "Inter-Medium",
+                    }}
+                  >
+                    To
+                  </Text>
+                  <View
+                    style={{
+                      width: "100%",
+                      marginTop: "5%",
+                      backgroundColor: "#F9FAFB",
+                      // paddingVertical: "5%",
+                      borderRadius: 10,
+                      height: windowHeight * 0.2,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <RulerPicker
+                      value={selectedHeightTo / 30.48}
+                      onValueChangeEnd={async number => {
+                        let res = await calculateInches(number);
+                        console.log("RES", res);
+                        selectHeightTo(res);
+                      }}
+                      onValueChange={number => {
+                        console.log("NUMBer", number);
+                      }}
+                      min={122}
+                      max={245}
+                      unit="ft"
+                      height={100}
+                      width={windowWidth * 0.8}
+                      indicatorHeight={40}
+                      indicatorColor={colors.primaryPink}
+                      shortStepHeight={20}
+                      longStepHeight={50}
+                      valueTextStyle={{
+                        color: colors.primaryPink,
+                        fontSize: 20,
+                      }}
+                      unitTextStyle={{
+                        color: colors.primaryPink,
+                        fontSize: 17,
+                      }}
+                      step={2.54}
+                      initialValue={122 / 30.48}
+                    />
+                  </View>
+                </>
+              ) : // <SliderView
+              //   sp={{ marginVertical: "1%" }}
+              //   searchPreferences
+              //   textWithoutIconView
+              //   multiSliderValue={
+              //     heightSlider[0] !== null && heightSlider[1] !== null
+              //       ? [heightSlider[0], heightSlider[1]]
+              //       : [4, 10]
+              //   }
+              //   isMarkersSeparated={true}
+              //   showSteps={true}
+              //   multiSliderValuesChange={HeightSliderValuesChange}
+              //   min={4}
+              //   max={10}
+              //   preferenceName={"Height"}
+              //   customLabel="feet"
+              //   enableLabel={true}
+              //   step={0.1}
+              //   bg={{ color: "red" }}
+              // />
+              type === "Age" && preferenceEdit ? (
                 <SliderView
                   sp={{ marginVertical: "1%" }}
                   searchPreferences
@@ -1478,27 +1669,44 @@ const EditScreenSetting = props => {
                   </View>
                 )
               ) : type === "Height" ? (
-                <View style={styles.rulerView}>
-                  <RulerPicker
-                    value={selectedHeight / 30.48}
-                    onValueChangeEnd={number =>
-                      selectHeight((number / 30.48).toFixed(1))
-                    }
-                    min={92}
-                    max={252}
-                    unit="ft"
-                    height={100}
-                    width={windowWidth * 0.8}
-                    // indicatorHeight={40}
-                    indicatorColor={colors.primaryPink}
-                    shortStepHeight={20}
-                    longStepHeight={50}
-                    valueTextStyle={{ color: colors.primaryPink, fontSize: 20 }}
-                    unitTextStyle={{ color: colors.primaryPink, fontSize: 17 }}
-                    step={5}
-                    initialValue={92 / 30.48}
-                  />
-                </View>
+                <>
+                  <View
+                    style={{
+                      width: "100%",
+                      borderWidth: 0.7,
+                      alignSelf: "center",
+                      borderColor: "#EBECEF",
+                      marginBottom: 5,
+                    }}
+                  ></View>
+                  <View style={styles.rulerView}>
+                    <RulerPicker
+                      value={selectedHeight / 30.48}
+                      onValueChangeEnd={number =>
+                        selectHeight((number / 30.48).toFixed(1))
+                      }
+                      min={92}
+                      max={252}
+                      unit="ft"
+                      height={100}
+                      width={windowWidth * 0.8}
+                      // indicatorHeight={40}
+                      indicatorColor={colors.primaryPink}
+                      shortStepHeight={20}
+                      longStepHeight={50}
+                      valueTextStyle={{
+                        color: colors.primaryPink,
+                        fontSize: 20,
+                      }}
+                      unitTextStyle={{
+                        color: colors.primaryPink,
+                        fontSize: 17,
+                      }}
+                      step={5}
+                      initialValue={92 / 30.48}
+                    />
+                  </View>
+                </>
               ) : type === "Family Origin" ? (
                 <>
                   <OnBoardingSearch
@@ -2157,7 +2365,7 @@ const EditScreenSetting = props => {
       <BottomButton
         bottomStyles={{ bottom: isKeyboardVisible && android ? 2 : 15 }}
         loading={buttonLoader}
-        text={"Update"}
+        text={"Save search preference"}
         onPress={updateProfile}
       />
     </>

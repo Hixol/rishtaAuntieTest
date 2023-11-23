@@ -36,6 +36,7 @@ const initialState = {
   allVibes: [],
   allPrompts: [],
   allProfileValues: [],
+  distance1: null,
 };
 
 export const NewOnBoardingReducer = createReducer(initialState, {
@@ -47,6 +48,10 @@ export const NewOnBoardingReducer = createReducer(initialState, {
   firstName: (state, action) => {
     const { payload } = action;
     state.firstName = payload;
+  },
+  distance1: (state, action) => {
+    const { payload } = action;
+    state.distance1 = payload;
   },
   lastName: (state, action) => {
     const { payload } = action;

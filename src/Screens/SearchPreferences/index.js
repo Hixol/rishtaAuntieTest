@@ -15,13 +15,13 @@ import BasicPrivacySetting from "../../components/containers/BasicPrivacySetting
 import Button from "../../components/buttons/Button";
 import SettingHeader from "../../components/containers/settingHeader";
 
-const SearchPreferences = (props) => {
+const SearchPreferences = props => {
   const isFocused = useIsFocused();
   const value = props?.route?.params?.preferences;
 
   const dispatch = useDispatch();
   const { handleDisablePremium, handleStatusCode } = useHelper();
-  const { token, userData } = useSelector((store) => store.userReducer);
+  const { token, userData } = useSelector(store => store.userReducer);
 
   const [premiumPrivacySetting, setPremiumPrivacySetting] = useState(
     userData?.UserSetting?.isSubscribed
@@ -34,7 +34,8 @@ const SearchPreferences = (props) => {
       type: "Distance",
       value: value?.distance,
       editType: "Distance",
-      ask: "Please select distance",
+      ask: "Find matches closer or farther away",
+      line: "Set your preferred distance",
     },
     {
       id: 2,
@@ -42,7 +43,8 @@ const SearchPreferences = (props) => {
       type: "Age",
       value: [value?.ageFrom, value?.ageTo],
       editType: "Age",
-      ask: "Please select age",
+      ask: "Discover matches in your preferred age group",
+      line: "Select desired age range",
     },
     {
       id: 3,
@@ -52,7 +54,8 @@ const SearchPreferences = (props) => {
       editType: "Religion",
       screenName: "ReligionScreen",
       screen: true,
-      ask: "Please select religion",
+      ask: "Find matches with similar religious views",
+      line: "Set your preferred distance",
     },
     {
       id: 4,
@@ -60,7 +63,8 @@ const SearchPreferences = (props) => {
       type: "Origin",
       value: value?.familyOrigin,
       editType: "Family Origin",
-      ask: "Please select family origin",
+      ask: "Embrace a variety of family origins",
+      line: "Explore diverse family origins",
     },
   ];
 
@@ -71,7 +75,8 @@ const SearchPreferences = (props) => {
       type: "Height",
       value: [value?.heightFrom, value?.heightTo],
       editType: "Height",
-      ask: "Please select height",
+      ask: "Find matches based on height compatibility",
+      line: "Specify preferred height range",
     },
     {
       id: 2,
@@ -79,7 +84,8 @@ const SearchPreferences = (props) => {
       type: "Community",
       value: value?.community,
       editType: "Community",
-      ask: "Please select community",
+      ask: "Find matches from various communities",
+      line: "Embrace diverse communities",
     },
     {
       id: 3,
@@ -87,7 +93,8 @@ const SearchPreferences = (props) => {
       type: "Languages",
       value: value?.languagesSpoken,
       editType: "Languages",
-      ask: "Please select languages",
+      ask: "Connect with matches who speak your language",
+      line: "Explore multilingual connections",
     },
     {
       id: 4,
@@ -95,7 +102,8 @@ const SearchPreferences = (props) => {
       type: "Religious",
       value: value?.religiousDenomination,
       editType: "Denomination",
-      ask: "Please select denomination",
+      ask: "Find matches with matching faith traditions",
+      line: "Match based on religious denomination",
     },
     {
       id: 5,
@@ -103,7 +111,8 @@ const SearchPreferences = (props) => {
       type: "Pray",
       value: value?.theyPray,
       editType: "Pray",
-      ask: "How often do they pray?",
+      ask: "Connect with matches who share your spiritual practices",
+      line: "Match your prayer habits",
     },
     {
       id: 6,
@@ -111,7 +120,8 @@ const SearchPreferences = (props) => {
       type: "Drink",
       value: value?.drinking,
       editType: "Drink",
-      ask: "How often do they drink?",
+      ask: "Match with those who share your attitude towards alcohol",
+      line: "Specify drinking preferences",
     },
     {
       id: 7,
@@ -119,7 +129,8 @@ const SearchPreferences = (props) => {
       type: "Smoke",
       value: value?.smoking,
       editType: "Smoke",
-      ask: "How often do they smoke?",
+      ask: "Connect with matches who match your smoking habits",
+      line: "Set smoking preferences",
     },
     {
       id: 8,
@@ -127,7 +138,8 @@ const SearchPreferences = (props) => {
       type: "Diet",
       value: value?.dietChoices,
       editType: "Diet",
-      ask: "What are their diet choices?",
+      ask: "Connect with matches who share your dietary lifestyle?",
+      line: "Define diet preferences",
     },
     {
       id: 9,
@@ -135,7 +147,8 @@ const SearchPreferences = (props) => {
       type: "Marital",
       value: value?.maritalHistory,
       editType: "Marital History",
-      ask: "What is their marital history?",
+      ask: "Connect with matches based on their marital background",
+      line: "Choose marital history preferences",
     },
     {
       id: 10,
@@ -143,7 +156,8 @@ const SearchPreferences = (props) => {
       type: "HaveKids",
       value: value?.hasKids,
       editType: "Have Kids",
-      ask: "Do they have kids?",
+      ask: "Match with those who have kids",
+      line: "Preferences regarding children",
     },
     {
       id: 11,
@@ -151,7 +165,8 @@ const SearchPreferences = (props) => {
       type: "WantKids",
       value: value?.wantKids,
       editType: "Want Kids",
-      ask: "Do they want kids?",
+      ask: "Connect with those who share your family plans",
+      line: "Desire for future children",
     },
     {
       id: 12,
@@ -159,18 +174,19 @@ const SearchPreferences = (props) => {
       type: "Relocate",
       value: value?.willingToRelocate,
       editType: "Relocate",
-      ask: "Are they willing to relocate?",
+      ask: "Connect with those who are willing to relocate",
+      line: "Openness to relocation",
     },
   ];
 
   const resetFeature = () => {
     UserService.applyReset(token)
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
         }
       })
-      .catch((err) => console.log("applyReset err:", err));
+      .catch(err => console.log("applyReset err:", err));
   };
 
   const handleUpgrade = () => {
@@ -192,7 +208,7 @@ const SearchPreferences = (props) => {
         ])
       )
     )
-      .then(async (res) => {
+      .then(async res => {
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
             type: "allProfileValues",
@@ -200,7 +216,7 @@ const SearchPreferences = (props) => {
           });
         }
       })
-      .catch((err) => console.log("profileValues err", err))
+      .catch(err => console.log("profileValues err", err))
       .finally(() => {});
   }, []);
 
@@ -208,7 +224,7 @@ const SearchPreferences = (props) => {
     React.useCallback(() => {
       if (token != null) {
         setPremiumPrivacySetting(userData?.UserSetting?.isSubscribed);
-        ProfileServices.getMyProfile(token).then((res) => {
+        ProfileServices.getMyProfile(token).then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             let data = res?.data?.data;
@@ -261,7 +277,7 @@ const SearchPreferences = (props) => {
                             type: i?.editType,
                             ask: i?.ask,
                             // ask: i?.ask,
-                            // line: i?.line,
+                            line: i?.line,
                           })
                     }
                     arrowIcon
@@ -320,7 +336,7 @@ const SearchPreferences = (props) => {
                         type: i?.editType,
                         ask: i?.ask,
                         // ask: i?.ask,
-                        // line: i?.line,
+                        line: i?.line,
                       })
 
                     // props.navigation.navigate('MySearchPreferencesEditScreen', {

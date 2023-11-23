@@ -7,7 +7,7 @@ import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import colors from "../../utility/colors";
 import ToggleSwitch from "toggle-switch-react-native";
 
-const SliderView = (props) => {
+const SliderView = props => {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(!isEnabled);
 
@@ -163,7 +163,7 @@ const SliderView = (props) => {
           snapped={true}
           minMarkerOverlapDistance={10}
           enableLabel={props.enableLabel}
-          customLabel={(sliderPosition) => {
+          customLabel={sliderPosition => {
             return (
               <>
                 {props.customLabel == "simple" ? (
@@ -314,7 +314,7 @@ const SliderView = (props) => {
                       position: "absolute",
                       left:
                         sliderPosition.oneMarkerValue === 0
-                          ? sliderPosition.oneMarkerLeftPosition - 25
+                          ? sliderPosition.oneMarkerLeftPosition - 15
                           : sliderPosition.oneMarkerLeftPosition - 40,
                       top: 40,
                     }}
