@@ -446,7 +446,8 @@ const Settings = props => {
             }}
           >
             <BoostUpgradeCard
-              onPress={handleEnableSpotlight}
+              onSpotPress={handleEnableSpotlight}
+              onPress={() => props.navigation.navigate("PaywallSpots")}
               typeCount={userData?.UserSetting?.noOfSpotlight}
               type={"Spotlight:"}
               imageSource={require("../../assets/iconimages/pinkspotlight.png")}
