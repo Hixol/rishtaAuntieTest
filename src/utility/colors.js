@@ -7,6 +7,8 @@ export default {
   daysAgoGrey: "#808080",
   lightGreen: "#49B430",
   blazingGreen: "#1CF981",
+  callGreen: "#27AE60",
+  callRed: "#EB5757",
   navyBlue: "rgb(33,77,112)",
   error: "#d00",
   error100: "#FDEDF1",
