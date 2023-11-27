@@ -2,7 +2,6 @@ import React, { useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 import StoryContainer from "./StoryContainer";
-import FastImage from "react-native-fast-image";
 
 const Stories = props => {
   const [currentUserIndex, setCurrentUserIndex] = useState(0);
@@ -35,24 +34,6 @@ const Stories = props => {
     <View style={styles.container}>
       {AllStories.map((item, index) => (
         <>
-          <View
-            style={{
-              width: "100%",
-              height: "100%",
-              zIndex: 1,
-              position: "absolute",
-            }}
-          >
-            <FastImage
-              resizeMode="cover"
-              style={{
-                width: "100%",
-                height: "100%",
-                overflow: "hidden",
-              }}
-              source={require("../../assets/iconimages/opacity-02.png")}
-            />
-          </View>
           <StoryContainer
             isPaused={props.isPaused}
             imageCurrentIndex={props.imageCurrentIndex}

@@ -141,60 +141,10 @@ const MyProfileDetails = props => {
         </View>
 
         <View>
-          <Text
-            style={[
-              styles.myvibes,
-              {
-                paddingHorizontal: "4%",
-                marginTop: "5%",
-              },
-            ]}
-          >
-            Details
-          </Text>
           <View style={styles.analystSection}>
             <Text style={styles.statementTxt}>
               {userData?.Profile?.tagline}
             </Text>
-            <View style={styles.analystTxt}>
-              <View style={styles.analystFooter}>
-                <Icons.MaterialCommunityIcons
-                  name="map-marker-outline"
-                  size={30}
-                  color={colors.blackBlue}
-                />
-                <Text
-                  style={[
-                    styles.locationTxt,
-                    {
-                      minWidth: "50%",
-                      maxWidth: "70%",
-                    },
-                  ]}
-                >
-                  {bioData ? bioData.city : null}
-                  {bioData
-                    ? bioData?.country !== "Not Specified" &&
-                      bioData?.country != "United States"
-                      ? ", " + bioData?.country
-                      : bioData?.country == "United States"
-                      ? ", " + bioData?.address
-                      : null
-                    : null}
-                </Text>
-              </View>
-              <Text
-                style={[
-                  styles.locationTxt,
-                  {
-                    minWidth: "30%",
-                    maxWidth: "40%",
-                  },
-                ]}
-              >
-                {bioData ? bioData.Profile.occupation : null}
-              </Text>
-            </View>
           </View>
 
           <View style={styles.matchingSection}>

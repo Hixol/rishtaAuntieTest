@@ -82,11 +82,12 @@ export default StyleSheet.create({
   analystSection: {
     // height: windowHeight * 0.11,
     width: windowWidth * 0.92,
-    marginVertical: "4%",
+    marginTop: "6%",
+    marginBottom: "4%",
     alignSelf: "center",
     borderRadius: 18,
     backgroundColor: colors.white,
-    paddingVertical: "4%",
+    paddingVertical: "8%",
     paddingHorizontal: "4%",
     justifyContent: "center",
     shadowColor: "#CCCCCC",
@@ -113,7 +114,7 @@ export default StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 18,
-    shadowColor: "grey",
+    shadowColor: "#ccc",
     shadowOffset: {
       width: 1,
       height: 1,
@@ -206,9 +207,9 @@ export default StyleSheet.create({
     alignSelf: "center",
     alignItems: "center",
   },
-  statementTxt: {
-    color: colors.blackBlue,
+  tagTxt: {
     fontSize: 16,
+    color: colors.blackBlue,
     fontFamily: "Inter-Medium",
   },
   analystFooter: {
