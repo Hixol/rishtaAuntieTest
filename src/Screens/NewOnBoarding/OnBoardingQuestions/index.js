@@ -153,9 +153,7 @@ const OnBoardingQuestions = ({ navigation }) => {
   }, [ppCheck]);
 
   useEffect(() => {
-    console.log("HELLO VIBES", vibes);
     if (vibes && vibes.length > 0) {
-      console.log("HELLO VIVES", vibes);
       setSelectedVibe(vibes);
     }
     if (promptsPool && promptsPool.length > 0) {
@@ -184,7 +182,6 @@ const OnBoardingQuestions = ({ navigation }) => {
       setSelectedDenomination(denomination);
     }
 
-    console.log("HELLO PRACTCING LEVEL 1", practicingLevel);
     if (practicingLevel === "Rarely Religious") {
       setSliderVal([1]);
     } else if (practicingLevel === "Somewhat Religious") {
@@ -194,14 +191,12 @@ const OnBoardingQuestions = ({ navigation }) => {
     } else if (practicingLevel === "Strongly Religious") {
       setSliderVal([4]);
     } else {
-      console.log("HELLO PRACTCING LEVEL 2", practicingLevel);
       dispatch({
         type: "practicingLevel",
         payload: "Rarely Religious",
       });
       setSliderVal([1]);
     }
-    console.log("HELLO MARRIAGE TIMELINE", marriageTimeline);
 
     if (marriageTimeline === "1 Year") {
       setSliderMarriageVal([1]);
@@ -212,7 +207,6 @@ const OnBoardingQuestions = ({ navigation }) => {
     } else if (marriageTimeline === "4 Years") {
       setSliderMarriageVal([4]);
     } else {
-      console.log("HELLO MARRIAGE TIMELINE", marriageTimeline);
       dispatch({
         type: "marriageTimeline",
         payload: "1 Year",
@@ -628,12 +622,10 @@ const OnBoardingQuestions = ({ navigation }) => {
     OnBoardingServices.profileValues(
       encodeURI(
         JSON.stringify([
-          "college",
           "community",
           "denomination",
           "familyOrigin",
           "language",
-          "occupation",
         ])
       )
     )
@@ -709,7 +701,7 @@ const OnBoardingQuestions = ({ navigation }) => {
     if (arr.length < 8 && check === false) {
       arr.push(item);
       setSelectedVibe(arr);
-      console.log("ARR", arr);
+
       dispatch({
         type: "vibes",
         payload: arr,
@@ -792,7 +784,6 @@ const OnBoardingQuestions = ({ navigation }) => {
   };
 
   const selectHeight = number => {
-    console.log("NUMBER", number);
     setSelectedHeight(number);
     dispatch({
       type: "height",
@@ -1296,9 +1287,7 @@ const OnBoardingQuestions = ({ navigation }) => {
     } else if (array[currentIndex]?.type === "Tagline" && tagline === "") {
       alerts("error", "Please write something to introduce yourself");
     } else {
-      console.log("PRACTICING LEVEL", practicingLevel);
       if (currentIndex === array?.length - 1) {
-        console.log("HEIGHT", height);
         // setButtonLoader(true);
         const formData = new FormData();
         formData.append("height", height);
@@ -1337,10 +1326,9 @@ const OnBoardingQuestions = ({ navigation }) => {
           formData.append(`profilePrompts[${ind}][answer]`, el.answer);
           formData.append(`profilePrompts[${ind}][operation]`, "add");
         });
-        console.log("FORM DATA", formData);
+
         UserService.updateNewProfile(formData, token)
           .then(res => {
-            console.log("HELLO RES", res);
             if (res?.status >= 200 && res?.status <= 299) {
               Alerts("success", "Profile updated successfully");
               dispatch({
@@ -1446,7 +1434,7 @@ const OnBoardingQuestions = ({ navigation }) => {
       />
     );
   };
-  console.log("PP CHECK NAD ANDROID", ppCheck, android);
+
   return loading ? (
     <View
       style={{
@@ -1595,7 +1583,7 @@ const OnBoardingQuestions = ({ navigation }) => {
                             index={index}
                             item={item}
                             multiSelect={array[currentIndex]?.multiSelect}
-                            nameorid={"id"}
+                            nameorid={"name"}
                             search={array[currentIndex]?.search}
                           />
                         );

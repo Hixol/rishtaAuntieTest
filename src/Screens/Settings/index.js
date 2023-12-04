@@ -402,27 +402,31 @@ const Settings = props => {
                   {userData?.firstName + " " + userData?.lastName}
                 </Text>
 
-                <Icons.EvilIcons
-                  onPress={() => props.navigation.navigate("ViewProfile")}
-                  name="user"
-                  size={36}
-                  color={colors.primaryPink}
-                  style={{ bottom: 2.5 }}
-                />
                 {status !== "INCOMPLETE" ? (
-                  <TouchableOpacity
-                    onPress={() => {
-                      props.navigation.navigate("EditProfileScreen");
-                    }}
-                    style={{ width: "10%" }}
-                  >
-                    <FastImage
-                      resizeMode="contain"
-                      style={{ width: "100%", height: 25 }}
-                      source={require("../../assets/iconimages/editoutline.png")}
+                  <>
+                    <Icons.EvilIcons
+                      onPress={() => props.navigation.navigate("ViewProfile")}
+                      name="user"
+                      size={36}
+                      color={colors.primaryPink}
+                      style={{ bottom: 2.5 }}
                     />
-                  </TouchableOpacity>
-                ) : null}
+                    <TouchableOpacity
+                      onPress={() => {
+                        props.navigation.navigate("EditProfileScreen");
+                      }}
+                      style={{ width: "10%" }}
+                    >
+                      <FastImage
+                        resizeMode="contain"
+                        style={{ width: "100%", height: 25 }}
+                        source={require("../../assets/iconimages/editoutline.png")}
+                      />
+                    </TouchableOpacity>
+                  </>
+                ) : (
+                  <View />
+                )}
               </View>
               <SettingButton
                 onPress={() => props.navigation.navigate("MyInsight")}

@@ -75,11 +75,12 @@ export default StyleSheet.create({
   },
   analystSection: {
     width: windowWidth * 0.92,
-    marginVertical: "4%",
+    marginTop: "6%",
+    marginBottom: "4%",
     alignSelf: "center",
     borderRadius: 18,
     backgroundColor: colors.white,
-    paddingVertical: "4%",
+    paddingVertical: "8%",
     paddingHorizontal: "4%",
     justifyContent: "center",
     shadowColor: "#CCCCCC",
@@ -100,7 +101,7 @@ export default StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 18,
-    shadowColor: "grey",
+    shadowColor: "#ccc",
     shadowOffset: {
       width: 1,
       height: 1,

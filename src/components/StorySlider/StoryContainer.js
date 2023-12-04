@@ -1,19 +1,20 @@
-import React, {useState} from 'react';
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-} from 'react-native';
+} from "react-native";
 
-import GestureRecognizer from 'react-native-swipe-gestures';
+import GestureRecognizer from "react-native-swipe-gestures";
 
-import Story from './Story';
-import ProgressArray from './ProgressArray';
+import Story from "./Story";
+import ProgressArray from "./ProgressArray";
+import FastImage from "react-native-fast-image";
 
 const StoryContainer = props => {
-  const {user} = props;
-  const {stories = {}} = user || {};
+  const { user } = props;
+  const { stories = {} } = user || {};
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPause, setIsPause] = useState(props.isPaused ? true : false);
@@ -75,7 +76,7 @@ const StoryContainer = props => {
     if (!isLoaded) {
       return (
         <View style={styles.loading}>
-          <View style={{width: 1, height: 1}}>
+          <View style={{ width: 1, height: 1 }}>
             <Story
               onImageLoaded={onImageLoaded}
               pause
@@ -103,7 +104,8 @@ const StoryContainer = props => {
         onPress={e => changeStory(e.nativeEvent)}
         onLongPress={() => onPause(true)}
         onPressOut={() => onPause(false)}
-        style={styles.container}>
+        style={styles.container}
+      >
         <View style={styles.container}>
           <Story
             onImageLoaded={onImageLoaded}
@@ -126,9 +128,32 @@ const StoryContainer = props => {
             currentIndex={currentIndex}
             currentStory={stories[currentIndex]}
             length={stories.map((_, i) => i)}
-            progress={{id: currentIndex}}
+            progress={{ id: currentIndex }}
           />
         </View>
+      </TouchableOpacity>
+      <TouchableOpacity
+        activeOpacity={1}
+        delayLongPress={100}
+        onPress={e => changeStory(e.nativeEvent)}
+        onLongPress={() => onPause(true)}
+        onPressOut={() => onPause(false)}
+        style={{
+          width: "100%",
+          height: "100%",
+          zIndex: 1,
+          position: "absolute",
+        }}
+      >
+        <FastImage
+          resizeMode="cover"
+          style={{
+            width: "100%",
+            height: "100%",
+            overflow: "hidden",
+          }}
+          source={require("../../assets/iconimages/opacity-02.png")}
+        />
       </TouchableOpacity>
     </GestureRecognizer>
   );
@@ -137,60 +162,60 @@ const StoryContainer = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    width: "100%",
+    justifyContent: "flex-start",
+    alignItems: "center",
     // paddingTop: 30,
   },
   progressBarArray: {
-    flexDirection: 'row',
-    position: 'absolute',
+    flexDirection: "row",
+    position: "absolute",
     top: 30,
-    width: '98%',
+    width: "98%",
     height: 10,
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   userView: {
-    flexDirection: 'row',
-    position: 'absolute',
+    flexDirection: "row",
+    position: "absolute",
     top: 55,
-    width: '98%',
-    alignItems: 'center',
+    width: "98%",
+    alignItems: "center",
   },
   name: {
     fontSize: 18,
-    fontWeight: '500',
+    fontWeight: "500",
     marginLeft: 12,
-    color: 'white',
+    color: "white",
   },
   time: {
     fontSize: 12,
-    fontWeight: '400',
+    fontWeight: "400",
     marginTop: 3,
     marginLeft: 12,
-    color: 'white',
+    color: "white",
   },
-  content: {width: '100%', height: '100%'},
+  content: { width: "100%", height: "100%" },
   loading: {
-    backgroundColor: 'black',
-    height: '100%',
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "black",
+    height: "100%",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
   },
   modal: {
-    width: '100%',
-    height: '90%',
-    backgroundColor: 'white',
+    width: "100%",
+    height: "90%",
+    backgroundColor: "white",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
   bar: {
     width: 50,
     height: 8,
-    backgroundColor: 'gray',
-    alignSelf: 'center',
+    backgroundColor: "gray",
+    alignSelf: "center",
     borderRadius: 4,
     marginTop: 8,
   },

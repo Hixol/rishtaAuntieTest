@@ -928,7 +928,6 @@ const EditScreenSetting = props => {
                 check = userData?.ProfilePrompts?.some((item, index) => {
                   return item?.Question?.id === el?.id;
                 });
-                console.log("CHECCK", check);
 
                 formData.append(`profilePrompts[${ind}][questionId]`, el?.id);
                 formData.append(`profilePrompts[${ind}][answer]`, el.answer);
@@ -937,7 +936,7 @@ const EditScreenSetting = props => {
                   !check && el?.selected ? "delete" : check ? "update" : "add"
                 );
               });
-              console.log("FORM DATA", formData);
+
               await updateUser(formData, token);
               setPPCheck(false);
             } else {
@@ -1156,12 +1155,6 @@ const EditScreenSetting = props => {
       }
     }
   };
-  console.log(
-    "SELECTED HEIGHT FROM",
-    userData,
-    selectedHeightTo,
-    distanceSlider
-  );
 
   const calculateInches = async number => {
     const totalInches = number / 2.54;
@@ -1303,7 +1296,6 @@ const EditScreenSetting = props => {
                         index={index}
                         item={item}
                         multiSelect={false}
-                        nameorid={"name"}
                         search={false}
                         radio={true}
                       />
@@ -1333,8 +1325,12 @@ const EditScreenSetting = props => {
                           marginTop: "5%",
                         }}
                         multiSliderValue={[
-                          userData?.UserPreference?.distance === "Unlimited" ||
-                          userData?.UserPreference?.distance === "Nationwide"
+                          /Unlimited|unlimited/.test(
+                            userData?.UserPreference?.distance
+                          ) ||
+                          /Nationwide|nationwide/.test(
+                            userData?.UserPreference?.distance
+                          )
                             ? 0
                             : parseInt(userData?.UserPreference?.distance),
                         ]}
@@ -1385,7 +1381,6 @@ const EditScreenSetting = props => {
                       value={selectedHeightFrom / 30.48}
                       onValueChangeEnd={async number => {
                         let res = await calculateInches(number);
-                        console.log("RES", res);
                         selectHeightFrom(res);
                       }}
                       onValueChange={number => {
@@ -1437,7 +1432,6 @@ const EditScreenSetting = props => {
                       value={selectedHeightTo / 30.48}
                       onValueChangeEnd={async number => {
                         let res = await calculateInches(number);
-                        console.log("RES", res);
                         selectHeightTo(res);
                       }}
                       onValueChange={number => {

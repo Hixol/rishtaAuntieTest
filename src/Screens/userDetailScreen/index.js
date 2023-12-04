@@ -387,60 +387,10 @@ const UserDetailScreen = props => {
                   </View>
 
                   <View>
-                    <Text
-                      style={[
-                        styles.myvibes,
-                        {
-                          paddingHorizontal: "4%",
-                          marginTop: "5%",
-                        },
-                      ]}
-                    >
-                      Details
-                    </Text>
                     <View style={styles.analystSection}>
-                      <Text style={styles.statementTxt}>
+                      <Text style={styles.tagTxt}>
                         {allDetails?.Profile?.tagline}
                       </Text>
-                      <View style={styles.analystTxt}>
-                        <View style={styles.analystFooter}>
-                          <Icons.MaterialCommunityIcons
-                            name="map-marker-outline"
-                            size={30}
-                            color={colors.blackBlue}
-                          />
-                          <Text
-                            style={[
-                              styles.locationTxt,
-                              {
-                                minWidth: "50%",
-                                maxWidth: "60%",
-                              },
-                            ]}
-                          >
-                            {allDetails ? allDetails?.city : null}
-                            {allDetails
-                              ? allDetails?.country !== "Not Specified" &&
-                                allDetails?.country != "United States"
-                                ? ", " + allDetails?.country
-                                : allDetails?.country == "United States"
-                                ? ", " + allDetails?.address
-                                : null
-                              : null}
-                          </Text>
-                        </View>
-                        <Text
-                          style={[
-                            styles.locationTxt,
-                            {
-                              minWidth: "40%",
-                              maxWidth: "50%",
-                            },
-                          ]}
-                        >
-                          {allDetails ? allDetails?.Profile?.occupation : null}
-                        </Text>
-                      </View>
                     </View>
 
                     {personalityRes != null &&
