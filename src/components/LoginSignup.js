@@ -24,12 +24,12 @@ import config from "../aws-exports";
 import Loader from "./Loader";
 import Icons from "../utility/icons";
 
-const LoginSignup = (props) => {
+const LoginSignup = props => {
   const webviewRef = useRef(null);
   const dispatch = useDispatch();
   const { Alerts, handleStatusCode, dispatchAndNavigate } = useHelper();
   const { mobileNumber, email, status } = useSelector(
-    (store) => store.userReducer
+    store => store.userReducer
   );
 
   let [fullNumber, setFullNumber] = useState("");
@@ -53,7 +53,7 @@ const LoginSignup = (props) => {
   const urlOpener = async (url, redirectUrl) => {
     let identityProvider = url
       .split("&")
-      .find((str) => str.indexOf("identity_provider") > -1)
+      .find(str => str.indexOf("identity_provider") > -1)
       .split("=")
       .pop();
 
@@ -89,10 +89,10 @@ const LoginSignup = (props) => {
 
   const getUser = () => {
     Auth.currentAuthenticatedUser()
-      .then((user) => {
+      .then(user => {
         setCurrentAuthUser(user);
       })
-      .catch((err) => console.log("currentAuthenticatedUser err:", err));
+      .catch(err => console.log("currentAuthenticatedUser err:", err));
   };
 
   useEffect(() => {
@@ -140,7 +140,7 @@ const LoginSignup = (props) => {
     UserService.login({
       phoneNumber: fullNumber,
     })
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           Alerts("success", res.data.message);
@@ -150,7 +150,7 @@ const LoginSignup = (props) => {
           });
         }
       })
-      .catch((err) => {
+      .catch(err => {
         console.log("login err", err);
         Alerts("error", err?.message.toString());
       })
@@ -359,7 +359,7 @@ const LoginSignup = (props) => {
     });
     if (res === "SUCCESS") {
       UserService.signUpSocial(body)
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             let data = res?.data?.data;
@@ -380,7 +380,7 @@ const LoginSignup = (props) => {
             }
           }
         })
-        .catch((err) => {
+        .catch(err => {
           if (err?.message.includes("Network")) {
             Alerts("error", err.message);
           } else {
@@ -404,7 +404,7 @@ const LoginSignup = (props) => {
     UserService.signUp({
       phoneNumber: fullNumber,
     })
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           Alerts("success", res.data.message);
@@ -414,7 +414,7 @@ const LoginSignup = (props) => {
           });
         }
       })
-      .catch((err) => Alerts("error", err?.message.toString()))
+      .catch(err => Alerts("error", err?.message.toString()))
       .finally(() => setLoading(false));
   };
 
@@ -439,7 +439,7 @@ const LoginSignup = (props) => {
     }
   };
 
-  const handleUrl = (endpoint) =>
+  const handleUrl = endpoint =>
     Linking.openURL(`https://rishtaauntie.app/${endpoint}/`);
 
   return loader ? (
@@ -487,7 +487,7 @@ const LoginSignup = (props) => {
               ? "Chrome/18.0.1025.133 Mobile Safari/535.19"
               : "AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75"
           }
-          onNavigationStateChange={(navState) => {
+          onNavigationStateChange={navState => {
             setCanGoBack(navState.canGoBack);
           }}
         />
@@ -520,7 +520,7 @@ const LoginSignup = (props) => {
               ? "Chrome/18.0.1025.133 Mobile Safari/535.19"
               : "AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75"
           }
-          onNavigationStateChange={(navState) => {
+          onNavigationStateChange={navState => {
             setCanGoBack(navState.canGoBack);
           }}
         />
@@ -592,13 +592,15 @@ const LoginSignup = (props) => {
               fontFamily: "Inter-Regular",
             }}
             placeholderTextColor={colors.vibeLightGrey}
-            defaultCountry="PK"
+            defaultCountry="US"
             lang="en"
             modalCountryItemCountryNameStyle={{ color: "black" }}
             modalCountryItemCountryDialCodeStyle={{
               color: "black",
               fontFamily: "Inter-Regular",
             }}
+            flagStyle={{ fontSize: ios ? 35 : 25, color: "black" }}
+            modalFlagStyle={{ fontSize: ios ? 25 : 20, color: "black" }}
           />
           <View style={{ marginTop: "2%", height: 20 }}>
             <Text
