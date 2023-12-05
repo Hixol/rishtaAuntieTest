@@ -1,11 +1,9 @@
-import {createReducer} from '@reduxjs/toolkit';
+import { createReducer } from "@reduxjs/toolkit";
 
 const initialState = {
-  colleges: [],
   countries: [],
   communities: [],
   languages: [],
-  occupations: [],
   religions: [],
   denomination: [],
   den: [],
@@ -15,12 +13,10 @@ const initialState = {
 export const profileReducer = createReducer(initialState, {
   //This is the action that will be called when the action is dispatched
   PROFILE_VALUES: (state, action) => {
-    const {payload} = action;
-    state.colleges = payload.college.map(x => x.name);
+    const { payload } = action;
     state.countries = payload.familyOrigin.map(x => x.name);
     state.communities = payload.community.map(x => x.name);
     state.languages = payload.language.map(x => x.name);
-    state.occupations = payload.occupation.map(x => x.name);
     state.denomination = payload.denomination;
     state.religions = Object.keys(payload.denomination).sort((a, b) => {
       if (a < b) return -1;
@@ -30,12 +26,12 @@ export const profileReducer = createReducer(initialState, {
   },
 
   PROFILE_DEN_VALUES: (state, action) => {
-    const {payload} = action;
+    const { payload } = action;
     state.den = payload;
   },
 
   PERSONALITY_RES: (state, action) => {
-    const {payload} = action;
+    const { payload } = action;
     state.personalityRes = payload;
   },
 });

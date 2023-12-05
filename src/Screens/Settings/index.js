@@ -145,12 +145,10 @@ const Settings = props => {
               OnBoardingServices.profileValues(
                 encodeURI(
                   JSON.stringify([
-                    "college",
                     "community",
                     "denomination",
                     "familyOrigin",
                     "language",
-                    "occupation",
                   ])
                 )
               )
