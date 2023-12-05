@@ -831,7 +831,11 @@ const ChatScreen = props => {
       <FastImage
         style={styles.image}
         resizeMode={"stretch"}
-        source={{ uri: el?.ChatMembers[0]?.User?.UserMedia[0]?.url }}
+        source={
+          el?.type == "GROUP"
+            ? require("../../assets/iconimages/logo-01.png")
+            : { uri: el?.ChatMembers[0]?.User?.UserMedia[0]?.url }
+        }
       />
       {userStatus ? <View style={styles.status} /> : null}
     </View>
@@ -1068,7 +1072,7 @@ const ChatScreen = props => {
           {/* BOTTOM CONTAINER */}
           <KeyboardAvoidingView
             behavior={ios ? "padding" : ""}
-            keyboardVerticalOffset={100}
+            keyboardVerticalOffset={props.offset}
           >
             {reply && (
               <View style={styles.replyContainer}>

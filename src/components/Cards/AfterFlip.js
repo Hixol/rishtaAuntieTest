@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, TouchableOpacity, ActivityIndicator} from 'react-native';
+import React, { useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 
-import styles from './styles';
-import FastImage from 'react-native-fast-image';
-import colors from '../../utility/colors';
-import WaveForm from 'react-native-audiowaveform';
-import CircularIcon from '../circularIcons';
+import styles from "./styles";
+import FastImage from "react-native-fast-image";
+import colors from "../../utility/colors";
+import WaveForm from "react-native-audiowaveform";
+import CircularIcon from "../circularIcons";
 
 const AfterFlip = props => {
   let date_1 = new Date(props.createdAt);
@@ -29,9 +29,9 @@ const AfterFlip = props => {
   return (
     <View style={styles.shadowContainer1} onPress={props.afterFlipPress}>
       <View style={styles.commentContainer}>
-        <View style={{alignSelf: 'center'}}>
+        <View style={{ alignSelf: "center" }}>
           <Text style={styles.daysAgoTxt}>
-            {TotalDays <= 1 ? TotalDays + ' Day Ago' : TotalDays + ' Days Ago'}
+            {TotalDays <= 1 ? TotalDays + " Day Ago" : TotalDays + " Days Ago"}
           </Text>
         </View>
 
@@ -44,56 +44,60 @@ const AfterFlip = props => {
           </View>
         </View>
 
-        <View style={{marginVertical: '5%'}}>
-          {props.type === 'COMMENT' ? (
+        <View style={{ marginVertical: "5%" }}>
+          {props.type === "COMMENT" ? (
             <View>
-              <Text numberOfLines={3} style={styles.likeCommentText}>
-                {props.userMediaType === 'video'
+              <Text
+                numberOfLines={props.resourceType === "PROFILE_PROMPT" ? 6 : 3}
+                style={styles.likeCommentText}
+              >
+                {props.userMediaType === "video"
                   ? `You commented: "${props.interactionComment}" on discover video`
-                  : props.userMediaType === 'image' &&
-                    props.resourceType === 'USER_MEDIA'
+                  : props.userMediaType === "image" &&
+                    props.resourceType === "USER_MEDIA"
                   ? `You commented: "${props.interactionComment}" on picture`
                   : `You commented: "${props.interactionComment}" on profile prompt`}
               </Text>
             </View>
-          ) : props.type === 'LIKE' ? (
+          ) : props.type === "LIKE" ? (
             <Text numberOfLines={2} style={styles.likeCommentText}>
-              {props.resourceType === 'USER_MEDIA' &&
-              props.userMediaType === 'image'
+              {props.resourceType === "USER_MEDIA" &&
+              props.userMediaType === "image"
                 ? `You liked picture`
-                : props.resourceType === 'USER_MEDIA' &&
-                  props.userMediaType === 'video'
+                : props.resourceType === "USER_MEDIA" &&
+                  props.userMediaType === "video"
                 ? `You liked discover video`
                 : `You liked his/her profile prompt`}
             </Text>
-          ) : props.type === 'VOICE_NOTE' ? (
+          ) : props.type === "VOICE_NOTE" ? (
             <View>
               <Text numberOfLines={2} style={styles.likeCommentText}>
-                You left a voice note on{' '}
-                {props.resourceType === 'USER_MEDIA' &&
-                props.userMediaType === 'image'
-                  ? 'picture'
-                  : props.resourceType === 'USER_MEDIA' &&
-                    props.userMediaType === 'video'
-                  ? 'discover video'
-                  : 'profile prompt'}
+                You left a voice note on{" "}
+                {props.resourceType === "USER_MEDIA" &&
+                props.userMediaType === "image"
+                  ? "picture"
+                  : props.resourceType === "USER_MEDIA" &&
+                    props.userMediaType === "video"
+                  ? "discover video"
+                  : "profile prompt"}
               </Text>
 
               <View style={styles.waveContainer}>
                 <TouchableOpacity
                   disabled={loading ? true : false}
                   onPress={() => setShowWaves(!showWaves)}
-                  style={styles.playBtnContainer}>
+                  style={styles.playBtnContainer}
+                >
                   {loading ? (
-                    <ActivityIndicator size={'small'} color={colors.white} />
+                    <ActivityIndicator size={"small"} color={colors.white} />
                   ) : (
                     <FastImage
                       resizeMode="contain"
                       style={styles.playBtn}
                       source={
                         showWaves
-                          ? require('../../assets/iconimages/pause.png')
-                          : require('../../assets/iconimages/playIcon.png')
+                          ? require("../../assets/iconimages/pause.png")
+                          : require("../../assets/iconimages/playIcon.png")
                       }
                     />
                   )}
@@ -101,7 +105,7 @@ const AfterFlip = props => {
                 <WaveForm
                   style={styles.wave}
                   onFinishPlay={() => setShowWaves(false)}
-                  source={{uri: props.voiceNoteUrl}}
+                  source={{ uri: props.voiceNoteUrl }}
                   waveFormStyle={{
                     waveColor: colors.primaryPink,
                     scrubColor: colors.primaryBlue,
@@ -119,17 +123,17 @@ const AfterFlip = props => {
           )}
         </View>
 
-        <View style={{alignSelf: 'center'}}>
-          {props.resourceType === 'USER_MEDIA' ? (
+        <View style={{ alignSelf: "center" }}>
+          {props.resourceType === "USER_MEDIA" ? (
             <FastImage style={styles.profilePic} source={props.Image} />
-          ) : props.resourceType === 'PROFILE_PROMPT' ? null : (
+          ) : props.resourceType === "PROFILE_PROMPT" ? null : (
             <FastImage style={styles.profilePic} source={props.Image} />
           )}
         </View>
-        {props.resourceType === 'PROFILE_PROMPT' ? (
+        {props.resourceType === "PROFILE_PROMPT" ? (
           <View style={styles.divider} />
         ) : null}
-        {props.resourceType === 'PROFILE_PROMPT' ? (
+        {props.resourceType === "PROFILE_PROMPT" ? (
           <View style={styles.promptContainer}>
             <Text numberOfLines={2} style={styles.questTxt}>
               {props.question}
@@ -140,19 +144,19 @@ const AfterFlip = props => {
           </View>
         ) : null}
 
-        {props.theirMoves === 'theirMoves' ? (
+        {props.theirMoves === "theirMoves" ? (
           <View style={styles.btnView1}>
-            {props.type === 'Rejected' ? (
+            {props.type === "Rejected" ? (
               <CircularIcon
                 iconCrossImage
                 color={colors.primaryPink}
                 size={26}
                 circularIconStyle={[
                   styles.iconStyle,
-                  {backgroundColor: colors.white},
+                  { backgroundColor: colors.white },
                 ]}
               />
-            ) : props.type === 'Accepted' ? (
+            ) : props.type === "Accepted" ? (
               <View style={styles.btnView1}>
                 <CircularIcon
                   iconCrossImage
@@ -160,7 +164,7 @@ const AfterFlip = props => {
                   size={26}
                   circularIconStyle={[
                     styles.iconStyle,
-                    {backgroundColor: colors.white},
+                    { backgroundColor: colors.white },
                   ]}
                 />
                 <CircularIcon
@@ -206,12 +210,13 @@ const AfterFlip = props => {
 
       <TouchableOpacity
         onPress={props.onPress1}
-        style={styles.diagonalXContainer}>
+        style={styles.diagonalXContainer}
+      >
         <View style={styles.diagonalXInnerContainer}>
           <FastImage
             resizeMode="contain"
             style={styles.xImg}
-            source={require('../../assets/iconimages/x.png')}
+            source={require("../../assets/iconimages/x.png")}
           />
         </View>
       </TouchableOpacity>

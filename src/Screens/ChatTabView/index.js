@@ -14,7 +14,9 @@ const Tab = createMaterialTopTabNavigator();
 const ChatTabView = props => {
   const insets = useSafeAreaInsets();
   const chatType = props.route.params?.el?.type;
-  const { userData, swipeScreenIndex } = useSelector(store => store.userReducer);
+  const { userData, swipeScreenIndex } = useSelector(
+    store => store.userReducer
+  );
   const proMember = userData?.UserSetting?.isSubscribed;
 
   return (
@@ -45,7 +47,9 @@ const ChatTabView = props => {
     >
       <Tab.Screen
         name="ChatScreen"
-        children={() => <ChatScreen props={props} />}
+        children={() => (
+          <ChatScreen props={props} offset={chatType == "GROUP" ? 0 : 100} />
+        )}
         options={{ tabBarLabel: "Chat", swipeEnabled: swipeScreenIndex }}
       />
       <Tab.Screen
