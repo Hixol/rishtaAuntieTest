@@ -34,7 +34,8 @@ const EditScreenSetting = props => {
   const dispatch = useDispatch();
   const proMem = userData?.UserSetting?.isSubscribed;
   const { userData, token } = useSelector(store => store.userReducer);
-  const { edit, type, index, ask, line, preferenceEdit } = props?.route?.params;
+  const { edit, type, index, ask, line, preferenceEdit, placeholder } =
+    props?.route?.params;
   const [tagline, setTagline] = useState("");
   const [selctedVibe, setSelectedVibe] = useState([]);
   const [selectedDenomination, setSelectedDenomination] = useState(null);
@@ -1172,6 +1173,18 @@ const EditScreenSetting = props => {
     return feet + "." + inchesString;
   };
 
+  const Divider = () => (
+    <View
+      style={{
+        width: "100%",
+        borderWidth: 0.7,
+        alignSelf: "center",
+        borderColor: "#EBECEF",
+        marginTop: 5,
+      }}
+    />
+  );
+
   return (
     <>
       <SafeAreaView
@@ -1480,26 +1493,29 @@ const EditScreenSetting = props => {
               //   bg={{ color: "red" }}
               // />
               type === "Age" && preferenceEdit ? (
-                <SliderView
-                  sp={{ marginVertical: "1%" }}
-                  searchPreferences
-                  textWithoutIconView
-                  multiSliderValue={
-                    age[0] !== null && age[1] !== null
-                      ? [parseInt(age[0]), parseInt(age[1])]
-                      : [18, 68]
-                  }
-                  isMarkersSeparated={true}
-                  showSteps={true}
-                  multiSliderValuesChange={AgeSliderValuesChange}
-                  min={18}
-                  max={68}
-                  preferenceName={"Age"}
-                  customLabel="age"
-                  enableLabel={true}
-                  step={0.1}
-                  bg={{ color: "red" }}
-                />
+                <>
+                  <Divider />
+                  <SliderView
+                    sp={{ marginVertical: "1%" }}
+                    searchPreferences
+                    textWithoutIconView
+                    multiSliderValue={
+                      age[0] !== null && age[1] !== null
+                        ? [parseInt(age[0]), parseInt(age[1])]
+                        : [18, 68]
+                    }
+                    isMarkersSeparated={true}
+                    showSteps={true}
+                    multiSliderValuesChange={AgeSliderValuesChange}
+                    min={18}
+                    max={68}
+                    preferenceName={"Age"}
+                    customLabel="age"
+                    enableLabel={true}
+                    step={0.1}
+                    bg={{ color: "red" }}
+                  />
+                </>
               ) : type === "Tagline" ? (
                 <View style={styles.textinputView}>
                   <TextInput
@@ -1710,6 +1726,7 @@ const EditScreenSetting = props => {
                     searchValue={searchValue}
                     search={true}
                     edit
+                    placeholder={placeholder}
                     type={type}
                   />
                   <View style={styles.scrollContainer}>
@@ -1807,6 +1824,7 @@ const EditScreenSetting = props => {
                     searchValue={searchValue}
                     search={true}
                     edit
+                    placeholder={placeholder}
                     type={type}
                   />
                   <View style={styles.scrollContainer}>
@@ -1905,6 +1923,7 @@ const EditScreenSetting = props => {
                     searchValue={searchValue}
                     search={true}
                     edit
+                    placeholder={placeholder}
                     type={type}
                   />
                   <View style={styles.scrollContainer}>

@@ -23,13 +23,14 @@ let filtered = [];
 
 const ReligionScreen = ({ navigation, route }) => {
   let edit = route?.params?.edit;
+  let placeholder = route?.params?.placeholder;
   let preferenceEdit = route?.params?.preferenceEdit;
 
   const dispatch = useDispatch();
   const { updateUser, updateUserPreference } = useHelper();
 
-  const { userData, token } = useSelector((store) => store.userReducer);
-  const { religion } = useSelector((store) => store.NewOnBoardingReducer);
+  const { userData, token } = useSelector(store => store.userReducer);
+  const { religion } = useSelector(store => store.NewOnBoardingReducer);
 
   const [searchValue, setSearchValue] = useState("");
   const [array, setArray] = useState([
@@ -89,14 +90,14 @@ const ReligionScreen = ({ navigation, route }) => {
     OnBoardingServices.profileValues(
       encodeURI(JSON.stringify(["denomination"]))
     )
-      .then(async (res) => {
+      .then(async res => {
         if (res.status >= 200 && res.status <= 299) {
           let data = res?.data?.data;
-          let findReligionIndex = copyarr.findIndex((item) => {
+          let findReligionIndex = copyarr.findIndex(item => {
             return item?.type === "Religion";
           });
           let religionArray = await Object.keys(data?.denomination)
-            .map((x) => ({ name: x }))
+            .map(x => ({ name: x }))
             .sort((a, b) => {
               if (a.name < b.name) return -1;
               if (a.name > b.name) return 1;
@@ -110,7 +111,7 @@ const ReligionScreen = ({ navigation, route }) => {
           setArray(copyarr);
         }
       })
-      .catch((err) => console.log("profileValues err", err))
+      .catch(err => console.log("profileValues err", err))
       .finally(() => setLoading(false));
   }, []);
 
@@ -169,7 +170,7 @@ const ReligionScreen = ({ navigation, route }) => {
     if (text?.length > 2) {
       filtered = [...array];
       let copyArray = [...array];
-      let filtered1 = array[currentIndex]?.options.filter((item) => {
+      let filtered1 = array[currentIndex]?.options.filter(item => {
         return item?.name.includes(text);
       });
       if (filtered1.length > 0) {
@@ -216,13 +217,15 @@ const ReligionScreen = ({ navigation, route }) => {
         {array[currentIndex]?.type === "Religion" ? (
           <>
             <OnBoardingSearch
-              onChangeText={(text) =>
+              onChangeText={text =>
                 search(text, array[currentIndex]?.type, currentIndex)
               }
               array={array}
+              type={array[currentIndex]?.type}
               currentIndex={currentIndex}
               searchValue={searchValue}
               search={array[currentIndex]?.search}
+              placeholder={placeholder}
             />
             <View style={styles.scrollContainer}>
               <View style={{ height: "95%", width: "95%" }}>
@@ -248,7 +251,7 @@ const ReligionScreen = ({ navigation, route }) => {
                         let findIndex = filtered[
                           currentIndex
                         ]?.options.findIndex(
-                          (item) => item?.name === selectedReligion?.name
+                          item => item?.name === selectedReligion?.name
                         );
 
                         return (
@@ -328,7 +331,7 @@ const ReligionScreen = ({ navigation, route }) => {
         ) : null}
       </View>
       <BottomButton
-        text={edit ? "Update" : "Continue"}
+        text={edit ? "Update" : "Save search preference"}
         onPress={() => createProfile()}
       />
     </SafeAreaView>

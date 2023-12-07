@@ -12,73 +12,86 @@ const SliderView = props => {
   const toggleSwitch = () => setIsEnabled(!isEnabled);
 
   return (
-    <View style={styles.details}>
-      <View
-        style={{
-          justifyContent: "center",
-          flexDirection: "row",
-          backgroundColor: props.bg ? props.bg : colors.white,
-          marginHorizontal: props.bg ? "6%" : "2%",
-        }}
-      >
-        {props.textWithIconView ? (
-          <View
-            style={{
-              flexDirection: "row",
-              width: "100%",
-              alignItems: "center",
-              justifyContent: "flex-start",
-            }}
-          >
-            <Image
-              style={{
-                // marginRight: '3%',
-                width: "9%",
-                height: "100%",
-                // marginLeft: '5%',
-              }}
-              resizeMode={"contain"}
-              source={props.preferenceIcon}
-            />
-
-            <Text style={styles.detailsTxt}>{props.preferenceName}</Text>
-          </View>
-        ) : null}
-        {/* {props.textWithoutIconView ? ( */}
+    <View
+      style={[
+        styles.details,
+        props.customLabel == "mi" && { marginVertical: 0, marginTop: -18 },
+      ]}
+    >
+      {props.customLabel == "mi" ? null : (
         <View
-          style={[
-            {
-              flexDirection: "row",
-              width: "100%",
-              // marginBottom: ,
-            },
-            props.sp,
-          ]}
+          style={{
+            justifyContent: "center",
+            flexDirection: "row",
+            backgroundColor: props.bg ? props.bg : colors.white,
+            marginHorizontal: props.bg ? "6%" : "2%",
+          }}
         >
-          <Text
-            style={[
-              styles.detailsTxt,
-              props.bg && { fontSize: 14, color: colors.black },
-            ]}
-          >
-            {props.preferenceName}
-          </Text>
-        </View>
-        {/* ) : null} */}
+          {props.textWithIconView ? (
+            <View
+              style={{
+                flexDirection: "row",
+                width: "100%",
+                alignItems: "center",
+                justifyContent: "flex-start",
+              }}
+            >
+              <Image
+                style={{
+                  // marginRight: '3%',
+                  width: "9%",
+                  height: "100%",
+                  // marginLeft: '5%',
+                }}
+                resizeMode={"contain"}
+                source={props.preferenceIcon}
+              />
 
-        {props.deal && (
-          <ToggleSwitch
-            isOn={isEnabled}
-            onColor={colors.primaryPink}
-            offColor={colors.mediumGrey}
-            labelStyle={{ color: "black", fontFamily: "Inter-Regular" }}
-            size="small"
-            label="Deal Break?"
-            onToggle={toggleSwitch}
-          />
-        )}
-      </View>
-      <View style={{ alignSelf: "center", marginTop: "5%" }}>
+              <Text style={styles.detailsTxt}>{props.preferenceName}</Text>
+            </View>
+          ) : null}
+          {/* {props.textWithoutIconView ? ( */}
+          {props.preferenceName == "Age" ? null : (
+            <View
+              style={[
+                {
+                  flexDirection: "row",
+                  width: "100%",
+                  // marginBottom: ,
+                },
+                props.sp,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.detailsTxt,
+                  props.bg && { fontSize: 14, color: colors.black },
+                ]}
+              >
+                {props.preferenceName}
+              </Text>
+            </View>
+          )}
+          {/* ) : null} */}
+
+          {props.deal && (
+            <ToggleSwitch
+              isOn={isEnabled}
+              onColor={colors.primaryPink}
+              offColor={colors.mediumGrey}
+              labelStyle={{ color: "black", fontFamily: "Inter-Regular" }}
+              size="small"
+              label="Deal Break?"
+              onToggle={toggleSwitch}
+            />
+          )}
+        </View>
+      )}
+      <View
+        style={
+          props.customLabel == "mi" ? styles.distanceStyle : styles.ageStyle
+        }
+      >
         <MultiSlider
           markerStyle={{
             ...Platform.select({
@@ -321,11 +334,15 @@ const SliderView = props => {
                   >
                     {sliderPosition?.oneMarkerValue === "unlimited" ||
                     sliderPosition?.oneMarkerValue === "nationwide" ? (
-                      <Text style={{ color: colors.black, fontWeight: "600" }}>
+                      <Text
+                        style={{ color: colors.primaryPink, fontWeight: "600" }}
+                      >
                         {sliderPosition.oneMarkerValue}
                       </Text>
                     ) : (
-                      <Text style={{ color: colors.black, fontWeight: "600" }}>
+                      <Text
+                        style={{ color: colors.primaryPink, fontWeight: "600" }}
+                      >
                         {sliderPosition.oneMarkerValue} mi
                       </Text>
                     )}
@@ -339,7 +356,9 @@ const SliderView = props => {
                         top: 40,
                       }}
                     >
-                      <Text style={{ color: colors.black, fontWeight: "600" }}>
+                      <Text
+                        style={{ color: colors.primaryPink, fontWeight: "600" }}
+                      >
                         {sliderPosition.oneMarkerValue}
                       </Text>
                     </View>
@@ -347,10 +366,12 @@ const SliderView = props => {
                       style={{
                         position: "absolute",
                         left: sliderPosition.twoMarkerLeftPosition - 8,
-                        top: -10,
+                        top: 40,
                       }}
                     >
-                      <Text style={{ color: colors.black, fontWeight: "600" }}>
+                      <Text
+                        style={{ color: colors.primaryPink, fontWeight: "600" }}
+                      >
                         {sliderPosition.twoMarkerValue}
                       </Text>
                     </View>
@@ -497,5 +518,22 @@ const styles = StyleSheet.create({
 
     alignSelf: "flex-start",
     // marginLeft: '20%',
+  },
+  distanceStyle: {
+    alignSelf: "center",
+    backgroundColor: colors.msgGrey,
+    paddingHorizontal: 11.5,
+    paddingVertical: 30,
+    borderRadius: 14,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+  },
+  ageStyle: {
+    alignSelf: "center",
+    backgroundColor: colors.msgGrey,
+    paddingHorizontal: 11.5,
+    paddingVertical: 30,
+    borderRadius: 14,
+    marginTop: 10,
   },
 });

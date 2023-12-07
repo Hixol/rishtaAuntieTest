@@ -4,7 +4,7 @@ import { View, StyleSheet, TextInput, Platform } from "react-native";
 import colors from "../../utility/colors";
 import FastImage from "react-native-fast-image";
 
-const OnBoardingSearch = (props) => {
+const OnBoardingSearch = props => {
   const {
     search,
     searchValue,
@@ -13,6 +13,7 @@ const OnBoardingSearch = (props) => {
     text,
     onChangeText,
     type,
+    placeholder,
     edit,
   } = props;
 
@@ -28,8 +29,10 @@ const OnBoardingSearch = (props) => {
         value={searchValue}
         onChangeText={onChangeText}
         placeholder={`${
-          edit
+          edit && !placeholder
             ? "Search your " + type.toLowerCase()
+            : placeholder
+            ? placeholder
             : array[currentIndex]?.type === "Family Origin"
             ? "Search countries"
             : "Search your " + array[currentIndex]?.type.toLowerCase()
@@ -100,7 +103,7 @@ const styles = StyleSheet.create({
     paddingVertical: Platform.OS === "ios" ? "5%" : "3%",
     borderRadius: 10,
     backgroundColor: "#F9FAFB",
-    marginVertical: "5%",
+    marginVertical: "1%",
     flexDirection: "row",
     alignItems: "center",
   },
