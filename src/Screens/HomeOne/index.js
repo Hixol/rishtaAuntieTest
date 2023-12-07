@@ -35,6 +35,7 @@ import ChatServices from "../../services/ChatServices";
 import ActionCard from "../../components/Cards/ActionCard";
 import ActionBottomModal from "../../components/Modal/ActionBottomModal";
 import FastImage from "react-native-fast-image";
+import OutOfProfilesDay from "../../components/OutOfProfilesDay";
 
 let limit = 15;
 let offset = 0;
@@ -523,6 +524,8 @@ const HomeOne = props => {
         <DiscoverSkeleton tabBarHeight={tabBarHeight} />
       ) : totalProfiles === 0 && remainingProfiles > 0 ? (
         renderOutProfiles()
+      ) : totalProfiles > 0 && remainingProfiles === 0 ? (
+        <OutOfProfilesDay navigation={props.navigation} />
       ) : (
         <SafeAreaView style={styles.container}>
           {
