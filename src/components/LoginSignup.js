@@ -23,11 +23,19 @@ import UserService from "../services/UserService";
 import config from "../aws-exports";
 import Loader from "./Loader";
 import Icons from "../utility/icons";
+import Countries from "../assets/countryLists/Countries";
 
 const LoginSignup = props => {
   const webviewRef = useRef(null);
   const dispatch = useDispatch();
-  const { Alerts, handleStatusCode, dispatchAndNavigate } = useHelper();
+  const {
+    Alerts,
+    handleStatusCode,
+    dispatchAndNavigate,
+    mulk,
+    handleLocation,
+  } = useHelper();
+
   const { mobileNumber, email, status } = useSelector(
     store => store.userReducer
   );
@@ -39,6 +47,7 @@ const LoginSignup = props => {
 
   const [check, setCheck] = useState(false);
   const [user, setUser] = useState(null);
+  const [countryCode, setCountryCode] = useState("US");
   const [currentAuthUser, setCurrentAuthUser] = useState(null);
   const [canGoBack, setCanGoBack] = useState(false);
   const [provider, setProvider] = useState("");
@@ -94,6 +103,13 @@ const LoginSignup = props => {
       })
       .catch(err => console.log("currentAuthenticatedUser err:", err));
   };
+
+  useEffect(() => {
+    if (mulk == "") handleLocation();
+    if (mulk != "") {
+      setCountryCode(Countries.filter(el => el.en == mulk)[0].code);
+    }
+  }, [mulk]);
 
   useEffect(() => {
     const unsubscribe = Hub.listen("auth", ({ payload: { event, data } }) => {
@@ -592,7 +608,7 @@ const LoginSignup = props => {
               fontFamily: "Inter-Regular",
             }}
             placeholderTextColor={colors.vibeLightGrey}
-            defaultCountry="US"
+            defaultCountry={countryCode}
             lang="en"
             modalCountryItemCountryNameStyle={{ color: "black" }}
             modalCountryItemCountryDialCodeStyle={{

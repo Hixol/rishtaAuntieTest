@@ -12,6 +12,7 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
+    "@babel/preset-typescript": "^7.23.3",
     "@flyerhq/react-native-link-preview": "^1.6.0",
     "@gorhom/bottom-sheet": "^4",
     "@homielab/react-native-auto-scroll": "^0.0.10",
