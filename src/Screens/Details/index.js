@@ -113,12 +113,6 @@ const DetailScreen = props => {
       .catch(err => console.log("viewIntercation err", err));
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      return viewIntercation();
-    }, [props?.route?.params?.userId])
-  );
-
   useEffect(() => {
     userDetails === null ||
     userDetails === undefined ||

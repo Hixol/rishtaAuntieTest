@@ -144,7 +144,7 @@ const HomeOne = props => {
           const CONFIG = {
             debug: { mode: 0 },
           };
-          ConnectyCube.init(CREDENTIALS, CONFIG);
+          // ConnectyCube.init(CREDENTIALS, CONFIG);
           ConnectyCube.createSession()
             .then(session => {
               checkUserAlreadyExist(token, login);
@@ -203,6 +203,17 @@ const HomeOne = props => {
         }
       })
       .catch(err => console.log("Personality match err", err));
+  };
+
+  const viewIntercation = userId => {
+    UserService.viewIntercation(userId, token)
+      .then(res => {
+        handleStatusCode(res);
+        console.log("viewIntercation res", res.data);
+        if (res.status >= 200 && res.status <= 299) {
+        }
+      })
+      .catch(err => console.log("viewIntercation err", err));
   };
 
   const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 70 });
@@ -421,6 +432,7 @@ const HomeOne = props => {
       setIndex(viewableItems[i].index);
       setUserId(viewableItems[i].item.id);
       setUserName(viewableItems[i].item?.firstName);
+      viewIntercation(viewableItems[i].item.id);
       props.navigation.navigate("Discover", {
         enableees: swipeIndex,
         userId: viewableItems[i].item.id,
