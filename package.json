@@ -17,6 +17,7 @@
     "@gorhom/bottom-sheet": "^4",
     "@homielab/react-native-auto-scroll": "^0.0.10",
     "@ptomasroos/react-native-multi-slider": "^2.2.2",
+    "@react-native-admob/admob": "^1.5.1",
     "@react-native-async-storage/async-storage": "^1.17.7",
     "@react-native-community/cli": "^7.0.1",
     "@react-native-community/datetimepicker": "^5.1.0",
