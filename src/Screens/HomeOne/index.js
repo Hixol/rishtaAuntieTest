@@ -18,6 +18,7 @@ import { android, userDevice, windowHeight } from "../../utility/size";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useHelper } from "../../hooks/useHelper";
 import { Button } from "react-native-elements";
+import { TestIds, useRewardedInterstitialAd } from "@react-native-admob/admob";
 
 import styles from "./styles";
 import DiscoverImg from "../../components/DiscoverImg";
@@ -61,6 +62,12 @@ const HomeOne = props => {
   const flatListRef = useRef(null);
   const dispatch = useDispatch();
   const { handlePlayerId, handleStatusCode, Alerts } = useHelper();
+  const { adLoaded, adDismissed, reward, show, load, adLoadError } =
+    useRewardedInterstitialAd(TestIds.REWARDED_INTERSTITIAL, {
+      requestOptions: {
+        requestNonPersonalizedAdsOnly: true,
+      },
+    });
 
   const renderOutProfiles = () => (
     <View style={styles.outContainer}>
@@ -402,6 +409,35 @@ const HomeOne = props => {
 
     getAllUser(limit, offset);
   }, [status]);
+
+  useEffect(() => {
+    if (adDismissed) {
+      handleGetReward();
+    } else if (adLoaded) {
+      show();
+    } else {
+      load();
+    }
+  }, [adLoaded, adDismissed, reward]);
+
+  const handleGetReward = () => {
+    UserService.adReward(token)
+      .then(res => {
+        handleStatusCode(res);
+        if (res.status == 200 || res.status == 201) {
+          let copy = JSON.parse(JSON.stringify(userData));
+          copy.Profile = res.data.data[0][0][0];
+
+          dispatch({
+            type: "AUTH_USER",
+            payload: copy,
+          });
+
+          Alerts("success", res.data.message);
+        }
+      })
+      .catch(err => console.log("adReward err", err));
+  };
 
   const onViewableItemsChanged = useRef(({ viewableItems }) => {
     setUserMediaImage(null);

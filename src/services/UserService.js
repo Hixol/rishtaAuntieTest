@@ -40,6 +40,7 @@ class UserService extends Resources {
     blockList: "/user/block-list",
     unblockUser: "/user/",
     myInsight: "/user/insight/",
+    adReward: "/user/ad-reward",
     searchUserPreference: "/user/search-preferences",
     profile: "chat-info",
     userGet: "user",
@@ -153,6 +154,10 @@ class UserService extends Resources {
   };
   myInsight = token => {
     return ApiManager.get(this.routes.myInsight, "", token);
+  };
+
+  adReward = token => {
+    return ApiManager.patch(this.routes.adReward, {}, token);
   };
 
   userProfile = (payload, token) => {
