@@ -425,12 +425,8 @@ const HomeOne = props => {
   useEffect(() => {
     if (adDismissed) {
       handleGetReward();
-    } else if (adLoaded) {
-      show();
-    } else {
-      load();
     }
-  }, [adLoaded, adDismissed, reward]);
+  }, [adDismissed, reward]);
 
   const handleGetReward = () => {
     UserService.adReward(token)
@@ -449,6 +445,14 @@ const HomeOne = props => {
         }
       })
       .catch(err => console.log("adReward err", err));
+  };
+
+  const handleWatchAd = () => {
+    if (adLoaded) {
+      show();
+    } else {
+      load();
+    }
   };
 
   const onViewableItemsChanged = useRef(({ viewableItems }) => {
@@ -573,7 +577,10 @@ const HomeOne = props => {
       ) : totalProfiles === 0 && remainingProfiles > 0 ? (
         renderOutProfiles()
       ) : totalProfiles > 0 && remainingProfiles === 0 ? (
-        <OutOfProfilesDay navigation={props.navigation} />
+        <OutOfProfilesDay
+          adPress={handleWatchAd}
+          navigation={props.navigation}
+        />
       ) : (
         <SafeAreaView style={styles.container}>
           {
