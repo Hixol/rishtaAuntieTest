@@ -9,6 +9,7 @@ import * as Sentry from "@sentry/react-native";
 import { withIAPContext } from "react-native-iap";
 import { useSelector } from "react-redux";
 
+import MobileAds from "react-native-google-mobile-ads";
 import SocketProvider from "./src/context/SocketContext";
 import StackNavigations from "./src/Navigations/StackNavigation";
 import configureStore from "./src/store";
@@ -150,6 +151,14 @@ const App = () => {
     notificationListener();
     // checkToken();
     createConnectyCubeSession();
+
+    MobileAds()
+      .initialize()
+      .then(adapterStatuses => {
+        // Initialization complete!
+        console.log("adapterStatuses", adapterStatuses);
+      })
+      .catch(err => console.log("adapter err", err));
   }, []);
 
   return (

@@ -1,4 +1,8 @@
 {
   "name": "rishtaaunty",
-  "displayName": "rishtaaunty"
+  "displayName": "rishtaaunty",
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-8950919464657693~4992698574",
+    "ios_app_id": "ca-app-pub-8950919464657693~3463160335"
+  }
 }
