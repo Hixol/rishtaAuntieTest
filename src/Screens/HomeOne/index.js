@@ -18,7 +18,11 @@ import { android, userDevice, windowHeight } from "../../utility/size";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useHelper } from "../../hooks/useHelper";
 import { Button } from "react-native-elements";
-import { TestIds, useRewardedInterstitialAd } from "@react-native-admob/admob";
+import {
+  TestIds,
+  RewardedAd,
+  RewardedAdEventType,
+} from "react-native-google-mobile-ads";
 
 import styles from "./styles";
 import DiscoverImg from "../../components/DiscoverImg";
@@ -33,13 +37,20 @@ import ConnectyCube from "react-native-connectycube";
 import CallService from "../../services/call-service";
 import pushNotificationService from "../../services/PushNotificationService";
 import ChatServices from "../../services/ChatServices";
-import ActionCard from "../../components/Cards/ActionCard";
 import ActionBottomModal from "../../components/Modal/ActionBottomModal";
 import FastImage from "react-native-fast-image";
 import OutOfProfilesDay from "../../components/OutOfProfilesDay";
 
 let limit = 15;
 let offset = 0;
+
+const adUnitId = __DEV__
+  ? TestIds.REWARDED
+  : "ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy";
+
+const admob = RewardedAd.createForAdRequest(adUnitId, {
+  requestNonPersonalizedAdsOnly: true,
+});
 
 const HomeOne = props => {
   const [userId, setUserId] = useState();
@@ -60,15 +71,10 @@ const HomeOne = props => {
   const [skeleton, setSkeleton] = useState(true);
   const [index, setIndex] = useState();
   const [check, setCheck] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const flatListRef = useRef(null);
   const dispatch = useDispatch();
   const { handlePlayerId, handleStatusCode, Alerts } = useHelper();
-  const { adLoaded, adDismissed, reward, show, load, adLoadError } =
-    useRewardedInterstitialAd(TestIds.REWARDED_INTERSTITIAL, {
-      requestOptions: {
-        requestNonPersonalizedAdsOnly: true,
-      },
-    });
 
   const renderOutProfiles = () => (
     <View style={styles.outContainer}>
@@ -423,10 +429,28 @@ const HomeOne = props => {
   }, [status]);
 
   useEffect(() => {
-    if (adDismissed) {
-      handleGetReward();
-    }
-  }, [adDismissed, reward]);
+    const unsubscribeLoaded = admob.addAdEventListener(
+      RewardedAdEventType.LOADED,
+      () => {
+        setLoaded(true);
+
+        if (admob.loaded) {
+          admob.show();
+        }
+
+        unsubscribeLoaded();
+      }
+    );
+
+    const unsubscribeEarned = admob.addAdEventListener(
+      RewardedAdEventType.EARNED_REWARD,
+      reward => {
+        console.log("User earned reward of ", reward);
+        handleGetReward();
+        unsubscribeEarned();
+      }
+    );
+  }, []);
 
   const handleGetReward = () => {
     UserService.adReward(token)
@@ -447,11 +471,9 @@ const HomeOne = props => {
       .catch(err => console.log("adReward err", err));
   };
 
-  const handleWatchAd = () => {
-    if (adLoaded) {
-      show();
-    } else {
-      load();
+  const handleWatchAd = async () => {
+    if (!loaded) {
+      admob.load();
     }
   };
 
