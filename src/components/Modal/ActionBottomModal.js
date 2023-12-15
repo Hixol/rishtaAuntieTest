@@ -113,7 +113,7 @@ const ActionBottomModal = ({
       .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
-          setSubmitted(["22%"]);
+          setSubmitted(["26%"]);
         }
       })
       .catch(err => Alerts("error", err?.message.toString()));

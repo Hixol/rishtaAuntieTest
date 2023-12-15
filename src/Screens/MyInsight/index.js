@@ -104,7 +104,6 @@ const MyInsight = props => {
         btnWithTitle
         screenTitle="Insights"
         titleStyle={{
-          width: "45%",
           alignItems: "flex-end",
           fontSize: 22,
           fontFamily: "Inter-Bold",
@@ -116,7 +115,7 @@ const MyInsight = props => {
         Users you match with can see your insights. Play it smart. 😉
       </Text>
       <View style={styles.paddingContainer}>
-        <Text style={styles.title}>Insights</Text>
+        {/* <Text style={styles.title}>Insights</Text> */}
         {insight != null && Object.keys(insight).length > 0 && (
           <View style={styles.row}>
             <View style={styles.iconContainer}>
