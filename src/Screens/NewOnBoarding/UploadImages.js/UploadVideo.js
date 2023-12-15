@@ -162,6 +162,24 @@ const UploadVideo = ({ navigation, route }) => {
         .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
+            let copy = JSON.parse(JSON.stringify(userData));
+
+            copy.UserMedia = copy.UserMedia.map(el => {
+              if (el.type == "video") {
+                return {
+                  ...el,
+                  url: res.data.data,
+                };
+              } else {
+                return el;
+              }
+            });
+
+            dispatch({
+              type: "AUTH_USER",
+              payload: copy,
+            });
+
             dispatch({
               type: "SET_VIDEO_FLAG",
               payload: true,
