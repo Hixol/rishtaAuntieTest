@@ -67,7 +67,9 @@ const AfterFlip = props => {
                 : props.resourceType === "USER_MEDIA" &&
                   props.userMediaType === "video"
                 ? `You liked discover video`
-                : `You liked his/her profile prompt`}
+                : `You liked ${
+                    props.item.user.Profile.gender == "Male" ? "his" : "her"
+                  } profile prompt`}
             </Text>
           ) : props.type === "VOICE_NOTE" ? (
             <View>
