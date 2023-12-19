@@ -46,7 +46,7 @@ let offset = 0;
 
 const adUnitId = __DEV__
   ? TestIds.REWARDED
-  : "ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy";
+  : "ca-app-pub-8950919464657693/2927384385";
 
 const admob = RewardedAd.createForAdRequest(adUnitId, {
   requestNonPersonalizedAdsOnly: true,
@@ -72,6 +72,7 @@ const HomeOne = props => {
   const [index, setIndex] = useState();
   const [check, setCheck] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [adLoad, setAdLoad] = useState(false);
   const flatListRef = useRef(null);
   const dispatch = useDispatch();
   const { handlePlayerId, handleStatusCode, Alerts } = useHelper();
@@ -433,6 +434,7 @@ const HomeOne = props => {
       RewardedAdEventType.LOADED,
       () => {
         setLoaded(true);
+        setAdLoad(false);
 
         if (admob.loaded) {
           admob.show();
@@ -445,6 +447,8 @@ const HomeOne = props => {
     const unsubscribeEarned = admob.addAdEventListener(
       RewardedAdEventType.EARNED_REWARD,
       reward => {
+        setLoaded(false);
+        setAdLoad(false);
         console.log("User earned reward of ", reward);
         handleGetReward();
         unsubscribeEarned();
@@ -473,6 +477,7 @@ const HomeOne = props => {
 
   const handleWatchAd = async () => {
     if (!loaded) {
+      setAdLoad(true);
       admob.load();
     }
   };
@@ -600,6 +605,7 @@ const HomeOne = props => {
         renderOutProfiles()
       ) : totalProfiles > 0 && remainingProfiles === 0 ? (
         <OutOfProfilesDay
+          adLoad={adLoad}
           adPress={handleWatchAd}
           navigation={props.navigation}
         />
