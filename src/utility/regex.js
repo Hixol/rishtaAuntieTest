@@ -1,15 +1,16 @@
-import {Alert, Linking, PermissionsAndroid} from 'react-native';
+import { Alert, Linking, PermissionsAndroid } from "react-native";
 import {
   check,
   request,
   checkMultiple,
   requestMultiple,
   PERMISSIONS,
-} from 'react-native-permissions';
-import {ios} from './size';
+} from "react-native-permissions";
+import { ios } from "./size";
 
-import RNFetchBlob from 'rn-fetch-blob';
-import Toast from 'react-native-toast-message';
+import moment from "moment";
+import RNFetchBlob from "rn-fetch-blob";
+import Toast from "react-native-toast-message";
 
 const imgExtensions = /jpg|png|jpeg/;
 const videoExtension = /mp4|mov|MOV|quicktime/;
@@ -18,12 +19,12 @@ const audioExtension = /aac|m4a/;
 export const directory = {
   checkPermission: () => {
     return PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
     );
   },
   checkAudioPermission: () => {
     return PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+      PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
     );
   },
 
@@ -38,9 +39,9 @@ export const directory = {
 
 export const alerts = (type, msg) => {
   const msgType = {
-    success: 'Success',
-    info: 'Info',
-    error: 'Error',
+    success: "Success",
+    info: "Info",
+    error: "Error",
   };
 
   Toast.show({
@@ -55,91 +56,91 @@ export const alerts = (type, msg) => {
 export const handlePermissions = {
   callAlert: type => {
     Alert.alert(
-      'Permission Required!',
+      "Permission Required!",
       `Please enable ${type} permission.`,
       [
         {
-          text: 'Cancel',
+          text: "Cancel",
         },
         {
-          text: 'Enable',
+          text: "Enable",
           onPress: () => Linking.openSettings(),
         },
       ],
-      {cancelable: false},
+      { cancelable: false }
     );
   },
 
   callToast: type => {
-    alerts('error', `The ${type} feature is not available on this device.`);
+    alerts("error", `The ${type} feature is not available on this device.`);
   },
 
   blockedMultiplePermissions: (statuses, permissions) => {
-    if (statuses[permissions[0]] == 'blocked') {
-      handlePermissions.callAlert('camera');
+    if (statuses[permissions[0]] == "blocked") {
+      handlePermissions.callAlert("camera");
     }
-    if (statuses[permissions[1]] == 'blocked') {
+    if (statuses[permissions[1]] == "blocked") {
       // handlePermissions.callAlert('gallery');
     }
-    if (statuses[permissions[2]] == 'blocked') {
-      handlePermissions.callAlert('microphone');
+    if (statuses[permissions[2]] == "blocked") {
+      handlePermissions.callAlert("microphone");
     }
-    if (statuses[permissions[3]] == 'blocked') {
+    if (statuses[permissions[3]] == "blocked") {
       // handlePermissions.callAlert('location');
     }
   },
 
-  checkMultiplePermissions: (permissions, type = '', callback) => {
+  checkMultiplePermissions: (permissions, type = "", callback) => {
     if (Array.isArray(permissions)) {
       checkMultiple(permissions).then(statuses => {
-        console.log('🚀 REGEX checkMultiplePermissions statuses', statuses);
+        console.log("🚀 REGEX checkMultiplePermissions statuses", statuses);
         if (
-          statuses[permissions[0]] == 'denied' ||
-          statuses[permissions[1]] == 'denied' ||
-          statuses[permissions[2]] == 'denied' ||
-          statuses[permissions[3]] == 'denied'
+          statuses[permissions[0]] == "denied" ||
+          statuses[permissions[1]] == "denied" ||
+          statuses[permissions[2]] == "denied" ||
+          statuses[permissions[3]] == "denied"
         ) {
           handlePermissions.requestMultiplePermissions(
             permissions,
             type,
-            callback,
+            callback
           );
         } else if (
-          statuses[permissions[0]] == 'blocked' ||
-          statuses[permissions[1]] == 'blocked' ||
-          statuses[permissions[2]] == 'blocked' ||
-          statuses[permissions[3]] == 'blocked'
+          statuses[permissions[0]] == "blocked" ||
+          statuses[permissions[1]] == "blocked" ||
+          statuses[permissions[2]] == "blocked" ||
+          statuses[permissions[3]] == "blocked"
         ) {
           handlePermissions.blockedMultiplePermissions(statuses, permissions);
         } else if (
-          statuses[permissions[0]] == 'granted' ||
-          statuses[permissions[1]] == 'granted' ||
-          statuses[permissions[2]] == 'granted' ||
-          statuses[permissions[3]] == 'granted'
+          statuses[permissions[0]] == "granted" ||
+          statuses[permissions[1]] == "granted" ||
+          statuses[permissions[2]] == "granted" ||
+          statuses[permissions[3]] == "granted"
         ) {
-          callback('granted');
+          callback("granted");
         }
       });
     } else {
       check(permissions).then(status => {
-        if (status == 'denied') {
+        if (status == "denied") {
           request(permissions).then(res => {
-            if (res == 'granted') {
+            if (res == "granted") {
               callback(res);
-            } else if (res == 'blocked') {
+            } else if (res == "blocked") {
               handlePermissions.callAlert(type);
-            } else if (res == 'limited') {
-              handlePermissions.callAlert('full gallery access');
-            } else if (res == 'unavailable') {
+            } else if (res == "limited") {
+              handlePermissions.callAlert("full gallery access");
+            } else if (res == "unavailable") {
               handlePermissions.callToast(type);
             }
           });
-        } else if (status == 'granted') {
+        } else if (status == "granted") {
           callback(status);
-        } else if (status == 'blocked') {
+        } else if (status == "blocked") {
           handlePermissions.callAlert(type);
-        } else if (status == 'limited') {
-          handlePermissions.callAlert('full gallery access');
+        } else if (status == "limited") {
+          handlePermissions.callAlert("full gallery access");
         }
       });
     }
@@ -148,64 +149,64 @@ export const handlePermissions = {
   requestMultiplePermissions: (permissions, type, callback) => {
     if (Array.isArray(permissions)) {
       requestMultiple(permissions).then(statuses => {
-        console.log('🚀 REGEX requestMultiplePermissions statuses', statuses);
+        console.log("🚀 REGEX requestMultiplePermissions statuses", statuses);
         if (
-          statuses[permissions[0]] == 'denied' ||
-          statuses[permissions[1]] == 'denied' ||
-          statuses[permissions[2]] == 'denied' ||
-          statuses[permissions[3]] == 'denied'
+          statuses[permissions[0]] == "denied" ||
+          statuses[permissions[1]] == "denied" ||
+          statuses[permissions[2]] == "denied" ||
+          statuses[permissions[3]] == "denied"
         ) {
-          callback('denied');
+          callback("denied");
         } else if (
-          statuses[permissions[0]] == 'blocked' ||
-          statuses[permissions[1]] == 'blocked' ||
-          statuses[permissions[2]] == 'blocked' ||
-          statuses[permissions[3]] == 'blocked'
+          statuses[permissions[0]] == "blocked" ||
+          statuses[permissions[1]] == "blocked" ||
+          statuses[permissions[2]] == "blocked" ||
+          statuses[permissions[3]] == "blocked"
         ) {
           handlePermissions.blockedMultiplePermissions(statuses, permissions);
         } else if (
-          statuses[permissions[0]] == 'granted' ||
-          statuses[permissions[1]] == 'granted' ||
-          statuses[permissions[2]] == 'granted' ||
-          statuses[permissions[3]] == 'granted'
+          statuses[permissions[0]] == "granted" ||
+          statuses[permissions[1]] == "granted" ||
+          statuses[permissions[2]] == "granted" ||
+          statuses[permissions[3]] == "granted"
         ) {
-          callback('granted');
+          callback("granted");
         }
 
-        if (statuses[permissions[0]] == 'unavailable') {
-          handlePermissions.callToast('camera');
+        if (statuses[permissions[0]] == "unavailable") {
+          handlePermissions.callToast("camera");
         }
-        if (statuses[permissions[1]] == 'unavailable') {
-          handlePermissions.callToast('gallery');
+        if (statuses[permissions[1]] == "unavailable") {
+          handlePermissions.callToast("gallery");
         }
-        if (statuses[permissions[2]] == 'unavailable') {
-          handlePermissions.callToast('microphone');
+        if (statuses[permissions[2]] == "unavailable") {
+          handlePermissions.callToast("microphone");
         }
-        if (statuses[permissions[3]] == 'unavailable') {
-          handlePermissions.callToast('location');
+        if (statuses[permissions[3]] == "unavailable") {
+          handlePermissions.callToast("location");
         }
       });
     } else {
       request(permissions).then(status => {
-        if (status == 'denied') {
+        if (status == "denied") {
           request(permissions).then(res => {
-            if (res == 'granted') {
+            if (res == "granted") {
               callback(res);
-            } else if (res == 'blocked') {
+            } else if (res == "blocked") {
               handlePermissions.callAlert(type);
-            } else if (res == 'limited') {
-              handlePermissions.callAlert('full gallery access');
-            } else if (res == 'unavailable') {
+            } else if (res == "limited") {
+              handlePermissions.callAlert("full gallery access");
+            } else if (res == "unavailable") {
               handlePermissions.callToast(type);
             }
           });
-        } else if (status == 'granted') {
+        } else if (status == "granted") {
           callback(status);
-        } else if (status == 'blocked') {
+        } else if (status == "blocked") {
           handlePermissions.callAlert(type);
-        } else if (status == 'limited') {
-          handlePermissions.callAlert('full gallery access');
-        } else if (status == 'unavailable') {
+        } else if (status == "limited") {
+          handlePermissions.callAlert("full gallery access");
+        } else if (status == "unavailable") {
           handlePermissions.callToast(type);
         }
       });
@@ -213,30 +214,30 @@ export const handlePermissions = {
   },
 
   handleAndroid13BlockedPermissions: status => {
-    console.log('🚀 [HandleAndroid13BlockedPermissions]', status);
-    if (status[PERMISSIONS.ANDROID.CAMERA] === 'blocked') {
-      handlePermissions.callAlert('camera');
-    } else if (status[PERMISSIONS.ANDROID.READ_MEDIA_IMAGES] === 'blocked') {
-      handlePermissions.callAlert('photos and media');
-    } else if (status[PERMISSIONS.ANDROID.READ_MEDIA_VIDEO] === 'blocked') {
-      handlePermissions.callAlert('videos and media');
-    } else if (status[PERMISSIONS.ANDROID.RECORD_AUDIO] === 'blocked') {
-      handlePermissions.callAlert('audio');
+    console.log("🚀 [HandleAndroid13BlockedPermissions]", status);
+    if (status[PERMISSIONS.ANDROID.CAMERA] === "blocked") {
+      handlePermissions.callAlert("camera");
+    } else if (status[PERMISSIONS.ANDROID.READ_MEDIA_IMAGES] === "blocked") {
+      handlePermissions.callAlert("photos and media");
+    } else if (status[PERMISSIONS.ANDROID.READ_MEDIA_VIDEO] === "blocked") {
+      handlePermissions.callAlert("videos and media");
+    } else if (status[PERMISSIONS.ANDROID.RECORD_AUDIO] === "blocked") {
+      handlePermissions.callAlert("audio");
     } else if (
-      status[PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION] === 'blocked'
+      status[PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION] === "blocked"
     ) {
-      handlePermissions.callAlert('location');
+      handlePermissions.callAlert("location");
     }
   },
 
-  checkAndroid13Permissions: (permissions, type = '', callback = null) => {
+  checkAndroid13Permissions: (permissions, type = "", callback = null) => {
     if (Array.isArray(permissions)) {
       checkMultiple(permissions).then(checkStatus => {
-        console.log('🚀 [CheckAndroid13Permissions][Status]', checkStatus);
+        console.log("🚀 [CheckAndroid13Permissions][Status]", checkStatus);
         handlePermissions.requestAndroid13Permissions(
           permissions,
           type,
-          callback,
+          callback
         );
         handlePermissions.handleAndroid13BlockedPermissions(checkStatus);
       });
@@ -247,15 +248,15 @@ export const handlePermissions = {
 
   requestSinglePermission: (permission, type, callback) => {
     request(permission).then(requestStatus => {
-      if (requestStatus === 'denied') {
-        request(permission).then(res => callback('granted'));
-      } else if (requestStatus === 'granted') {
-        callback('granted');
-      } else if (requestStatus === 'blocked') {
+      if (requestStatus === "denied") {
+        request(permission).then(res => callback("granted"));
+      } else if (requestStatus === "granted") {
+        callback("granted");
+      } else if (requestStatus === "blocked") {
         handlePermissions.callAlert(type);
-      } else if (requestStatus === 'limited') {
-        alerts('error', `Please give ${type} full access`);
-      } else if (requestStatus === 'unavailable') {
+      } else if (requestStatus === "limited") {
+        alerts("error", `Please give ${type} full access`);
+      } else if (requestStatus === "unavailable") {
         handlePermissions.callToast(type);
       }
     });
@@ -264,7 +265,7 @@ export const handlePermissions = {
   requestAndroid13Permissions: (permissions, type, callback) => {
     if (Array.isArray(permissions)) {
       requestMultiple(permissions).then(requestStatus => {
-        console.log('🚀 [RequestAndroid13Permissions][Status]', requestStatus);
+        console.log("🚀 [RequestAndroid13Permissions][Status]", requestStatus);
         handlePermissions.handleAndroid13BlockedPermissions(requestStatus);
       });
     } else {
@@ -273,30 +274,30 @@ export const handlePermissions = {
   },
 
   handleAndroidBlockedPermissions: status => {
-    console.log('🚀 [HandleAndroidBlockedPermissions]', status);
-    if (status[PERMISSIONS.ANDROID.CAMERA] === 'blocked') {
-      handlePermissions.callAlert('camera');
+    console.log("🚀 [HandleAndroidBlockedPermissions]", status);
+    if (status[PERMISSIONS.ANDROID.CAMERA] === "blocked") {
+      handlePermissions.callAlert("camera");
     } else if (
-      status[PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE] === 'blocked'
+      status[PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE] === "blocked"
     ) {
-      handlePermissions.callAlert('photos and media');
-    } else if (status[PERMISSIONS.ANDROID.RECORD_AUDIO] === 'blocked') {
-      handlePermissions.callAlert('audio');
+      handlePermissions.callAlert("photos and media");
+    } else if (status[PERMISSIONS.ANDROID.RECORD_AUDIO] === "blocked") {
+      handlePermissions.callAlert("audio");
     } else if (
-      status[PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION] === 'blocked'
+      status[PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION] === "blocked"
     ) {
-      handlePermissions.callAlert('location');
+      handlePermissions.callAlert("location");
     }
   },
 
-  checkAndroidPermissions: (permissions, type = '', callback = null) => {
+  checkAndroidPermissions: (permissions, type = "", callback = null) => {
     if (Array.isArray(permissions)) {
       checkMultiple(permissions).then(checkStatus => {
-        console.log('🚀 [CheckAndroidPermissions][Status]', checkStatus);
+        console.log("🚀 [CheckAndroidPermissions][Status]", checkStatus);
         handlePermissions.requestAndroidPermissions(
           permissions,
           type,
-          callback,
+          callback
         );
         handlePermissions.handleAndroidBlockedPermissions(checkStatus);
       });
@@ -308,7 +309,7 @@ export const handlePermissions = {
   requestAndroidPermissions: (permissions, type, callback) => {
     if (Array.isArray(permissions)) {
       requestMultiple(permissions).then(requestStatus => {
-        console.log('🚀 [RequestAndroidPermissions][Status]', requestStatus);
+        console.log("🚀 [RequestAndroidPermissions][Status]", requestStatus);
         handlePermissions.handleAndroidBlockedPermissions(requestStatus);
       });
     } else {
@@ -317,44 +318,60 @@ export const handlePermissions = {
   },
 };
 
+export const calculateDateAndTime = lastUpdatedDate => {
+  let currentDate = moment(new Date());
+  let updatedDate = moment(lastUpdatedDate);
+
+  let diff = currentDate.diff(updatedDate, "days");
+  if (diff == 1) {
+    return "Yesterday";
+  } else if (diff == 0) {
+    return updatedDate.format("h:mm A");
+  } else if (isNaN(diff)) {
+    return "";
+  } else {
+    return `${diff} Days ago`;
+  }
+};
+
 export const getTypeForApi = objType => {
   if (imgExtensions.test(objType)) {
-    return 'PICTURE';
+    return "PICTURE";
   } else if (videoExtension.test(objType)) {
-    return 'VIDEO';
+    return "VIDEO";
   } else if (audioExtension.test(objType)) {
-    return 'VOICE_NOTE';
+    return "VOICE_NOTE";
   }
 };
 
 export const checkExtension = msg => {
   if (imgExtensions.test(msg)) {
-    return 'Photo';
+    return "Photo";
   } else if (videoExtension.test(msg)) {
-    return 'Video';
+    return "Video";
   } else if (audioExtension.test(msg)) {
-    return 'Audio';
+    return "Audio";
   } else {
     return msg;
   }
 };
 
 const checkInteractionType = interactionType => {
-  if (interactionType === 'LIKE') return 'liked';
-  else if (interactionType === 'COMMENT') return 'commented on';
-  else return 'left a voice note on';
+  if (interactionType === "LIKE") return "liked";
+  else if (interactionType === "COMMENT") return "commented on";
+  else return "left a voice note on";
 };
 
 const checkInteractionMediaExt = mediaType => {
-  if (mediaType === 'image') return 'picture';
-  else if (mediaType === 'video') return 'discover video';
-  else return 'prompt';
+  if (mediaType === "image") return "picture";
+  else if (mediaType === "video") return "discover video";
+  else return "prompt";
 };
 
 export const checkInteractionStatement = (
   userId,
   firstInteraction,
-  otherUserName,
+  otherUserName
 ) => {
   let type = checkInteractionType(firstInteraction?.type);
   let ext = checkInteractionMediaExt(firstInteraction?.resource?.type);
@@ -378,10 +395,10 @@ export const measureUnits = {
   },
 
   convertFeetAndInchesToDecimal: height => {
-    let valueInPoints = height.replace(/[']+/g, '.').slice(0, -1);
-    let lastNumber = parseInt(valueInPoints.split('.').pop());
+    let valueInPoints = height.replace(/[']+/g, ".").slice(0, -1);
+    let lastNumber = parseInt(valueInPoints.split(".").pop());
     if (lastNumber <= 9) {
-      valueInPoints = valueInPoints.split('.')[0];
+      valueInPoints = valueInPoints.split(".")[0];
       lastNumber = `0${lastNumber}`;
       return `${valueInPoints}.${lastNumber}`;
     } else if (lastNumber >= 10) {
@@ -391,12 +408,12 @@ export const measureUnits = {
 
   convertFeetAndInchesToStringFormat: height => {
     let str = `${height}`;
-    if (str.includes('.') === false) {
+    if (str.includes(".") === false) {
       str = `${height}.0`;
     } else if (
-      !str.includes('.11') ||
-      !str.includes('.12') ||
-      str.includes('.1')
+      !str.includes(".11") ||
+      !str.includes(".12") ||
+      str.includes(".1")
     ) {
       str = `${height}0`;
     }
@@ -406,48 +423,48 @@ export const measureUnits = {
 
 export const insightsArr = [
   {
-    title: 'Just joined',
-    desc: 'Joined Rishta Auntie recently',
-    icon: require('../assets/iconimages/join-1.png'),
+    title: "Just joined",
+    desc: "Joined Rishta Auntie recently",
+    icon: require("../assets/iconimages/join-1.png"),
   },
   {
-    title: 'Frequent flyer',
-    desc: 'Opens Rishta Auntie frequently',
-    icon: require('../assets/iconimages/flyer-1.png'),
+    title: "Frequent flyer",
+    desc: "Opens Rishta Auntie frequently",
+    icon: require("../assets/iconimages/flyer-1.png"),
   },
   {
-    title: 'Ghost',
-    desc: 'They left 2 people on read in the past 30 days',
-    icon: require('../assets/iconimages/ghost-1.png'),
+    title: "Ghost",
+    desc: "They left 2 people on read in the past 30 days",
+    icon: require("../assets/iconimages/ghost-1.png"),
   },
   {
-    title: 'Rishta Auntie gold member',
+    title: "Rishta Auntie gold member",
     desc: "The person you're looking at has Gold",
-    icon: require('../assets/iconimages/gold.png'),
+    icon: require("../assets/iconimages/gold.png"),
   },
   {
-    title: 'Editor in chief',
-    desc: 'Someone who updates their profile once every 15 days',
-    icon: require('../assets/iconimages/editor-1.png'),
+    title: "Editor in chief",
+    desc: "Someone who updates their profile once every 15 days",
+    icon: require("../assets/iconimages/editor-1.png"),
   },
   {
-    title: 'Teleprompter',
-    desc: 'Their prompts speak for themselves, and get a lot of engagement',
-    icon: require('../assets/iconimages/teleprompter-1.png'),
+    title: "Teleprompter",
+    desc: "Their prompts speak for themselves, and get a lot of engagement",
+    icon: require("../assets/iconimages/teleprompter-1.png"),
   },
   {
-    title: 'Photogenic',
-    desc: 'Gets more interactions on photos, rather than prompts',
-    icon: require('../assets/iconimages/photogenic-1.png'),
+    title: "Photogenic",
+    desc: "Gets more interactions on photos, rather than prompts",
+    icon: require("../assets/iconimages/photogenic-1.png"),
   },
   {
-    title: 'Ab bunny hai baat',
-    desc: 'Uses voice on photos or prompts frequently',
-    icon: require('../assets/iconimages/bunny-1.png'),
+    title: "Ab bunny hai baat",
+    desc: "Uses voice on photos or prompts frequently",
+    icon: require("../assets/iconimages/bunny-1.png"),
   },
   {
-    title: 'Storyteller',
-    desc: 'Someone who uses the voice chat feature frequently',
-    icon: require('../assets/iconimages/story-1.png'),
+    title: "Storyteller",
+    desc: "Someone who uses the voice chat feature frequently",
+    icon: require("../assets/iconimages/story-1.png"),
   },
 ];

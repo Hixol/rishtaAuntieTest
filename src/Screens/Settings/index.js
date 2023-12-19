@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import { OnBoardingServices } from "../../services";
 import { useHelper } from "../../hooks/useHelper";
+import { OS_VER } from "../../utility/size";
 
 import styles from "./styles";
 import FastImage from "react-native-fast-image";
@@ -407,7 +408,10 @@ const Settings = props => {
                       name="user"
                       size={36}
                       color={colors.primaryPink}
-                      style={{ bottom: 2.5 }}
+                      style={{
+                        width: "10%",
+                        bottom: OS_VER >= 13 ? 5.5 : 2.5,
+                      }}
                     />
                     <TouchableOpacity
                       onPress={() => {

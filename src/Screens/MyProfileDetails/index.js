@@ -30,6 +30,7 @@ const MyProfileDetails = props => {
   let userImages = [];
   let countryFlag = "";
   let originFlag = "";
+  let countryCode = null;
 
   Countries.filter(country => {
     if (country.en == userData?.country) {
@@ -37,6 +38,12 @@ const MyProfileDetails = props => {
     }
     if (country.en == userData?.Profile?.familyOrigin) {
       originFlag = country.code;
+    }
+    if (
+      userData?.country == "United States" &&
+      userData?.address?.toLowerCase() == country.name?.toLowerCase()
+    ) {
+      countryCode = country.abbreviation;
     }
   });
 
@@ -133,7 +140,7 @@ const MyProfileDetails = props => {
               <Text style={styles.location}>
                 {bioData?.city},{" "}
                 {bioData?.country == "United States"
-                  ? bioData?.address
+                  ? countryCode
                   : bioData?.country}
               </Text>
             </View>

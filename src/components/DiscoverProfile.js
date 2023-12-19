@@ -31,6 +31,7 @@ const DiscoverProfile = ({
   image,
   userName,
   city,
+  address,
   country,
   fOrigin,
   occupation,
@@ -41,6 +42,9 @@ const DiscoverProfile = ({
   const insets = useSafeAreaInsets();
 
   let adjustHeight = 0;
+  let flagsLiving = null;
+  let flagsOrigin = null;
+  let countryCode = null;
   const navigation = useNavigation();
   const [isPaused, setIsPaused] = useState(true);
   const [isPausedButton, setIsPausedButton] = useState(true);
@@ -60,14 +64,19 @@ const DiscoverProfile = ({
     }
   }, [isFocused]);
 
-  let flagsLiving = [];
-  flagsLiving = Countries.filter(item => {
-    return item?.en === country ? item.code : null;
-  });
-
-  let flagsOrigin = [];
-  flagsOrigin = Countries.filter(item => {
-    return item.en === fOrigin ? item.code : null;
+  Countries.filter(item => {
+    if (item.en == country) {
+      flagsLiving = item.code;
+    }
+    if (item.en == fOrigin) {
+      flagsOrigin = item.code;
+    }
+    if (
+      country == "United States" &&
+      address?.toLowerCase() == item.name?.toLowerCase()
+    ) {
+      countryCode = item.abbreviation;
+    }
   });
 
   if (screenHeight - windowHeight > 0) {
@@ -189,9 +198,9 @@ const DiscoverProfile = ({
         {/* <Text style={styles.statementTxt}>{tagline}</Text> */}
         <View style={styles.lastFooter}>
           <View style={styles.flagContainer}>
-            <CountryFlag isoCode={`${flagsLiving[0]?.code}`} size={18} />
+            <CountryFlag isoCode={`${flagsLiving}`} size={18} />
             <View style={{ marginLeft: "20%" }}>
-              <CountryFlag isoCode={`${flagsOrigin[0]?.code}`} size={18} />
+              <CountryFlag isoCode={`${flagsOrigin}`} size={18} />
             </View>
           </View>
           <View
@@ -207,7 +216,7 @@ const DiscoverProfile = ({
               color={colors.textGrey1}
             />
             <Text style={[styles.name, { width: "60%" }]}>
-              {city}, {country == "United States" ? item.address : country}
+              {city}, {country == "United States" ? countryCode : country}
             </Text>
           </View>
         </View>

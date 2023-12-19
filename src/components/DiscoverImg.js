@@ -46,6 +46,7 @@ const DiscoverImg = ({
   let adjustHeight = 0;
   let flagsLiving = null;
   let flagsOrigin = null;
+  let countryCode = null;
   const [isPreloading, setIsPreloading] = useState(false);
   const [isPreloadingImage, setIsPreloadingImage] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -74,6 +75,12 @@ const DiscoverImg = ({
     }
     if (country.en == item.Profile?.familyOrigin) {
       flagsOrigin = country.code;
+    }
+    if (
+      item.country == "United States" &&
+      item.address?.toLowerCase() == country.name?.toLowerCase()
+    ) {
+      countryCode = country.abbreviation;
     }
   });
 
@@ -293,7 +300,7 @@ const DiscoverImg = ({
               />
               <Text style={[styles.name, { width: "60%" }]}>
                 {item.city},{" "}
-                {item.country == "United States" ? item.address : item.country}
+                {item.country == "United States" ? countryCode : item.country}
               </Text>
             </View>
           </View>

@@ -67,6 +67,7 @@ const MyProfile = props => {
                 occupation={userData?.Profile?.occupation}
                 tagline={userData?.Profile?.tagline}
                 city={userData?.city}
+                address={userData?.address}
                 country={userData?.country}
                 tabBarHeight={tabBarHeight}
                 video={video}

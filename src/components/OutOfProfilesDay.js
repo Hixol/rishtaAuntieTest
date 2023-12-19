@@ -6,7 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import colors from "../utility/colors";
 import FastImage from "react-native-fast-image";
 
-const OutOfProfilesDay = ({ adPress, navigation }) => {
+const OutOfProfilesDay = ({ adPress, adLoad, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={[styles.h2, { textAlign: "center" }]}>
@@ -40,6 +40,7 @@ const OutOfProfilesDay = ({ adPress, navigation }) => {
       </Text>
       <Button
         onPress={adPress}
+        loading={adLoad}
         title="Unlock 5 profiles for free"
         titleStyle={styles.titleStyle1}
         buttonStyle={styles.buttonStyle1}

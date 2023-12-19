@@ -237,16 +237,27 @@ const DetailScreen = props => {
     };
   }, [handleBackButton]);
 
+  let address = props?.route?.params?.userDetails?.address;
   let country = props?.route?.params?.userDetails?.country;
   let fOrigin = props?.route?.params?.userDetails?.Profile?.familyOrigin;
 
-  let flagsLiving = [];
-  flagsLiving = Countries.filter(item => {
-    return item?.en === country ? item.code : null;
-  });
-  let flagsOrigin = [];
-  flagsOrigin = Countries.filter(item => {
-    return item.en === fOrigin ? item.code : null;
+  let flagsLiving = null;
+  let flagsOrigin = null;
+  let countryCode = null;
+
+  Countries.filter(item => {
+    if (item.en == country) {
+      flagsLiving = item.code;
+    }
+    if (item.en == fOrigin) {
+      flagsOrigin = item.code;
+    }
+    if (
+      country == "United States" &&
+      address?.toLowerCase() == item.name?.toLowerCase()
+    ) {
+      countryCode = item.abbreviation;
+    }
   });
 
   const Capsule = ({ outlined, title, style, titleStyle }) => (
@@ -380,11 +391,11 @@ const DetailScreen = props => {
               <View style={styles.flagContainer}>
                 <View style={styles.row1}>
                   <CountryFlag
-                    isoCode={`${flagsLiving[0]?.code}`}
+                    isoCode={`${flagsLiving}`}
                     size={17}
                     style={{ marginRight: 5 }}
                   />
-                  <CountryFlag isoCode={`${flagsOrigin[0]?.code}`} size={17} />
+                  <CountryFlag isoCode={`${flagsOrigin}`} size={17} />
                 </View>
 
                 <View style={styles.row2}>
@@ -396,7 +407,7 @@ const DetailScreen = props => {
                   <Text style={styles.location}>
                     {userDetails?.city},{" "}
                     {userDetails?.country == "United States"
-                      ? userDetails?.address
+                      ? countryCode
                       : userDetails?.country}
                   </Text>
                 </View>
