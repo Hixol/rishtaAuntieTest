@@ -52,36 +52,36 @@ const AfterFlip = props => {
                 style={styles.likeCommentText}
               >
                 {props.userMediaType === "video"
-                  ? `You commented: "${props.interactionComment}" on discover video`
+                  ? `You commented: "${props.interactionComment}" on a discover video`
                   : props.userMediaType === "image" &&
                     props.resourceType === "USER_MEDIA"
-                  ? `You commented: "${props.interactionComment}" on picture`
-                  : `You commented: "${props.interactionComment}" on profile prompt`}
+                  ? `You commented: "${props.interactionComment}" on a picture`
+                  : `You commented: "${props.interactionComment}" on a prompt`}
               </Text>
             </View>
           ) : props.type === "LIKE" ? (
             <Text numberOfLines={2} style={styles.likeCommentText}>
               {props.resourceType === "USER_MEDIA" &&
               props.userMediaType === "image"
-                ? `You liked picture`
+                ? `You liked a picture`
                 : props.resourceType === "USER_MEDIA" &&
                   props.userMediaType === "video"
-                ? `You liked discover video`
+                ? `You liked a discover video`
                 : `You liked ${
                     props.item.user.Profile.gender == "Male" ? "his" : "her"
-                  } profile prompt`}
+                  } prompt`}
             </Text>
           ) : props.type === "VOICE_NOTE" ? (
             <View>
               <Text numberOfLines={2} style={styles.likeCommentText}>
-                You left a voice note on{" "}
+                You left a voice note on a{" "}
                 {props.resourceType === "USER_MEDIA" &&
                 props.userMediaType === "image"
                   ? "picture"
                   : props.resourceType === "USER_MEDIA" &&
                     props.userMediaType === "video"
                   ? "discover video"
-                  : "profile prompt"}
+                  : "prompt"}
               </Text>
 
               <View style={styles.waveContainer}>

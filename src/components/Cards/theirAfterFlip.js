@@ -52,11 +52,11 @@ const theirAfterFlip = props => {
                 style={styles.likeCommentText}
               >
                 {props.userMediaType === "video"
-                  ? `Commented: "${props.interactionComment}" on your discover video`
+                  ? `commented: "${props.interactionComment}" on your discover video`
                   : props.userMediaType === "image"
-                  ? `Commented: "${props.interactionComment}" on your picture`
+                  ? `commented: "${props.interactionComment}" on your picture`
                   : props.resourceType === "PROFILE_PROMPT"
-                  ? `Commented: "${props.interactionComment}" on your prompt`
+                  ? `commented: "${props.interactionComment}" on your prompt`
                   : null}
               </Text>
             </View>
@@ -64,13 +64,11 @@ const theirAfterFlip = props => {
             <Text numberOfLines={2} style={styles.likeCommentText}>
               {props.resourceType === "USER_MEDIA" &&
               props.userMediaType === "video"
-                ? "Liked your discover video"
+                ? "liked your discover video"
                 : props.resourceType === "USER_MEDIA" &&
                   props.userMediaType === "image"
-                ? "Liked your picture"
-                : `You liked ${
-                    props.item.user.Profile.gender == "Male" ? "his" : "her"
-                  } prompt`}
+                ? "liked your picture"
+                : `liked your prompt`}
             </Text>
           ) : props.type === "VOICE_NOTE" ? (
             <View>
