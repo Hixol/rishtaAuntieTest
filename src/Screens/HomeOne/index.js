@@ -14,7 +14,7 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { UserService } from "../../services";
 import { useSelector, useDispatch } from "react-redux";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
-import { android, userDevice, windowHeight } from "../../utility/size";
+import { android, ios, userDevice, windowHeight } from "../../utility/size";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useHelper } from "../../hooks/useHelper";
 import { Button } from "react-native-elements";
@@ -46,6 +46,8 @@ let offset = 0;
 
 const adUnitId = __DEV__
   ? TestIds.REWARDED
+  : ios
+  ? "ca-app-pub-8950919464657693/6439625116"
   : "ca-app-pub-8950919464657693/2927384385";
 
 const admob = RewardedAd.createForAdRequest(adUnitId, {
@@ -461,6 +463,8 @@ const HomeOne = props => {
       .then(res => {
         handleStatusCode(res);
         if (res.status == 200 || res.status == 201) {
+          getAllUser(15, 0);
+
           let copy = JSON.parse(JSON.stringify(userData));
           copy.Profile = res.data.data[0][0][0];
 

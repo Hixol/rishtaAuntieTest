@@ -246,6 +246,69 @@ const SearchPreferences = props => {
     }, [isFocused])
   );
 
+  const handleClearPref = type => {
+    let body = {};
+    if (type == "basic") {
+      body = {
+        distance: "2000",
+        ageFrom: 0,
+        ageTo: 0,
+        religion: null,
+        familyOrigin: null,
+        heightFrom: userData?.UserPreference?.heightFrom,
+        heightTo: userData?.UserPreference?.heightTo,
+        community: userData?.UserPreference?.community,
+        languagesSpoken: userData?.UserPreference?.languagesSpoken,
+        religiousDenomination: userData?.UserPreference?.religiousDenomination,
+        theyPray: userData?.UserPreference?.theyPray,
+        drinking: userData?.UserPreference?.drinking,
+        smoking: userData?.UserPreference?.smoking,
+        dietChoices: userData?.UserPreference?.dietChoices,
+        maritalHistory: userData?.UserPreference?.maritalHistory,
+        haveKids: userData?.UserPreference?.haveKids,
+        wantKids: userData?.UserPreference?.wantKids,
+        willingToRelocate: userData?.UserPreference?.willingToRelocate,
+      };
+    } else {
+      body = {
+        distance: userData?.UserPreference?.distance
+          ? userData?.UserPreference?.distance
+          : "unlimited",
+        ageFrom: userData?.UserPreference?.ageFrom,
+        ageTo: userData?.UserPreference?.ageTo,
+        religion: userData?.UserPreference?.religion,
+        familyOrigin: userData?.UserPreference?.familyOrigin,
+        heightFrom: 0,
+        heightTo: 0,
+        community: null,
+        languagesSpoken: null,
+        religiousDenomination: null,
+        theyPray: null,
+        drinking: null,
+        smoking: null,
+        dietChoices: null,
+        maritalHistory: null,
+        haveKids: false,
+        wantKids: false,
+        willingToRelocate: false,
+      };
+    }
+
+    UserService.searchUserPreference(body, token)
+      .then(res => {
+        handleStatusCode(res);
+        if (res.data.status == 200 || res.data.status == 201) {
+          alerts("success", res.data.message);
+
+          dispatch({
+            type: "SET_PREFERENCE_FILTER",
+            payload: true,
+          });
+        }
+      })
+      .catch(err => console.log("clearPreference err", err));
+  };
+
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.white, padding: 20 }}
@@ -262,7 +325,15 @@ const SearchPreferences = props => {
       </TouchableOpacity> */}
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Text style={styles.basicPreferenceType}>Basic Preferences</Text>
+        <View style={styles.preferenceRow}>
+          <Text style={styles.basicPreferenceType}>Basic Preferences</Text>
+          <Text
+            onPress={() => handleClearPref("basic")}
+            style={styles.clearTxt}
+          >
+            Clear all
+          </Text>
+        </View>
         <View style={styles.actionItemsView}>
           <View style={{ marginVertical: "2%" }}>
             {BasicPreferences.map((i, index, array) => {
@@ -305,7 +376,15 @@ const SearchPreferences = props => {
             })}
           </View>
         </View>
-        <Text style={[styles.basicPreferenceType]}>Gold Preferences</Text>
+        <View style={styles.preferenceRow}>
+          <Text style={styles.basicPreferenceType}>Gold Preferences</Text>
+          <Text
+            onPress={() => handleClearPref("premium")}
+            style={styles.clearTxt}
+          >
+            Clear all
+          </Text>
+        </View>
         {premiumPrivacySetting == false ? (
           <TouchableOpacity
             onPress={handleUpgrade}

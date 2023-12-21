@@ -373,19 +373,19 @@ const Settings = props => {
                     borderRadius: 56 / 2,
                   }}
                 >
-                  <FastImage
-                    resizeMode="cover"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      borderRadius: 56 / 2,
-                    }}
-                    source={{
-                      uri:
-                        userData?.UserMedia?.length > 0 &&
-                        userData?.UserMedia[0]?.url,
-                    }}
-                  />
+                  {userData?.UserMedia?.length > 0 && (
+                    <FastImage
+                      resizeMode="cover"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: 56 / 2,
+                      }}
+                      source={{
+                        uri: userData?.UserMedia[0]?.url,
+                      }}
+                    />
+                  )}
                 </View>
                 <Text
                   style={{

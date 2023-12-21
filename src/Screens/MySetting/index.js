@@ -68,7 +68,7 @@ const MySetting = props => {
 
   const socket = useContext(SocketContext);
   const dispatch = useDispatch();
-  const { handleStatusCode } = useHelper();
+  const { handleStatusCode, handleDisablePremium } = useHelper();
   const { token, email, settings } = useSelector(store => store.userReducer);
 
   const onToggleSwitch = (type, val) => {
@@ -208,7 +208,7 @@ const MySetting = props => {
           ]}
         >
           <TouchableOpacity
-            onPressIn={() => props.navigation.navigate("Paywall")}
+            onPressIn={handleDisablePremium}
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
