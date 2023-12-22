@@ -26,22 +26,22 @@ import colors from "../../utility/colors";
 import FlipCard from "../Cards/FlipCard";
 import TheirFlipCard from "../Cards/theirFlipCard";
 
-const TabViewExample = (props) => {
+const TabViewExample = props => {
   const { Alerts, handleStatusCode } = useHelper();
   const navigation = useNavigation();
 
-  const { userData } = useSelector((store) => store.userReducer);
+  const { userData } = useSelector(store => store.userReducer);
 
   const [play, setPlay] = useState(true);
   const [showWaves, setShowWaves] = useState(false);
 
-  const TheirMoves = (props) => {
+  const TheirMoves = props => {
     let isFocused = useIsFocused();
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [theirMoves, setTheirMoves] = useState();
     const [selectedItems, setSelectedItems] = useState(["All interactions"]);
-    const { token } = useSelector((store) => store.userReducer);
+    const { token } = useSelector(store => store.userReducer);
 
     const filters = [
       { id: 1, title: "All interactions" },
@@ -55,19 +55,19 @@ const TabViewExample = (props) => {
       { id: 9, title: "Rejected" },
     ];
 
-    const handleOnSelect = (state) => {
+    const handleOnSelect = state => {
       setSelectedItems(state);
     };
 
     const getAllTheirMoves = () => {
       setLoading(true);
       UserService.getAllTheirMoves(token)
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             let arr = [];
             let dataObj = {};
-            res?.data?.data.data.map((el) => {
+            res?.data?.data.data.map(el => {
               // if (el.type != 'MATCH_REQUEST') {
               //   dataObj = {
               //     createdAt: el.createdAt,
@@ -99,7 +99,7 @@ const TabViewExample = (props) => {
             });
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("getAllTheirMoves err", error);
         })
         .finally(() => setLoading(false));
@@ -109,13 +109,13 @@ const TabViewExample = (props) => {
       setLoading(true);
 
       UserService.getAllTheirLikes(token)
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             setTheirMoves(res?.data?.data);
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("getAllTheirLikes err", error);
         })
         .finally(() => setLoading(false));
@@ -125,13 +125,13 @@ const TabViewExample = (props) => {
       setLoading(true);
 
       UserService.getAllTheirComments(token)
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             setTheirMoves(res?.data?.data);
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("getAllTheirComments err", error);
         })
         .finally(() => setLoading(false));
@@ -141,13 +141,13 @@ const TabViewExample = (props) => {
       setLoading(true);
 
       UserService.getAllTheirVoice(token)
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             setTheirMoves(res?.data?.data);
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("getAllTheirVoice err", error);
         })
         .finally(() => setLoading(false));
@@ -156,13 +156,13 @@ const TabViewExample = (props) => {
     const getAllTheirViews = () => {
       setLoading(true);
       UserService.getAllTheirViews(token)
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             setTheirMoves(res?.data?.data);
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("getAllTheirViews err", error);
         })
         .finally(() => setLoading(false));
@@ -180,49 +180,54 @@ const TabViewExample = (props) => {
           ? `filter=${selectedItems[0]}`
           : null
       )
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             setTheirMoves(res?.data?.data);
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("getAllTheirMatchRequests err", error);
         })
         .finally(() => setLoading(false));
     };
 
-    const circularIconCrossPress = (item) => {
+    const circularIconCrossPress = item => {
       let urlencoded = new URLSearchParams();
 
       urlencoded.append("id", item?.id);
       urlencoded.append("status", 2);
       UserService.matchRequest(urlencoded, token)
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             Alerts("success", "Request Rejected Successfully");
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("circularIconCrossPress err", error);
         })
         .finally(() => setLoading(false));
     };
-    const circularIconChatPress = (item) => {
+    const circularIconChatPress = item => {
       let urlencoded = new URLSearchParams();
 
       urlencoded.append("id", item?.id);
       urlencoded.append("status", 1);
       UserService.matchRequest(urlencoded, token)
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             Alerts("success", "Request Accepted Successfully");
-            navigation.navigate("UserChatList");
+            navigation.navigate("UserChatList", {
+              screen: "UserChatListScreen",
+              params: {
+                userId: item?.User?.id ? item?.User?.id : item?.user?.id,
+              },
+            });
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("circularIconChatPress err", error);
         })
         .finally(() => setLoading(false));
@@ -315,7 +320,7 @@ const TabViewExample = (props) => {
         </View> */}
 
         <View style={styles.filterContainer}>
-          {filters.map((el) => (
+          {filters.map(el => (
             <Pressable
               onPress={() => handleOnSelect([el.title])}
               key={el.id}
@@ -398,6 +403,7 @@ const TabViewExample = (props) => {
                                 : selectedItems[0] === "Views"
                                 ? item?.viewerUser?.id
                                 : item?.user?.id,
+                            moves: false,
                           })
                         }
                         item={item}
@@ -414,7 +420,7 @@ const TabViewExample = (props) => {
                         }
                         promptImage={{
                           uri: item?.user?.UserMedia.filter(
-                            (item) => item?.sequence == 1
+                            item => item?.sequence == 1
                           )[0]?.url,
                         }}
                         Image={{
@@ -428,11 +434,11 @@ const TabViewExample = (props) => {
                               ? item?.viewerUser?.UserMedia[0]?.url
                               : item?.resource?.type === "image"
                               ? item?.user?.UserMedia.filter(
-                                  (item) => item?.sequence == 1
+                                  item => item?.sequence == 1
                                 )[0]?.url
                               : item?.resource?.type === "video"
                               ? item?.user?.UserMedia.filter(
-                                  (item) => item?.sequence == 1
+                                  item => item?.sequence == 1
                                 )[0]?.url
                               : item.type === "MATCH_REQUEST"
                               ? item.user.UserMedia[0].url
@@ -522,7 +528,7 @@ const TabViewExample = (props) => {
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [selectedItems, setSelectedItems] = useState(["All interactions"]);
-    const { token } = useSelector((store) => store.userReducer);
+    const { token } = useSelector(store => store.userReducer);
 
     const filters = [
       { id: 1, title: "All interactions" },
@@ -532,20 +538,20 @@ const TabViewExample = (props) => {
       { id: 5, title: "Comments" },
     ];
 
-    const handleOnSelect = (state) => {
+    const handleOnSelect = state => {
       setSelectedItems(state);
     };
 
     const getAllMyMoves = () => {
       setLoading(true);
       UserService.getAllMyMoves(token)
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             setMyMoves(res?.data?.data);
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("getAllMyMoves err", error);
         })
         .finally(() => setLoading(false));
@@ -554,13 +560,13 @@ const TabViewExample = (props) => {
     const getAllMyComments = () => {
       setLoading(true);
       UserService.getAllMyComments(token)
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             setMyMoves(res?.data?.data);
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("getAllMyComments err", error);
         })
         .finally(() => setLoading(false));
@@ -569,13 +575,13 @@ const TabViewExample = (props) => {
     const getAllMyLikes = () => {
       setLoading(true);
       UserService.getAllMyLikes(token)
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             setMyMoves(res?.data?.data);
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("getAllMyLikes err", error);
         })
         .finally(() => setLoading(false));
@@ -584,13 +590,13 @@ const TabViewExample = (props) => {
     const getAllMyVoice = () => {
       setLoading(true);
       UserService.getAllMyVoice(token)
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             setMyMoves(res?.data?.data);
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("getAllMyVoice err", error);
         })
         .finally(() => setLoading(false));
@@ -599,13 +605,13 @@ const TabViewExample = (props) => {
     const getAllMyViews = () => {
       setLoading(true);
       UserService.getAllMyViews(token)
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             setMyMoves(res?.data?.data);
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log("getAllMyViews err", error);
         })
         .finally(() => setLoading(false));
@@ -692,7 +698,7 @@ const TabViewExample = (props) => {
         </View> */}
 
         <View style={styles.filterContainer}>
-          {filters.map((el) => (
+          {filters.map(el => (
             <Pressable
               onPress={() => handleOnSelect([el.title])}
               key={el.id}
@@ -770,6 +776,7 @@ const TabViewExample = (props) => {
                         beforeFlipPress={() =>
                           navigation.navigate("userDetailScreen", {
                             userId: item?.otherUser?.id,
+                            moves: false,
                           })
                         }
                         item={item}
@@ -786,7 +793,7 @@ const TabViewExample = (props) => {
                         }
                         promptImage={{
                           uri: item?.otherUser?.UserMedia.filter(
-                            (item) => item?.sequence == 1
+                            item => item?.sequence == 1
                           )[0]?.url,
                         }}
                         selectedItems={selectedItems[0]}
@@ -801,7 +808,7 @@ const TabViewExample = (props) => {
                               ? item?.resource?.url
                               : item?.resource?.type === "video"
                               ? item?.otherUser?.UserMedia.filter(
-                                  (item) => item?.sequence == 1
+                                  item => item?.sequence == 1
                                 )[0].url
                               : null,
                         }}
@@ -861,7 +868,7 @@ const TabViewExample = (props) => {
     );
   };
 
-  const renderTabBar = (props) => (
+  const renderTabBar = props => (
     <TabBar
       renderLabel={({ route }) => (
         <Text

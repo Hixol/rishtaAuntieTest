@@ -8,7 +8,7 @@ import { alerts, handlePermissions } from "../utility/regex";
 import { PERMISSIONS } from "react-native-permissions";
 import { UserService } from "../services";
 
-import OneSignal from "react-native-onesignal";
+import { OneSignal } from "react-native-onesignal";
 import NotificationServices from "../services/NotificationServices";
 import Geolocation from "react-native-geolocation-service";
 import axios from "axios";
@@ -134,20 +134,31 @@ export const useHelper = props => {
   };
 
   const handlePlayerId = (token, ccuid) => {
-    OneSignal.getDeviceState()
-      .then(res => {
-        if (res.userId.length > 0) {
-          const body = {
-            deviceToken: res.userId,
-            ccuid: `${ccuid}`,
-          };
+    // OneSignal.getDeviceState()
+    //   .then(res => {
+    //     if (res.userId.length > 0) {
+    //       const body = {
+    //         deviceToken: res.userId,
+    //         ccuid: `${ccuid}`,
+    //       };
 
-          NotificationServices.deviceToken(body, token)
-            .then(res => {})
-            .catch(err => console.log("deviceToken err:", err));
-        }
-      })
-      .catch(err => console.log("getDeviceState err:", err));
+    //       NotificationServices.deviceToken(body, token)
+    //         .then(res => {})
+    //         .catch(err => console.log("deviceToken err:", err));
+    //     }
+    //   })
+    //   .catch(err => console.log("getDeviceState err:", err));
+
+    let userId = OneSignal.User.pushSubscription.getPushSubscriptionId();
+
+    const body = {
+      deviceToken: userId,
+      ccuid: `${ccuid}`,
+    };
+
+    NotificationServices.deviceToken(body, token)
+      .then(res => {})
+      .catch(err => console.log("deviceToken err:", err));
   };
 
   const dispatchAndNavigate = (status, route, data) => {

@@ -27,7 +27,7 @@ import { useHelper } from "../../hooks/useHelper";
 import { Divider } from "react-native-elements";
 import { SocketContext } from "../../context/SocketContext";
 import EmojiSelector, { Categories } from "react-native-emoji-selector";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, StackActions } from "@react-navigation/native";
 
 import ImagePicker from "react-native-image-crop-picker";
 import styles from "./styles";
@@ -958,8 +958,8 @@ const ChatScreen = props => {
         <>
           <Divider width={3} color={colors.white} style={styles.divider} />
           <Text style={styles.comment}>
-            That’s funny I am looking for the same thing. Maybe we should get
-            one someday.
+            {/* That’s funny I am looking for the same thing. Maybe we should get
+            one someday. */}
           </Text>
         </>
       )}
@@ -988,12 +988,16 @@ const ChatScreen = props => {
             ? navProps.navigation.replace("BottomTab", {
                 screen: "Settings",
               })
-            : navProps.navigation.goBack()
+            : navProps.navigation.dispatch(
+                StackActions.replace("BottomTab", {
+                  screen: "UserChatList",
+                })
+              )
         }
         type={el.type === "GROUP" && "GROUP"}
         name={
           el.type === "GROUP"
-            ? "Customer Support"
+            ? "Rishta Auntie Support"
             : el?.ChatMembers[0]?.User?.firstName
         }
         image={el?.ChatMembers[0]?.User?.UserMedia[0]?.url}

@@ -17,11 +17,14 @@ import styles from "./styles";
 
 const Tab = createMaterialTopTabNavigator();
 
-const UserChatList = (props) => {
+const UserChatList = props => {
+  const userId = props.route.params?.userId;
+  const chatHeadId = props.route.params?.chatHeadId;
+
   const insets = useSafeAreaInsets();
   const socket = useContext(SocketContext);
   const { handleStatusCode } = useHelper();
-  const { token, userData } = useSelector((store) => store.userReducer);
+  const { token, userData } = useSelector(store => store.userReducer);
 
   const proMember = userData?.UserSetting?.isSubscribed;
 
@@ -37,14 +40,27 @@ const UserChatList = (props) => {
       setUnreadCount(null);
       setLoading(true);
       ChatServices.chatHead(token)
-        .then((res) => {
+        .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             let data = res.data.data;
             let ids = [];
-            data.map((el) => {
+            data.map(el => {
               ids.push(el.ChatMembers[0]?.memberId);
+
+              if (userId != undefined && el.ChatMembers[0].memberId == userId) {
+                props.navigation.navigate("ChatTabView", {
+                  el,
+                  moves: true,
+                });
+              } else if (chatHeadId != undefined && el.id == chatHeadId) {
+                props.navigation.navigate("ChatTabView", {
+                  el,
+                  moves: true,
+                });
+              }
             });
+
             if (socket.connect) {
               socket.emit("is-online", {
                 recipientId: ids,
@@ -53,17 +69,17 @@ const UserChatList = (props) => {
             setChatHead(data);
           }
         })
-        .catch((err) => console.log("ChatHead Err: ", err))
+        .catch(err => console.log("ChatHead Err: ", err))
         .finally(() => setLoading(false));
     }, [isFocused])
   );
 
   useEffect(() => {
-    socket.on("is-online", (res) => {
+    socket.on("is-online", res => {
       setOnlineUsers(res);
     });
 
-    socket.on("message-receive", (res) => {
+    socket.on("message-receive", res => {
       if (res.status == "SEND") {
         setUnreadCount(res);
       }
@@ -82,13 +98,14 @@ const UserChatList = (props) => {
         <ScrollView>
           <View style={{ borderRadius: 16, overflow: "hidden" }}>
             {chatHead.length > 0 &&
-              chatHead.map((el) => {
+              chatHead.map(el => {
                 if (el.type != "GROUP")
                   return (
                     <ChatListItem
                       onPress={() =>
                         props.navigation.navigate("ChatTabView", {
                           el,
+                          moves: true,
                         })
                       }
                       key={el.id}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { LogBox } from "react-native";
 import {
   NavigationContainer,
@@ -13,7 +13,7 @@ import MobileAds from "react-native-google-mobile-ads";
 import SocketProvider from "./src/context/SocketContext";
 import StackNavigations from "./src/Navigations/StackNavigation";
 import configureStore from "./src/store";
-import OneSignal from "react-native-onesignal";
+import { OneSignal } from "react-native-onesignal";
 import ConnectyCube from "react-native-connectycube";
 import CallService from "./src/services/call-service";
 import pushNotificationService from "./src/services/PushNotificationService";
@@ -102,47 +102,48 @@ const App = () => {
   const navigationRef = createNavigationContainerRef();
   const { mobileNumber, email } = useSelector(store => store.userReducer);
 
-  const [isOpened, setIsOpened] = useState(false);
+  // OneSignal Initialization
+  OneSignal.initialize("04e507aa-792a-45f8-9d6d-55859c8dbd92");
 
-  OneSignal.setAppId("04e507aa-792a-45f8-9d6d-55859c8dbd92");
-  OneSignal.setLogLevel(6, 0);
+  // requestPermission will show the native iOS or Android notification permission prompt.
+  // We recommend removing the following code and instead using an In-App Message to prompt for notification permission
+  OneSignal.Notifications.requestPermission(true);
 
-  //Prompt for push on iOS
-  OneSignal.promptForPushNotificationsWithUserResponse(res => {
-    console.log("Prompt response:", res);
-  });
-
-  //Method for handling notifications received while app in foreground
-  OneSignal.setNotificationWillShowInForegroundHandler(
-    notificationReceivedEvent => {
-      let notification = notificationReceivedEvent.getNotification();
-      console.log("notification", JSON.stringify(notification, null, 2));
-      // Complete with null means don't show a notification.
-      notificationReceivedEvent.complete(notification);
-    }
-  );
-
-  //Method for handling notifications opened
-  OneSignal.setNotificationOpenedHandler(notification => {
-    console.log("OneSignal: notification opened:", notification);
+  // Method for listening for notification clicks
+  OneSignal.Notifications.addEventListener("click", event => {
+    console.log("OneSignal: notification clicked:", event);
     if (mobileNumber || email) {
-      console.log("in if 0");
-      if (notification.notification.body.includes("received")) {
-        console.log("in if 1");
-        navigate("BottomTab");
+      if (event.notification.body.includes("received")) {
+        navigate("moves");
+      } else if (
+        event.notification.additionalData.hasOwnProperty("chatRecord")
+      ) {
+        navigate("chat", event.notification.additionalData.chatRecord);
       }
     }
-
-    setIsOpened(true);
   });
 
-  const navigate = name => {
+  const navigate = (name, param = null) => {
     if (navigationRef.isReady()) {
-      setTimeout(() => {
-        navigationRef.navigate(name, {
-          screen: "Interactions",
-        });
-      }, 3300);
+      if (name == "moves") {
+        setTimeout(() => {
+          navigationRef.navigate("BottomTab", {
+            screen: "Interactions",
+          });
+        }, 2700);
+      } else if (name == "chat") {
+        setTimeout(() => {
+          navigationRef.navigate("BottomTab", {
+            screen: "UserChatList",
+            params: {
+              screen: "UserChatListScreen",
+              params: {
+                chatHeadId: param.chatHeadId,
+              },
+            },
+          });
+        }, 2700);
+      }
     }
   };
 
