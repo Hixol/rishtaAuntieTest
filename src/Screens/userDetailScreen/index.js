@@ -33,8 +33,6 @@ const UserDetailScreen = props => {
   const userId =
     props?.props?.route?.params?.el.ChatMembers[0].User.id ||
     props?.route?.params?.userId;
-  const moves =
-    props?.props?.route?.params?.moves || props?.route?.params?.moves;
 
   const ref = useRef(null);
   const dispatch = useDispatch();
@@ -318,7 +316,7 @@ const UserDetailScreen = props => {
                           photosLength={userPhotosUrl?.length}
                           isPaused={imageModal ? true : false}
                           imageUris={userPhotosUrl}
-                          onIconPress={moves}
+                          onIconPress={false}
                           onIconMicPress={imageUri => {
                             setImageModal(true);
                             setModalType("mic");
@@ -483,54 +481,6 @@ const UserDetailScreen = props => {
                             {item?.Question?.title}
                           </Text>
                           <Text style={styles.poolAnsTxt}>{item?.answer}</Text>
-                          {!moves ? null : (
-                            <View style={styles.cardFooter}>
-                              <TouchableOpacity
-                                onPress={() => {
-                                  setPromptModal(true);
-                                  setPromptIndex(item);
-                                  setModalType("mic");
-                                }}
-                                style={[
-                                  styles.actionIcon,
-                                  styles.actionbtnShadow,
-                                ]}
-                              >
-                                <FastImage
-                                  source={require("../../assets/iconimages/mic.png")}
-                                  style={{ height: "76%", width: "76%" }}
-                                />
-                              </TouchableOpacity>
-                              <TouchableOpacity
-                                onPress={() => {
-                                  setPromptModal(true);
-                                  setPromptIndex(item);
-                                  setModalType("comment");
-                                }}
-                                style={[
-                                  styles.actionIcon,
-                                  styles.actionbtnShadow,
-                                ]}
-                              >
-                                <FastImage
-                                  source={require("../../assets/iconimages/chat.png")}
-                                  style={{ height: "54%", width: "54%" }}
-                                />
-                              </TouchableOpacity>
-                              <TouchableOpacity
-                                onPress={() => likeProfilePrompt(item)}
-                                style={[
-                                  styles.actionIcon,
-                                  styles.actionbtnShadow,
-                                ]}
-                              >
-                                <FastImage
-                                  source={require("../../assets/iconimages/heart.png")}
-                                  style={{ height: "54%", width: "54%" }}
-                                />
-                              </TouchableOpacity>
-                            </View>
-                          )}
                         </View>
                       );
                     })}

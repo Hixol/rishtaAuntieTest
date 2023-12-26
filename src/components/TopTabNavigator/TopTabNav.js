@@ -403,7 +403,6 @@ const TabViewExample = props => {
                                 : selectedItems[0] === "Views"
                                 ? item?.viewerUser?.id
                                 : item?.user?.id,
-                            moves: false,
                           })
                         }
                         item={item}
@@ -776,7 +775,6 @@ const TabViewExample = props => {
                         beforeFlipPress={() =>
                           navigation.navigate("userDetailScreen", {
                             userId: item?.otherUser?.id,
-                            moves: false,
                           })
                         }
                         item={item}
