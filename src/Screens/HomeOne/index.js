@@ -607,12 +607,6 @@ const HomeOne = props => {
         <DiscoverSkeleton tabBarHeight={tabBarHeight} />
       ) : totalProfiles === 0 && remainingProfiles > 0 ? (
         renderOutProfiles()
-      ) : totalProfiles > 0 && remainingProfiles === 0 ? (
-        <OutOfProfilesDay
-          adLoad={adLoad}
-          adPress={handleWatchAd}
-          navigation={props.navigation}
-        />
       ) : (
         <SafeAreaView style={styles.container}>
           {
@@ -638,11 +632,10 @@ const HomeOne = props => {
                 onPress={() => props.navigation.navigate("SelfieVerification")}
               />
             ) : totalProfiles === 0 && remainingProfiles === 0 ? (
-              <VerificationPendingCard
-                heading="Upgrade to Premium Version"
-                tagline="Your Profile viewing limit is reached, Please upgrade to view profiles"
-                btnText="Upgrade"
-                onPress={() => props.navigation.navigate("Paywall")}
+              <OutOfProfilesDay
+                adLoad={adLoad}
+                adPress={handleWatchAd}
+                navigation={props.navigation}
               />
             ) : profilesList.length > 0 ? (
               <FlatList

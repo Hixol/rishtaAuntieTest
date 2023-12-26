@@ -441,7 +441,7 @@ const TabViewExample = props => {
                                   item => item?.sequence == 1
                                 )[0]?.url
                               : item.type === "MATCH_REQUEST"
-                              ? item.user.UserMedia[0].url
+                              ? item?.user?.UserMedia[0].url
                               : null,
                         }}
                         selectedItems={selectedItems[0]}
