@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -978,6 +978,27 @@ const ChatScreen = props => {
     );
   };
 
+  const FlatListComp = useMemo(
+    () => (
+      <FlatList
+        inverted={matchReq ? false : true}
+        ref={flatRef}
+        contentContainerStyle={{ paddingHorizontal: "3%" }}
+        showsVerticalScrollIndicator={false}
+        data={
+          matchReq
+            ? noMatchMessages
+            : chatMessages?.rows?.sort((a, b) => b.id - a.id)
+        }
+        keyExtractor={item => item.id.toString()}
+        onEndReached={loadMoreData}
+        renderItem={matchReq ? renderMatchItem : renderItem}
+        ListFooterComponent={el.type != "GROUP" ? renderInteraction() : null}
+      />
+    ),
+    [matchReq, chatMessages]
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <ChatHeaderContainer
@@ -1055,23 +1076,7 @@ const ChatScreen = props => {
         <Loader />
       ) : (
         <>
-          <FlatList
-            inverted={matchReq ? false : true}
-            ref={flatRef}
-            contentContainerStyle={{ paddingHorizontal: "3%" }}
-            showsVerticalScrollIndicator={false}
-            data={
-              matchReq
-                ? noMatchMessages
-                : chatMessages?.rows?.sort((a, b) => b.id - a.id)
-            }
-            keyExtractor={item => item.id.toString()}
-            onEndReached={loadMoreData}
-            renderItem={matchReq ? renderMatchItem : renderItem}
-            ListFooterComponent={
-              el.type != "GROUP" ? renderInteraction() : null
-            }
-          />
+          {FlatListComp}
 
           {/* BOTTOM CONTAINER */}
           <KeyboardAvoidingView

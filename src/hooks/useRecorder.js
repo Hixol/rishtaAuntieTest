@@ -69,11 +69,13 @@ export const useRecorder = chat => {
   }, []);
 
   const onStopRecord = useCallback(async () => {
-    setPauseView(false);
+    await audioRecorderPlayer.stopRecorder();
     audioRecorderPlayer.removeRecordBackListener();
+    setPauseView(false);
     setRecordSecs(0);
     setRecordTime("00:00");
     setRecordView(false);
+    setAudioUri(null);
   }, []);
 
   const onSendAudio = async () => {
@@ -86,9 +88,11 @@ export const useRecorder = chat => {
       uri: audioUri,
     };
 
+    setPauseView(false);
     setRecordSecs(0);
     setRecordTime("00:00");
     setRecordView(false);
+    setAudioUri(null);
     return audioFile;
   };
 
