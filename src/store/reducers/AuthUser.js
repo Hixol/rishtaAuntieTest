@@ -13,6 +13,8 @@ const initialState = {
   focusedScreen: false,
   discoverUserIndex: null,
   preferenceFilter: false,
+  isSpotTimerFinished: null,
+  isProfileTimerFinished: null,
   settings: {
     isNotificationEnabled: false,
     isDarkMode: false,
@@ -78,6 +80,20 @@ export const userReducer = createReducer(initialState, {
 
   SET_PREFERENCE_FILTER: (state, action) => {
     state.preferenceFilter = action.payload;
+  },
+
+  SET_SPOT_TIMER: (state, action) => {
+    state.isSpotTimerFinished = {
+      userId: action.payload.userId,
+      timer: action.payload.timer,
+    };
+  },
+
+  SET_PROFILE_TIMER: (state, action) => {
+    state.isProfileTimerFinished = {
+      userId: action.payload.userId,
+      timer: action.payload.timer,
+    };
   },
 
   USER_IS_NOTIFICATION: (state, action) => {
