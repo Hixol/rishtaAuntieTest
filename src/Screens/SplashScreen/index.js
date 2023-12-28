@@ -63,7 +63,10 @@ const SplashScreen = props => {
             routes: [{ name: "WelcomeScreen" }],
           })
         );
-      } else if (mobileNumber != "" && status == null) {
+      } else if (
+        mobileNumber != "" &&
+        (status == null || status == "INACTIVE")
+      ) {
         props.navigation.dispatch(
           CommonActions.reset({
             index: 0,

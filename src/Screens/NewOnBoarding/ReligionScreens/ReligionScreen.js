@@ -127,7 +127,11 @@ const ReligionScreen = ({ navigation, route }) => {
     setSelectedDenomination(item);
   };
 
-  useEffect(() => {}, [selectedReligion]);
+  useEffect(() => {
+    if (religion) {
+      setSelectedReligion(religion);
+    }
+  }, []);
 
   useEffect(() => {
     if (edit) {
