@@ -21,6 +21,10 @@ const BoostUpgradeCard = props => {
     .duration(moment(props.timer?.createdAt).format("HH:mm"))
     .asSeconds();
 
+  const timeToShow = timerInSeconds >= 3600 ? ["H", "M", "S"] : ["M", "S"];
+  const timeLabels =
+    timerInSeconds >= 3600 ? { h: "", m: "", s: "" } : { m: "", s: "" };
+
   return (
     <View style={[styles.actionItemsView]}>
       {type == "Spotlight:" &&
@@ -44,8 +48,8 @@ const BoostUpgradeCard = props => {
             onChange={() => {}}
             digitStyle={{ backgroundColor: "transparent" }}
             digitTxtStyle={{ color: colors.primaryPink }}
-            timeToShow={["M", "S"]}
-            timeLabels={{ m: "", s: "" }}
+            timeToShow={timeToShow}
+            timeLabels={timeLabels}
           />
         </View>
       ) : type == "Profiles left" &&
@@ -116,7 +120,6 @@ const styles = StyleSheet.create({
   },
   timeView: {
     flexDirection: "row",
-    width: "80%",
     paddingHorizontal: "2%",
     height: 25,
     backgroundColor: colors.primaryPinkOpacity,
