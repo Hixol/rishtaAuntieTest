@@ -1,18 +1,80 @@
 import React from "react";
 import { Text, View, StyleSheet, Pressable } from "react-native";
 import { android, windowHeight } from "../../utility/size";
+import { useDispatch, useSelector } from "react-redux";
 
+import moment from "moment";
 import colors from "../../utility/colors";
 import FastImage from "react-native-fast-image";
 import SettingButton from "../buttons/SettingButton";
+import CountDown from "react-native-countdown-component";
 
 const BoostUpgradeCard = props => {
   const { proMember, type } = props;
+
+  const dispatch = useDispatch();
+  const { userData, isSpotTimerFinished, isProfileTimerFinished } = useSelector(
+    store => store.userReducer
+  );
+
+  const timerInSeconds = moment
+    .duration(moment(props.timer?.createdAt).format("HH:mm"))
+    .asSeconds();
+
   return (
     <View style={[styles.actionItemsView]}>
-      <View style={styles.timeView}>
-        <Text style={styles.timeText}>Time left: 12:12</Text>
-      </View>
+      {type == "Spotlight:" &&
+      props.timer &&
+      isSpotTimerFinished?.userId == userData.id &&
+      isSpotTimerFinished?.timer ? (
+        <View style={styles.timeView}>
+          <Text style={styles.timeText}>Time left:</Text>
+          <CountDown
+            until={timerInSeconds}
+            size={10}
+            onFinish={() => {
+              dispatch({
+                type: "SET_SPOT_TIMER",
+                payload: {
+                  userId: userData.id,
+                  timer: false,
+                },
+              });
+            }}
+            onChange={() => {}}
+            digitStyle={{ backgroundColor: "transparent" }}
+            digitTxtStyle={{ color: colors.primaryPink }}
+            timeToShow={["M", "S"]}
+            timeLabels={{ m: "", s: "" }}
+          />
+        </View>
+      ) : type == "Profiles left" &&
+        props.timer &&
+        isProfileTimerFinished?.userId == userData.id &&
+        isProfileTimerFinished?.timer ? (
+        <View style={styles.timeView}>
+          <Text style={styles.timeText}>Time left:</Text>
+          <CountDown
+            until={timerInSeconds}
+            size={10}
+            onFinish={() => {
+              dispatch({
+                type: "SET_PROFILE_TIMER",
+                payload: {
+                  userId: userData.id,
+                  timer: false,
+                },
+              });
+            }}
+            onChange={() => {}}
+            digitStyle={{ backgroundColor: "transparent" }}
+            digitTxtStyle={{ color: colors.primaryPink }}
+            timeToShow={["M", "S"]}
+            timeLabels={{ m: "", s: "" }}
+          />
+        </View>
+      ) : null}
+
       <View style={styles.typeMainView}>
         <Pressable onPress={props.onSpotPress}>
           <FastImage
@@ -53,6 +115,7 @@ const styles = StyleSheet.create({
     height: android ? windowHeight * 0.33 : windowHeight * 0.27,
   },
   timeView: {
+    flexDirection: "row",
     width: "80%",
     paddingHorizontal: "2%",
     height: 25,

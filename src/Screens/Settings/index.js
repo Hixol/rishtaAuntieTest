@@ -36,7 +36,13 @@ const Settings = props => {
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const { Alerts, handleStatusCode } = useHelper();
-  const { token, userData, status } = useSelector(store => store.userReducer);
+  const {
+    token,
+    userData,
+    status,
+    isSpotTimerFinished,
+    isProfileTimerFinished,
+  } = useSelector(store => store.userReducer);
   const { denomination } = useSelector(store => store.profileReducer);
 
   const proMember = userData?.UserSetting?.isSubscribed;
@@ -191,27 +197,60 @@ const Settings = props => {
     setMediaOptions(state);
   };
 
-  const handleEnableSpotlight = () => [
-    IAPServices.enableSpotlight(token)
+  const handleEnableSpotlight = () => {
+    if (
+      isSpotTimerFinished?.userId == userData.id &&
+      isSpotTimerFinished?.timer
+    ) {
+      Alerts("error", "Spotlight is already enabled");
+    } else {
+      IAPServices.enableSpotlight(token)
+        .then(res => {
+          handleStatusCode(res);
+          if (res.status >= 200 && res.status <= 299) {
+            Alerts("success", res.data.message);
+
+            let copyUser = { ...userData };
+            copyUser.UserSetting = {
+              ...copyUser.UserSetting,
+              noOfSpotlight: userData?.UserSetting?.noOfSpotlight - 1,
+            };
+
+            dispatch({
+              type: "AUTH_USER",
+              payload: copyUser,
+            });
+
+            dispatch({
+              type: "SET_SPOT_TIMER",
+              payload: {
+                userId: userData.id,
+                timer: true,
+              },
+            });
+
+            handleGetProfile();
+          }
+        })
+        .catch(err => Alerts("error", err?.message));
+    }
+  };
+
+  const handleGetProfile = () => {
+    ProfileServices.getMyProfile(token)
       .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
-          Alerts("success", res.data.message);
-
-          let copyUser = { ...userData };
-          copyUser.UserSetting = {
-            ...copyUser.UserSetting,
-            noOfSpotlight: userData?.UserSetting?.noOfSpotlight - 1,
-          };
+          let data = res?.data?.data;
 
           dispatch({
             type: "AUTH_USER",
-            payload: copyUser,
+            payload: data,
           });
         }
       })
-      .catch(err => Alerts("error", err?.message)),
-  ];
+      .catch(err => console.log("getMyOwnProfile err", err));
+  };
 
   const createContactSupport = () => {
     ChatServices.contactSupport(token)
@@ -456,6 +495,7 @@ const Settings = props => {
               onPress={() => props.navigation.navigate("PaywallSpots")}
               typeCount={userData?.UserSetting?.noOfSpotlight}
               type={"Spotlight:"}
+              timer={userData?.spotlightEnabled}
               imageSource={require("../../assets/iconimages/pinkspotlight.png")}
               buttonTitle={"Boost"}
               bottomText={"Boost my visibility"}
