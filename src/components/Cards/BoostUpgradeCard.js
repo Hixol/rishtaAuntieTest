@@ -3,7 +3,6 @@ import { Text, View, StyleSheet, Pressable } from "react-native";
 import { android, windowHeight } from "../../utility/size";
 import { useDispatch, useSelector } from "react-redux";
 
-import moment from "moment";
 import colors from "../../utility/colors";
 import FastImage from "react-native-fast-image";
 import SettingButton from "../buttons/SettingButton";
@@ -17,35 +16,55 @@ const BoostUpgradeCard = props => {
     store => store.userReducer
   );
 
-  const timerInSeconds = moment
-    .duration(moment(props.timer?.createdAt).format("HH:mm"))
-    .asSeconds();
+  let seconds = 0;
+  const timerInSeconds = isSpotTimerFinished?.time;
 
   const timeToShow = timerInSeconds >= 3600 ? ["H", "M", "S"] : ["M", "S"];
   const timeLabels =
     timerInSeconds >= 3600 ? { h: "", m: "", s: "" } : { m: "", s: "" };
+
+  const onFinish = () => {
+    dispatch({
+      type: "SET_SPOT_TIMER",
+      payload: {
+        userId: userData.id,
+        showtimer: false,
+        time: 0,
+      },
+    });
+
+    seconds = 0;
+  };
+
+  const onChange = () => {
+    seconds += 1;
+    if (seconds == 10) {
+      dispatch({
+        type: "SET_SPOT_TIMER",
+        payload: {
+          userId: userData.id,
+          showtimer: true,
+          time: isSpotTimerFinished?.time - 10,
+        },
+      });
+
+      seconds = 0;
+    }
+  };
 
   return (
     <View style={[styles.actionItemsView]}>
       {type == "Spotlight:" &&
       props.timer &&
       isSpotTimerFinished?.userId == userData.id &&
-      isSpotTimerFinished?.timer ? (
+      isSpotTimerFinished?.showtimer ? (
         <View style={styles.timeView}>
           <Text style={styles.timeText}>Time left:</Text>
           <CountDown
             until={timerInSeconds}
             size={10}
-            onFinish={() => {
-              dispatch({
-                type: "SET_SPOT_TIMER",
-                payload: {
-                  userId: userData.id,
-                  timer: false,
-                },
-              });
-            }}
-            onChange={() => {}}
+            onFinish={onFinish}
+            onChange={onChange}
             digitStyle={{ backgroundColor: "transparent" }}
             digitTxtStyle={{ color: colors.primaryPink }}
             timeToShow={timeToShow}
@@ -55,7 +74,7 @@ const BoostUpgradeCard = props => {
       ) : type == "Profiles left" &&
         props.timer &&
         isProfileTimerFinished?.userId == userData.id &&
-        isProfileTimerFinished?.timer ? (
+        isProfileTimerFinished?.showtimer ? (
         <View style={styles.timeView}>
           <Text style={styles.timeText}>Time left:</Text>
           <CountDown

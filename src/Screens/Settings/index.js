@@ -15,6 +15,7 @@ import { OnBoardingServices } from "../../services";
 import { useHelper } from "../../hooks/useHelper";
 import { OS_VER } from "../../utility/size";
 
+import moment from "moment";
 import styles from "./styles";
 import FastImage from "react-native-fast-image";
 import colors from "../../utility/colors";
@@ -200,7 +201,7 @@ const Settings = props => {
   const handleEnableSpotlight = () => {
     if (
       isSpotTimerFinished?.userId == userData.id &&
-      isSpotTimerFinished?.timer
+      isSpotTimerFinished?.showtimer
     ) {
       Alerts("error", "Spotlight is already enabled");
     } else {
@@ -221,14 +222,6 @@ const Settings = props => {
               payload: copyUser,
             });
 
-            dispatch({
-              type: "SET_SPOT_TIMER",
-              payload: {
-                userId: userData.id,
-                timer: true,
-              },
-            });
-
             handleGetProfile();
           }
         })
@@ -246,6 +239,19 @@ const Settings = props => {
           dispatch({
             type: "AUTH_USER",
             payload: data,
+          });
+
+          let time = moment
+            .duration(moment(data?.spotlightEnabled?.createdAt).format("HH:mm"))
+            .asSeconds();
+
+          dispatch({
+            type: "SET_SPOT_TIMER",
+            payload: {
+              userId: userData.id,
+              showtimer: true,
+              time: time,
+            },
           });
         }
       })

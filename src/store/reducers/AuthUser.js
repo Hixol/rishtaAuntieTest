@@ -85,14 +85,16 @@ export const userReducer = createReducer(initialState, {
   SET_SPOT_TIMER: (state, action) => {
     state.isSpotTimerFinished = {
       userId: action.payload.userId,
-      timer: action.payload.timer,
+      showtimer: action.payload.showtimer,
+      time: action.payload.time,
     };
   },
 
   SET_PROFILE_TIMER: (state, action) => {
     state.isProfileTimerFinished = {
       userId: action.payload.userId,
-      timer: action.payload.timer,
+      showtimer: action.payload.showtimer,
+      time: action.payload.time,
     };
   },
 
