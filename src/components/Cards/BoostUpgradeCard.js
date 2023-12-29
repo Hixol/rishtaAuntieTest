@@ -1,8 +1,9 @@
-import React from "react";
-import { Text, View, StyleSheet, Pressable } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Text, View, StyleSheet, Pressable, AppState } from "react-native";
 import { android, windowHeight } from "../../utility/size";
 import { useDispatch, useSelector } from "react-redux";
 
+import moment from "moment";
 import colors from "../../utility/colors";
 import FastImage from "react-native-fast-image";
 import SettingButton from "../buttons/SettingButton";
@@ -16,8 +17,13 @@ const BoostUpgradeCard = props => {
     store => store.userReducer
   );
 
-  let seconds = 0;
+  let secs = 0;
+  let startTime = 0;
+  let endTime = 0;
   const timerInSeconds = isSpotTimerFinished?.time;
+  console.log("isSpotTimerFinished", isSpotTimerFinished?.time);
+
+  const [seconds, setSeconds] = useState(0);
 
   const timeToShow = timerInSeconds >= 3600 ? ["H", "M", "S"] : ["M", "S"];
   const timeLabels =
@@ -33,12 +39,24 @@ const BoostUpgradeCard = props => {
       },
     });
 
-    seconds = 0;
+    secs = 0;
   };
 
   const onChange = () => {
-    seconds += 1;
-    if (seconds == 10) {
+    secs += 1;
+
+    if (seconds > 0) {
+      dispatch({
+        type: "SET_SPOT_TIMER",
+        payload: {
+          userId: userData.id,
+          showtimer: true,
+          time: isSpotTimerFinished?.time - seconds,
+        },
+      });
+
+      setSeconds(0);
+    } else if (secs == 10) {
       dispatch({
         type: "SET_SPOT_TIMER",
         payload: {
@@ -48,9 +66,29 @@ const BoostUpgradeCard = props => {
         },
       });
 
-      seconds = 0;
+      secs = 0;
     }
   };
+
+  const handleAppState = appState => {
+    if (appState == "background") {
+      startTime = moment(Date.now());
+    } else {
+      endTime = moment(Date.now());
+      let diff = moment.duration(endTime.diff(startTime));
+      let seconds = Math.floor(diff.asSeconds());
+
+      setSeconds(seconds);
+    }
+  };
+
+  useEffect(() => {
+    const subs = AppState.addEventListener("change", handleAppState);
+
+    return () => {
+      subs.remove();
+    };
+  }, []);
 
   return (
     <View style={[styles.actionItemsView]}>
