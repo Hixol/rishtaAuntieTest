@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   BackHandler,
+  ActivityIndicator,
 } from "react-native";
 import { android, ios, OS_VER } from "../../utility/size";
 import {
@@ -79,6 +80,8 @@ const ChatScreen = props => {
   const [pause, setPause] = useState(true);
   const [msgRead, setMsgRead] = useState("");
   const [matchReq, setMatchReq] = useState(null);
+  const [waveLoader, setWaveLoader] = useState(true);
+  const [playWaves, setPlayWaves] = useState(false);
   const [isTicketOpened, setIsTicketOpened] = useState(false);
   const {
     onStartRecord,
@@ -268,6 +271,13 @@ const ChatScreen = props => {
       BackHandler.removeEventListener("hardwareBackPress", handleBackButton);
     };
   }, [handleBackButton]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      console.log("timeout");
+      setWaveLoader(false);
+    }, 7000);
+  }, []);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -937,29 +947,46 @@ const ChatScreen = props => {
       ) : null}
       {/LIKE/.test(
         chatMessages?.firstInteraction?.type
-      ) ? null : /VOICE_NOTE/.test(
-          chatMessages?.firstInteraction?.type
-        ) ? null : (
-        // <WaveForm
-        //   style={{
-        //     width: '70%',
-        //     height: 30,
-        //     marginLeft: 5,
-        //     alignSelf: 'center',
-        //   }}
-        //   // onFinishPlay={() => setShowWaves(false)}
-        //   // source={{uri: props.voiceNoteUrl}}
-        //   waveFormStyle={{
-        //     waveColor: colors.primaryPink,
-        //     scrubColor: colors.primaryBlue,
-        //   }}
-        //   play={false}
-        // />
+      ) ? null : /VOICE_NOTE/.test(chatMessages?.firstInteraction?.type) ? (
+        <>
+          <Divider width={3} color={colors.white} style={styles.divider} />
+          <View style={styles.waveContainer}>
+            <TouchableOpacity
+              disabled={waveLoader}
+              onPress={() => setPlayWaves(!playWaves)}
+              style={styles.playBtnContainer}
+            >
+              {waveLoader ? (
+                <ActivityIndicator size={"small"} color={colors.white} />
+              ) : (
+                <FastImage
+                  resizeMode="contain"
+                  style={styles.waveBtn}
+                  source={
+                    playWaves
+                      ? require("../../assets/iconimages/pause.png")
+                      : require("../../assets/iconimages/playIcon.png")
+                  }
+                />
+              )}
+            </TouchableOpacity>
+            <WaveForm
+              style={styles.wave}
+              onFinishPlay={() => setPlayWaves(false)}
+              source={{ uri: chatMessages?.firstInteraction?.voiceNoteUrl }}
+              waveFormStyle={{
+                waveColor: colors.primaryPink,
+                scrubColor: colors.blackBlue,
+              }}
+              play={playWaves}
+            />
+          </View>
+        </>
+      ) : (
         <>
           <Divider width={3} color={colors.white} style={styles.divider} />
           <Text style={styles.comment}>
-            {/* That’s funny I am looking for the same thing. Maybe we should get
-            one someday. */}
+            {chatMessages?.firstInteraction?.comment}
           </Text>
         </>
       )}
@@ -996,7 +1023,7 @@ const ChatScreen = props => {
         ListFooterComponent={el.type != "GROUP" ? renderInteraction() : null}
       />
     ),
-    [matchReq, chatMessages]
+    [matchReq, chatMessages, pause, playWaves, waveLoader]
   );
 
   return (
