@@ -10,6 +10,7 @@ const persistConfig = {
   whitelist: [
     "chatReducer",
     "userReducer",
+    "timerReducer",
     "profileReducer",
     "NewOnBoardingReducer",
   ],

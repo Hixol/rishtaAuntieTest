@@ -37,13 +37,10 @@ const Settings = props => {
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const { Alerts, handleStatusCode } = useHelper();
-  const {
-    token,
-    userData,
-    status,
-    isSpotTimerFinished,
-    isProfileTimerFinished,
-  } = useSelector(store => store.userReducer);
+  const { token, userData, status } = useSelector(store => store.userReducer);
+  const { isSpotTimerFinished, isProfileTimerFinished } = useSelector(
+    store => store.timerReducer
+  );
   const { denomination } = useSelector(store => store.profileReducer);
 
   const proMember = userData?.UserSetting?.isSubscribed;
@@ -507,7 +504,7 @@ const Settings = props => {
               bottomText={"Boost my visibility"}
             />
             <BoostUpgradeCard
-              memberType={proMember}
+              proMember={proMember}
               onPress={() => props.navigation.navigate("Paywall")}
               typeCount={`${userData?.Profile?.noOfProfilesRemaining}/${userData?.Profile?.totalNoOfProfiles}`}
               type={"Profiles left"}

@@ -13,15 +13,15 @@ const BoostUpgradeCard = props => {
   const { proMember, type } = props;
 
   const dispatch = useDispatch();
-  const { userData, isSpotTimerFinished, isProfileTimerFinished } = useSelector(
-    store => store.userReducer
+  const { userData } = useSelector(store => store.userReducer);
+  const { isSpotTimerFinished, isProfileTimerFinished } = useSelector(
+    store => store.timerReducer
   );
 
   let secs = 0;
   let startTime = 0;
   let endTime = 0;
   const timerInSeconds = isSpotTimerFinished?.time;
-  console.log("isSpotTimerFinished", isSpotTimerFinished?.time);
 
   const [seconds, setSeconds] = useState(0);
 
@@ -56,13 +56,13 @@ const BoostUpgradeCard = props => {
       });
 
       setSeconds(0);
-    } else if (secs == 10) {
+    } else {
       dispatch({
         type: "SET_SPOT_TIMER",
         payload: {
           userId: userData.id,
           showtimer: true,
-          time: isSpotTimerFinished?.time - 10,
+          time: isSpotTimerFinished?.time - 1,
         },
       });
 
@@ -159,6 +159,12 @@ const BoostUpgradeCard = props => {
           <Text style={styles.bottomText}>{props.bottomText}</Text>
         </>
       )}
+      {proMember && (
+        <Text style={styles.bottomText}>
+          You can view unlimited profiles with your Rishta Auntie Gold
+          membership
+        </Text>
+      )}
     </View>
   );
 };
@@ -173,7 +179,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: "5%",
     borderWidth: 1,
     borderColor: "#F3F4F6",
-    height: android ? windowHeight * 0.33 : windowHeight * 0.27,
+    minHeight: android ? windowHeight * 0.23 : windowHeight * 0.27,
+    maxHeight: android ? windowHeight * 0.27 : windowHeight * 0.31,
   },
   timeView: {
     flexDirection: "row",
