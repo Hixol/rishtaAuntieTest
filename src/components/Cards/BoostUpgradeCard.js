@@ -10,7 +10,7 @@ import SettingButton from "../buttons/SettingButton";
 import CountDown from "react-native-countdown-component";
 
 const BoostUpgradeCard = props => {
-  const { proMember, type } = props;
+  const { proMember, focused, type } = props;
 
   const dispatch = useDispatch();
   const { userData } = useSelector(store => store.userReducer);
@@ -89,6 +89,28 @@ const BoostUpgradeCard = props => {
       subs.remove();
     };
   }, []);
+
+  useEffect(() => {
+    if (focused && startTime != 0) {
+      endTime = moment(Date.now());
+      let diff = moment.duration(endTime.diff(startTime));
+      let seconds = Math.floor(diff.asSeconds());
+
+      dispatch({
+        type: "SET_SPOT_TIMER",
+        payload: {
+          userId: userData.id,
+          showtimer: true,
+          time: isSpotTimerFinished?.time - seconds,
+        },
+      });
+
+      startTime = 0;
+      endTime = 0;
+    } else if (!focused && isSpotTimerFinished?.showtimer) {
+      startTime = moment(Date.now());
+    }
+  }, [focused]);
 
   return (
     <View style={[styles.actionItemsView]}>

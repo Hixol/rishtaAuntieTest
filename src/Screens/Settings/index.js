@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -32,6 +32,8 @@ import Loader from "../../components/Loader";
 import SettingButton from "../../components/buttons/SettingButton";
 import BoostUpgradeCard from "../../components/Cards/BoostUpgradeCard";
 import Icons from "../../utility/icons";
+
+let focused = false;
 
 const Settings = props => {
   const isFocused = useIsFocused();
@@ -185,6 +187,21 @@ const Settings = props => {
       }
     }, [isFocused])
   );
+
+  useEffect(() => {
+    const focusSubs = props.navigation.addListener("focus", () => {
+      focused = true;
+    });
+
+    const blurSubs = props.navigation.addListener("blur", () => {
+      focused = false;
+    });
+
+    return () => {
+      focusSubs();
+      blurSubs();
+    };
+  }, [props.navigation]);
 
   const handleQuiz = state => {
     setMediaOptions(state);
@@ -498,6 +515,7 @@ const Settings = props => {
               onPress={() => props.navigation.navigate("PaywallSpots")}
               typeCount={userData?.UserSetting?.noOfSpotlight}
               type={"Spotlight:"}
+              focused={focused}
               timer={userData?.spotlightEnabled}
               imageSource={require("../../assets/iconimages/pinkspotlight.png")}
               buttonTitle={"Boost"}
