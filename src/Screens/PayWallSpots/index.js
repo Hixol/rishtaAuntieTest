@@ -86,6 +86,7 @@ const PayWallSpots = ({ navigation }) => {
               ))}
 
             <Button
+              loading={ios ? disableBtn : false}
               onPress={handlePurchasePackage}
               icon={
                 <FastImage

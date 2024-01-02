@@ -131,6 +131,7 @@ const PayWall = ({ navigation }) => {
             </View> */}
 
             <Button
+              loading={ios ? disableBtn : false}
               onPress={handlePurchaseSub}
               title="Upgrade now"
               buttonStyle={styles.btn}

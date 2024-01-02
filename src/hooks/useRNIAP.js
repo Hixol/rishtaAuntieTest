@@ -204,6 +204,8 @@ export const useRNIAP = () => {
             type: "AUTH_USER",
             payload: copy,
           });
+        } else {
+          alerts("error", res?.error?.message);
         }
       })
       .catch(err => console.log("buySpotlight err", err));
@@ -234,6 +236,8 @@ export const useRNIAP = () => {
             type: "AUTH_USER",
             payload: copy,
           });
+        } else {
+          alerts("error", res?.error?.message);
         }
       })
       .catch(err => {
