@@ -84,8 +84,8 @@ const EditScreenSetting = props => {
   const [elArray, setElArray] = useState([
     { name: "High School" },
     { name: "Bachelors" },
-    { name: "Doctorate" },
     { name: "Masters" },
+    { name: "Doctorate" },
   ]);
   const [distanceOptions, setDistanceOptions] = useState([
     { name: "Unlimited" },

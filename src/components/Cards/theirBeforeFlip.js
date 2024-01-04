@@ -22,16 +22,22 @@ const theirBeforeFlip = props => {
   Countries.filter(country => {
     if (
       "otherUser" in props.item &&
-      country.en == props.item.otherUser.country
+      country.en == props.item?.otherUser.country
     ) {
       flagsLiving = country.code;
-    } else if ("User" in props.item && country.en == props.item.User.country) {
+    } else if (
+      "User" in props.item &&
+      country.en == props.item?.User?.country
+    ) {
       flagsLiving = country.code;
-    } else if ("user" in props.item && country.en == props.item.user.country) {
+    } else if (
+      "user" in props.item &&
+      country.en == props.item?.user?.country
+    ) {
       flagsLiving = country.code;
     } else if (
       "viewerUser" in props.item &&
-      country.en == props.item.viewerUser.country
+      country.en == props.item?.viewerUser?.country
     ) {
       flagsLiving = country.code;
     }

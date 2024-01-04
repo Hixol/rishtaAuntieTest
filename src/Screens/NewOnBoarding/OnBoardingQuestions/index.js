@@ -312,8 +312,8 @@ const OnBoardingQuestions = ({ navigation }) => {
       options: [
         { name: "High School" },
         { name: "Bachelors" },
-        { name: "Doctorate" },
         { name: "Masters" },
+        { name: "Doctorate" },
       ],
       search: false,
       multiSelect: false,

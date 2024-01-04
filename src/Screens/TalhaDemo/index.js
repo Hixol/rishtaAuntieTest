@@ -38,7 +38,7 @@ const TalhaDemo = props => {
 
   const dispatch = useDispatch();
 
-  const educations = ["High School", "Bachelors", "Doctorate", "Masters"];
+  const educations = ["High School", "Bachelors", "Masters", "Doctorate"];
   let martialHistory = ["None", "Divorced", "Widowed", "Annulled"];
   let [loading, setLoading] = useState(false);
   let btnChoice = [];
