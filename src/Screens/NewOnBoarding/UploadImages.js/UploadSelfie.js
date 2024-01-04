@@ -368,23 +368,23 @@ const UploadSelfie = ({ navigation, route }) => {
           <TouchableOpacity
             onPress={handleCamera}
             style={{
-              width: "100%",
-              height: 400,
+              width: "80%",
+              height: "70%",
+              alignSelf: "center",
               alignItems: "center",
               justifyContent: "center",
               borderRadius: 20,
+              overflow: "hidden",
             }}
           >
-            <View style={{ width: "100%", height: "100%", borderRadius: 20 }}>
-              <FastImage
-                resizeMode="cover"
-                style={{ width: "100%", height: "100%", borderRadius: 20 }}
-                source={{
-                  uri: imageUri?.uri,
-                  priority: "high",
-                }}
-              />
-            </View>
+            <FastImage
+              resizeMode="cover"
+              style={{ width: "100%", height: "100%" }}
+              source={{
+                uri: imageUri?.uri,
+                priority: "high",
+              }}
+            />
           </TouchableOpacity>
         )}
       </View>
