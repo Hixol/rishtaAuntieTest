@@ -295,19 +295,19 @@ const UploadSelfie = ({ navigation, route }) => {
       />
 
       <View style={styles.bottomContainer}>
-        <Pressable onPressIn={handleFlashMode}>
+        {/* <Pressable onPressIn={handleFlashMode}>
           <FastImage
             style={styles.featureIcons}
             resizeMode="contain"
             source={require("../../../assets/iconimages/flash.png")}
           />
-        </Pressable>
+        </Pressable> */}
 
         <Pressable onPress={handleCapture} style={styles.captureBtnBorder}>
           <Pressable onPress={handleCapture} style={styles.captureBtn} />
         </Pressable>
 
-        {selfieObj ? (
+        {/* {selfieObj ? (
           <Pressable onPressIn={handleRetake} style={styles.retake}>
             <Icons.MaterialCommunityIcons
               name="camera-retake"
@@ -323,7 +323,7 @@ const UploadSelfie = ({ navigation, route }) => {
               source={require("../../../assets/iconimages/retake.png")}
             />
           </Pressable>
-        )}
+        )} */}
       </View>
     </View>
   ) : (

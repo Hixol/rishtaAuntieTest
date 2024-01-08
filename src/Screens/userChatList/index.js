@@ -71,7 +71,7 @@ const UserChatList = props => {
         })
         .catch(err => console.log("ChatHead Err: ", err))
         .finally(() => setLoading(false));
-    }, [isFocused])
+    }, [isFocused, chatHeadId])
   );
 
   useEffect(() => {
