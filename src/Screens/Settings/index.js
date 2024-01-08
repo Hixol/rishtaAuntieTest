@@ -102,6 +102,27 @@ const Settings = props => {
               if (data != null && data?.Profile?.personalityType == null) {
                 setMediaOptions(true);
               }
+              if (
+                data.lastLogDailyProfilesLimit &&
+                !isProfileTimerFinished?.showtimer
+              ) {
+                let time = moment
+                  .duration(
+                    moment(data.lastLogDailyProfilesLimit?.createdAt).format(
+                      "HH:mm"
+                    )
+                  )
+                  .asSeconds();
+
+                dispatch({
+                  type: "SET_PROFILE_TIMER",
+                  payload: {
+                    userId: data.id,
+                    showtimer: true,
+                    time: time,
+                  },
+                });
+              }
               dispatch({
                 type: "AUTH_USER",
                 payload: data,
@@ -511,10 +532,15 @@ const Settings = props => {
             }}
           >
             <BoostUpgradeCard
-              onSpotPress={handleEnableSpotlight}
-              onPress={() => props.navigation.navigate("PaywallSpots")}
+              onPress={() => {
+                if (userData?.UserSetting?.noOfSpotlight > 0) {
+                  handleEnableSpotlight();
+                } else {
+                  props.navigation.navigate("PaywallSpots");
+                }
+              }}
               typeCount={userData?.UserSetting?.noOfSpotlight}
-              type={"Spotlight:"}
+              type="Spotlight:"
               focused={focused}
               timer={userData?.spotlightEnabled}
               imageSource={require("../../assets/iconimages/pinkspotlight.png")}
@@ -525,7 +551,9 @@ const Settings = props => {
               proMember={proMember}
               onPress={() => props.navigation.navigate("Paywall")}
               typeCount={`${userData?.Profile?.noOfProfilesRemaining}/${userData?.Profile?.totalNoOfProfiles}`}
-              type={"Profiles left"}
+              type="Profiles left"
+              focused={focused}
+              timer={userData?.lastLogDailyProfilesLimit}
               imageSource={require("../../assets/iconimages/pinkprofiles.png")}
               buttonTitle={"Upgrade"}
               bottomText={"Upgrade for unlimited daily profiles"}

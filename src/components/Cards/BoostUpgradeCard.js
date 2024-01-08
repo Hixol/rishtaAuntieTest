@@ -21,7 +21,10 @@ const BoostUpgradeCard = props => {
   let secs = 0;
   let startTime = 0;
   let endTime = 0;
-  const timerInSeconds = isSpotTimerFinished?.time;
+  const timerInSeconds =
+    type == "Spotlight:"
+      ? isSpotTimerFinished?.time
+      : isProfileTimerFinished?.time;
 
   const [seconds, setSeconds] = useState(0);
 
@@ -29,42 +32,75 @@ const BoostUpgradeCard = props => {
   const timeLabels =
     timerInSeconds >= 3600 ? { h: "", m: "", s: "" } : { m: "", s: "" };
 
-  const onFinish = () => {
-    dispatch({
-      type: "SET_SPOT_TIMER",
-      payload: {
-        userId: userData.id,
-        showtimer: false,
-        time: 0,
-      },
-    });
+  const onFinish = type => {
+    if (type == "spot") {
+      dispatch({
+        type: "SET_SPOT_TIMER",
+        payload: {
+          userId: userData.id,
+          showtimer: false,
+          time: 0,
+        },
+      });
+    } else {
+      dispatch({
+        type: "SET_PROFILE_TIMER",
+        payload: {
+          userId: userData.id,
+          showtimer: false,
+          time: 0,
+        },
+      });
+    }
 
     secs = 0;
   };
 
-  const onChange = () => {
+  const onChange = type => {
     secs += 1;
 
     if (seconds > 0) {
-      dispatch({
-        type: "SET_SPOT_TIMER",
-        payload: {
-          userId: userData.id,
-          showtimer: true,
-          time: isSpotTimerFinished?.time - seconds,
-        },
-      });
+      if (type == "spot") {
+        dispatch({
+          type: "SET_SPOT_TIMER",
+          payload: {
+            userId: userData.id,
+            showtimer: true,
+            time: isSpotTimerFinished?.time - seconds,
+          },
+        });
+      } else {
+        dispatch({
+          type: "SET_PROFILE_TIMER",
+          payload: {
+            userId: userData.id,
+            showtimer: true,
+            time: isProfileTimerFinished?.time - seconds,
+          },
+        });
+      }
 
       setSeconds(0);
     } else {
-      dispatch({
-        type: "SET_SPOT_TIMER",
-        payload: {
-          userId: userData.id,
-          showtimer: true,
-          time: isSpotTimerFinished?.time - 1,
-        },
-      });
+      if (type == "spot") {
+        dispatch({
+          type: "SET_SPOT_TIMER",
+          payload: {
+            userId: userData.id,
+            showtimer: true,
+            time: isSpotTimerFinished?.time - 1,
+          },
+        });
+      } else {
+        dispatch({
+          type: "SET_PROFILE_TIMER",
+          payload: {
+            userId: userData.id,
+            showtimer: true,
+            time: isProfileTimerFinished?.time - 1,
+          },
+        });
+      }
 
       secs = 0;
     }
@@ -123,8 +159,8 @@ const BoostUpgradeCard = props => {
           <CountDown
             until={timerInSeconds}
             size={10}
-            onFinish={onFinish}
-            onChange={onChange}
+            onFinish={() => onFinish("spot")}
+            onChange={() => onChange("spot")}
             digitStyle={{ backgroundColor: "transparent" }}
             digitTxtStyle={{ color: colors.primaryPink }}
             timeToShow={timeToShow}
@@ -140,32 +176,22 @@ const BoostUpgradeCard = props => {
           <CountDown
             until={timerInSeconds}
             size={10}
-            onFinish={() => {
-              dispatch({
-                type: "SET_PROFILE_TIMER",
-                payload: {
-                  userId: userData.id,
-                  timer: false,
-                },
-              });
-            }}
-            onChange={() => {}}
+            onFinish={() => onFinish("profile")}
+            onChange={() => onChange("profile")}
             digitStyle={{ backgroundColor: "transparent" }}
             digitTxtStyle={{ color: colors.primaryPink }}
-            timeToShow={["M", "S"]}
-            timeLabels={{ m: "", s: "" }}
+            timeToShow={timeToShow}
+            timeLabels={timeLabels}
           />
         </View>
       ) : null}
 
       <View style={styles.typeMainView}>
-        <Pressable onPress={props.onSpotPress}>
-          <FastImage
-            resizeMode="contain"
-            style={{ width: 30, height: 30 }}
-            source={props.imageSource}
-          />
-        </Pressable>
+        <FastImage
+          resizeMode="contain"
+          style={{ width: 30, height: 30 }}
+          source={props.imageSource}
+        />
         {type === "Profiles left" && proMember ? null : (
           <View style={{ marginLeft: 20 }}>
             <Text style={styles.typeText}>{props.type}</Text>
