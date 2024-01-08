@@ -43,6 +43,7 @@ import OutOfProfilesDay from "../../components/OutOfProfilesDay";
 
 let limit = 15;
 let offset = 0;
+let profileIds = [];
 
 const adUnitId = __DEV__
   ? TestIds.REWARDED
@@ -226,7 +227,7 @@ const HomeOne = props => {
       .then(res => {
         handleStatusCode(res);
         console.log("viewIntercation res", res.data);
-        if (res.status >= 200 && res.status <= 299) {
+        if (res.status >= 200 || res.status <= 201) {
         }
       })
       .catch(err => console.log("viewIntercation err", err));
@@ -358,11 +359,30 @@ const HomeOne = props => {
                 type: "SET_PREFERENCE_FILTER",
                 payload: false,
               });
-              setProfilesList(data?.profiles);
+              setProfilesList(
+                data?.profiles?.filter(
+                  el =>
+                    el.Profile.gender.toLowerCase() !=
+                    userData.Profile.gender.toLowerCase()
+                )
+              );
             } else if (!preferenceFilter && pagination) {
-              setProfilesList(prevState => [...prevState, ...data?.profiles]);
+              setProfilesList(prevState => [
+                ...prevState,
+                ...data?.profiles.filter(
+                  el =>
+                    el.Profile.gender.toLowerCase() !=
+                    userData.Profile.gender.toLowerCase()
+                ),
+              ]);
             } else {
-              setProfilesList(data?.profiles);
+              setProfilesList(
+                data?.profiles.filter(
+                  el =>
+                    el.Profile.gender.toLowerCase() !=
+                    userData.Profile.gender.toLowerCase()
+                )
+              );
             }
           }
         })
@@ -413,6 +433,18 @@ const HomeOne = props => {
         getAllUser(limit, offset);
       }
     }, [preferenceFilter])
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (profileIds.length > 0 && profilesList.length > 0) {
+        setProfilesList(prevState =>
+          prevState.filter(el => profileIds.every(id => id != el.id))
+        );
+
+        profileIds = [];
+      }
+    }, [profileIds, profilesList])
   );
 
   useEffect(() => {
@@ -504,6 +536,9 @@ const HomeOne = props => {
       setUserId(viewableItems[i].item.id);
       setUserName(viewableItems[i].item?.firstName);
       viewIntercation(viewableItems[i].item.id);
+      if (!profileIds.includes(viewableItems[i].item.id)) {
+        profileIds.push(viewableItems[i].item.id);
+      }
       props.navigation.navigate("Discover", {
         enableees: swipeIndex,
         userId: viewableItems[i].item.id,
