@@ -853,10 +853,7 @@ const HomeOne = props => {
                 }}
               />
             ) : (
-              <VerificationPendingCard
-                heading="Search Preferences"
-                tagline="Please change your search preferences and try again later!"
-              />
+              renderOutProfiles()
             )
           }
           {imageModal ? (

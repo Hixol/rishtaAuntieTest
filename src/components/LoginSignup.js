@@ -24,9 +24,10 @@ import config from "../aws-exports";
 import Loader from "./Loader";
 import Icons from "../utility/icons";
 import Countries from "../assets/countryLists/Countries";
+import InAppBrowser from "react-native-inappbrowser-reborn";
 
 const LoginSignup = props => {
-  const webviewRef = useRef(null);
+  let webviewRef = useRef(null);
   const dispatch = useDispatch();
   const {
     Alerts,
@@ -66,9 +67,27 @@ const LoginSignup = props => {
       .split("=")
       .pop();
 
-    setIdentityProvider(identityProvider);
-    setUrl(url);
-    setLoader(false);
+    if (identityProvider == "Google") {
+      await InAppBrowser.isAvailable();
+
+      const res = await InAppBrowser.openAuth(url, redirectUrl, {
+        dismissButtonStyle: "cancel",
+        showTitle: false,
+        enableUrlBarHiding: true,
+        enableDefaultShare: false,
+        enableBarCollapsing: false,
+        ephemeralWebSession: true,
+      });
+
+      if (res.type == "cancel") {
+      } else if (res.type == "success" && res.url) {
+        Linking.openURL(res.url);
+      }
+    } else {
+      setIdentityProvider(identityProvider);
+      setUrl(url);
+      setLoader(false);
+    }
   };
 
   Amplify.configure({
@@ -188,6 +207,22 @@ const LoginSignup = props => {
     dispatch({
       type: "PROMPTS_POOL",
       payload: [],
+    });
+    dispatch({
+      type: "SET_SPOT_TIMER",
+      payload: {
+        userId: null,
+        showtimer: false,
+        time: 0,
+      },
+    });
+    dispatch({
+      type: "SET_PROFILE_TIMER",
+      payload: {
+        userId: null,
+        showtimer: false,
+        time: 0,
+      },
     });
 
     if (flag) {

@@ -103,6 +103,7 @@ const Settings = props => {
                 setMediaOptions(true);
               }
               if (
+                data.UserSetting.isSubscribed &&
                 data.lastLogDailyProfilesLimit &&
                 !isProfileTimerFinished?.showtimer
               ) {
@@ -210,7 +211,7 @@ const Settings = props => {
   );
 
   useEffect(() => {
-    const focusSubs = props.navigation.addListener("focus", () => {
+    props.navigation.addListener("focus", () => {
       focused = true;
     });
 
@@ -219,7 +220,6 @@ const Settings = props => {
     });
 
     return () => {
-      focusSubs();
       blurSubs();
     };
   }, [props.navigation]);

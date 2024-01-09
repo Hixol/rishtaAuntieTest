@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet, Pressable, AppState } from "react-native";
-import { android, windowHeight } from "../../utility/size";
+import { Text, View, StyleSheet, AppState } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { windowHeight } from "../../utility/size";
 
 import moment from "moment";
 import colors from "../../utility/colors";
@@ -14,9 +14,12 @@ const BoostUpgradeCard = props => {
 
   const dispatch = useDispatch();
   const { userData } = useSelector(store => store.userReducer);
-  const { isSpotTimerFinished, isProfileTimerFinished } = useSelector(
-    store => store.timerReducer
-  );
+  const {
+    isSpotTimerFinished,
+    isProfileTimerFinished,
+    navStartTimer,
+    navEndTimer,
+  } = useSelector(store => store.timerReducer);
 
   let secs = 0;
   let startTime = 0;
@@ -141,12 +144,59 @@ const BoostUpgradeCard = props => {
         },
       });
 
+      dispatch({
+        type: "SET_PROFILE_TIMER",
+        payload: {
+          userId: userData.id,
+          showtimer: true,
+          time: isProfileTimerFinished?.time - seconds,
+        },
+      });
+
       startTime = 0;
       endTime = 0;
-    } else if (!focused && isSpotTimerFinished?.showtimer) {
+    } else if (
+      (!focused && isSpotTimerFinished?.showtimer) ||
+      (!focused && isProfileTimerFinished?.showtimer)
+    ) {
       startTime = moment(Date.now());
     }
   }, [focused]);
+
+  // useEffect(() => {
+  //   if (focused && navStartTimer != 0 && navEndTimer != 0) {
+  //     let diff = moment.duration(navEndTimer.diff(navStartTimer));
+  //     let seconds = Math.floor(diff.asSeconds());
+
+  //     dispatch({
+  //       type: "SET_SPOT_TIMER",
+  //       payload: {
+  //         userId: userData.id,
+  //         showtimer: true,
+  //         time: isSpotTimerFinished?.time - seconds,
+  //       },
+  //     });
+
+  //     dispatch({
+  //       type: "SET_PROFILE_TIMER",
+  //       payload: {
+  //         userId: userData.id,
+  //         showtimer: true,
+  //         time: isProfileTimerFinished?.time - seconds,
+  //       },
+  //     });
+  //     setTimeout(() => {
+  //       dispatch({
+  //         type: "SET_NAV_START_TIMER",
+  //         payload: 0,
+  //       });
+  //       dispatch({
+  //         type: "SET_NAV_END_TIMER",
+  //         payload: 0,
+  //       });
+  //     }, 300);
+  //   }
+  // }, [focused, navStartTimer, navEndTimer]);
 
   return (
     <View style={[styles.actionItemsView]}>
@@ -227,8 +277,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: "5%",
     borderWidth: 1,
     borderColor: "#F3F4F6",
-    minHeight: android ? windowHeight * 0.23 : windowHeight * 0.27,
-    maxHeight: android ? windowHeight * 0.27 : windowHeight * 0.31,
+    minHeight: windowHeight * 0.25,
+    maxHeight: windowHeight * 0.27,
   },
   timeView: {
     flexDirection: "row",

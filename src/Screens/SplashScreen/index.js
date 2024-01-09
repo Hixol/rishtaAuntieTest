@@ -56,11 +56,11 @@ const SplashScreen = props => {
         );
         let ccuid = await AsyncStorage.getItem("ccuid");
         handlePlayerId(token, ccuid);
-      } else if (email != "" && status == undefined) {
+      } else if (email != "" && (status == null || status == "INACTIVE")) {
         props.navigation.dispatch(
           CommonActions.reset({
             index: 0,
-            routes: [{ name: "WelcomeScreen" }],
+            routes: [{ name: "FullNameScreen" }],
           })
         );
       } else if (
