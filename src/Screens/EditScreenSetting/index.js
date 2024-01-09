@@ -493,10 +493,10 @@ const EditScreenSetting = props => {
       }
     }
   }, []);
+
   useEffect(() => {
     if (
-      (userData?.UserPreference?.distance === "Unlimited" ||
-        userData?.UserPreference?.distance === "Nationwide") &&
+      /unlimited|nationwide/.test(userData?.UserPreference?.distance) &&
       userData?.UserPreference?.distance !== null
     ) {
       setDistance(userData?.UserPreference?.distance);
@@ -1076,7 +1076,7 @@ const EditScreenSetting = props => {
               ? distanceSlider.toString()
               : distance === null
               ? "unlimited"
-              : distance;
+              : distance.toLowerCase();
           break;
         case "Height":
           sendType = "heightFrom";
@@ -1299,7 +1299,7 @@ const EditScreenSetting = props => {
                 <>
                   {distanceList.map((item, index) => {
                     let findIndex = distanceList.findIndex((item, index) => {
-                      return item === distance;
+                      return item.toLowerCase() === distance?.toLowerCase();
                     });
 
                     return (
@@ -2035,9 +2035,10 @@ const EditScreenSetting = props => {
                         marginVertical: "5%",
                       }}
                     >
-                      {allProfileValues?.denomination[
-                        userData?.Profile?.religion
-                      ].length > 0 &&
+                      {userData?.Profile.religion != undefined &&
+                        allProfileValues?.denomination[
+                          userData?.Profile?.religion
+                        ].length > 0 &&
                         allProfileValues?.denomination[
                           userData?.Profile?.religion
                         ].map((item, index) => {
@@ -2102,7 +2103,8 @@ const EditScreenSetting = props => {
                         marginVertical: "5%",
                       }}
                     >
-                      {allProfileValues?.denomination[
+                      {userData?.UserPreference?.religion != undefined &&
+                      allProfileValues?.denomination[
                         userData?.UserPreference?.religion
                       ].length > 0 ? (
                         allProfileValues?.denomination[
@@ -2150,22 +2152,26 @@ const EditScreenSetting = props => {
                       )}
                     </ScrollView>
                   </View>
-                  <View
-                    style={[
-                      styles.customScrollBarBackground,
-                      { height: "80%", marginTop: "5%" },
-                    ]}
-                  >
-                    <Animated.View
+                  {userData?.UserPreference?.religion != undefined && (
+                    <View
                       style={[
-                        styles.customScrollBar,
-                        {
-                          height: scrollIndicatorSize,
-                          transform: [{ translateY: scrollIndicatorPosition }],
-                        },
+                        styles.customScrollBarBackground,
+                        { height: "80%", marginTop: "5%" },
                       ]}
-                    />
-                  </View>
+                    >
+                      <Animated.View
+                        style={[
+                          styles.customScrollBar,
+                          {
+                            height: scrollIndicatorSize,
+                            transform: [
+                              { translateY: scrollIndicatorPosition },
+                            ],
+                          },
+                        ]}
+                      />
+                    </View>
+                  )}
                 </View>
               ) : type === "Education Level" ? (
                 elArray.length > 0 &&
