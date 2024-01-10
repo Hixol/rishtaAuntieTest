@@ -892,9 +892,9 @@ const EditScreenSetting = props => {
     setHeightSlider(values);
   };
   const AgeSliderValuesChange = value => {
-    value = value.map(item => {
-      return parseInt(item);
-    });
+    // value = value.map(item => {
+    //   return parseInt(item);
+    // });
 
     setAge(value);
   };
@@ -1501,7 +1501,7 @@ const EditScreenSetting = props => {
                     textWithoutIconView
                     multiSliderValue={
                       age[0] !== null && age[1] !== null
-                        ? [parseInt(age[0]), parseInt(age[1])]
+                        ? [age[0], age[1]]
                         : [18, 68]
                     }
                     isMarkersSeparated={true}
@@ -1512,7 +1512,7 @@ const EditScreenSetting = props => {
                     preferenceName={"Age"}
                     customLabel="age"
                     enableLabel={true}
-                    step={0.1}
+                    step={1}
                     bg={{ color: "red" }}
                   />
                 </>

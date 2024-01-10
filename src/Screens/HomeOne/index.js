@@ -343,12 +343,10 @@ const HomeOne = props => {
                 payload: false,
               });
             } else if (!swipeScreenIndex) {
-              setTimeout(() => {
-                dispatch({
-                  type: "AUTH_USER_SCREEN_INDEX",
-                  payload: true,
-                });
-              }, 500);
+              dispatch({
+                type: "AUTH_USER_SCREEN_INDEX",
+                payload: true,
+              });
             }
 
             setRemainingProfiles(data?.noOfProfilesRemaining);
@@ -413,7 +411,7 @@ const HomeOne = props => {
         payload: true,
       });
 
-      if (foundIndex !== -1 && foundIndex < profilesList.length - 1) {
+      if (foundIndex !== -1 && profilesList.length > 0) {
         setProfilesList(prevState =>
           prevState.filter(el => el.id != discoverUserIndex)
         );
@@ -438,11 +436,24 @@ const HomeOne = props => {
   useFocusEffect(
     useCallback(() => {
       if (profileIds.length > 0 && profilesList.length > 0) {
+        dispatch({
+          type: "AUTH_USER_SCREEN_INDEX",
+          payload: true,
+        });
+
         setProfilesList(prevState =>
           prevState.filter(el => profileIds.every(id => id != el.id))
         );
 
         profileIds = [];
+      }
+
+      if (profilesList.length == 0) {
+        console.log("profilesList.length == 0", swipeScreenIndex);
+        dispatch({
+          type: "AUTH_USER_SCREEN_INDEX",
+          payload: false,
+        });
       }
     }, [profileIds, profilesList])
   );
