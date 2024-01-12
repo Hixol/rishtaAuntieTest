@@ -58,7 +58,7 @@ import EditScreenSetting from "../Screens/EditScreenSetting";
 
 const Stack = createNativeStackNavigator();
 
-const HeaderTitle = () => (
+const HeaderTitle = ({ proMember }) => (
   <View
     style={{
       width: 30,
@@ -70,7 +70,11 @@ const HeaderTitle = () => (
     <FastImage
       resizeMode="contain"
       style={{ width: 40, height: "100%" }}
-      source={require("../assets/iconimages/header-icon.png")}
+      source={
+        proMember
+          ? require("../assets/iconimages/logo-gold.png")
+          : require("../assets/iconimages/header-icon.png")
+      }
     />
   </View>
 );
@@ -91,12 +95,15 @@ const paywallProps = title => ({
 
 const StackNavigations = props => {
   const [showScreen, setShowScreen] = useState(false);
+  const { userData } = useSelector(store => store.userReducer);
   const { isIcoming, isEarlyAccepted } = useSelector(store => store.ActiveCall);
+
+  const proMember = userData?.UserSetting?.isSubscribed;
 
   const centeredHeader = {
     headerShown: true,
     headerTitleAlign: "center",
-    headerTitle: () => <HeaderTitle />,
+    headerTitle: () => <HeaderTitle proMember={proMember} />,
   };
 
   const showCallScreen = () => {
@@ -128,7 +135,7 @@ const StackNavigations = props => {
         options={{
           headerShown: false,
           headerTitleAlign: "center",
-          headerTitle: () => <HeaderTitle />,
+          headerTitle: () => <HeaderTitle proMember={proMember} />,
         }}
       />
       <Stack.Screen
@@ -137,7 +144,7 @@ const StackNavigations = props => {
         options={{
           headerShown: false,
           headerTitleAlign: "center",
-          headerTitle: () => <HeaderTitle />,
+          headerTitle: () => <HeaderTitle proMember={proMember} />,
         }}
       />
       <Stack.Screen
@@ -156,11 +163,11 @@ const StackNavigations = props => {
           animation: "slide_from_bottom",
         }}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="UserChatList"
         component={UserChatList}
         options={centeredHeader}
-      />
+      /> */}
       <Stack.Screen name="MyPrivacySetting" component={MyPrivacySetting} />
       <Stack.Screen name="MySetting" component={MySetting} />
       <Stack.Screen name="BlockedList" component={BlockedList} />
