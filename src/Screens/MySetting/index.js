@@ -94,8 +94,8 @@ const MySetting = props => {
   };
 
   const logOut = async () => {
-    ConnectyCube.chat.disconnect();
-    await ConnectyCube.destroySession();
+    // ConnectyCube.chat.disconnect();
+    // await ConnectyCube.destroySession();
     await UserService.logout(token);
 
     if (email != "") {

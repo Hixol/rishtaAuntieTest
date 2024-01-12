@@ -86,8 +86,8 @@ const LoginSignup = props => {
     } else {
       setIdentityProvider(identityProvider);
       setUrl(url);
-      setLoader(false);
     }
+    setLoader(false);
   };
 
   Amplify.configure({

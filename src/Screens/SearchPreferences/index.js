@@ -394,16 +394,7 @@ const SearchPreferences = props => {
               Upgrade now to use Gold preferences
             </Text>
           </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            onPress={handleDisablePremium}
-            style={styles.enableDisableButton}
-          >
-            <Text style={{ fontSize: 15, color: colors.white }}>
-              Disable Premium
-            </Text>
-          </TouchableOpacity>
-        )}
+        ) : null}
         <View style={[styles.actionItemsView, { marginBottom: "10%" }]}>
           {PremiumPreferences.map((i, index, array) => {
             return (

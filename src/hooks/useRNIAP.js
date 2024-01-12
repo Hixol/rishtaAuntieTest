@@ -15,6 +15,7 @@ import {
 import { Alert, Platform } from "react-native";
 import { android, ios } from "../utility/size";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
 import { alerts } from "../utility/regex";
 import IAPServices from "../services/IAPServices";
 
@@ -36,6 +37,7 @@ let purchaseErrorSubscription;
 
 export const useRNIAP = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   const { token, userData } = useSelector(store => store.userReducer);
 
@@ -204,6 +206,8 @@ export const useRNIAP = () => {
             type: "AUTH_USER",
             payload: copy,
           });
+
+          navigation.goBack();
         } else {
           alerts("error", res?.error?.message);
         }
@@ -236,6 +240,8 @@ export const useRNIAP = () => {
             type: "AUTH_USER",
             payload: copy,
           });
+
+          navigation.goBack();
         } else {
           alerts("error", res?.error?.message);
         }

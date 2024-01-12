@@ -361,7 +361,7 @@ const HomeOne = props => {
                 data?.profiles?.filter(
                   el =>
                     el.Profile.gender.toLowerCase() !=
-                    userData.Profile.gender.toLowerCase()
+                    userData.Profile?.gender.toLowerCase()
                 )
               );
             } else if (!preferenceFilter && pagination) {
@@ -370,7 +370,7 @@ const HomeOne = props => {
                 ...data?.profiles.filter(
                   el =>
                     el.Profile.gender.toLowerCase() !=
-                    userData.Profile.gender.toLowerCase()
+                    userData.Profile?.gender.toLowerCase()
                 ),
               ]);
             } else {
@@ -378,7 +378,7 @@ const HomeOne = props => {
                 data?.profiles.filter(
                   el =>
                     el.Profile.gender.toLowerCase() !=
-                    userData.Profile.gender.toLowerCase()
+                    userData.Profile?.gender.toLowerCase()
                 )
               );
             }
