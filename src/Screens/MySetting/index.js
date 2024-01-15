@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Text, View, Alert, Modal, TouchableOpacity } from "react-native";
+import {
+  Text,
+  View,
+  Alert,
+  Modal,
+  Linking,
+  TouchableOpacity,
+} from "react-native";
 import { Auth } from "aws-amplify";
 import { useDispatch, useSelector } from "react-redux";
 import { CommonActions } from "@react-navigation/native";
@@ -11,6 +18,7 @@ import { UserService } from "../../services";
 
 import styles from "./styles";
 import colors from "../../utility/colors";
+import awsmobile from "../../aws-exports";
 import ConnectyCube from "react-native-connectycube";
 import HeaderContainer from "../../components/containers/headerContainer";
 import BasicPrivacySetting from "../../components/containers/BasicPrivacySetting";
@@ -21,6 +29,7 @@ import Icons from "../../utility/icons";
 import SettingHeader from "../../components/containers/settingHeader";
 import FastImage from "react-native-fast-image";
 import ActionBottomModal from "../../components/Modal/ActionBottomModal";
+import InAppBrowser from "react-native-inappbrowser-reborn";
 
 const ModalDataArray = [
   {
@@ -103,7 +112,25 @@ const MySetting = props => {
         type: "USER_EMAIL",
         payload: "",
       });
-      Auth.signOut().catch(err => console.log("auth signOut err:", err));
+      await Auth.signOut().catch(err => console.log("auth signOut err:", err));
+
+      await InAppBrowser.isAvailable();
+
+      const res = await InAppBrowser.openAuth(
+        `https://${awsmobile.oauth.domain}/logout?client_id=${awsmobile.aws_user_pools_web_client_id}&logout_uri=${awsmobile.oauth.redirectSignOut}`,
+        awsmobile.oauth.redirectSignOut,
+        {
+          dismissButtonStyle: "cancel",
+          showTitle: false,
+          enableUrlBarHiding: true,
+          enableDefaultShare: false,
+        }
+      );
+
+      if (res.type == "cancel") {
+      } else if (res.type == "success" && res.url) {
+        Linking.openURL(res.url);
+      }
     }
     dispatch({
       type: "AUTH_TOKEN",

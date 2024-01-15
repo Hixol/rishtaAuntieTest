@@ -62,7 +62,7 @@ const LoginSignup = props => {
 
   const urlOpener = async (url, redirectUrl) => {
     let identityProvider = url
-      .split("&")
+      ?.split("&")
       .find(str => str.indexOf("identity_provider") > -1)
       .split("=")
       .pop();
@@ -75,11 +75,10 @@ const LoginSignup = props => {
         showTitle: false,
         enableUrlBarHiding: true,
         enableDefaultShare: false,
-        enableBarCollapsing: false,
-        ephemeralWebSession: true,
       });
 
       if (res.type == "cancel") {
+        setLoader(false);
       } else if (res.type == "success" && res.url) {
         Linking.openURL(res.url);
       }
@@ -87,7 +86,6 @@ const LoginSignup = props => {
       setIdentityProvider(identityProvider);
       setUrl(url);
     }
-    setLoader(false);
   };
 
   Amplify.configure({
@@ -429,6 +427,11 @@ const LoginSignup = props => {
                 dispatchAndNavigate(data.status, "BottomTab", data);
               }
             }
+
+            dispatch({
+              type: "USER_EMAIL",
+              payload: currentAuthUser?.attributes?.email,
+            });
           }
         })
         .catch(err => {
