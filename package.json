@@ -33,7 +33,7 @@
     "@sentry/react-native": "^4.12.0",
     "@shopify/flash-list": "^1.5.0",
     "@symhomendra21/react-native-linkedin": "^2.1.11",
-    "aws-amplify": "^4.3.29",
+    "aws-amplify": "6",
     "aws-amplify-react-native": "^6.0.5",
     "axios": "^0.24.0",
     "deprecated-react-native-prop-types": "^2.3.0",
