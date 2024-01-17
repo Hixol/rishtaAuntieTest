@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import { OnBoardingServices } from "../../services";
 import { useHelper } from "../../hooks/useHelper";
+import { useRNIAP } from "../../hooks/useRNIAP";
 import { OS_VER } from "../../utility/size";
 
 import moment from "moment";
@@ -38,6 +39,7 @@ let focused = false;
 const Settings = props => {
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
+  const {} = useRNIAP();
   const { Alerts, handleStatusCode } = useHelper();
   const { token, userData, status } = useSelector(store => store.userReducer);
   const { isSpotTimerFinished, isProfileTimerFinished } = useSelector(

@@ -15,7 +15,6 @@ import colors from "../../utility/colors";
 
 const SplashScreen = props => {
   const dispatch = useDispatch();
-  const {} = useRNIAP();
 
   const { token, status, mobileNumber, email, userData } = useSelector(
     store => store.userReducer

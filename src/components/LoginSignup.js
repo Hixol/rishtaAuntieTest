@@ -25,6 +25,7 @@ import Loader from "./Loader";
 import Icons from "../utility/icons";
 import Countries from "../assets/countryLists/Countries";
 import InAppBrowser from "react-native-inappbrowser-reborn";
+import DeviceInfo from "react-native-device-info";
 
 const LoginSignup = props => {
   let webviewRef = useRef(null);
@@ -67,7 +68,12 @@ const LoginSignup = props => {
       .split("=")
       .pop();
 
-    if (identityProvider == "Google") {
+    let OSVersion = DeviceInfo.getSystemVersion();
+
+    if (
+      identityProvider == "Google" ||
+      (ios && /13.3|16.4|17.3/.test(OSVersion))
+    ) {
       await InAppBrowser.isAvailable();
 
       const res = await InAppBrowser.openAuth(url, redirectUrl, {
@@ -85,6 +91,7 @@ const LoginSignup = props => {
     } else {
       setIdentityProvider(identityProvider);
       setUrl(url);
+      setLoader(false);
     }
   };
 
