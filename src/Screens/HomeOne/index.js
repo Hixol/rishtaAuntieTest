@@ -226,7 +226,6 @@ const HomeOne = props => {
     UserService.viewIntercation(userId, token)
       .then(res => {
         handleStatusCode(res);
-        console.log("viewIntercation res", res.data);
         if (res.status >= 200 || res.status <= 201) {
         }
       })
@@ -330,6 +329,7 @@ const HomeOne = props => {
       status === "ACTIVE" ||
       status === "INCOMPLETE" ||
       status === "INACTIVE" ||
+      status === "FAILED" ||
       status === "COMPLETED"
     ) {
       UserService.getAllUser(token, `limit=${limit}&offset=${offset * limit}`)
@@ -449,7 +449,6 @@ const HomeOne = props => {
       }
 
       if (profilesList.length == 0) {
-        console.log("profilesList.length == 0", swipeScreenIndex);
         dispatch({
           type: "AUTH_USER_SCREEN_INDEX",
           payload: false,
