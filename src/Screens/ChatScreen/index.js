@@ -261,7 +261,8 @@ const ChatScreen = props => {
 
     if (el.type === "GROUP") getOpenendTicket();
 
-    permisisonsService.checkAndRequestDrawOverlaysPermission();
+    if (el.type !== "GROUP")
+      permisisonsService.checkAndRequestDrawOverlaysPermission();
   }, []);
 
   useEffect(() => {
