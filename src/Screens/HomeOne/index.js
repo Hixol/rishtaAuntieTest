@@ -40,6 +40,7 @@ import ChatServices from "../../services/ChatServices";
 import ActionBottomModal from "../../components/Modal/ActionBottomModal";
 import FastImage from "react-native-fast-image";
 import OutOfProfilesDay from "../../components/OutOfProfilesDay";
+import UploadSelfie from "../NewOnBoarding/UploadImages.js/UploadSelfie";
 
 let limit = 15;
 let offset = 0;
@@ -64,7 +65,6 @@ const HomeOne = props => {
   const [profilesList, setProfilesList] = useState([]);
   const [totalProfiles, setTotalProfiles] = useState(0);
   const [remainingProfiles, setRemainingProfiles] = useState(0);
-  const [loading, setLoading] = useState(false);
   const [action, setAction] = useState(false);
   const [blockAlert, setBlockAlert] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
@@ -100,6 +100,16 @@ const HomeOne = props => {
         titleStyle={styles.titleStyle}
         buttonStyle={styles.buttonStyle}
       />
+    </View>
+  );
+
+  const renderFailed = () => (
+    <View style={styles.outContainer}>
+      <Text style={styles.title}>Failed verification</Text>
+      <Text style={styles.description}>
+        Sorry, we were unable to verify your profile. Please delete your profile
+        and make a new one again.
+      </Text>
     </View>
   );
 
@@ -329,7 +339,6 @@ const HomeOne = props => {
       status === "ACTIVE" ||
       status === "INCOMPLETE" ||
       status === "INACTIVE" ||
-      status === "FAILED" ||
       status === "COMPLETED"
     ) {
       UserService.getAllUser(token, `limit=${limit}&offset=${offset * limit}`)
@@ -395,11 +404,8 @@ const HomeOne = props => {
             payload: false,
           });
         })
-        .finally(() => {
-          setLoading(false);
-          setSkeleton(false);
-        });
-    }
+        .finally(() => setSkeleton(false));
+    } else setSkeleton(false);
   };
 
   let foundIndex = profilesList.findIndex(el => el.id == discoverUserIndex);
@@ -642,230 +648,202 @@ const HomeOne = props => {
 
   return (
     <>
-      {loading ? (
-        <ActivityIndicator
-          color={colors.primaryPink}
-          style={{ alignSelf: "center", flex: 1 }}
-          size={"large"}
-        />
-      ) : skeleton ? (
+      {skeleton ? (
         <DiscoverSkeleton tabBarHeight={tabBarHeight} />
       ) : totalProfiles === 0 && remainingProfiles > 0 ? (
         renderOutProfiles()
       ) : (
         <SafeAreaView style={styles.container}>
-          {
-            // (token !== null || token !== '' || token !== undefined) &&
-            // status === 'COMPLETED' &&
-            // reverify == false ? (
-            //   // <VerificationPendingCard
-            //   //   heading="Verification Pending"
-            //   //   tagline="We have to ensure that there are no actual rishta aunties
-            //   // here. This may take up to 24-48 hours"
-            //   //   btnText="Refresh Status"
-            //   //   onPress={() => {
-            //   //     getAllUser(limit, offset);
-            //   //     getMyProfile();
-            //   //   }}
-            //   // />
-            // ) :
-            (status === "COMPLETED" && reverify) || status == "FAILED" ? (
-              <VerificationPendingCard
-                heading="Re - Submit Verification"
-                tagline="Please click the button below to re-submit a selfie, please make sure that you are in a well lit space. Thank you!"
-                btnText="Resubmit Verification"
-                onPress={() => props.navigation.navigate("SelfieVerification")}
-              />
-            ) : totalProfiles === 0 && remainingProfiles === 0 ? (
-              <OutOfProfilesDay
-                adLoad={adLoad}
-                adPress={handleWatchAd}
-                navigation={props.navigation}
-              />
-            ) : profilesList.length > 0 ? (
-              <FlatList
-                scrollEnabled={check ? false : true}
-                keyboardShouldPersistTaps="handled"
-                removeClippedSubviews={false}
-                ref={flatListRef}
-                viewabilityConfig={viewConfigRef.current}
-                onViewableItemsChanged={onViewableItemsChanged.current}
-                showsVerticalScrollIndicator={false}
-                inverted={false}
-                pagingEnabled
-                initialNumToRender={1}
-                snapToAlignment={"start"}
-                data={profilesList}
-                onEndReachedThreshold={0.5}
-                onEndReached={loadMoreData}
-                keyExtractor={item => item.id}
-                renderItem={({ item }) => {
-                  let sortedImage = [...item?.UserMedia]
-                    .filter(media => media.type != "video")
-                    .sort((a, b) => a.sequence - b.sequence)[0].url;
+          {reverify ? (
+            <UploadSelfie reverify />
+          ) : status == "FAILED" ? (
+            renderFailed()
+          ) : totalProfiles === 0 && remainingProfiles === 0 ? (
+            <OutOfProfilesDay
+              adLoad={adLoad}
+              adPress={handleWatchAd}
+              navigation={props.navigation}
+            />
+          ) : profilesList.length > 0 ? (
+            <FlatList
+              scrollEnabled={check ? false : true}
+              keyboardShouldPersistTaps="handled"
+              removeClippedSubviews={false}
+              ref={flatListRef}
+              viewabilityConfig={viewConfigRef.current}
+              onViewableItemsChanged={onViewableItemsChanged.current}
+              showsVerticalScrollIndicator={false}
+              inverted={false}
+              pagingEnabled
+              initialNumToRender={1}
+              snapToAlignment={"start"}
+              data={profilesList}
+              onEndReachedThreshold={0.5}
+              onEndReached={loadMoreData}
+              keyExtractor={item => item.id}
+              renderItem={({ item }) => {
+                let sortedImage = [...item?.UserMedia]
+                  .filter(media => media.type != "video")
+                  .sort((a, b) => a.sequence - b.sequence)[0].url;
 
-                  return (
-                    <>
-                      <DiscoverImg
-                        key={item?.id}
-                        item={item}
-                        userId={userId}
-                        images={sortedImage}
-                        check={check}
-                        video={item?.UserMedia?.filter(el => {
-                          return el?.type == "video";
-                        })}
-                        paused={true}
-                        pausedButton={false}
-                        isFocused={isFocused}
-                        tabBarHeight={tabBarHeight}
-                        searchPress={() =>
-                          props.navigation.navigate("SearchPreferences")
+                return (
+                  <>
+                    <DiscoverImg
+                      key={item?.id}
+                      item={item}
+                      userId={userId}
+                      images={sortedImage}
+                      check={check}
+                      video={item?.UserMedia?.filter(el => {
+                        return el?.type == "video";
+                      })}
+                      paused={true}
+                      pausedButton={false}
+                      isFocused={isFocused}
+                      tabBarHeight={tabBarHeight}
+                      searchPress={() =>
+                        props.navigation.navigate("SearchPreferences")
+                      }
+                      onPressCommentInteraction={() => {
+                        if (status === "INACTIVE" || status === "INCOMPLETE") {
+                          setCheck(true);
+                        } else {
+                          onCommentPress();
                         }
-                        onPressCommentInteraction={() => {
-                          if (
-                            status === "INACTIVE" ||
-                            status === "INCOMPLETE"
-                          ) {
-                            setCheck(true);
-                          } else {
-                            onCommentPress();
-                          }
-                        }}
-                        onPressVoiceInteraction={() =>
-                          status === "INACTIVE" || status === "INCOMPLETE"
-                            ? setCheck(true)
-                            : onMicPress()
-                        }
-                        onPressLikeInteraction={() =>
-                          status === "INACTIVE" || status === "INCOMPLETE"
-                            ? setCheck(true)
-                            : onHeartPress(item?.id)
-                        }
-                        onDotsPress={handleDotsPress}
-                      />
-                      {check ? (
-                        <>
+                      }}
+                      onPressVoiceInteraction={() =>
+                        status === "INACTIVE" || status === "INCOMPLETE"
+                          ? setCheck(true)
+                          : onMicPress()
+                      }
+                      onPressLikeInteraction={() =>
+                        status === "INACTIVE" || status === "INCOMPLETE"
+                          ? setCheck(true)
+                          : onHeartPress(item?.id)
+                      }
+                      onDotsPress={handleDotsPress}
+                    />
+                    {check ? (
+                      <>
+                        <View
+                          style={{
+                            flex: 1,
+                            width: "100%",
+                            height: "100%",
+                            zIndex: 1,
+                            position: "absolute",
+                            backgroundColor: colors.black,
+                            opacity: 0.8,
+                          }}
+                        ></View>
+                        <Pressable
+                          onPress={() => setCheck(false)}
+                          style={{
+                            flex: 1,
+                            position: "absolute",
+                            width: "100%",
+                            height: "100%",
+                            zIndex: 2,
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
                           <View
                             style={{
-                              flex: 1,
-                              width: "100%",
-                              height: "100%",
-                              zIndex: 1,
-                              position: "absolute",
-                              backgroundColor: colors.black,
-                              opacity: 0.8,
-                            }}
-                          ></View>
-                          <Pressable
-                            onPress={() => setCheck(false)}
-                            style={{
-                              flex: 1,
-                              position: "absolute",
-                              width: "100%",
-                              height: "100%",
-                              zIndex: 2,
+                              width: "90%",
+                              height: 250,
                               alignItems: "center",
                               justifyContent: "center",
+                              backgroundColor: colors.white,
+                              borderRadius: 16,
                             }}
                           >
-                            <View
+                            <Text
                               style={{
-                                width: "90%",
-                                height: 250,
+                                fontSize: 20,
+                                fontFamily: "Inter-Medium",
+                                color: colors.black,
+                              }}
+                            >
+                              Warning
+                            </Text>
+                            <Text
+                              style={{
+                                fontSize: 16,
+                                fontFamily: "Inter-Regular",
+                                color: "#6B7280",
+                                marginTop: "5%",
+                                marginHorizontal: "3%",
+                              }}
+                            >
+                              Please complete your profile to interact with
+                              other users, thank you!
+                            </Text>
+
+                            <TouchableOpacity
+                              onPress={() => {
+                                props.navigation.navigate(
+                                  "OnBoardingQuestions"
+                                );
+                                setCheck(false);
+                              }}
+                              style={{
+                                width: "80%",
+                                paddingVertical: "3%",
                                 alignItems: "center",
                                 justifyContent: "center",
-                                backgroundColor: colors.white,
-                                borderRadius: 16,
+                                borderRadius: 5,
+                                backgroundColor: colors.primaryPink,
+                                marginTop: "5%",
                               }}
                             >
                               <Text
                                 style={{
-                                  fontSize: 20,
-                                  fontFamily: "Inter-Medium",
-                                  color: colors.black,
+                                  fontSize: 16,
+                                  fontFamily: "Inter-Regular",
+                                  color: colors.white,
                                 }}
                               >
-                                Warning
+                                Complete Profile
                               </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              onPress={() => {
+                                setCheck(false);
+                              }}
+                              style={{
+                                width: "80%",
+                                paddingVertical: "3%",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                borderRadius: 5,
+                                backgroundColor: colors.white,
+                                marginTop: "5%",
+                                borderWidth: 1,
+                                borderColor: colors.primaryPink,
+                              }}
+                            >
                               <Text
                                 style={{
                                   fontSize: 16,
                                   fontFamily: "Inter-Regular",
-                                  color: "#6B7280",
-                                  marginTop: "5%",
-                                  marginHorizontal: "3%",
+                                  color: colors.primaryPink,
                                 }}
                               >
-                                Please complete your profile to interact with
-                                other users, thank you!
+                                Later
                               </Text>
-
-                              <TouchableOpacity
-                                onPress={() => {
-                                  props.navigation.navigate(
-                                    "OnBoardingQuestions"
-                                  );
-                                  setCheck(false);
-                                }}
-                                style={{
-                                  width: "80%",
-                                  paddingVertical: "3%",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  borderRadius: 5,
-                                  backgroundColor: colors.primaryPink,
-                                  marginTop: "5%",
-                                }}
-                              >
-                                <Text
-                                  style={{
-                                    fontSize: 16,
-                                    fontFamily: "Inter-Regular",
-                                    color: colors.white,
-                                  }}
-                                >
-                                  Complete Profile
-                                </Text>
-                              </TouchableOpacity>
-                              <TouchableOpacity
-                                onPress={() => {
-                                  setCheck(false);
-                                }}
-                                style={{
-                                  width: "80%",
-                                  paddingVertical: "3%",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  borderRadius: 5,
-                                  backgroundColor: colors.white,
-                                  marginTop: "5%",
-                                  borderWidth: 1,
-                                  borderColor: colors.primaryPink,
-                                }}
-                              >
-                                <Text
-                                  style={{
-                                    fontSize: 16,
-                                    fontFamily: "Inter-Regular",
-                                    color: colors.primaryPink,
-                                  }}
-                                >
-                                  Later
-                                </Text>
-                              </TouchableOpacity>
-                            </View>
-                          </Pressable>
-                        </>
-                      ) : null}
-                    </>
-                  );
-                }}
-              />
-            ) : (
-              renderOutProfiles()
-            )
-          }
+                            </TouchableOpacity>
+                          </View>
+                        </Pressable>
+                      </>
+                    ) : null}
+                  </>
+                );
+              }}
+            />
+          ) : (
+            renderOutProfiles()
+          )}
           {imageModal ? (
             <GestureHandlerRootView
               style={{

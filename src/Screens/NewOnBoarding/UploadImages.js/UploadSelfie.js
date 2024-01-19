@@ -7,7 +7,6 @@ import {
   Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { launchCamera } from "react-native-image-picker";
 import { ios, android, windowHeight, windowWidth } from "../../../utility/size";
 import { alerts, handlePermissions } from "../../../utility/regex";
 import { PERMISSIONS } from "react-native-permissions";
@@ -16,6 +15,7 @@ import { useHelper } from "../../../hooks/useHelper";
 import { useIsFocused } from "@react-navigation/native";
 import { RNCamera } from "react-native-camera";
 import { Camera, useCameraDevices } from "react-native-vision-camera";
+import { Svg, Defs, Rect, Mask, Circle } from "react-native-svg";
 import FaceDetection, {
   FaceDetectorContourMode,
   FaceDetectorLandmarkMode,
@@ -25,24 +25,14 @@ import Icons from "../../../utility/icons";
 import colors from "../../../utility/colors";
 import FastImage from "react-native-fast-image";
 import BottomButton from "../../../components/buttons/BottomButton";
-import { Svg, Defs, Rect, Mask, Circle } from "react-native-svg";
+import ProfileServices from "../../../services/ProfileServices";
 
-const UploadSelfie = ({ navigation, route }) => {
+const UploadSelfie = ({ reverify, navigation, route }) => {
   const dispatch = useDispatch();
-  const {} = useHelper();
-  const {
-    firstName,
-    lastName,
-    dob,
-    gender,
-    selfie,
-    picture,
-    video,
-    religion,
-    profilePictures,
-  } = useSelector(store => store.NewOnBoardingReducer);
-
   const isFocused = useIsFocused();
+  const { handleStatusCode } = useHelper();
+  const { token } = useSelector(store => store.userReducer);
+  const { selfie } = useSelector(store => store.NewOnBoardingReducer);
 
   const FDOptions = {
     landmarkMode: FaceDetectorLandmarkMode.ALL,
@@ -52,9 +42,7 @@ const UploadSelfie = ({ navigation, route }) => {
   };
 
   const cameraRef = useRef(null);
-  const [loading, setLoading] = useState(false);
   const [imageUri, setImageUri] = useState(null);
-  const [mediaOptions, setMediaOptions] = useState(false);
   const [selfieObj, setSelfieObj] = useState(null);
   const [showCamera, setShowCamera] = useState(false);
   const [flashMode, setFlashMode] = useState("off");
@@ -96,49 +84,33 @@ const UploadSelfie = ({ navigation, route }) => {
     }
   }, []);
 
-  useEffect(() => {}, [imageUri]);
+  useEffect(() => {
+    if (reverify && selfieObj) {
+      handleUploadSelfie();
+    }
+  }, [selfieObj]);
 
-  const handleCameraMedia = async (state, result) => {
-    try {
-      if (result == "granted") {
-        const options = {
-          mediaType: "photo",
-          quality: 0.4,
-          cameraType: "front",
-        };
+  const handleUploadSelfie = () => {
+    if (selfieObj == null) {
+      alerts("error", "Please upload selfie.");
+    } else {
+      let formData = new FormData();
+      formData.append("verificationPicture", selfieObj);
 
-        await launchCamera(options, res => {
-          if (res.errorCode == "others") {
-            alerts(
-              "error",
-              res.errorMessage
-                ? res.errorMessage
-                : "Camera support is not available on your device."
-            );
-          } else if (res.didCancel === true) {
-          } else if (
-            res?.assets[0]?.height == 0 ||
-            res?.assets[0]?.width == 0
-          ) {
-            alerts("error", "Please select jpeg/png format images.");
-          } else {
-            setMediaOptions(state);
-            let obj = {};
-            obj = {
-              name: res?.assets[0]?.fileName,
-              type: res?.assets[0]?.type,
-              uri: res?.assets[0]?.uri,
-            };
-            setSelfieObj(obj);
-
-            setImageUri({
-              uri: res?.assets[0]?.uri,
+      ProfileServices.updateProfile(formData, token)
+        .then(res => {
+          handleStatusCode(res);
+          if (res.data.status >= 200 && res.data.status <= 299) {
+            dispatch({
+              type: "AUTH_USER",
+              payload: res.data.data.user,
             });
+
+            setSelfieObj(null);
+            alerts("success", res.data.message);
           }
-        });
-      }
-    } catch (err) {
-      console.log("camera err", err);
+        })
+        .catch(err => alerts("error", err?.message.toString()));
     }
   };
 
@@ -330,17 +302,25 @@ const UploadSelfie = ({ navigation, route }) => {
     <SafeAreaView
       style={{ flex: 1, padding: 20, backgroundColor: colors.white }}
     >
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <FastImage
-          resizeMode="contain"
-          style={{ width: 20, height: 30 }}
-          source={require("../../../assets/iconimages/arrow-back.png")}
-        />
-      </TouchableOpacity>
+      {reverify ? null : (
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <FastImage
+            resizeMode="contain"
+            style={{ width: 20, height: 30 }}
+            source={require("../../../assets/iconimages/arrow-back.png")}
+          />
+        </TouchableOpacity>
+      )}
       <View style={{ marginTop: "8%" }}>
-        <Text style={styles.heading}>Profile Verification</Text>
+        <Text style={styles.heading}>
+          {reverify
+            ? "Profile reverification required"
+            : "Profile Verification"}
+        </Text>
         <Text style={styles.lightText}>
-          Building trust, one selfie at a time.
+          {reverify
+            ? "Please resubmit a selfie so that your profile can be verified."
+            : "Building trust, one selfie at a time."}
         </Text>
         <View style={{ width: "100%", marginVertical: "5%" }}></View>
         {selfie === null && imageUri === null ? (
@@ -388,7 +368,7 @@ const UploadSelfie = ({ navigation, route }) => {
           </TouchableOpacity>
         )}
       </View>
-      <BottomButton loading={loading} onPress={() => continuePress()} />
+      {reverify ? null : <BottomButton onPress={() => continuePress()} />}
     </SafeAreaView>
   );
 };
