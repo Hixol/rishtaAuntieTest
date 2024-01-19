@@ -60,9 +60,9 @@ class CallService {
     this.executed = false;
   }
 
-  getStore = storeFromApp => {
+  getStore(storeFromApp) {
     store = storeFromApp;
-  };
+  }
 
   init() {
     ConnectyCube.videochat.onCallListener = this._onCallListener.bind(this);
