@@ -250,9 +250,9 @@ const SearchPreferences = props => {
     let body = {};
     if (type == "basic") {
       body = {
-        distance: "2000",
-        ageFrom: 0,
-        ageTo: 0,
+        distance: "unlimited",
+        ageFrom: 18,
+        ageTo: 68,
         religion: null,
         familyOrigin: null,
         heightFrom: userData?.UserPreference?.heightFrom,
@@ -288,9 +288,9 @@ const SearchPreferences = props => {
         smoking: null,
         dietChoices: null,
         maritalHistory: null,
-        haveKids: false,
-        wantKids: false,
-        willingToRelocate: false,
+        haveKids: null,
+        wantKids: null,
+        willingToRelocate: null,
       };
     }
 

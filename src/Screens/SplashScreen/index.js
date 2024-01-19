@@ -45,6 +45,7 @@ const SplashScreen = props => {
         ((token !== null || token !== "" || token !== undefined) &&
           status === "ACTIVE") ||
         status === "COMPLETED" ||
+        status === "FAILED" ||
         status === "INCOMPLETE"
       ) {
         props.navigation.dispatch(

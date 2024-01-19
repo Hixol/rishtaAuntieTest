@@ -105,7 +105,7 @@ const Settings = props => {
                 setMediaOptions(true);
               }
               if (
-                data.UserSetting.isSubscribed &&
+                !data.UserSetting.isSubscribed &&
                 data.lastLogDailyProfilesLimit &&
                 !isProfileTimerFinished?.showtimer
               ) {
