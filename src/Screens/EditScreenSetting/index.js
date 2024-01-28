@@ -234,15 +234,18 @@ const EditScreenSetting = props => {
       setSelectedHeight(userData?.Profile?.height);
     } else if (type === "Family Origin") {
       let arr = [];
-      arr = {
-        ...arr,
-        name: edit
-          ? userData?.Profile?.familyOrigin
-          : preferenceEdit
-          ? userData?.UserPreference?.familyOrigin
-          : null,
-      };
-      setSelectedFO([arr]);
+      if (preferenceEdit) {
+        userData?.UserPreference?.familyOrigin.map(el => {
+          arr.push({ name: el });
+        });
+        setSelectedFO(arr);
+      } else {
+        arr = {
+          ...arr,
+          name: edit ? userData?.Profile?.familyOrigin : null,
+        };
+        setSelectedFO([arr]);
+      }
     } else if (type === "Community") {
       let arr;
       arr = {
@@ -570,9 +573,31 @@ const EditScreenSetting = props => {
       filtered = [];
     }
   };
+
+  const onPressAll = () => {
+    setSelectedFO(
+      allProfileValues?.familyOrigin.filter(el => el.name != "Not Specified")
+    );
+  };
+
   const selectFO = (item, index) => {
     if (preferenceEdit) {
-      setSelectedFO([item]);
+      if (item.name == "Not Specified") {
+        setSelectedFO([item]);
+      } else {
+        setSelectedFO(prevState => {
+          if (prevState.length == 1 && prevState[0].name == "Not Specified") {
+            // replace not specified value
+            return [item];
+          } else if (prevState.some(el => el.name.includes(item.name))) {
+            // remove if already exist
+            return prevState.filter(el => el.name != item.name);
+          } else {
+            // append new value
+            return [...prevState, item];
+          }
+        });
+      }
     } else {
       let arr = [...selectedFO];
 
@@ -900,6 +925,7 @@ const EditScreenSetting = props => {
   };
 
   const updateProfile = async () => {
+    let foArr = selectedFO.map(el => el.name);
     if (edit) {
       let formData = new FormData();
       if (type === "Prompts Pool") {
@@ -1095,7 +1121,7 @@ const EditScreenSetting = props => {
           break;
         case "Family Origin":
           sendType = "familyOrigin";
-          value = filteredFO[0]?.name;
+          value = foArr;
           break;
         case "Community":
           sendType = "community";
@@ -1729,6 +1755,19 @@ const EditScreenSetting = props => {
                     placeholder={placeholder}
                     type={type}
                   />
+                  <Text
+                    onPress={onPressAll}
+                    style={{
+                      fontFamily: "Inter-SemiBold",
+                      color: colors.primaryPink,
+                      alignSelf: "flex-end",
+                      fontSize: 16,
+                      marginRight: 10,
+                      marginBottom: -14,
+                    }}
+                  >
+                    Select all
+                  </Text>
                   <View style={styles.scrollContainer}>
                     <View style={{ height: windowHeight * 0.6 }}>
                       <ScrollView
