@@ -39,7 +39,7 @@ const EditScreenSetting = props => {
   const [tagline, setTagline] = useState("");
   const [selctedVibe, setSelectedVibe] = useState([]);
   const [selectedDenomination, setSelectedDenomination] = useState(null);
-  const [selectedPray, setSelectedPray] = useState(null);
+  const [selectedPray, setSelectedPray] = useState([]);
   const [selectedMH, setSelectedMH] = useState(null);
   const [selectedHK, setSelectedHK] = useState(null);
   const [selectedWK, setSelectedWK] = useState(null);
@@ -235,10 +235,15 @@ const EditScreenSetting = props => {
     } else if (type === "Family Origin") {
       let arr = [];
       if (preferenceEdit) {
-        userData?.UserPreference?.familyOrigin.map(el => {
-          arr.push({ name: el });
-        });
-        setSelectedFO(arr);
+        if (
+          userData?.UserPreference &&
+          Array.isArray(userData?.UserPreference?.familyOrigin)
+        ) {
+          userData?.UserPreference?.familyOrigin.forEach(el => {
+            arr.push({ name: el });
+          });
+          setSelectedFO(arr);
+        }
       } else {
         arr = {
           ...arr,
@@ -248,23 +253,42 @@ const EditScreenSetting = props => {
       }
     } else if (type === "Community") {
       let arr;
-      arr = {
-        ...arr,
-        name: edit
-          ? userData?.Profile?.community
-          : preferenceEdit
-          ? userData?.UserPreference?.community
-          : null,
-      };
-      setSelectedCommunity([arr]);
-    } else if (type === "Languages") {
       if (preferenceEdit) {
-        let arr = [];
+        if (userData?.UserPreference && userData?.UserPreference?.community) {
+          arr = {
+            ...arr,
+            name: userData?.UserPreference?.community,
+          };
+          setSelectedCommunity([arr]);
+        } else {
+          // Handle the case where userData or UserPreference or community is not available
+        }
+      } else {
         arr = {
           ...arr,
-          name: userData?.UserPreference?.languagesSpoken,
+          name: edit
+            ? userData?.Profile?.community
+            : preferenceEdit
+            ? userData?.UserPreference?.community
+            : null,
         };
-        setSelectedLanguage([arr]);
+        setSelectedCommunity([arr]);
+      }
+    } else if (type === "Languages") {
+      let arr;
+      if (preferenceEdit) {
+        if (
+          userData?.UserPreference &&
+          userData?.UserPreference?.languagesSpoken
+        ) {
+          arr = {
+            ...arr,
+            name: userData?.UserPreference?.languagesSpoken,
+          };
+          setSelectedLanguage([arr]);
+        } else {
+          // Handle the case where userData or UserPreference or languagesSpoken is not available
+        }
       } else {
         let copy = edit
           ? userData?.UserLanguages
@@ -313,15 +337,21 @@ const EditScreenSetting = props => {
       }
     } else if (type === "Pray") {
       let arr = [];
-      arr = {
-        ...arr,
-        name: edit
-          ? userData?.Profile?.iPray
-          : preferenceEdit
-          ? userData?.UserPreference?.theyPray
-          : null,
-      };
-      setSelectedPray(arr);
+      if (preferenceEdit) {
+        // Check if UserPreference and theyPray are available and it is an array
+        if (
+          userData?.UserPreference &&
+          Array.isArray(userData?.UserPreference?.theyPray)
+        ) {
+          // Iterate through the theyPray array and push items to the arr
+          userData?.UserPreference?.theyPray.forEach(prayItem => {
+            arr.push({
+              name: prayItem, // Assuming theyPray contains strings, adjust if needed
+            });
+          });
+          setSelectedPray(arr);
+        }
+      }
     } else if (type === "Drink") {
       let arr = [];
       arr = {
@@ -347,13 +377,19 @@ const EditScreenSetting = props => {
       };
       setSelectedDrink(arr);
     } else if (type === "Smoke") {
+      let arr;
       if (preferenceEdit) {
-        let arr = [];
-        arr = {
-          ...arr,
-          name: userData?.UserPreference?.smoking,
-        };
-        setSelectedSmoke([arr]);
+        if (
+          userData?.UserPreference &&
+          Array.isArray(userData?.UserPreference?.smoking)
+        ) {
+          arr =
+            userData?.UserPreference?.smoking.map(item => ({ name: item })) ||
+            [];
+          setSelectedSmoke(arr);
+        } else {
+          // Handle the case where userData or UserPreference or smoking is not available
+        }
       } else {
         let copy = edit
           ? userData?.UserSmokes
@@ -380,13 +416,20 @@ const EditScreenSetting = props => {
         }
       }
     } else if (type === "Diet") {
+      let arr;
       if (preferenceEdit) {
-        let arr = [];
-        arr = {
-          ...arr,
-          name: userData?.UserPreference?.dietChoices,
-        };
-        setSelectedDiet([arr]);
+        if (
+          userData?.UserPreference &&
+          Array.isArray(userData?.UserPreference?.dietChoices)
+        ) {
+          arr =
+            userData?.UserPreference?.dietChoices.map(item => ({
+              name: item,
+            })) || [];
+          setSelectedDiet(arr);
+        } else {
+          // Handle the case where userData or UserPreference or smoking is not available
+        }
       } else {
         let copy = edit
           ? userData?.UserDietChoices
@@ -635,38 +678,29 @@ const EditScreenSetting = props => {
       }
     }
   };
+  const onPressAllLanguages = () => {
+    setSelectedLanguage(
+      allProfileValues?.language.filter(el => el.name != "Other")
+    );
+  };
+
   const selectLanguage = (item, index) => {
     if (preferenceEdit) {
-      setSelectedLanguage([item]);
-    } else {
-      let arr = [...selectedLanguage];
-
-      let check2 = arr.some(item1 => {
-        return item1?.name === item?.name;
-      });
-
-      let check = arr.some(item1 => {
-        return item1?.name === "Other";
-      });
-      if (check && item?.name !== "Other") {
-        arr = [];
-        arr.push(item);
-        setSelectedLanguage(arr);
-      } else if (check && item?.name === "Other") {
-        arr = [];
-        setSelectedLanguage(arr);
-      } else if (item?.name === "Other" && !check) {
-        arr = [];
-        arr.push(item);
-        setSelectedLanguage(arr);
-      } else if (!check && item?.name !== "Other" && !check2) {
-        arr.push(item);
-        setSelectedLanguage(arr);
-      } else if (!check && item?.name !== "Other" && check2) {
-        let filtered = arr.filter(item1 => {
-          return item1?.name !== item?.name;
+      if (item.name == "Other") {
+        setSelectedLanguage([item]);
+      } else {
+        setSelectedLanguage(prevState => {
+          if (prevState.length == 1 && prevState[0].name == "Other") {
+            // replace not specified value
+            return [item];
+          } else if (prevState.some(el => el.name.includes(item.name))) {
+            // remove if already exist
+            return prevState.filter(el => el.name != item.name);
+          } else {
+            // append new value
+            return [...prevState, item];
+          }
         });
-        setSelectedLanguage(filtered);
       }
     }
   };
@@ -708,9 +742,30 @@ const EditScreenSetting = props => {
   }) => {
     setVisibleScrollBarHeight(height);
   };
+
+  const onPressAllCommunity = () => {
+    setSelectedCommunity(
+      allProfileValues?.community.filter(el => el.name != "Not Specified")
+    );
+  };
   const selectCommunity = (item, index) => {
     if (preferenceEdit) {
-      setSelectedCommunity([item]);
+      if (item.name == "Not Specified") {
+        setSelectedCommunity([item]);
+      } else {
+        setSelectedCommunity(prevState => {
+          if (prevState.length == 1 && prevState[0].name == "Not Specified") {
+            // replace not specified value
+            return [item];
+          } else if (prevState.some(el => el.name.includes(item.name))) {
+            // remove if already exist
+            return prevState.filter(el => el.name != item.name);
+          } else {
+            // append new value
+            return [...prevState, item];
+          }
+        });
+      }
     } else {
       let arr = [...selectedCommunity];
 
@@ -812,15 +867,59 @@ const EditScreenSetting = props => {
   const handleSliderMarriageValue = (label, val) => {
     setSliderMarriageVal(val);
   };
+
+  // const selectPray = (item, index) => {
+  //   console.log("PPPP", item);
+  //   setSelectedPray(item);
+  // };
+
   const selectPray = (item, index) => {
-    setSelectedPray(item);
+    if (preferenceEdit) {
+      setSelectedPray(prevState => {
+        if (prevState.some(el => el.name.includes(item.name))) {
+          // remove if already exist
+          return prevState.filter(el => el.name != item.name);
+        } else {
+          // append new value
+          return [...prevState, item];
+        }
+      });
+    }
   };
+  console.log("Pray", selectedPray);
+
   const selectDrink = (item, index) => {
     setSelectedDrink(item);
   };
   const selectSmoke = (item, index) => {
     if (preferenceEdit) {
-      setSelectedSmoke([item]);
+      setSelectedSmoke(prevState => {
+        const updatedState = [...(prevState || [])];
+
+        // Check if "None" is selected
+        const isNoneSelected = updatedState.some(el => el.name === "None");
+
+        if (item.name === "None") {
+          // If "None" is selected, clear the array and add only "None"
+          return [item];
+        }
+
+        if (isNoneSelected) {
+          // If "None" is already selected, unselect it and select the new option
+          return [item];
+        }
+
+        // Check if the new option is already selected
+        const isItemSelected = updatedState.some(el => el.name === item.name);
+
+        if (isItemSelected) {
+          // If selected, remove it from the array
+          return updatedState.filter(el => el.name !== item.name);
+        } else {
+          // If not selected, add it to the array
+          return [...updatedState, item];
+        }
+      });
     } else {
       let arr = [...selectedSmoke];
 
@@ -855,7 +954,33 @@ const EditScreenSetting = props => {
   };
   const selectDiet = (item, index) => {
     if (preferenceEdit) {
-      setSelectedDiet([item]);
+      setSelectedDiet(prevState => {
+        const updatedState = [...(prevState || [])];
+
+        // Check if "None" is selected
+        const isNoneSelected = updatedState.some(el => el.name === "Anything");
+
+        if (item.name === "Anything") {
+          // If "None" is selected, clear the array and add only "None"
+          return [item];
+        }
+
+        if (isNoneSelected) {
+          // If "None" is already selected, unselect it and select the new option
+          return [item];
+        }
+
+        // Check if the new option is already selected
+        const isItemSelected = updatedState.some(el => el.name === item.name);
+
+        if (isItemSelected) {
+          // If selected, remove it from the array
+          return updatedState.filter(el => el.name !== item.name);
+        } else {
+          // If not selected, add it to the array
+          return [...updatedState, item];
+        }
+      });
     } else {
       let arr = [...selectedDiet];
 
@@ -925,7 +1050,13 @@ const EditScreenSetting = props => {
   };
 
   const updateProfile = async () => {
+    console.log("FO:", selectedFO);
+    console.log("Community:", selectedCommunity);
     let foArr = selectedFO.map(el => el.name);
+    let communityArr = selectedCommunity.map(el => el.name);
+    let langArr = selectedLanguage.map(el => el.name);
+    let smokeArr = selectedSmoke.map(el => el.name);
+    let dietArr = selectedDiet.map(el => el.name);
     if (edit) {
       let formData = new FormData();
       if (type === "Prompts Pool") {
@@ -1001,7 +1132,7 @@ const EditScreenSetting = props => {
             break;
           case "Languages":
             selectedLanguage.map((x, index) => {
-              formData.append(`languages[]`, x?.name);
+              formData.append(`languages[]`, x[0]?.name);
             });
             break;
           case "Denomination":
@@ -1077,6 +1208,7 @@ const EditScreenSetting = props => {
         await updateUser(formData, token);
         props.navigation.goBack();
       }
+      formData.append(sendType, value);
     } else if (preferenceEdit) {
       let filteredCommuntiy;
       let filteredFO;
@@ -1125,11 +1257,11 @@ const EditScreenSetting = props => {
           break;
         case "Community":
           sendType = "community";
-          value = filteredCommuntiy[0]?.name;
+          value = communityArr;
           break;
         case "Languages":
           sendType = "languagesSpoken";
-          value = selectedLanguage[0]?.name;
+          value = langArr;
           break;
         case "Denomination":
           sendType = "religiousDenomination";
@@ -1146,11 +1278,11 @@ const EditScreenSetting = props => {
           break;
         case "Smoke":
           sendType = "smoking";
-          value = selectedSmoke[0]?.name;
+          value = smokeArr;
           break;
         case "Diet":
           sendType = "dietChoices";
-          value = selectedDiet[0]?.name;
+          value = dietArr;
           break;
         case "Marital History":
           sendType = "maritalHistory";
@@ -1868,6 +2000,20 @@ const EditScreenSetting = props => {
                   />
                   <View style={styles.scrollContainer}>
                     <View style={{ height: windowHeight * 0.6 }}>
+                      <Text
+                        onPress={onPressAllCommunity}
+                        style={{
+                          fontFamily: "Inter-SemiBold",
+                          color: colors.primaryPink,
+                          alignSelf: "flex-end",
+                          fontSize: 16,
+                          marginRight: 10,
+                          marginBottom: -14,
+                        }}
+                      >
+                        Select all
+                      </Text>
+
                       <ScrollView
                         onContentSizeChange={onContentSizeChange}
                         onLayout={onLayout}
@@ -1967,6 +2113,19 @@ const EditScreenSetting = props => {
                   />
                   <View style={styles.scrollContainer}>
                     <View style={{ height: windowHeight * 0.6 }}>
+                      <Text
+                        onPress={onPressAllLanguages}
+                        style={{
+                          fontFamily: "Inter-SemiBold",
+                          color: colors.primaryPink,
+                          alignSelf: "flex-end",
+                          fontSize: 16,
+                          marginRight: 10,
+                          marginBottom: -14,
+                        }}
+                      >
+                        Select all
+                      </Text>
                       <ScrollView
                         onContentSizeChange={onContentSizeChange}
                         onLayout={onLayout}
@@ -2256,41 +2415,41 @@ const EditScreenSetting = props => {
                   />
                 </View>
               ) : type === "Pray" ? (
-                prayArray.map((item, index) => {
-                  let findIndex = prayArray.findIndex((item, index) => {
-                    return item?.name === selectedPray?.name;
-                  });
-                  return (
-                    <NewOnBoardingDesign
-                      mainOnPress={() => selectPray(item, index)}
-                      findIndex={findIndex}
-                      index={index}
-                      item={item}
-                      multiSelect={false}
-                      nameorid={"name"}
-                      search={false}
-                      radio={true}
-                    />
-                  );
-                })
-              ) : type === "Drink" ? (
-                drinkArray.map((item, index) => {
-                  let findIndex = drinkArray.findIndex((item, index) => {
-                    return item?.name === selectedDrink?.name;
-                  });
-                  return (
-                    <NewOnBoardingDesign
-                      mainOnPress={() => selectDrink(item, index)}
-                      findIndex={findIndex}
-                      index={index}
-                      item={item}
-                      multiSelect={false}
-                      nameorid={"name"}
-                      search={false}
-                      icon={true}
-                    />
-                  );
-                })
+                <>
+                  {/* <Text
+                    onPress={onPressAllPray}
+                    style={{
+                      fontFamily: "Inter-SemiBold",
+                      color: colors.primaryPink,
+                      alignSelf: "flex-end",
+                      fontSize: 16,
+                      marginRight: 10,
+                      marginBottom: 10,
+                    }}
+                  >
+                    Select all
+                  </Text> */}
+                  {prayArray.map((item, index) => {
+                    let findIndex = prayArray.map(newItem => {
+                      return selectedPray.findIndex(
+                        item => item?.name === newItem?.name
+                      );
+                    });
+                    return (
+                      <NewOnBoardingDesign
+                        key={index}
+                        mainOnPress={() => selectPray(item, index)}
+                        findIndex={findIndex}
+                        index={index}
+                        item={item}
+                        multiSelect={false}
+                        nameorid={"name"}
+                        search={false}
+                        radio={true}
+                      />
+                    );
+                  })}
+                </>
               ) : type === "Smoke" ? (
                 smokeArray.map((item, index) => {
                   let findIndex = selectedSmoke.map(newItem => {
