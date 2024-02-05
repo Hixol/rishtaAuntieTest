@@ -46,7 +46,7 @@ const EditScreenSetting = props => {
   const [selectedRelocate, setSelectedRelocate] = useState(null);
   const [distance, setDistance] = useState(null);
   let [distanceSlider, setDistanceSlider] = useState();
-  const [selectedDrink, setSelectedDrink] = useState(null);
+  const [selectedDrink, setSelectedDrink] = useState([]);
   const [selectedSmoke, setSelectedSmoke] = useState([]);
   const [selectedDiet, setSelectedDiet] = useState([]);
   const [selectedPP, setSelectedPP] = useState([]);
@@ -353,28 +353,39 @@ const EditScreenSetting = props => {
         }
       }
     } else if (type === "Drink") {
-      let arr = [];
-      arr = {
-        ...arr,
-        name: edit
-          ? userData?.Profile?.iDrink
+      let arr;
+      if (preferenceEdit) {
+        // Check if UserPreference and theyPray are available and it is an array
+        if (
+          userData?.UserPreference &&
+          Array.isArray(userData?.UserPreference?.drinking)
+        ) {
+          // Iterate through the drinking array and push items to the arr
+          userData?.UserPreference?.drinking.forEach(drinkItem => {
+            arr.push({
+              name: drinkItem, // Assuming drinking contains strings, adjust if needed
+              icon: getDrinkIcon(drinkItem), // Assuming you have a function to get the corresponding icon
+            });
+          });
+          setSelectedDrink(arr);
+        }
+      } else {
+        let copy = edit
+          ? userData?.UserDrinks
           : preferenceEdit
           ? userData?.UserPreference?.drinking
-          : null,
-        icon: edit
-          ? userData?.Profile?.iDrink === "I Drink"
-            ? require("../../assets/iconimages/yes-drink.png")
-            : userData?.Profile?.iDrink === "Sometimes, Socially"
-            ? require("../../assets/iconimages/socially-drink.png")
-            : require("../../assets/iconimages/no-drinks.png")
-          : preferenceEdit
-          ? userData?.UserPreference?.drinking === "I Drink"
-            ? require("../../assets/iconimages/yes-drink.png")
-            : userData?.UserPreference?.drinking === "Sometimes, Socially"
-            ? require("../../assets/iconimages/socially-drink.png")
-            : require("../../assets/iconimages/no-drinks.png")
-          : null,
-      };
+          : null;
+        if (copy !== null && copy?.length > 0) {
+          copy = copy.map(drinkObj => {
+            return {
+              name: drinkObj?.choice,
+              icon: getDrinkIcon(drinkObj?.choice), // Assuming you have a function to get the corresponding icon
+            };
+          });
+          setSelectedDrink(copy);
+        }
+      }
+
       setSelectedDrink(arr);
     } else if (type === "Smoke") {
       let arr;
@@ -618,9 +629,7 @@ const EditScreenSetting = props => {
   };
 
   const onPressAll = () => {
-    setSelectedFO(
-      allProfileValues?.familyOrigin.filter(el => el.name != "Not Specified")
-    );
+    setSelectedFO(allProfileValues?.familyOrigin.filter(el => el.name != ""));
   };
 
   const selectFO = (item, index) => {
@@ -679,9 +688,7 @@ const EditScreenSetting = props => {
     }
   };
   const onPressAllLanguages = () => {
-    setSelectedLanguage(
-      allProfileValues?.language.filter(el => el.name != "Other")
-    );
+    setSelectedLanguage(allProfileValues?.language.filter(el => el.name != ""));
   };
 
   const selectLanguage = (item, index) => {
@@ -745,7 +752,7 @@ const EditScreenSetting = props => {
 
   const onPressAllCommunity = () => {
     setSelectedCommunity(
-      allProfileValues?.community.filter(el => el.name != "Not Specified")
+      allProfileValues?.community.filter(el => el.name != "")
     );
   };
   const selectCommunity = (item, index) => {
@@ -872,7 +879,9 @@ const EditScreenSetting = props => {
   //   console.log("PPPP", item);
   //   setSelectedPray(item);
   // };
-
+  const onPressAllPray = () => {
+    setSelectedPray(prayArray.filter(el => el.name !== ""));
+  };
   const selectPray = (item, index) => {
     if (preferenceEdit) {
       setSelectedPray(prevState => {
@@ -888,8 +897,76 @@ const EditScreenSetting = props => {
   };
   console.log("Pray", selectedPray);
 
+  const onPressAllDrink = () => {
+    setSelectedPray(drinkArray.filter(el => el.name !== ""));
+  };
   const selectDrink = (item, index) => {
-    setSelectedDrink(item);
+    if (preferenceEdit) {
+      setSelectedDrink(prevState => {
+        const updatedState = [...(prevState || [])];
+
+        // Check if "I Don't Drink" is selected
+        const isNoDrinkSelected = updatedState.some(
+          el => el.name === "I Don't Drink"
+        );
+
+        if (item.name === "I Don't Drink") {
+          // If "I Don't Drink" is selected, clear the array and add only "I Don't Drink"
+          return [item];
+        }
+
+        if (isNoDrinkSelected) {
+          // If "I Don't Drink" is already selected, unselect it and select the new option
+          return [item];
+        }
+
+        // Check if the new option is already selected
+        const isItemSelected = updatedState.some(el => el.name === item.name);
+
+        if (isItemSelected) {
+          // If selected, remove it from the array
+          return updatedState.filter(el => el.name !== item.name);
+        } else {
+          // If not selected, add it to the array
+          return [...updatedState, item];
+        }
+      });
+    } else {
+      let arr = [...selectedDrink];
+
+      let check2 = arr.some(item1 => {
+        return item1?.name === item?.name;
+      });
+
+      let check = arr.some(item1 => {
+        return item1?.name === "I Don't Drink";
+      });
+
+      if (check && item?.name !== "I Don't Drink") {
+        arr = [];
+        arr.push(item);
+        setSelectedDrink(arr);
+      } else if (check && item?.name === "I Don't Drink") {
+        arr = [];
+        setSelectedDrink(arr);
+      } else if (item?.name === "I Don't Drink" && !check) {
+        arr = [];
+        arr.push(item);
+        setSelectedDrink(arr);
+      } else if (!check && item?.name !== "I Don't Drink" && !check2) {
+        arr.push(item);
+        setSelectedDrink(arr);
+      } else if (!check && item?.name !== "I Don't Drink" && check2) {
+        let filtered = arr.filter(item1 => {
+          return item1?.name !== item?.name;
+        });
+        setSelectedDrink(filtered);
+      }
+    }
+  };
+
+  const onPressAllSmoke = () => {
+    setSelectedSmoke(smokeArray.filter(el => el.name !== ""));
   };
   const selectSmoke = (item, index) => {
     if (preferenceEdit) {
@@ -951,6 +1028,9 @@ const EditScreenSetting = props => {
         setSelectedSmoke(filtered);
       }
     }
+  };
+  const onPressAllDiet = () => {
+    setSelectedDiet(dietArray.filter(el => el.name !== ""));
   };
   const selectDiet = (item, index) => {
     if (preferenceEdit) {
@@ -1057,6 +1137,7 @@ const EditScreenSetting = props => {
     let langArr = selectedLanguage.map(el => el.name);
     let smokeArr = selectedSmoke.map(el => el.name);
     let dietArr = selectedDiet.map(el => el.name);
+    let prayArr = selectedPray.map(el => el.name);
     if (edit) {
       let formData = new FormData();
       if (type === "Prompts Pool") {
@@ -1270,7 +1351,7 @@ const EditScreenSetting = props => {
 
         case "Pray":
           sendType = "theyPray";
-          value = selectedPray?.name;
+          value = prayArr;
           break;
         case "Drink":
           sendType = "drinking";
@@ -2321,7 +2402,7 @@ const EditScreenSetting = props => {
                               findIndex={findIndex}
                               index={index}
                               item={item}
-                              multiSelect={false}
+                              multiSelect={true}
                               nameorid={"name"}
                               search={false}
                               radio={true}
@@ -2416,7 +2497,7 @@ const EditScreenSetting = props => {
                 </View>
               ) : type === "Pray" ? (
                 <>
-                  {/* <Text
+                  <Text
                     onPress={onPressAllPray}
                     style={{
                       fontFamily: "Inter-SemiBold",
@@ -2428,10 +2509,10 @@ const EditScreenSetting = props => {
                     }}
                   >
                     Select all
-                  </Text> */}
+                  </Text>
                   {prayArray.map((item, index) => {
-                    let findIndex = prayArray.map(newItem => {
-                      return selectedPray.findIndex(
+                    let findIndex = selectedPray.map(newItem => {
+                      return prayArray.findIndex(
                         item => item?.name === newItem?.name
                       );
                     });
@@ -2442,7 +2523,7 @@ const EditScreenSetting = props => {
                         findIndex={findIndex}
                         index={index}
                         item={item}
-                        multiSelect={false}
+                        multiSelect={true}
                         nameorid={"name"}
                         search={false}
                         radio={true}
@@ -2450,46 +2531,114 @@ const EditScreenSetting = props => {
                     );
                   })}
                 </>
+              ) : type === "Drink" ? (
+                <>
+                  <Text
+                    onPress={onPressAllDrink}
+                    style={{
+                      fontFamily: "Inter-SemiBold",
+                      color: colors.primaryPink,
+                      alignSelf: "flex-end",
+                      fontSize: 16,
+                      marginRight: 10,
+                      marginBottom: 10,
+                    }}
+                  >
+                    Select all
+                  </Text>
+                  {drinkArray.map((item, index) => {
+                    let findIndex = (selectedDrink || []).map(newItem => {
+                      return drinkArray.findIndex(
+                        drinkItem => drinkItem?.name === newItem?.name
+                      );
+                    });
+                    return (
+                      <NewOnBoardingDesign
+                        key={index}
+                        mainOnPress={() => selectDrink(item, index)}
+                        findIndex={findIndex}
+                        index={index}
+                        item={item}
+                        multiSelect={true}
+                        nameorid={"name"}
+                        search={false}
+                        icon={true}
+                      />
+                    );
+                  })}
+                </>
               ) : type === "Smoke" ? (
-                smokeArray.map((item, index) => {
-                  let findIndex = selectedSmoke.map(newItem => {
-                    return smokeArray.findIndex(
-                      item => item?.name === newItem?.name
+                <>
+                  <Text
+                    onPress={onPressAllSmoke}
+                    style={{
+                      fontFamily: "Inter-SemiBold",
+                      color: colors.primaryPink,
+                      alignSelf: "flex-end",
+                      fontSize: 16,
+                      marginRight: 10,
+                      marginBottom: 10,
+                    }}
+                  >
+                    Select all
+                  </Text>
+                  {smokeArray.map((item, index) => {
+                    let findIndex = selectedSmoke.map(newItem => {
+                      return smokeArray.findIndex(
+                        smokeItem => smokeItem?.name === newItem?.name
+                      );
+                    });
+                    return (
+                      <NewOnBoardingDesign
+                        key={index}
+                        mainOnPress={() => selectSmoke(item, index)}
+                        findIndex={findIndex}
+                        index={index}
+                        item={item}
+                        multiSelect={true}
+                        nameorid={"name"}
+                        search={false}
+                        icon={true}
+                      />
                     );
-                  });
-                  return (
-                    <NewOnBoardingDesign
-                      mainOnPress={() => selectSmoke(item, index)}
-                      findIndex={findIndex}
-                      index={index}
-                      item={item}
-                      multiSelect={true}
-                      nameorid={"name"}
-                      search={false}
-                      icon={true}
-                    />
-                  );
-                })
+                  })}
+                </>
               ) : type === "Diet" ? (
-                dietArray.map((item, index) => {
-                  let findIndex = selectedDiet.map(newItem => {
-                    return dietArray.findIndex(
-                      item => item?.name === newItem?.name
+                <>
+                  <Text
+                    onPress={onPressAllDiet}
+                    style={{
+                      fontFamily: "Inter-SemiBold",
+                      color: colors.primaryPink,
+                      alignSelf: "flex-end",
+                      fontSize: 16,
+                      marginRight: 10,
+                      marginBottom: 10,
+                    }}
+                  >
+                    Select all
+                  </Text>
+                  {dietArray.map((item, index) => {
+                    let findIndex = selectedDiet.map(newItem => {
+                      return dietArray.findIndex(
+                        dietItem => dietItem?.name === newItem?.name
+                      );
+                    });
+                    return (
+                      <NewOnBoardingDesign
+                        key={index}
+                        mainOnPress={() => selectDiet(item, index)}
+                        findIndex={findIndex}
+                        index={index}
+                        item={item}
+                        multiSelect={true}
+                        nameorid={"name"}
+                        search={false}
+                        icon={true}
+                      />
                     );
-                  });
-                  return (
-                    <NewOnBoardingDesign
-                      mainOnPress={() => selectDiet(item, index)}
-                      findIndex={findIndex}
-                      index={index}
-                      item={item}
-                      multiSelect={true}
-                      nameorid={"name"}
-                      search={false}
-                      icon={true}
-                    />
-                  );
-                })
+                  })}
+                </>
               ) : type === "Marital History" ? (
                 mhArray.map((item, index) => {
                   let findIndex = mhArray.findIndex((item, index) => {
