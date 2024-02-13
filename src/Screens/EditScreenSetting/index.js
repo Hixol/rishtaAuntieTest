@@ -38,7 +38,7 @@ const EditScreenSetting = props => {
     props?.route?.params;
   const [tagline, setTagline] = useState("");
   const [selctedVibe, setSelectedVibe] = useState([]);
-  const [selectedDenomination, setSelectedDenomination] = useState(null);
+  const [selectedDenomination, setSelectedDenomination] = useState([]);
   const [selectedPray, setSelectedPray] = useState([]);
   const [selectedMH, setSelectedMH] = useState(null);
   const [selectedHK, setSelectedHK] = useState(null);
@@ -304,15 +304,26 @@ const EditScreenSetting = props => {
       }
     } else if (type === "Denomination") {
       let arr = [];
-      arr = {
-        ...arr,
-        name: edit
-          ? userData?.Profile?.denomination
-          : preferenceEdit
-          ? userData?.UserPreference?.religiousDenomination
-          : null,
-      };
-      setSelectedDenomination(arr);
+
+      if (preferenceEdit) {
+        if (
+          userData?.UserPreference &&
+          Array.isArray(userData?.UserPreference?.religiousDenomination)
+        ) {
+          userData?.UserPreference?.religiousDenomination.forEach(el => {
+            console.log("el", typeof el);
+            arr.push({ name: el });
+          });
+          setSelectedDenomination(arr);
+        }
+      } else {
+        arr = {
+          ...arr,
+          name: edit ? userData?.Profile?.denomination : null,
+        };
+
+        setSelectedDenomination([arr]);
+      }
     } else if (type === "Education Level") {
       let arr = [];
       arr = {
@@ -351,42 +362,49 @@ const EditScreenSetting = props => {
           });
           setSelectedPray(arr);
         }
-      }
-    } else if (type === "Drink") {
-      let arr;
-      if (preferenceEdit) {
-        // Check if UserPreference and theyPray are available and it is an array
-        if (
-          userData?.UserPreference &&
-          Array.isArray(userData?.UserPreference?.drinking)
-        ) {
-          // Iterate through the drinking array and push items to the arr
-          userData?.UserPreference?.drinking.forEach(drinkItem => {
-            arr.push({
-              name: drinkItem, // Assuming drinking contains strings, adjust if needed
-              icon: getDrinkIcon(drinkItem), // Assuming you have a function to get the corresponding icon
+      } else if (type === "Drink") {
+        let arr = [];
+        if (preferenceEdit) {
+          // Check if UserPreference and theyPray are available and it is an array
+          if (
+            userData?.UserPreference &&
+            Array.isArray(userData?.UserPreference?.drinking)
+          ) {
+            // Iterate through the drinking array and push items to the arr
+            userData?.UserPreference?.drinking.forEach(drinkItem => {
+              arr.push({
+                name: drinkItem, // Assuming drinking contains strings, adjust if needed
+                icon: getDrinkIcon(drinkItem), // Assuming you have a function to get the corresponding icon
+              });
             });
-          });
-          setSelectedDrink(arr);
+            setSelectedDrink(arr);
+          }
+        } else {
+          arr = {
+            ...arr,
+            name: edit
+              ? userData?.Profile?.iDrink
+              : preferenceEdit
+              ? userData?.UserPreference?.drinking
+              : null,
+            icon: edit
+              ? userData?.Profile?.iDrink === "I Drink"
+                ? require("../../assets/iconimages/yes-drink.png")
+                : userData?.Profile?.iDrink === "Sometimes, Socially"
+                ? require("../../assets/iconimages/socially-drink.png")
+                : require("../../assets/iconimages/no-drinks.png")
+              : preferenceEdit
+              ? userData?.UserPreference?.drinking === "I Drink"
+                ? require("../../assets/iconimages/yes-drink.png")
+                : userData?.UserPreference?.drinking === "Sometimes, Socially"
+                ? require("../../assets/iconimages/socially-drink.png")
+                : require("../../assets/iconimages/no-drinks.png")
+              : null,
+          };
         }
-      } else {
-        let copy = edit
-          ? userData?.UserDrinks
-          : preferenceEdit
-          ? userData?.UserPreference?.drinking
-          : null;
-        if (copy !== null && copy?.length > 0) {
-          copy = copy.map(drinkObj => {
-            return {
-              name: drinkObj?.choice,
-              icon: getDrinkIcon(drinkObj?.choice), // Assuming you have a function to get the corresponding icon
-            };
-          });
-          setSelectedDrink(copy);
-        }
-      }
 
-      setSelectedDrink(arr);
+        setSelectedDrink(arr);
+      }
     } else if (type === "Smoke") {
       let arr;
       if (preferenceEdit) {
@@ -711,10 +729,33 @@ const EditScreenSetting = props => {
       }
     }
   };
-  const selectDenomination = (item, index) => {
-    setSelectedDenomination(item);
+  const onPressAllDenomination = () => {
+    let arr = [];
+    userData?.UserPreference?.religion.map(rel => {
+      arr = allProfileValues?.denomination[rel].filter(el => el.name != "");
+    });
+
+    setSelectedDenomination(arr);
   };
 
+  const selectDenomination = (item, index) => {
+    if (item.name == "") {
+      setSelectedDenomination([item]);
+    } else {
+      setSelectedDenomination(prevState => {
+        if (prevState.length == 1 && prevState[0].name == "") {
+          // replace not specified value
+          return [item];
+        } else if (prevState?.some(el => el.name.includes(item.name))) {
+          // remove if already exist
+          return prevState.filter(el => el.name != item.name);
+        } else {
+          // append new value
+          return [...prevState, item];
+        }
+      });
+    }
+  };
   const [completeScrollBarHeight, setCompleteScrollBarHeight] = useState(1);
   const [visibleScrollBarHeight, setVisibleScrollBarHeight] = useState(0);
   const scrollIndicator = useRef(new Animated.Value(0)).current;
@@ -895,40 +936,18 @@ const EditScreenSetting = props => {
       });
     }
   };
-  console.log("Pray", selectedPray);
-
   const onPressAllDrink = () => {
-    setSelectedPray(drinkArray.filter(el => el.name !== ""));
+    setSelectedDrink(drinkArray.filter(el => el.name !== ""));
   };
   const selectDrink = (item, index) => {
     if (preferenceEdit) {
       setSelectedDrink(prevState => {
-        const updatedState = [...(prevState || [])];
-
-        // Check if "I Don't Drink" is selected
-        const isNoDrinkSelected = updatedState.some(
-          el => el.name === "I Don't Drink"
-        );
-
-        if (item.name === "I Don't Drink") {
-          // If "I Don't Drink" is selected, clear the array and add only "I Don't Drink"
-          return [item];
-        }
-
-        if (isNoDrinkSelected) {
-          // If "I Don't Drink" is already selected, unselect it and select the new option
-          return [item];
-        }
-
-        // Check if the new option is already selected
-        const isItemSelected = updatedState.some(el => el.name === item.name);
-
-        if (isItemSelected) {
-          // If selected, remove it from the array
-          return updatedState.filter(el => el.name !== item.name);
+        if (prevState.some(el => el.name === item.name)) {
+          // Remove if already exists
+          return prevState.filter(el => el.name !== item.name);
         } else {
-          // If not selected, add it to the array
-          return [...updatedState, item];
+          // Append new value
+          return [...prevState, item];
         }
       });
     } else {
@@ -964,7 +983,6 @@ const EditScreenSetting = props => {
       }
     }
   };
-
   const onPressAllSmoke = () => {
     setSelectedSmoke(smokeArray.filter(el => el.name !== ""));
   };
@@ -1138,6 +1156,8 @@ const EditScreenSetting = props => {
     let smokeArr = selectedSmoke.map(el => el.name);
     let dietArr = selectedDiet.map(el => el.name);
     let prayArr = selectedPray.map(el => el.name);
+    let drinkArr = selectedDrink.map(el => el.name);
+    let denArr = selectedDenomination.map(el => el.name);
     if (edit) {
       let formData = new FormData();
       if (type === "Prompts Pool") {
@@ -1346,7 +1366,7 @@ const EditScreenSetting = props => {
           break;
         case "Denomination":
           sendType = "religiousDenomination";
-          value = selectedDenomination?.name;
+          value = denArr;
           break;
 
         case "Pray":
@@ -1355,7 +1375,7 @@ const EditScreenSetting = props => {
           break;
         case "Drink":
           sendType = "drinking";
-          value = selectedDrink?.name;
+          value = drinkArr;
           break;
         case "Smoke":
           sendType = "smoking";
@@ -2334,7 +2354,7 @@ const EditScreenSetting = props => {
                               findIndex={findIndex}
                               index={index}
                               item={item}
-                              multiSelect={false}
+                              multiSelect={true}
                               nameorid={"name"}
                               search={false}
                               radio={true}
@@ -2382,55 +2402,77 @@ const EditScreenSetting = props => {
                         marginVertical: "5%",
                       }}
                     >
-                      {userData?.UserPreference?.religion != undefined &&
-                      allProfileValues?.denomination[
-                        userData?.UserPreference?.religion
-                      ].length > 0 ? (
-                        allProfileValues?.denomination[
-                          userData?.UserPreference?.religion
-                        ].map((item, index) => {
-                          let findIndex = allProfileValues?.denomination[
-                            userData?.UserPreference?.religion
-                          ]?.findIndex((item, index) => {
-                            return item?.name === selectedDenomination?.name;
-                          });
-                          return (
-                            <NewOnBoardingDesign
-                              mainOnPress={() =>
-                                selectDenomination(item, index)
-                              }
-                              findIndex={findIndex}
-                              index={index}
-                              item={item}
-                              multiSelect={true}
-                              nameorid={"name"}
-                              search={false}
-                              radio={true}
-                            />
-                          );
-                        })
-                      ) : (
-                        <View
-                          style={{
-                            width: "100%",
-                            height: 200,
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Text
-                            style={{
-                              fontSize: 20,
-                              fontFamily: "Inter-Medium",
-                              color: colors.black,
-                            }}
-                          >
-                            Please Select Religion First
-                          </Text>
-                        </View>
-                      )}
+                      <Text
+                        onPress={onPressAllDenomination}
+                        style={{
+                          fontFamily: "Inter-SemiBold",
+                          color: colors.primaryPink,
+                          alignSelf: "flex-end",
+                          fontSize: 16,
+                          marginRight: 10,
+                          marginBottom: 0,
+                        }}
+                      >
+                        Select all
+                      </Text>
+
+                      {userData?.UserPreference?.religion !== undefined &&
+                        userData?.UserPreference?.religion.map(
+                          (rel, relIndex) =>
+                            allProfileValues?.denomination[rel]?.length > 0 ? (
+                              allProfileValues?.denomination[rel].map(
+                                (item, index) => {
+                                  let findIndex = selectedDenomination.map(
+                                    newItem => {
+                                      return allProfileValues?.denomination[
+                                        rel
+                                      ].findIndex(
+                                        item => item.name == newItem.name
+                                      );
+                                    }
+                                  );
+                                  return (
+                                    <NewOnBoardingDesign
+                                      key={index} // Ensure each item has a unique key
+                                      mainOnPress={() =>
+                                        selectDenomination(item, index)
+                                      }
+                                      findIndex={findIndex}
+                                      index={index}
+                                      item={item}
+                                      multiSelect={true}
+                                      nameorid={"name"}
+                                      search={false}
+                                      radio={true}
+                                    />
+                                  );
+                                }
+                              )
+                            ) : (
+                              <View
+                                key={`no-denomination-${relIndex}`}
+                                style={{
+                                  width: "100%",
+                                  height: 200,
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <Text
+                                  style={{
+                                    fontSize: 20,
+                                    fontFamily: "Inter-Medium",
+                                    color: colors.black,
+                                  }}
+                                >
+                                  Please Select Religion First
+                                </Text>
+                              </View>
+                            )
+                        )}
                     </ScrollView>
                   </View>
+
                   {userData?.UserPreference?.religion != undefined && (
                     <View
                       style={[
@@ -2547,9 +2589,9 @@ const EditScreenSetting = props => {
                     Select all
                   </Text>
                   {drinkArray.map((item, index) => {
-                    let findIndex = (selectedDrink || []).map(newItem => {
+                    let findIndex = selectedDrink.map(newItem => {
                       return drinkArray.findIndex(
-                        drinkItem => drinkItem?.name === newItem?.name
+                        drinkitem => drinkitem?.name === newItem?.name
                       );
                     });
                     return (

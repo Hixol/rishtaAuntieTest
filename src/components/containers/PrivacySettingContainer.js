@@ -1,13 +1,13 @@
-import React, {useState} from 'react';
-import {Text, View, TouchableOpacity} from 'react-native';
-import ToggleSwitch from 'toggle-switch-react-native';
-import colors from '../../utility/colors';
-import styles from '../../Screens/MyPrivacySetting/styles';
-import FastImage from 'react-native-fast-image';
-import {useSelector} from 'react-redux';
+import React, { useState } from "react";
+import { Text, View, TouchableOpacity } from "react-native";
+import ToggleSwitch from "toggle-switch-react-native";
+import colors from "../../utility/colors";
+import styles from "../../Screens/MyPrivacySetting/styles";
+import FastImage from "react-native-fast-image";
+import { useSelector } from "react-redux";
 
 const PrivacySettingContainer = props => {
-  const {userData} = useSelector(store => store.userReducer);
+  const { userData } = useSelector(store => store.userReducer);
 
   const [isEnabled, setIsEnabled] = useState(false);
 
@@ -29,7 +29,8 @@ const PrivacySettingContainer = props => {
         <TouchableOpacity
           disabled={props.disabled}
           onPress={props.arrowIcononPress}
-          style={[styles.toggleOptionView, props.toggleViewStyle]}>
+          style={[styles.toggleOptionView, props.toggleViewStyle]}
+        >
           <Text style={[styles.toggleOptionText, props.toggleOptionTextStyle]}>
             {props.toggleOptionText}
           </Text>
@@ -55,7 +56,7 @@ const PrivacySettingContainer = props => {
               isOn={props.isOn}
               onColor={colors.primaryPink}
               offColor={colors.mediumGrey}
-              labelStyle={{color: 'black', fontFamily: 'Inter-Bold'}}
+              labelStyle={{ color: "black", fontFamily: "Inter-Bold" }}
               size="small"
               onToggle={toggleSwitch}
             />

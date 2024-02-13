@@ -39,8 +39,7 @@ index 6856dbb..d03e85f 100644
      } = this.props;
      return (
        <View style={{ ...styles.container, ...containerStyle }}>
--        <TouchableOpacity onPress={() => this.showModal()}>
-+        <TouchableOpacity>
+       <TouchableOpacity onPress={() => this.showModal()}>
            <View style={styles.openDialogView}>
              <Text style={[styles.flagStyle, flagStyle]}>{flag}</Text>
              <Text style={[styles.dialCodeTextStyle, dialCodeTextStyle]}>{this.state.dialCode}</Text>

@@ -105,7 +105,7 @@ const App = () => {
   const { mobileNumber, email } = useSelector(store => store.userReducer);
 
   useEffect(() => {
-    // let isMounted = true;
+    let isMounted = true;
 
     const initializeOneSignal = async () => {
       OneSignal.setLogLevel(6, 0);
@@ -161,15 +161,12 @@ const App = () => {
 
     const notificationListener = async () => {
       messaging().onNotificationOpenedApp(() => {});
-
       messaging().onMessage(async () => {});
-
       messaging()
         .getInitialNotification()
         .then(() => {});
     };
 
-    createConnectyCubeSession();
     initializeOneSignal();
     requestUserPermission();
     notificationListener();
@@ -182,7 +179,7 @@ const App = () => {
       .catch(err => console.log("adapter err", err));
 
     return () => {
-      // isMounted = false;
+      isMounted = false;
       OneSignal.Notifications.removeEventListener(
         "click",
         handleNotificationClick
@@ -191,29 +188,29 @@ const App = () => {
     };
   }, []);
 
-  // const navigate = (name, param = null) => {
-  //   if (navigationRef.isReady()) {
-  //     if (name == "moves") {
-  //       setTimeout(() => {
-  //         navigationRef.navigate("BottomTab", {
-  //           screen: "Interactions",
-  //         });
-  //       }, 2700);
-  //     } else if (name == "chat") {
-  //       setTimeout(() => {
-  //         navigationRef.navigate("BottomTab", {
-  //           screen: "UserChatList",
-  //           params: {
-  //             screen: "UserChatListScreen",
-  //             params: {
-  //               chatHeadId: param.chatHeadId,
-  //             },
-  //           },
-  //         });
-  //       }, 2700);
-  //     }
-  //   }
-  // };
+  const navigate = (name, param = null) => {
+    if (navigationRef.isReady()) {
+      if (name == "moves") {
+        setTimeout(() => {
+          navigationRef.navigate("BottomTab", {
+            screen: "Interactions",
+          });
+        }, 2700);
+      } else if (name == "chat") {
+        setTimeout(() => {
+          navigationRef.navigate("BottomTab", {
+            screen: "UserChatList",
+            params: {
+              screen: "UserChatListScreen",
+              params: {
+                chatHeadId: param.chatHeadId,
+              },
+            },
+          });
+        }, 2700);
+      }
+    }
+  };
 
   return (
     <SocketProvider>

@@ -41,11 +41,11 @@ const ReligionScreen = ({ navigation, route }) => {
       ask: "Match with shared beliefs",
       options: [],
       search: true,
-      multiSelect: false,
+      multiSelect: true,
     },
   ]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedReligion, setSelectedReligion] = useState(null);
+  const [selectedReligion, setSelectedReligion] = useState([]);
   const [selectedDenomination, setSelectedDenomination] = useState(null);
   const [loading, setLoading] = useState(null);
 
@@ -115,23 +115,49 @@ const ReligionScreen = ({ navigation, route }) => {
       .finally(() => setLoading(false));
   }, []);
 
+  const onPressAllreligion = () => {
+    setSelectedReligion(
+      array[currentIndex]?.options.filter(item => item.name !== "Not Specified")
+    );
+  };
+
   const selectReligion = (item, index) => {
-    setSelectedReligion(item);
-    dispatch({
-      type: "religion",
-      payload: item,
-    });
+    if (item.name == "Not Specified") {
+      setSelectedReligion([item]);
+    } else {
+      setSelectedReligion(prevState => {
+        if (prevState.length == 1 && prevState[0].name == "Not Specified") {
+          // replace not specified value
+          return [item];
+        } else if (prevState.some(el => el.name.includes(item.name))) {
+          // remove if already exist
+          return prevState.filter(el => el.name != item.name);
+        } else {
+          // append new value
+          return [...prevState, item];
+        }
+      });
+    }
   };
 
   const selectDenomination = (item, index) => {
-    setSelectedDenomination(item);
-  };
-
-  useEffect(() => {
-    if (religion) {
-      setSelectedReligion(religion);
+    if (item.name == "Not Specified") {
+      setSelectedDenomination([item]);
+    } else {
+      setSelectedDenomination(prevState => {
+        if (prevState.length == 1 && prevState[0].name == "Not Specified") {
+          // replace not specified value
+          return [item];
+        } else if (prevState.some(el => el.name.includes(item.name))) {
+          // remove if already exist
+          return prevState.filter(el => el.name != item.name);
+        } else {
+          // append new value
+          return [...prevState, item];
+        }
+      });
     }
-  }, []);
+  };
 
   useEffect(() => {
     if (edit) {
@@ -140,12 +166,14 @@ const ReligionScreen = ({ navigation, route }) => {
         name: userData?.Profile?.religion,
       };
       setSelectedReligion(copy);
-    } else if (preferenceEdit) {
-      let copy = {
-        ...copy,
-        name: userData?.UserPreference?.religion,
-      };
-      setSelectedReligion(copy);
+    } else if (
+      preferenceEdit &&
+      userData?.UserPreference?.religion[0] != "string"
+    ) {
+      let arr = userData?.UserPreference?.religion.map(el => {
+        return { name: el };
+      });
+      setSelectedReligion(arr);
     }
   }, []);
 
@@ -156,7 +184,8 @@ const ReligionScreen = ({ navigation, route }) => {
       await updateUser(formData, token);
       navigation.goBack();
     } else if (preferenceEdit) {
-      await updateUserPreference(token, "religion", selectedReligion?.name);
+      let religions = selectedReligion.map(el => el.name);
+      await updateUserPreference(token, "religion", religions);
       navigation.goBack();
     } else {
       if (selectedReligion !== null) {
@@ -250,6 +279,19 @@ const ReligionScreen = ({ navigation, route }) => {
                     marginVertical: "5%",
                   }}
                 >
+                  <Text
+                    onPress={onPressAllreligion}
+                    style={{
+                      fontFamily: "Inter-SemiBold",
+                      color: colors.primaryPink,
+                      alignSelf: "flex-end",
+                      fontSize: 16,
+                      marginRight: 10,
+                      marginBottom: 0,
+                    }}
+                  >
+                    Select all
+                  </Text>
                   {filtered?.length > 0
                     ? filtered[currentIndex]?.options.map((item, index) => {
                         let findIndex = filtered[
@@ -272,11 +314,11 @@ const ReligionScreen = ({ navigation, route }) => {
                         );
                       })
                     : array[currentIndex]?.options.map((item, index) => {
-                        let findIndex = array[currentIndex]?.options.findIndex(
-                          (item, index) => {
-                            return item?.name === selectedReligion?.name;
-                          }
-                        );
+                        let findIndex = selectedReligion.map(newItem => {
+                          return array[currentIndex]?.options.findIndex(
+                            item => item?.name == newItem?.name
+                          );
+                        });
                         return (
                           <NewOnBoardingDesign
                             mainOnPress={() => selectReligion(item, index)}
@@ -313,11 +355,11 @@ const ReligionScreen = ({ navigation, route }) => {
         ) : array[currentIndex]?.type === "Denomination" ? (
           <ScrollView style={{ marginVertical: "5%" }}>
             {array[currentIndex]?.options.map((item, index) => {
-              let findIndex = array[currentIndex]?.options.findIndex(
-                (item, index) => {
-                  return item?.name === selectedDenomination?.name;
-                }
-              );
+              let findIndex = selectedDenomination.map(newItem => {
+                return array[currentIndex]?.options.findIndex(
+                  item => item?.name == newItem?.name
+                );
+              });
               return (
                 <NewOnBoardingDesign
                   mainOnPress={() => selectDenomination(item, index)}
