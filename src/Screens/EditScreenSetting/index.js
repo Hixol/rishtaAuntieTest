@@ -729,32 +729,36 @@ const EditScreenSetting = props => {
       }
     }
   };
-  const onPressAllDenomination = () => {
-    let arr = [];
-    userData?.UserPreference?.religion.map(rel => {
-      arr = allProfileValues?.denomination[rel].filter(el => el.name != "");
-    });
+  // const onPressAllDenomination = () => {
+  //   let arr = [];
+  //   userData?.UserPreference?.religion.map(rel => {
+  //     arr = allProfileValues?.denomination[rel].filter(el => el.name != "");
+  //   });
 
-    setSelectedDenomination(arr);
-  };
+  //   setSelectedDenomination(arr);
+  // };
 
-  const selectDenomination = (item, index) => {
-    if (item.name == "") {
-      setSelectedDenomination([item]);
-    } else {
-      setSelectedDenomination(prevState => {
-        if (prevState.length == 1 && prevState[0].name == "") {
-          // replace not specified value
-          return [item];
-        } else if (prevState?.some(el => el.name.includes(item.name))) {
-          // remove if already exist
-          return prevState.filter(el => el.name != item.name);
-        } else {
-          // append new value
-          return [...prevState, item];
-        }
-      });
-    }
+  // const selectDenomination = (item, index) => {
+  //   if (item.name == "") {
+  //     setSelectedDenomination([item]);
+  //   } else {
+  //     setSelectedDenomination(prevState => {
+  //       if (prevState.length == 1 && prevState[0].name == "") {
+  //         // replace not specified value
+  //         return [item];
+  //       } else if (prevState?.some(el => el.name.includes(item.name))) {
+  //         // remove if already exist
+  //         return prevState.filter(el => el.name != item.name);
+  //       } else {
+  //         // append new value
+  //         return [...prevState, item];
+  //       }
+  //     });
+  //   }
+  // };
+
+  const selectDenomination = item => {
+    setSelectedDenomination([item]);
   };
   const [completeScrollBarHeight, setCompleteScrollBarHeight] = useState(1);
   const [visibleScrollBarHeight, setVisibleScrollBarHeight] = useState(0);
@@ -2402,7 +2406,7 @@ const EditScreenSetting = props => {
                         marginVertical: "5%",
                       }}
                     >
-                      <Text
+                      {/* <Text
                         onPress={onPressAllDenomination}
                         style={{
                           fontFamily: "Inter-SemiBold",
@@ -2414,7 +2418,7 @@ const EditScreenSetting = props => {
                         }}
                       >
                         Select all
-                      </Text>
+                      </Text> */}
 
                       {userData?.UserPreference?.religion !== undefined &&
                         userData?.UserPreference?.religion.map(

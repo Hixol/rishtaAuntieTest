@@ -115,29 +115,33 @@ const ReligionScreen = ({ navigation, route }) => {
       .finally(() => setLoading(false));
   }, []);
 
-  const onPressAllreligion = () => {
-    setSelectedReligion(
-      array[currentIndex]?.options.filter(item => item.name !== "Not Specified")
-    );
-  };
+  // const onPressAllreligion = () => {
+  //   setSelectedReligion(
+  //     array[currentIndex]?.options.filter(item => item.name !== "Not Specified")
+  //   );
+  // };
+
+  // const selectReligion = (item, index) => {
+  //   if (item.name == "Not Specified") {
+  //     setSelectedReligion([item]);
+  //   } else {
+  //     setSelectedReligion(prevState => {
+  //       if (prevState.length == 1 && prevState[0].name == "Not Specified") {
+  //         // replace not specified value
+  //         return [item];
+  //       } else if (prevState.some(el => el.name.includes(item.name))) {
+  //         // remove if already exist
+  //         return prevState.filter(el => el.name != item.name);
+  //       } else {
+  //         // append new value
+  //         return [...prevState, item];
+  //       }
+  //     });
+  //   }
+  // };
 
   const selectReligion = (item, index) => {
-    if (item.name == "Not Specified") {
-      setSelectedReligion([item]);
-    } else {
-      setSelectedReligion(prevState => {
-        if (prevState.length == 1 && prevState[0].name == "Not Specified") {
-          // replace not specified value
-          return [item];
-        } else if (prevState.some(el => el.name.includes(item.name))) {
-          // remove if already exist
-          return prevState.filter(el => el.name != item.name);
-        } else {
-          // append new value
-          return [...prevState, item];
-        }
-      });
-    }
+    setSelectedReligion([item]);
   };
 
   const selectDenomination = (item, index) => {
@@ -279,7 +283,7 @@ const ReligionScreen = ({ navigation, route }) => {
                     marginVertical: "5%",
                   }}
                 >
-                  <Text
+                  {/* <Text
                     onPress={onPressAllreligion}
                     style={{
                       fontFamily: "Inter-SemiBold",
@@ -291,7 +295,7 @@ const ReligionScreen = ({ navigation, route }) => {
                     }}
                   >
                     Select all
-                  </Text>
+                  </Text> */}
                   {filtered?.length > 0
                     ? filtered[currentIndex]?.options.map((item, index) => {
                         let findIndex = filtered[
