@@ -711,11 +711,11 @@ const EditScreenSetting = props => {
 
   const selectLanguage = (item, index) => {
     if (preferenceEdit) {
-      if (item.name == "Other") {
+      if (item.name == "") {
         setSelectedLanguage([item]);
       } else {
         setSelectedLanguage(prevState => {
-          if (prevState.length == 1 && prevState[0].name == "Other") {
+          if (prevState.length == 1 && prevState[0].name == "") {
             // replace not specified value
             return [item];
           } else if (prevState.some(el => el.name.includes(item.name))) {
@@ -726,6 +726,36 @@ const EditScreenSetting = props => {
             return [...prevState, item];
           }
         });
+      }
+    } else {
+      let arr = [...selectedLanguage];
+
+      let check2 = arr.some(item1 => {
+        return item1?.name === item?.name;
+      });
+
+      let check = arr.some(item1 => {
+        return item1?.name === "Other";
+      });
+      if (check && item?.name !== "Other") {
+        arr = [];
+        arr.push(item);
+        setSelectedLanguage(arr);
+      } else if (check && item?.name === "Other") {
+        arr = [];
+        setSelectedLanguage(arr);
+      } else if (item?.name === "Other" && !check) {
+        arr = [];
+        arr.push(item);
+        setSelectedLanguage(arr);
+      } else if (!check && item?.name !== "Other" && !check2) {
+        arr.push(item);
+        setSelectedLanguage(arr);
+      } else if (!check && item?.name !== "Other" && check2) {
+        let filtered = arr.filter(item1 => {
+          return item1?.name !== item?.name;
+        });
+        setSelectedLanguage(filtered);
       }
     }
   };
@@ -938,6 +968,37 @@ const EditScreenSetting = props => {
           return [...prevState, item];
         }
       });
+    } else {
+      let arr = [...selectedPray];
+
+      let check2 = arr.some(item1 => {
+        return item1?.name === item?.name;
+      });
+
+      let check = arr.some(item1 => {
+        return item1?.name === "Don't Pray";
+      });
+
+      if (check && item?.name !== "Don't Pray") {
+        arr = [];
+        arr.push(item);
+        setSelectedPray(arr);
+      } else if (check && item?.name === "Don't Pray") {
+        arr = [];
+        setSelectedPray(arr);
+      } else if (item?.name === "Don't Pray" && !check) {
+        arr = [];
+        arr.push(item);
+        setSelectedPray(arr);
+      } else if (!check && item?.name !== "Don't Pray" && !check2) {
+        arr.push(item);
+        setSelectedPray(arr);
+      } else if (!check && item?.name !== "Don't Pray" && check2) {
+        let filtered = arr.filter(item1 => {
+          return item1?.name !== item?.name;
+        });
+        setSelectedPray(filtered);
+      }
     }
   };
   const onPressAllDrink = () => {
@@ -2338,20 +2399,21 @@ const EditScreenSetting = props => {
                         marginVertical: "5%",
                       }}
                     >
-                      {userData?.Profile.religion != undefined &&
+                      {userData?.Profile?.religion !== undefined &&
                         allProfileValues?.denomination[
                           userData?.Profile?.religion
-                        ].length > 0 &&
+                        ]?.length > 0 &&
                         allProfileValues?.denomination[
                           userData?.Profile?.religion
                         ].map((item, index) => {
-                          let findIndex = allProfileValues?.denomination[
-                            userData?.Profile?.religion
-                          ]?.findIndex((item, index) => {
-                            return item?.name === selectedDenomination?.name;
+                          let findIndex = selectedDenomination.map(newItem => {
+                            return allProfileValues?.denomination[
+                              userData?.Profile?.religion
+                            ].findIndex(item => item.name == newItem.name);
                           });
                           return (
                             <NewOnBoardingDesign
+                              key={index} // Ensure each item has a unique key
                               mainOnPress={() =>
                                 selectDenomination(item, index)
                               }
