@@ -138,7 +138,7 @@ const DiscoverProfile = ({
               width: "100%",
               height: "100%",
             }}
-            source={{ uri: convertToProxyURL(video) }}
+            source={{ uri: video.split("?")[0] }}
           />
           {isPausedButton ? (
             <View

@@ -19,12 +19,9 @@ const UploadPicture = ({ navigation, route }) => {
   let edit = route?.params;
 
   const dispatch = useDispatch();
-  const { updateUser } = useHelper();
-  const { userData, token } = useSelector((store) => store.userReducer);
-  const { profilePictures } = useSelector(
-    (store) => store.NewOnBoardingReducer
-  );
-
+  const { updateUser, handleStatusCode } = useHelper();
+  const { userData, token } = useSelector(store => store.userReducer);
+  const { profilePictures } = useSelector(store => store.NewOnBoardingReducer);
   const [loader, setLoader] = useState(false);
   const [imageUri, setImageUri] = useState(null);
   const [mediaOptions, setMediaOptions] = useState(false);
@@ -72,7 +69,7 @@ const UploadPicture = ({ navigation, route }) => {
 
   useEffect(() => {
     if (edit) {
-      let filtered = userData?.UserMedia?.filter((item) => {
+      let filtered = userData?.UserMedia?.filter(item => {
         return item?.type === "image";
       });
       let arr = [...profilePicArr];
@@ -96,7 +93,8 @@ const UploadPicture = ({ navigation, route }) => {
     }
   }, []);
 
-  const handleOnSelect = (item) => {
+  const handleOnSelect = item => {
+    console.log("Select", item);
     if (item?.uri) {
       let dummyArr = [...profilePicArr];
       dummyArr[item.index]["image"] = item;
@@ -106,12 +104,51 @@ const UploadPicture = ({ navigation, route }) => {
     }
   };
 
-  const handleOnRemove = (index) => {
-    let dummyArr = [...profilePicArr];
-    dummyArr[index]["image"] = null;
-    setProfilePicArr(dummyArr);
-  };
+  const getIds = userData.UserMedia.map(item => item.id);
+  console.log(getIds, "idss");
 
+  const handleOnRemove = async index => {
+    try {
+      const idToRemove = getIds[index];
+      if (idToRemove) {
+        const url =
+          "https://api.rishtaauntie.app/dev/rishta_auntie/api/v1/user/remove-media";
+        const requestOptions = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": token, // Assuming token is already defined
+          },
+          body: JSON.stringify({ userMediaIds: [idToRemove] }), // Adjusted payload format
+        };
+
+        const response = await fetch(url, requestOptions);
+        const data = await response.json();
+
+        if (response.ok) {
+          // Check if media was successfully removed (based on the response status)
+          if (response.status === 200) {
+            let dummyArr = [...profilePicArr];
+            dummyArr[index]["image"] = null;
+            setProfilePicArr(dummyArr);
+            // Display success alert
+            alerts("success", data.message);
+          } else {
+            // Handle unsuccessful removal
+            console.error("Media removal unsuccessful:", data.message);
+          }
+        } else {
+          // Handle error response
+          console.error("Error removing media:", data);
+        }
+      } else {
+        console.error("Invalid ID to remove:", idToRemove);
+      }
+    } catch (error) {
+      // Handle any network or unexpected errors here
+      console.error("Error removing media:", error);
+    }
+  };
   const handleCameraMedia = async (state, result) => {
     try {
       if (result == "granted") {
@@ -120,7 +157,7 @@ const UploadPicture = ({ navigation, route }) => {
           quality: 0.4,
         };
 
-        await launchCamera(options, (res) => {
+        await launchCamera(options, res => {
           if (res.errorCode == "others") {
             alerts(
               "error",
@@ -159,12 +196,12 @@ const UploadPicture = ({ navigation, route }) => {
     }
   };
 
-  const handleCamera = (state) => {
+  const handleCamera = state => {
     if (ios) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.IOS.CAMERA,
         "camera",
-        (res) => {
+        res => {
           handleCameraMedia(state, res);
         }
       );
@@ -172,7 +209,7 @@ const UploadPicture = ({ navigation, route }) => {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.ANDROID.CAMERA,
         "camera",
-        (res) => {
+        res => {
           handleCameraMedia(state, res);
         }
       );
@@ -197,7 +234,7 @@ const UploadPicture = ({ navigation, route }) => {
       setLoader(false);
       navigation.goBack();
     } else {
-      let check = profilePicArr.some((item) => {
+      let check = profilePicArr.some(item => {
         return item?.image;
       });
 
@@ -222,7 +259,7 @@ const UploadPicture = ({ navigation, route }) => {
           compressImageQuality: 0.5,
           forceJpg: true,
         })
-          .then((el) => {
+          .then(el => {
             if (el.height == 0 || el.width == 0) {
               alerts("error", "Please select jpeg/png/heif format images.");
             } else {
@@ -238,7 +275,7 @@ const UploadPicture = ({ navigation, route }) => {
               setCheck(true);
             }
           })
-          .catch((err) => {
+          .catch(err => {
             alerts("error", err.toString());
             console.log("gallery picker err:", err);
           })
@@ -252,12 +289,12 @@ const UploadPicture = ({ navigation, route }) => {
     }
   };
 
-  const handleGallery = (state) => {
+  const handleGallery = state => {
     if (ios) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.IOS.PHOTO_LIBRARY,
         "gallery",
-        (res) => {
+        res => {
           handleGalleryMedia(state, res);
         }
       );
@@ -268,18 +305,18 @@ const UploadPicture = ({ navigation, route }) => {
         handlePermissions.checkMultiplePermissions(
           PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
           "gallery",
-          (res) => {
+          res => {
             handleGalleryMedia(state, res);
           }
         );
       }
     }
   };
-  const handleAlert = (state) => {
+  const handleAlert = state => {
     setMediaOptions(state);
   };
 
-  const handleRemoveImage = (state) => {
+  const handleRemoveImage = state => {
     setImageUri(null);
     setMediaOptions(false);
   };
