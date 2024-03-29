@@ -1,25 +1,25 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
   useWindowDimensions,
   ScrollView,
   StyleSheet,
-} from 'react-native';
-import {TabBar, TabView, SceneMap} from 'react-native-tab-view';
-import {UserService} from '../../services';
-import {useSelector} from 'react-redux';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {windowHeight} from '../../utility/size';
-import {useHelper} from '../../hooks/useHelper';
+} from "react-native";
+import { TabBar, TabView, SceneMap } from "react-native-tab-view";
+import { UserService } from "../../services";
+import { useSelector } from "react-redux";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { windowHeight } from "../../utility/size";
+import { useHelper } from "../../hooks/useHelper";
 
-import BlogBlockCard from '../BlogBlockCard';
-import colors from '../../utility/colors';
-import Loader from '../Loader';
+import BlogBlockCard from "../BlogBlockCard";
+import colors from "../../utility/colors";
+import Loader from "../Loader";
 
 const BlockedList = props => {
-  const {handleStatusCode} = useHelper();
-  const {token} = useSelector(store => store.userReducer);
+  const { handleStatusCode } = useHelper();
+  const { token } = useSelector(store => store.userReducer);
 
   const [loading, setLoading] = useState(false);
   const [blockedUsersList, setBlockedUsersList] = useState([]);
@@ -28,12 +28,28 @@ const BlockedList = props => {
     setLoading(true);
     UserService.blockList(token)
       .then(res => {
+        console.log("Block List API Response:", res.data);
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
-          setBlockedUsersList(res.data.data);
+          const uniqueBlockedUsersList = res.data.data.reduce(
+            (uniqueList, user) => {
+              if (
+                !uniqueList.some(
+                  existingUser =>
+                    existingUser.blockedUser.id === user.blockedUser.id
+                )
+              ) {
+                uniqueList.push(user);
+              }
+              return uniqueList;
+            },
+            []
+          );
+          console.log("Unique Blocked Users List:", uniqueBlockedUsersList); // Log the filtered list
+          setBlockedUsersList(uniqueBlockedUsersList);
         }
       })
-      .catch(err => console.log('blockList err:', err))
+      .catch(err => console.log("blockList err:", err))
       .finally(() => setLoading(false));
   };
 
@@ -43,11 +59,11 @@ const BlockedList = props => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           setBlockedUsersList(prevState =>
-            prevState.filter(el => el.blockedUser.id != id),
+            prevState.filter(el => el.blockedUser.id != id)
           );
         }
       })
-      .catch(err => console.log('unblockUser err:', err));
+      .catch(err => console.log("unblockUser err:", err));
   };
 
   useEffect(() => {
@@ -68,7 +84,7 @@ const BlockedList = props => {
                   BlockProfileName={el.blockedUser.firstName}
                   BlockTime={el.createdAt}
                   BlockedList
-                  Image={el.blockedUser.UserMedia[0].url}
+                  Image={el.blockedUser.UserMedia[0]?.url}
                   title="Unblock"
                   onPressTitle={() => unblockUser(el.blockedUser.id)}
                 />
@@ -83,8 +99,8 @@ const BlockedList = props => {
 
 const UnmatchedList = () => {
   const navigation = useNavigation();
-  const {handleStatusCode} = useHelper();
-  const {token} = useSelector(store => store.userReducer);
+  const { handleStatusCode } = useHelper();
+  const { token } = useSelector(store => store.userReducer);
 
   const [loading, setLoading] = useState(false);
   const [interactionsList, setInteractionsList] = useState([]);
@@ -99,7 +115,7 @@ const UnmatchedList = () => {
           let dataObj = {};
 
           res?.data?.data.data.map(el => {
-            if (el.type == 'MATCH_REQUEST' && el.status == 2) {
+            if (el.type == "MATCH_REQUEST" && el.status == 2) {
               dataObj = {
                 createdAt: el.createdAt,
                 id: el.id,
@@ -117,7 +133,7 @@ const UnmatchedList = () => {
         }
       })
       .catch(err => {
-        console.log('getAllTheirMoves err:', err);
+        console.log("getAllTheirMoves err:", err);
       })
       .finally(() => setLoading(false));
   };
@@ -125,7 +141,7 @@ const UnmatchedList = () => {
   useFocusEffect(
     React.useCallback(() => {
       getAllTheirMoves();
-    }, []),
+    }, [])
   );
 
   return loading ? (
@@ -147,7 +163,7 @@ const UnmatchedList = () => {
                   Image={el.user.UserMedia[0].url}
                   title="Visit Profile"
                   onPressTitle={() =>
-                    navigation.navigate('userDetailScreen', {
+                    navigation.navigate("userDetailScreen", {
                       userId: el.user.id,
                       unmatch: true,
                     })
@@ -160,9 +176,10 @@ const UnmatchedList = () => {
               style={{
                 flex: 1,
                 marginTop: windowHeight / 2.8,
-                alignItems: 'center',
-              }}>
-              <Text style={{color: colors.black}}>
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: colors.black }}>
                 You have no unmatched profile.
               </Text>
             </View>
@@ -176,14 +193,15 @@ const UnmatchedList = () => {
 
 const renderTabBar = props => (
   <TabBar
-    renderLabel={({route, focused, color}) => (
+    renderLabel={({ route, focused, color }) => (
       <Text
         style={{
           color: colors.blackBlue,
           margin: 8,
-          fontFamily: 'Inter-Bold',
+          fontFamily: "Inter-Bold",
           fontSize: 16,
-        }}>
+        }}
+      >
         {route.title}
       </Text>
     )}
@@ -193,7 +211,7 @@ const renderTabBar = props => (
       borderRadius: 3,
       backgroundColor: colors.primaryPink,
     }}
-    style={{backgroundColor: colors.greyWhite}}
+    style={{ backgroundColor: colors.greyWhite }}
   />
 );
 
@@ -207,42 +225,42 @@ export default function BlockedTabView() {
 
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
-    {key: 'Blocked', title: 'Blocked'},
-    {key: 'Unmatched', title: 'Unmatched'},
+    { key: "Blocked", title: "Blocked" },
+    { key: "Unmatched", title: "Unmatched" },
   ]);
 
   return (
     <TabView
       renderTabBar={renderTabBar}
       screenOptions={{}}
-      navigationState={{index, routes}}
+      navigationState={{ index, routes }}
       renderScene={renderScene}
       onIndexChange={setIndex}
-      initialLayout={{width: layout.width}}
+      initialLayout={{ width: layout.width }}
     />
   );
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, marginVertical: '2%'},
+  container: { flex: 1, marginVertical: "2%" },
   title: {
     fontSize: 20,
     color: colors.primaryBlue,
-    textAlign: 'center',
-    fontFamily: 'Inter-Regular',
+    textAlign: "center",
+    fontFamily: "Inter-Regular",
   },
   cardWrapper: {
-    flexWrap: 'wrap',
-    flexDirection: 'row',
+    flexWrap: "wrap",
+    flexDirection: "row",
   },
   cardMargin: {
-    marginVertical: '2%',
-    marginHorizontal: '1%',
+    marginVertical: "2%",
+    marginHorizontal: "1%",
   },
   helpText: {
-    textAlign: 'center',
+    textAlign: "center",
     color: colors.primaryPink,
     fontSize: 14,
-    fontFamily: 'Inter-Bold',
+    fontFamily: "Inter-Bold",
   },
 });

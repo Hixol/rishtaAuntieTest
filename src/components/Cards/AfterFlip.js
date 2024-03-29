@@ -8,10 +8,45 @@ import WaveForm from "react-native-audiowaveform";
 import CircularIcon from "../circularIcons";
 
 const AfterFlip = props => {
+  // let date_1 = new Date(props.createdAt);
+  // let date_2 = new Date();
+  // let difference = date_2.getTime() - date_1.getTime();
+  // let TotalDays = Math.ceil(difference / (1000 * 3600 * 24));
   let date_1 = new Date(props.createdAt);
   let date_2 = new Date();
   let difference = date_2.getTime() - date_1.getTime();
-  let TotalDays = Math.ceil(difference / (1000 * 3600 * 24));
+
+  let TotalDays;
+
+  // If difference is less than 1 hour, display the time left since the interaction arrived in minutes
+  if (difference < 60 * 60 * 1000) {
+    // Less than 1 hour in milliseconds
+    let minutes = Math.floor(difference / (60 * 1000));
+    TotalDays = minutes + " minute" + (minutes > 1 ? "s" : "") + " ago";
+  } else if (difference < 24 * 60 * 60 * 1000) {
+    // Less than 24 hours in milliseconds
+    let hours = Math.floor(difference / (60 * 60 * 1000));
+    let minutes = Math.floor((difference % (60 * 60 * 1000)) / (60 * 1000));
+    let timeLeft = "";
+    if (hours > 0) {
+      timeLeft += hours + " hour" + (hours > 1 ? "s" : "");
+    }
+    if (minutes > 0) {
+      timeLeft +=
+        (timeLeft ? " " : "") + minutes + " minute" + (minutes > 1 ? "s" : "");
+    }
+    if (!timeLeft) {
+      timeLeft = "Less than a minute";
+    }
+    TotalDays = timeLeft + " ago";
+  } else {
+    // If difference is more than 24 hours, display x days ago
+    TotalDays =
+      Math.floor(difference / (24 * 60 * 60 * 1000)) +
+      " day" +
+      (Math.floor(difference / (24 * 60 * 60 * 1000)) > 1 ? "s" : "") +
+      " ago";
+  }
 
   const [loading, setLoading] = useState(false);
   const [showWaves, setShowWaves] = useState(props.showWaves);
@@ -31,7 +66,8 @@ const AfterFlip = props => {
       <View style={styles.commentContainer}>
         <View style={{ alignSelf: "center" }}>
           <Text style={styles.daysAgoTxt}>
-            {TotalDays <= 1 ? TotalDays + " Day Ago" : TotalDays + " Days Ago"}
+            {/* {TotalDays <= 1 ? TotalDays + " Day Ago" : TotalDays + " Days Ago"} */}
+            {TotalDays}
           </Text>
         </View>
 

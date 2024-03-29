@@ -131,8 +131,9 @@ export default StyleSheet.create({
     marginBottom: "5%",
   },
   daysAgoTxt: {
-    color: colors.daysAgoGrey,
-    fontSize: 12,
+    color: colors.textBlack,
+    fontSize: 14,
+    fontWeight: "400",
     paddingHorizontal: "10%",
     marginTop: "0.5%",
     alignSelf: "flex-start",
