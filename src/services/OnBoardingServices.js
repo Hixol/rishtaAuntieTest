@@ -1,16 +1,17 @@
-import ApiManager from './ApiManager';
-import Resources, {Singleton} from './Resources';
+import ApiManager from "./ApiManager";
+import Resources, { Singleton } from "./Resources";
 
 class OnBoardingServices extends Resources {
   authUser = {};
   routes = {
-    callLog: 'call-list',
-    changePassword: 'change-password',
-    resetPassword: 'forgot-password',
-    profileValues: '/user/profile-values?filter=',
-    vibesListing: '/user/vibes',
-    createUser: '/user',
-    uploadVideo: '/user/upload-video',
+    callLog: "call-list",
+    changePassword: "change-password",
+    resetPassword: "forgot-password",
+    profileValues: "/user/profile-values?filter=",
+    vibesListing: "/user/vibes",
+    createUser: "/user",
+    uploadVideo: "/user/add-intro-video",
+    getPresignedUrl: "/user/pre-signed-url",
   };
 
   constructor() {
@@ -33,6 +34,9 @@ class OnBoardingServices extends Resources {
     return ApiManager.post(this.routes.uploadVideo, payload, false, token);
   };
 
+  getPresignedUrl = (payload, token) => {
+    return ApiManager.post(this.routes.getPresignedUrl, payload, false, token);
+  };
   setAuthUser(user) {
     if (user) {
       this.authUser = user;
