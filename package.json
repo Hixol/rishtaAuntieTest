@@ -1,6 +1,6 @@
 {
   "name": "rishtaaunty",
-  "version": "0.0.33",
+  "version": "0.0.34",
   "private": true,
   "scripts": {
     "reset": "yarn start --reset-cache",
@@ -78,7 +78,7 @@
     "react-native-linear-gradient": "^2.6.2",
     "react-native-multiple-select": "^0.5.11",
     "react-native-notifications": "^4.3.1",
-    "react-native-onesignal": "^4.5.0",
+    "react-native-onesignal": "^5.0.4",
     "react-native-pager-view": "^5.4.13",
     "react-native-countdown-component": "^2.7.1",
     "react-native-permissions": "^3.6.0",

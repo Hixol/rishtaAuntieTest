@@ -13,9 +13,7 @@ import MobileAds from "react-native-google-mobile-ads";
 import SocketProvider from "./src/context/SocketContext";
 import StackNavigations from "./src/Navigations/StackNavigation";
 import configureStore from "./src/store";
-// import { OneSignal } from "react-native-onesignal";
-import OneSignal from "react-native-onesignal";
-
+import { OneSignal } from "react-native-onesignal";
 import ConnectyCube from "react-native-connectycube";
 import CallService from "./src/services/call-service";
 import pushNotificationService from "./src/services/PushNotificationService";
@@ -85,135 +83,84 @@ const createConnectyCubeSession = () => {
   //   .catch(err => console.log("createSession err:", err));
 };
 
-// const requestUserPermission = async () => {
-//   await messaging().requestPermission();
-//   await messaging().getToken();
-// };
+const requestUserPermission = async () => {
+  await messaging().requestPermission();
+  await messaging().getToken();
+};
 
-// const notificationListener = async () => {
-//   messaging().onNotificationOpenedApp(() => {});
+const notificationListener = async () => {
+  messaging().onNotificationOpenedApp(() => {});
 
-//   messaging().onMessage(async () => {});
+  messaging().onMessage(async () => {});
 
-//   messaging()
-//     .getInitialNotification()
-//     .then(() => {});
-// };
+  messaging()
+    .getInitialNotification()
+    .then(() => {});
+};
 
 const App = () => {
   const navigationRef = createNavigationContainerRef();
   const { mobileNumber, email } = useSelector(store => store.userReducer);
 
-  useEffect(() => {
-    // let isMounted = true;
+  // OneSignal Initialization
+  OneSignal.initialize("04e507aa-792a-45f8-9d6d-55859c8dbd92");
 
-    const initializeOneSignal = async () => {
-      OneSignal.setLogLevel(6, 0);
-      OneSignal.initialize("04e507aa-792a-45f8-9d6d-55859c8dbd92");
-      OneSignal.Notifications.requestPermission(true);
-      OneSignal.Notifications.addEventListener(
-        "click",
-        handleNotificationClick
-      );
-    };
+  // requestPermission will show the native iOS or Android notification permission prompt.
+  // We recommend removing the following code and instead using an In-App Message to prompt for notification permission
+  OneSignal?.Notifications?.requestPermission(true);
 
-    const handleNotificationClick = event => {
-      console.log("OneSignal: notification clicked:", event);
-      if (mobileNumber || email) {
-        if (event.notification.body.includes("received")) {
-          navigate("moves");
-        } else if (
-          event.notification.additionalData.hasOwnProperty("chatRecord")
-        ) {
-          navigate("chat", event.notification.additionalData.chatRecord);
-        }
+  // Method for listening for notification clicks
+  OneSignal?.Notifications?.addEventListener("click", event => {
+    console.log("OneSignal: notification clicked:", event);
+    if (mobileNumber || email) {
+      if (event.notification.body.includes("received")) {
+        navigate("moves");
+      } else if (
+        event.notification.additionalData.hasOwnProperty("chatRecord")
+      ) {
+        navigate("chat", event.notification.additionalData.chatRecord);
       }
-    };
+    }
+  });
 
-    const navigate = (name, param = null) => {
-      if (navigationRef.isReady()) {
-        if (name == "moves") {
-          setTimeout(() => {
-            navigationRef.navigate("BottomTab", {
-              screen: "Interactions",
-            });
-          }, 2700);
-        } else if (name == "chat") {
-          setTimeout(() => {
-            navigationRef.navigate("BottomTab", {
-              screen: "UserChatList",
+  const navigate = (name, param = null) => {
+    if (navigationRef.isReady()) {
+      if (name == "moves") {
+        setTimeout(() => {
+          navigationRef.navigate("BottomTab", {
+            screen: "Interactions",
+          });
+        }, 2700);
+      } else if (name == "chat") {
+        setTimeout(() => {
+          navigationRef.navigate("BottomTab", {
+            screen: "UserChatList",
+            params: {
+              screen: "UserChatListScreen",
               params: {
-                screen: "UserChatListScreen",
-                params: {
-                  chatHeadId: param.chatHeadId,
-                },
+                chatHeadId: param.chatHeadId,
               },
-            });
-          }, 2700);
-        }
+            },
+          });
+        }, 2700);
       }
-    };
+    }
+  };
 
-    const requestUserPermission = async () => {
-      await messaging().requestPermission();
-      await messaging().getToken();
-    };
-
-    const notificationListener = async () => {
-      messaging().onNotificationOpenedApp(() => {});
-
-      messaging().onMessage(async () => {});
-
-      messaging()
-        .getInitialNotification()
-        .then(() => {});
-    };
-
-    createConnectyCubeSession();
-    initializeOneSignal();
+  useEffect(() => {
     requestUserPermission();
     notificationListener();
+    // checkToken();
+    createConnectyCubeSession();
 
     MobileAds()
       .initialize()
       .then(adapterStatuses => {
+        // Initialization complete!
         console.log("adapterStatuses", adapterStatuses);
       })
       .catch(err => console.log("adapter err", err));
-
-    return () => {
-      // isMounted = false;
-      OneSignal.Notifications.removeEventListener(
-        "click",
-        handleNotificationClick
-      );
-      // Add cleanup for any other subscriptions or async tasks here
-    };
   }, []);
-
-  // const navigate = (name, param = null) => {
-  //   if (navigationRef.isReady()) {
-  //     if (name == "moves") {
-  //       setTimeout(() => {
-  //         navigationRef.navigate("BottomTab", {
-  //           screen: "Interactions",
-  //         });
-  //       }, 2700);
-  //     } else if (name == "chat") {
-  //       setTimeout(() => {
-  //         navigationRef.navigate("BottomTab", {
-  //           screen: "UserChatList",
-  //           params: {
-  //             screen: "UserChatListScreen",
-  //             params: {
-  //               chatHeadId: param.chatHeadId,
-  //             },
-  //           },
-  //         });
-  //       }, 2700);
-  //     }
-  //   }
-  // };
 
   return (
     <SocketProvider>
