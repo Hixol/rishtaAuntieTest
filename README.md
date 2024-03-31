@@ -2,7 +2,8 @@
 
 This project have Six Modules.
 
-```1.Auth
+```
+1.Auth(aws)
 2.OnBoarding
 3.Discover
 4.Moves
