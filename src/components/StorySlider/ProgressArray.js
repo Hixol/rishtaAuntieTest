@@ -1,9 +1,8 @@
-import React, {useEffect, useRef} from 'react';
-import {Animated, StyleSheet} from 'react-native';
+import React, { useEffect, useRef } from "react";
+import { Animated, StyleSheet } from "react-native";
+import ProgressBar from "./ProgressBar";
 
-import ProgressBar from './ProgressBar';
-
-const ProgressArray = props => {
+const ProgressArray = (props) => {
   const opacity = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -23,9 +22,10 @@ const ProgressArray = props => {
   }, [props.pause]);
 
   return (
-    <Animated.View style={[styles.progressBarArray, {opacity}]}>
+    <Animated.View style={[styles.progressBarArray, { opacity }]}>
       {props.length.map((i, index) => (
         <ProgressBar
+          key={index}
           index={index}
           duration={props.duration || 6}
           isNewStory={props.isNewStory}
@@ -43,13 +43,13 @@ const ProgressArray = props => {
 
 const styles = StyleSheet.create({
   progressBarArray: {
-    flexDirection: 'row',
-    position: 'absolute',
+    flexDirection: "row",
+    position: "absolute",
     bottom: 10,
-    width: '98%',
+    width: "98%",
     height: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

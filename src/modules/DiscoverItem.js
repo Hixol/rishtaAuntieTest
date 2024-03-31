@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     color: colors.blackBlue,
     fontSize: 16,
     textAlign: 'right',
-    fontFamily: 'Inter-Medium',
+    fontFamily: 'Inter-SemiBold',
     flexWrap: 'wrap',
   },
 });

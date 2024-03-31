@@ -11,7 +11,7 @@ const InviteFriendsContainer = props => {
       style={[styles.inviteFriendsContainer, props.btnStyle]}>
       <Text style={styles.inviteFriendsText}>
         Invite Friends -{' '}
-        <Text style={{fontFamily: 'Roboto-Regular'}}>
+        <Text style={{fontFamily: 'Inter-Regular'}}>
           You each get a free spotlight for every friend that joins Rishta
           Auntie
         </Text>
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   },
   inviteFriendsText: {
     fontSize: 15,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
 
     color: '#D90368',
     width: '88%',

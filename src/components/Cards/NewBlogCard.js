@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   title: {
     marginTop: '2%',
     fontSize: 15,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
     color: colors.primaryBlue,
     lineHeight: 23,
   },

@@ -8,7 +8,7 @@ const PreferenceTextName = props => {
         style={{
           fontSize: 16,
           color: colors.primaryBlue,
-          fontFamily: 'Roboto-Medium',
+          fontFamily: 'Inter-Medium',
 
           alignSelf: 'flex-start',
         }}>

@@ -1,229 +1,230 @@
-import React, {useState, useEffect} from 'react';
-import {
-  Text,
-  View,
-  ScrollView,
-  BackHandler,
-  TouchableOpacity,
-} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {useDispatch, useSelector} from 'react-redux';
-import {OnBoardingServices, UserService} from '../../services';
-import {useHelper} from '../../hooks/useHelper';
-import {useFocusEffect, useIsFocused} from '@react-navigation/native';
-import styles from './styles';
-import colors from '../../utility/colors';
-import FastImage from 'react-native-fast-image';
-import ProfileServices from '../../services/ProfileServices';
-import HeaderContainer from '../../components/containers/headerContainer';
-import PrivacySettingContainer from '../../components/containers/PrivacySettingContainer';
-import BasicPrivacySetting from '../../components/containers/BasicPrivacySetting';
-import Button from '../../components/buttons/Button';
-import SettingHeader from '../../components/containers/settingHeader';
-import {alerts} from '../../utility/regex';
+import React, { useState, useEffect } from "react";
+import { Text, View, ScrollView, TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch, useSelector } from "react-redux";
+import { OnBoardingServices, UserService } from "../../services";
+import { useHelper } from "../../hooks/useHelper";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
+import { alerts } from "../../utility/regex";
+
+import styles from "./styles";
+import colors from "../../utility/colors";
+import ProfileServices from "../../services/ProfileServices";
+import PrivacySettingContainer from "../../components/containers/PrivacySettingContainer";
+import BasicPrivacySetting from "../../components/containers/BasicPrivacySetting";
+import Button from "../../components/buttons/Button";
+import SettingHeader from "../../components/containers/settingHeader";
 
 const SearchPreferences = props => {
   const isFocused = useIsFocused();
   const value = props?.route?.params?.preferences;
-  const {token, userData} = useSelector(store => store.userReducer);
-  const dispatch = useDispatch();
-  const {handleDisablePremium, handleStatusCode, Alerts} = useHelper();
 
-  const [user, setUser] = useState();
+  const dispatch = useDispatch();
+  const { handleDisablePremium, handleStatusCode } = useHelper();
+  const { token, userData } = useSelector(store => store.userReducer);
 
   const [premiumPrivacySetting, setPremiumPrivacySetting] = useState(
-    userData?.UserSetting?.isSubscribed,
+    userData?.UserSetting?.isSubscribed
   );
 
   const BasicPreferences = [
     {
       id: 1,
-      preferenceName: 'Distance',
-      type: 'Distance',
+      preferenceName: "Distance",
+      type: "Distance",
       value: value?.distance,
-      editType: 'Distance',
-      ask: 'Please select distance',
+      editType: "Distance",
+      ask: "Find matches closer or farther away",
+      line: "Set your preferred distance",
     },
     {
       id: 2,
-      preferenceName: 'Age',
-      type: 'Age',
+      preferenceName: "Age",
+      type: "Age",
       value: [value?.ageFrom, value?.ageTo],
-      editType: 'Age',
-      ask: 'Please select age',
+      editType: "Age",
+      ask: "Discover matches in your preferred age group",
+      line: "Select desired age range",
     },
     {
       id: 3,
-      preferenceName: 'Religion',
-      type: 'Religion',
+      preferenceName: "Religion",
+      type: "Religion",
       value: value?.religion,
-      editType: 'Religion',
-      screenName: 'ReligionScreen',
+      editType: "Religion",
+      screenName: "ReligionScreen",
       screen: true,
-      ask: 'Please select religion',
+      placeholder: "Search religions",
+      ask: "Find matches with similar religious views",
+      line: "Set your preferred distance",
     },
     {
       id: 4,
-      preferenceName: 'Family Origin',
-      type: 'Origin',
+      preferenceName: "Family Origin",
+      type: "Origin",
       value: value?.familyOrigin,
-      editType: 'Family Origin',
-      ask: 'Please select family origin',
+      editType: "Family Origin",
+      placeholder: "Search countries",
+      ask: "Embrace a variety of family origins",
+      line: "Explore diverse family origins",
     },
   ];
 
   const PremiumPreferences = [
     {
       id: 1,
-      preferenceName: 'Height',
-      type: 'Height',
+      preferenceName: "Height",
+      type: "Height",
       value: [value?.heightFrom, value?.heightTo],
-      editType: 'Height',
-      ask: 'Please select height',
+      editType: "Height",
+      ask: "Find matches based on height compatibility",
+      line: "Specify preferred height range",
     },
     {
       id: 2,
-      preferenceName: 'Community',
-      type: 'Community',
+      preferenceName: "Community",
+      type: "Community",
       value: value?.community,
-      editType: 'Community',
-      ask: 'Please select community',
+      editType: "Community",
+      placeholder: "Search communities",
+      ask: "Find matches from various communities",
+      line: "Embrace diverse communities",
     },
     {
       id: 3,
-      preferenceName: 'Languages',
-      type: 'Languages',
+      preferenceName: "Languages",
+      type: "Languages",
       value: value?.languagesSpoken,
-      editType: 'Languages',
-      ask: 'Please select languages',
+      editType: "Languages",
+      placeholder: "Search languages",
+      ask: "Connect with matches who speak your language",
+      line: "Explore multilingual connections",
     },
     {
       id: 4,
-      preferenceName: 'Religious Denomination',
-      type: 'Religious',
+      preferenceName: "Religious Denomination",
+      type: "Religious",
       value: value?.religiousDenomination,
-      editType: 'Denomination',
-      ask: 'Please select denomination',
+      editType: "Denomination",
+      placeholder: "Search religious denominations",
+      ask: "Find matches with matching faith traditions",
+      line: "Match based on religious denomination",
     },
     {
       id: 5,
-      preferenceName: 'Do they pray?',
-      type: 'Pray',
+      preferenceName: "Do they pray?",
+      type: "Pray",
       value: value?.theyPray,
-      editType: 'Pray',
-      ask: 'How often do they pray?',
+      editType: "Pray",
+      ask: "Connect with matches who share your spiritual practices",
+      line: "Match your prayer habits",
     },
     {
       id: 6,
-      preferenceName: 'Do they drink?',
-      type: 'Drink',
+      preferenceName: "Do they drink?",
+      type: "Drink",
       value: value?.drinking,
-      editType: 'Drink',
-      ask: 'How often do they drink?',
+      editType: "Drink",
+      ask: "Match with those who share your attitude towards alcohol",
+      line: "Specify drinking preferences",
     },
     {
       id: 7,
-      preferenceName: 'Do they smoke?',
-      type: 'Smoke',
+      preferenceName: "Do they smoke?",
+      type: "Smoke",
       value: value?.smoking,
-      editType: 'Smoke',
-      ask: 'How often do they smoke?',
+      editType: "Smoke",
+      ask: "Connect with matches who match your smoking habits",
+      line: "Set smoking preferences",
     },
     {
       id: 8,
-      preferenceName: 'What are their diet choices?',
-      type: 'Diet',
+      preferenceName: "What are their diet choices?",
+      type: "Diet",
       value: value?.dietChoices,
-      editType: 'Diet',
-      ask: 'What are their diet choices?',
+      editType: "Diet",
+      ask: "Connect with matches who share your dietary lifestyle?",
+      line: "Define diet preferences",
     },
     {
       id: 9,
-      preferenceName: 'Marital history',
-      type: 'Marital',
+      preferenceName: "Marital history",
+      type: "Marital",
       value: value?.maritalHistory,
-      editType: 'Marital History',
-      ask: 'What is their marital history?',
+      editType: "Marital History",
+      ask: "Connect with matches based on their marital background",
+      line: "Choose marital history preferences",
     },
     {
       id: 10,
-      preferenceName: 'Do they have kids?',
-      type: 'HaveKids',
+      preferenceName: "Do they have kids?",
+      type: "HaveKids",
       value: value?.hasKids,
-      editType: 'Have Kids',
-      ask: 'Do they have kids?',
+      editType: "Have Kids",
+      ask: "Match with those who have kids",
+      line: "Preferences regarding children",
     },
     {
       id: 11,
-      preferenceName: 'Do they want kids?',
-      type: 'WantKids',
+      preferenceName: "Do they want kids?",
+      type: "WantKids",
       value: value?.wantKids,
-      editType: 'Want Kids',
-      ask: 'Do they want kids?',
+      editType: "Want Kids",
+      ask: "Connect with those who share your family plans",
+      line: "Desire for future children",
     },
     {
       id: 12,
-      preferenceName: 'Are they willing to relocate?',
-      type: 'Relocate',
+      preferenceName: "Are they willing to relocate?",
+      type: "Relocate",
       value: value?.willingToRelocate,
-      editType: 'Relocate',
-      ask: 'Are they willing to relocate?',
+      editType: "Relocate",
+      ask: "Connect with those who are willing to relocate",
+      line: "Openness to relocation",
     },
   ];
 
   const resetFeature = () => {
     UserService.applyReset(token)
       .then(res => {
-        console.log('applyReset res:', res);
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
         }
       })
-      .catch(err => console.log('applyReset err:', err));
-  };
-
-  const handleBackButton = () => {
-    props.navigation.goBack();
-
-    return true;
+      .catch(err => console.log("applyReset err:", err));
   };
 
   const handleUpgrade = () => {
     if (!premiumPrivacySetting) {
-      props.navigation.navigate('Paywall');
+      props.navigation.navigate("Paywall");
     }
   };
+
   useEffect(() => {
     OnBoardingServices.profileValues(
       encodeURI(
         JSON.stringify([
-          'college',
-          'community',
-          'denomination',
-          'familyOrigin',
-          'language',
-          'occupation',
-        ]),
-      ),
+          "college",
+          "community",
+          "denomination",
+          "familyOrigin",
+          "language",
+          "occupation",
+        ])
+      )
     )
       .then(async res => {
-        console.log('PROFILE VALUES', res);
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
-            type: 'allProfileValues',
+            type: "allProfileValues",
             payload: res?.data?.data,
           });
         }
       })
-      .catch(err => console.log('err', err))
+      .catch(err => console.log("profileValues err", err))
       .finally(() => {});
   }, []);
-  useEffect(() => {
-    BackHandler.addEventListener('hardwareBackPress', handleBackButton);
-    return () => {
-      BackHandler.removeEventListener('hardwareBackPress', handleBackButton);
-    };
-  }, []);
+
   useFocusEffect(
     React.useCallback(() => {
       if (token != null) {
@@ -232,25 +233,89 @@ const SearchPreferences = props => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             let data = res?.data?.data;
-            console.log('userData 1', res);
 
             dispatch({
-              type: 'AUTH_USER',
+              type: "AUTH_USER",
               payload: data,
             });
           }
         });
       } else {
-        alerts('error', 'Your token has expired. Please login again.');
+        alerts("error", "Your token has expired. Please login again.");
       }
-    }, [isFocused]),
+    }, [isFocused])
   );
 
+  const handleClearPref = type => {
+    let body = {};
+    if (type == "basic") {
+      body = {
+        distance: "unlimited",
+        ageFrom: 18,
+        ageTo: 68,
+        religion: null,
+        familyOrigin: null,
+        heightFrom: userData?.UserPreference?.heightFrom,
+        heightTo: userData?.UserPreference?.heightTo,
+        community: userData?.UserPreference?.community,
+        languagesSpoken: userData?.UserPreference?.languagesSpoken,
+        religiousDenomination: userData?.UserPreference?.religiousDenomination,
+        theyPray: userData?.UserPreference?.theyPray,
+        drinking: userData?.UserPreference?.drinking,
+        smoking: userData?.UserPreference?.smoking,
+        dietChoices: userData?.UserPreference?.dietChoices,
+        maritalHistory: userData?.UserPreference?.maritalHistory,
+        haveKids: userData?.UserPreference?.haveKids,
+        wantKids: userData?.UserPreference?.wantKids,
+        willingToRelocate: userData?.UserPreference?.willingToRelocate,
+      };
+    } else {
+      body = {
+        distance: userData?.UserPreference?.distance
+          ? userData?.UserPreference?.distance
+          : "unlimited",
+        ageFrom: userData?.UserPreference?.ageFrom,
+        ageTo: userData?.UserPreference?.ageTo,
+        religion: userData?.UserPreference?.religion,
+        familyOrigin: userData?.UserPreference?.familyOrigin,
+        heightFrom: 0,
+        heightTo: 0,
+        community: null,
+        languagesSpoken: null,
+        religiousDenomination: null,
+        theyPray: null,
+        drinking: null,
+        smoking: null,
+        dietChoices: null,
+        maritalHistory: null,
+        haveKids: null,
+        wantKids: null,
+        willingToRelocate: null,
+      };
+    }
+
+    UserService.searchUserPreference(body, token)
+      .then(res => {
+        handleStatusCode(res);
+        if (res.data.status == 200 || res.data.status == 201) {
+          alerts("success", res.data.message);
+
+          dispatch({
+            type: "SET_PREFERENCE_FILTER",
+            payload: true,
+          });
+        }
+      })
+      .catch(err => console.log("clearPreference err", err));
+  };
+
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: colors.white, padding: 20}}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: colors.white, padding: 20 }}
+    >
       <SettingHeader
         backPress={() => props.navigation.goBack()}
-        screenTitle={'Search preferences'}
+        screenTitle={"Search preferences"}
       />
       {/* 
       <TouchableOpacity onPress={resetFeature}>
@@ -260,9 +325,17 @@ const SearchPreferences = props => {
       </TouchableOpacity> */}
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Text style={styles.basicPreferenceType}>Basic Preferences</Text>
+        <View style={styles.preferenceRow}>
+          <Text style={styles.basicPreferenceType}>Basic Preferences</Text>
+          <Text
+            onPress={() => handleClearPref("basic")}
+            style={styles.clearTxt}
+          >
+            Clear all
+          </Text>
+        </View>
         <View style={styles.actionItemsView}>
-          <View style={{marginVertical: '2%'}}>
+          <View style={{ marginVertical: "2%" }}>
             {BasicPreferences.map((i, index, array) => {
               return (
                 <View>
@@ -273,25 +346,27 @@ const SearchPreferences = props => {
                             preferenceEdit: true,
                             index: i?.index,
                             type: i?.type,
+                            placeholder: i?.placeholder,
                           })
-                        : props.navigation.navigate('EditScreenSetting', {
+                        : props.navigation.navigate("EditScreenSetting", {
                             preferenceEdit: true,
                             index: i?.index,
                             type: i?.editType,
+                            placeholder: i?.placeholder,
                             ask: i?.ask,
                             // ask: i?.ask,
-                            // line: i?.line,
+                            line: i?.line,
                           })
                     }
                     arrowIcon
                     contStyle={styles.privacySettingStyle}
                     toggleOptionTextStyle={{
-                      color: '#374151',
+                      color: "#374151",
                       fontSize: 14,
-                      FontFamily: 'Inter-Medium',
+                      fontFamily: "Inter-Medium",
                     }}
                     toggleOptionText={i.preferenceName}
-                    toggleViewStyle={{paddingBottom: '2%'}}
+                    toggleViewStyle={{ paddingBottom: "2%" }}
                   />
                   {index === array?.length - 1 ? null : (
                     <View style={styles.horizontalLine}></View>
@@ -301,43 +376,45 @@ const SearchPreferences = props => {
             })}
           </View>
         </View>
-        <Text style={[styles.basicPreferenceType]}>Gold Preferences</Text>
+        <View style={styles.preferenceRow}>
+          <Text style={styles.basicPreferenceType}>Gold Preferences</Text>
+          <Text
+            onPress={() => handleClearPref("premium")}
+            style={styles.clearTxt}
+          >
+            Clear all
+          </Text>
+        </View>
         {premiumPrivacySetting == false ? (
           <TouchableOpacity
             onPress={handleUpgrade}
-            style={styles.enableDisableButton}>
-            <Text style={{fontSize: 15, color: colors.white}}>
+            style={styles.enableDisableButton}
+          >
+            <Text style={{ fontSize: 15, color: colors.white }}>
               Upgrade now to use Gold preferences
             </Text>
           </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            onPress={handleDisablePremium}
-            style={styles.enableDisableButton}>
-            <Text style={{fontSize: 15, color: colors.white}}>
-              Disable Premium
-            </Text>
-          </TouchableOpacity>
-        )}
-        <View style={[styles.actionItemsView, {marginBottom: '10%'}]}>
+        ) : null}
+        <View style={[styles.actionItemsView, { marginBottom: "10%" }]}>
           {PremiumPreferences.map((i, index, array) => {
             return (
               <View>
                 <PrivacySettingContainer
                   imageRequire={
                     premiumPrivacySetting
-                      ? require('../../assets/iconimages/settingarrow.png')
-                      : require('../../assets/iconimages/settingarrow.png')
+                      ? require("../../assets/iconimages/settingarrow.png")
+                      : require("../../assets/iconimages/settingarrow.png")
                   }
                   arrowIcononPress={
                     () =>
-                      props.navigation.navigate('EditScreenSetting', {
+                      props.navigation.navigate("EditScreenSetting", {
                         preferenceEdit: true,
                         index: i?.index,
                         type: i?.editType,
+                        placeholder: i?.placeholder,
                         ask: i?.ask,
                         // ask: i?.ask,
-                        // line: i?.line,
+                        line: i?.line,
                       })
 
                     // props.navigation.navigate('MySearchPreferencesEditScreen', {
@@ -352,13 +429,13 @@ const SearchPreferences = props => {
                   arrowIcon
                   toggleOptionTextStyle={{
                     color: premiumPrivacySetting
-                      ? '#374151'
+                      ? "#374151"
                       : colors.PremiumGrey,
                     fontSize: 14,
-                    FontFamily: 'Inter-Medium',
+                    fontFamily: "Inter-Medium",
                   }}
                   toggleOptionText={i.preferenceName}
-                  toggleViewStyle={{paddingBottom: '2%'}}
+                  toggleViewStyle={{ paddingBottom: "2%" }}
                 />
                 {index === array?.length - 1 ? null : (
                   <View style={styles.horizontalLine}></View>
@@ -372,7 +449,7 @@ const SearchPreferences = props => {
           <Text
             style={{
               fontSize: 16,
-              fontFamily: 'Roboto-Medium',
+              fontFamily: 'Inter-Medium',
               color: colors.primaryPink,
               alignSelf: 'center',
               marginVertical: '3%',

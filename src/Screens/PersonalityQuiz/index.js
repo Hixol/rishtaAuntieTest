@@ -1,21 +1,27 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, FlatList, Pressable, ActivityIndicator} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {windowWidth} from '../../utility/size';
-import {useSelector} from 'react-redux';
-import {useHelper} from '../../hooks/useHelper';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { windowWidth } from "../../utility/size";
+import { useSelector } from "react-redux";
+import { useHelper } from "../../hooks/useHelper";
 
-import styles from './styles';
-import Button from '../../components/buttons/Button';
-import PersonalityServices from '../../services/PersonalityServices';
-import colors from '../../utility/colors';
-import * as Progress from 'react-native-progress';
+import styles from "./styles";
+import PersonalityServices from "../../services/PersonalityServices";
+import colors from "../../utility/colors";
+import * as Progress from "react-native-progress";
+import BottomButton from "../../components/buttons/BottomButton";
 
 let isSubmitted = true;
 
 const PersonalityQuiz = props => {
-  const {Alerts, handleStatusCode} = useHelper();
-  const {token} = useSelector(store => store.userReducer);
+  const { Alerts, handleStatusCode } = useHelper();
+  const { token } = useSelector(store => store.userReducer);
 
   let [finalQuiz, setFinalQuiz] = useState([]),
     [outerIndex, setOuterIndex] = useState(0),
@@ -55,10 +61,10 @@ const PersonalityQuiz = props => {
         }
       })
       .catch(err => {
-        if (err?.message.includes('Network')) {
-          Alerts('error', err.message);
+        if (err?.message.includes("Network")) {
+          Alerts("error", err.message);
         } else {
-          console.log('Personality questions err', err);
+          console.log("Personality questions err", err);
         }
       })
       .finally(() => setLoading(false));
@@ -85,7 +91,7 @@ const PersonalityQuiz = props => {
             } else {
               return el;
             }
-          }),
+          })
         );
         setInnerIndex(prevState => prevState + 1);
         if (
@@ -123,7 +129,7 @@ const PersonalityQuiz = props => {
             } else {
               return item;
             }
-          }),
+          })
         );
       } else {
         setProgress(qCounter / 50);
@@ -137,7 +143,7 @@ const PersonalityQuiz = props => {
       }
       setIndex(null);
     } else {
-      Alerts('error', 'Please choose one that applies to you!');
+      Alerts("error", "Please choose one that applies to you!");
     }
   };
 
@@ -154,17 +160,17 @@ const PersonalityQuiz = props => {
         .then(res => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
-            Alerts('success', res.data.message);
-            props.navigation.navigate('BottomTab', {
-              screen: 'Settings',
+            Alerts("success", res.data.message);
+            props.navigation.navigate("BottomTab", {
+              screen: "Settings",
             });
           }
         })
         .catch(err => {
-          if (err?.message.includes('Network')) {
-            Alerts('error', err.message);
+          if (err?.message.includes("Network")) {
+            Alerts("error", err.message);
           } else {
-            console.log('Personality solve questions err', err);
+            console.log("Personality solve questions err", err);
           }
         })
         .finally(() => setLoading(false));
@@ -186,10 +192,10 @@ const PersonalityQuiz = props => {
           } else {
             return item;
           }
-        }),
+        })
       );
     } else {
-      Alerts('error', 'Something went wrong. Please try again!');
+      Alerts("error", "Something went wrong. Please try again!");
     }
   };
 
@@ -197,9 +203,9 @@ const PersonalityQuiz = props => {
     <>
       {loading ? (
         <ActivityIndicator
-          size={'large'}
+          size={"large"}
           color={colors.primaryPink}
-          style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         />
       ) : (
         <SafeAreaView style={styles.container}>
@@ -209,15 +215,15 @@ const PersonalityQuiz = props => {
             color={colors.primaryPink}
             height={8}
           />
-          <View style={{flex: 0.8, marginTop: '9%'}}>
-            <Text style={[styles.boxText, {marginBottom: '10%'}]}>
+          <View style={{ flex: 0.8, marginTop: "9%" }}>
+            <Text style={[styles.boxText, { marginBottom: "10%" }]}>
               Select the choice that applies to you:
             </Text>
             {finalQuiz.length > 0 ? (
               <FlatList
                 data={finalQuiz[0]?.qna}
                 key={(item, index) => index.toString()}
-                renderItem={({item}) => {
+                renderItem={({ item }) => {
                   return item?.map((el, i) => {
                     return (
                       <Pressable
@@ -225,7 +231,8 @@ const PersonalityQuiz = props => {
                         style={[
                           styles.box,
                           index == i ? styles.boxBorder : null,
-                        ]}>
+                        ]}
+                      >
                         <Text style={styles.boxText}>{el?.title}</Text>
                       </Pressable>
                     );
@@ -236,20 +243,17 @@ const PersonalityQuiz = props => {
           </View>
 
           {showBtn ? (
-            <Button
+            <BottomButton
+              bottomStyles={styles.btnContainer}
+              titleStyle={{ color: colors.primaryPink }}
               onPress={onSave}
-              title="Save"
-              YesNoBtn
-              YesNoBtnStyle={{paddingVertical: '2.5%'}}
-              btnTitleStyle={{fontSize: 18, fontFamily: 'Roboto-Medium'}}
+              text="Save"
             />
           ) : (
-            <Button
+            <BottomButton
+              bottomStyles={{ marginBottom: 40 }}
               onPress={onNext}
-              title="NEXT"
-              YesNoBtn
-              YesNoBtnStyle={{paddingVertical: '2.5%'}}
-              btnTitleStyle={{fontSize: 18, fontFamily: 'Roboto-Medium'}}
+              text="NEXT"
             />
           )}
         </SafeAreaView>

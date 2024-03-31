@@ -1,25 +1,24 @@
-import React, {useEffect} from 'react';
-import {Image, Text} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
-import {CommonActions} from '@react-navigation/native';
-import {useHelper} from '../../hooks/useHelper';
-import {useRNIAP} from '../../hooks/useRNIAP';
-import {version} from '../../../package.json';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import React, { useEffect } from "react";
+import { Image, Text } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { CommonActions } from "@react-navigation/native";
+import { useHelper } from "../../hooks/useHelper";
+import { useRNIAP } from "../../hooks/useRNIAP";
+import { version } from "../../../package.json";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import styles from './styles';
-import ProfileServices from '../../services/ProfileServices';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import BadgeServices from '../../services/BadgeServices';
-import colors from '../../utility/colors';
+import styles from "./styles";
+import ProfileServices from "../../services/ProfileServices";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import BadgeServices from "../../services/BadgeServices";
+import colors from "../../utility/colors";
 
 const SplashScreen = props => {
-  const {} = useRNIAP();
+  const dispatch = useDispatch();
 
-  const {token, status, mobileNumber, email, userData} = useSelector(
-    store => store.userReducer,
+  const { token, status, mobileNumber, email, userData } = useSelector(
+    store => store.userReducer
   );
-  const {routeName} = useSelector(store => store.NewOnBoardingReducer);
 
   const {
     handlePlayerId,
@@ -32,10 +31,9 @@ const SplashScreen = props => {
     state,
     mulk,
   } = useHelper();
-  const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log('tokenSplash', token);
+    console.log("tokenSplash", token);
     if (token != null) {
       handleLocation();
       setTimeout(() => {
@@ -44,64 +42,70 @@ const SplashScreen = props => {
     }
     setTimeout(async () => {
       if (
-        ((token !== null || token !== '' || token !== undefined) &&
-          status === 'ACTIVE') ||
-        status === 'COMPLETED' ||
-        status === 'INCOMPLETE'
+        ((token !== null || token !== "" || token !== undefined) &&
+          status === "ACTIVE") ||
+        status === "COMPLETED" ||
+        status === "FAILED" ||
+        status === "INCOMPLETE"
       ) {
         props.navigation.dispatch(
           CommonActions.reset({
             index: 0,
-            routes: [{name: 'BottomTab'}],
-          }),
+            routes: [{ name: "BottomTab" }],
+          })
         );
-        let ccuid = await AsyncStorage.getItem('ccuid');
+        let ccuid = await AsyncStorage.getItem("ccuid");
         handlePlayerId(token, ccuid);
-      } else if (email != '' && status == undefined) {
-        console.log('1');
+      } else if (email != "" && (status == null || status == "INACTIVE")) {
         props.navigation.dispatch(
           CommonActions.reset({
             index: 0,
-            routes: [{name: 'WelcomeScreen'}],
-          }),
+            routes: [{ name: "FullNameScreen" }],
+          })
         );
-      } else if (mobileNumber != '' && status == undefined) {
-        console.log('2');
+      } else if (
+        mobileNumber != "" &&
+        (status == null || status == "INACTIVE")
+      ) {
         props.navigation.dispatch(
           CommonActions.reset({
             index: 0,
-            routes: [{name: 'WelcomeScreen'}],
-          }),
+            routes: [{ name: "FullNameScreen" }],
+          })
         );
-      } else if (email == '' && status == undefined) {
-        console.log('3');
+      } else if (mobileNumber != "" && status == undefined) {
         props.navigation.dispatch(
           CommonActions.reset({
             index: 0,
-            routes: [{name: 'WelcomeScreen'}],
-          }),
+            routes: [{ name: "WelcomeScreen" }],
+          })
         );
-      } else if (mobileNumber == '' && status == undefined) {
-        console.log('4');
+      } else if (email == "" && status == undefined) {
         props.navigation.dispatch(
           CommonActions.reset({
             index: 0,
-            routes: [{name: 'WelcomeScreen'}],
-          }),
+            routes: [{ name: "WelcomeScreen" }],
+          })
+        );
+      } else if (mobileNumber == "" && status == undefined) {
+        props.navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: "WelcomeScreen" }],
+          })
         );
       } else {
-        console.log('5');
         props.navigation.dispatch(
           CommonActions.reset({
             index: 0,
-            routes: [{name: 'WelcomeScreen'}],
-          }),
+            routes: [{ name: "WelcomeScreen" }],
+          })
         );
       }
     }, 2000);
   }, []);
 
-  if (lat != '' && lng != '' && city != '' && state != '' && mulk != '') {
+  if (lat != "" && lng != "" && city != "" && state != "" && mulk != "") {
     updateLocation(token);
   }
 
@@ -111,13 +115,13 @@ const SplashScreen = props => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
-            type: 'AUTH_USER_STATUS',
+            type: "AUTH_USER_STATUS",
             payload: res?.data?.data?.status,
           });
           callBadge();
         }
       })
-      .catch(err => console.log('getMyProfile err', err));
+      .catch(err => console.log("getMyProfile err", err));
   };
 
   const callBadge = () => {
@@ -127,7 +131,7 @@ const SplashScreen = props => {
         if (res.status >= 200 && res.status <= 299) {
         }
       })
-      .catch(err => console.log('callBadge err', err));
+      .catch(err => console.log("callBadge err", err));
   };
 
   return (
@@ -135,9 +139,9 @@ const SplashScreen = props => {
       <Image
         resizeMode="contain"
         style={styles.logo}
-        source={require('../../assets/iconimages/logo.png')}
+        source={require("../../assets/iconimages/logo.png")}
       />
-      <Text style={{color: colors.primaryBlue}}>Version {version}</Text>
+      <Text style={{ color: colors.primaryBlue }}>Version {version}</Text>
     </SafeAreaView>
   );
 };

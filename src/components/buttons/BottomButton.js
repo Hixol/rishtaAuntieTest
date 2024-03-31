@@ -1,44 +1,54 @@
-import React, {useEffect} from 'react';
+import React from "react";
 import {
   Text,
-  View,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-} from 'react-native';
-import colors from '../../utility/colors';
-import {android} from '../../utility/size';
+} from "react-native";
+import { useHelper } from "../../hooks/useHelper";
+import colors from "../../utility/colors";
 
 const BottomButton = props => {
+  const { keyboardSpace } = useHelper();
+
   return (
     <TouchableOpacity
       onPress={props.onPress}
-      style={[styles.buttonView, props.bottomStyles]}>
+      style={[
+        styles.buttonView,
+        props.bottomStyles,
+        {
+          bottom: keyboardSpace === 0 ? 15 : keyboardSpace,
+        },
+      ]}
+    >
       {props.loading ? (
-        <ActivityIndicator size={'small'} color={colors.white} />
+        <ActivityIndicator size={"small"} color={colors.white} />
       ) : (
-        <Text style={styles.buttonText}>
-          {props.text === '' || props?.text === undefined
-            ? 'Continue'
+        <Text style={[styles.buttonText, props.titleStyle]}>
+          {props.text === "" || props?.text === undefined
+            ? "Continue"
             : props.text}
         </Text>
       )}
     </TouchableOpacity>
   );
 };
+
+export default BottomButton;
+
 const styles = StyleSheet.create({
   buttonView: {
-    width: '90%',
-    paddingVertical: '5%',
+    width: "90%",
+    paddingVertical: "5%",
     borderRadius: 10,
     backgroundColor: colors.primaryPink,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     zIndex: 1,
-    position: 'absolute',
-    alignSelf: 'center',
+    position: "absolute",
+    alignSelf: "center",
     bottom: 15,
   },
-  buttonText: {fontSize: 15, color: colors.white, fontFamily: 'Inter-Medium'},
+  buttonText: { fontSize: 15, color: colors.white, fontFamily: "Inter-Medium" },
 });
-export default BottomButton;

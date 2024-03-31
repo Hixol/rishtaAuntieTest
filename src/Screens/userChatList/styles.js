@@ -8,7 +8,7 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   txt: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     fontSize: 14,
     color: colors.textGrey,
     marginVertical: 5,

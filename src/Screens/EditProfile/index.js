@@ -1,39 +1,39 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {useDispatch, useSelector} from 'react-redux';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {PERMISSIONS} from 'react-native-permissions';
-import {handlePermissions} from '../../utility/regex';
-import {OnBoardingServices} from '../../services';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch, useSelector } from "react-redux";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import { PERMISSIONS } from "react-native-permissions";
+import { handlePermissions } from "../../utility/regex";
+import { OnBoardingServices } from "../../services";
 import {
   android,
   ios,
   OS_VER,
   windowHeight,
   windowWidth,
-} from '../../utility/size';
-import {useHelper} from '../../hooks/useHelper';
+} from "../../utility/size";
+import { useHelper } from "../../hooks/useHelper";
 
-import ImageCard from '../../components/Cards/ImageCard';
-import styles from './styles';
-import colors from '../../utility/colors';
-import ProfileServices from '../../services/ProfileServices';
-import Button from '../../components/buttons/Button';
-import ActionCard from '../../components/Cards/ActionCard';
-import ProfileVerificationOnBoarding from '../../components/OnBoarding/ProfileVerificationOnBOarding';
-import Icons from '../../utility/icons';
+import ImageCard from "../../components/Cards/ImageCard";
+import styles from "./styles";
+import colors from "../../utility/colors";
+import ProfileServices from "../../services/ProfileServices";
+import Button from "../../components/buttons/Button";
+import ActionCard from "../../components/Cards/ActionCard";
+import ProfileVerificationOnBoarding from "../../components/OnBoarding/ProfileVerificationOnBOarding";
+import Icons from "../../utility/icons";
 
-const EditProfile = props => {
+const EditProfile = (props) => {
   const dispatch = useDispatch();
-  const {Alerts, handleStatusCode} = useHelper();
-  const {token, userData} = useSelector(store => store.userReducer);
+  const { Alerts, handleStatusCode } = useHelper();
+  const { token, userData } = useSelector((store) => store.userReducer);
 
   let profilePrompts = userData?.ProfilePrompts;
   let [vibes, setVibes] = useState(null);
@@ -45,20 +45,20 @@ const EditProfile = props => {
   const EditOption = [
     {
       id: 1,
-      preferenceName: 'Tag Line',
-      type: 'TagLine',
+      preferenceName: "Tag Line",
+      type: "TagLine",
       value: userData?.Profile?.tagline,
     },
     {
       id: 2,
-      preferenceName: 'Edit My Vibes',
-      type: 'Vibes',
+      preferenceName: "Edit My Vibes",
+      type: "Vibes",
       value: vibes != null ? vibes : undefined,
     },
     {
       id: 3,
-      preferenceName: 'Profile Prompt',
-      type: 'ProfilePrompt',
+      preferenceName: "Profile Prompt",
+      type: "ProfilePrompt",
       value: profilePrompts,
     },
   ];
@@ -66,58 +66,58 @@ const EditProfile = props => {
   let videoButtons = [
     {
       id: 1,
-      title: 'Upload',
-      btnIcon: require('../../assets/iconimages/Upload-01.png'),
+      title: "Upload",
+      btnIcon: require("../../assets/iconimages/Upload-01.png"),
     },
   ];
 
   const EditOptions = [
     {
       id: 1,
-      preferenceName: 'First Name',
-      type: 'FirstName',
+      preferenceName: "First Name",
+      type: "FirstName",
       value: userData?.firstName,
     },
     {
       id: 19,
-      preferenceName: 'Height',
-      type: 'Height',
+      preferenceName: "Height",
+      type: "Height",
       value: userData?.Profile?.height,
     },
     {
       id: 2,
-      preferenceName: 'Family Origin',
-      type: 'FamilyOrigin',
+      preferenceName: "Family Origin",
+      type: "FamilyOrigin",
       value: userData?.Profile?.familyOrigin,
     },
     {
       id: 3,
-      preferenceName: 'Community',
-      type: 'Community',
+      preferenceName: "Community",
+      type: "Community",
       value: userData?.Profile?.community,
     },
     {
       id: 4,
-      preferenceName: 'Languages',
-      type: 'Languages',
+      preferenceName: "Languages",
+      type: "Languages",
       value: userData?.UserLanguages,
     },
     {
       id: 5,
-      preferenceName: 'Religion',
-      type: 'Religion',
+      preferenceName: "Religion",
+      type: "Religion",
       value: userData?.Profile?.religion,
     },
     {
       id: 6,
-      preferenceName: 'Denomination',
-      type: 'Denomination',
+      preferenceName: "Denomination",
+      type: "Denomination",
       value: userData?.Profile?.denomination,
     },
     {
       id: 7,
-      preferenceName: 'Education Level',
-      type: 'EducationLevel',
+      preferenceName: "Education Level",
+      type: "EducationLevel",
       value: userData?.Profile?.education,
     },
     // {
@@ -128,103 +128,103 @@ const EditProfile = props => {
     // },
     {
       id: 9,
-      preferenceName: 'Occupation',
-      type: 'Occupation&Company',
+      preferenceName: "Occupation",
+      type: "Occupation&Company",
       value: userData?.Profile?.occupation,
     },
     {
       id: 10,
-      preferenceName: 'Practicing Level',
-      type: 'PracticingLevel',
+      preferenceName: "Practicing Level",
+      type: "PracticingLevel",
       value: userData?.Profile?.practiceLevel,
     },
 
     {
       id: 11,
-      preferenceName: 'Do you pray?',
-      type: 'Pray',
+      preferenceName: "Do you pray?",
+      type: "Pray",
       value: userData?.Profile?.iPray,
     },
     {
       id: 12,
-      preferenceName: 'Do you drink?',
-      type: 'Drink',
+      preferenceName: "Do you drink?",
+      type: "Drink",
       value: userData?.Profile?.iDrink,
     },
     {
       id: 13,
-      preferenceName: 'Do you smoke?',
-      type: 'Smoke',
+      preferenceName: "Do you smoke?",
+      type: "Smoke",
       value: userData?.UserSmokes,
     },
     {
       id: 14,
-      preferenceName: 'What are your diet choices?',
-      type: 'Diet',
+      preferenceName: "What are your diet choices?",
+      type: "Diet",
       value: userData?.UserDietChoices,
     },
     {
       id: 15,
-      preferenceName: 'Marital history',
-      type: 'Marital',
+      preferenceName: "Marital history",
+      type: "Marital",
       value: userData?.Profile?.maritalHistory,
     },
     {
       id: 16,
-      preferenceName: 'Do you have kids?',
-      type: 'HaveKids',
+      preferenceName: "Do you have kids?",
+      type: "HaveKids",
       value: userData?.Profile?.haveKids,
     },
     {
       id: 17,
-      preferenceName: 'Do you want kids?',
-      type: 'WantKids',
+      preferenceName: "Do you want kids?",
+      type: "WantKids",
       value: userData?.Profile?.wantKids,
     },
     {
       id: 18,
-      preferenceName: 'Are they willing to relocate?',
-      type: 'Relocate',
+      preferenceName: "Are they willing to relocate?",
+      type: "Relocate",
       value: userData?.Profile?.willingToRelocate,
     },
   ];
   const [profilePicArr, setProfilePicArr] = useState([
     {
       index: 0,
-      title: 'Main Display Photo',
+      title: "Main Display Photo",
       profile: true,
       selected: false,
-      key: 'one',
+      key: "one",
     },
     {
       index: 1,
       profile: true,
       selected: false,
-      key: 'two',
+      key: "two",
     },
     {
       index: 2,
       profile: true,
       selected: false,
-      key: 'three',
+      key: "three",
     },
     {
       index: 3,
       profile: true,
       selected: false,
-      key: 'four',
+      key: "four",
     },
     {
       index: 4,
       profile: true,
       selected: false,
-      key: 'five',
+      key: "five",
     },
     {
       index: 5,
       profile: true,
       selected: false,
-      key: 'six',
+      key: "six",
     },
   ]);
 
@@ -237,19 +237,19 @@ const EditProfile = props => {
   useEffect(() => {
     if (userData != null && userData.UserMedia.length > 0) {
       userData.UserMedia.map((x, index) => {
-        if (x.type == 'image') {
+        if (x.type == "image") {
           let dummyArr = [...profilePicArr];
-          dummyArr[index]['image'] = {
+          dummyArr[index]["image"] = {
             index,
             type: x.type,
-            name: x.url.split('/').pop(),
+            name: x.url.split("/").pop(),
             uri: x.url,
           };
           setProfilePicArr(dummyArr);
-        } else if (x.type == 'video') {
+        } else if (x.type == "video") {
           let decodeUrl = decodeURIComponent(x.url);
           setIntroVideo({
-            name: decodeUrl.split('/').pop(),
+            name: decodeUrl.split("/").pop(),
             type: x.type,
             uri: x.url,
           });
@@ -258,36 +258,36 @@ const EditProfile = props => {
     }
   }, []);
 
-  const handleAlert = state => {
+  const handleAlert = (state) => {
     setMediaOptions(false);
   };
 
   const handleGalleryMedia = async (state, result) => {
-    if (result == 'granted') {
+    if (result == "granted") {
       let options = {
-        mediaType: 'video',
-        videoQuality: 'low',
+        mediaType: "video",
+        videoQuality: "low",
       };
 
-      await launchImageLibrary(options, res => {
-        if (res.errorCode == 'others') {
+      await launchImageLibrary(options, (res) => {
+        if (res.errorCode == "others") {
           Alerts(
-            'error',
+            "error",
             res.errorMessage
               ? res.errorMessage
-              : 'Gallery support is not available on your device.',
+              : "Gallery support is not available on your device."
           );
         } else if (res.didCancel === true) {
         } else if (res?.assets[0]?.height == 0 || res?.assets[0]?.width == 0) {
-          Alerts('error', 'Please select jpeg/png format images.');
+          Alerts("error", "Please select jpeg/png format images.");
         } else {
           let uri = res?.assets[0]?.uri;
           let type = res.assets[0]?.type;
 
-          if (android && !uri.includes('.mp4')) {
-            uri = `${uri}.${type.split('/').pop()}`;
-          } else if (ios && !uri.includes('.mov')) {
-            uri = `${uri}.${type.split('/').pop()}`;
+          if (android && !uri.includes(".mp4")) {
+            uri = `${uri}.${type.split("/").pop()}`;
+          } else if (ios && !uri.includes(".mov")) {
+            uri = `${uri}.${type.split("/").pop()}`;
           }
 
           let obj = {
@@ -299,64 +299,64 @@ const EditProfile = props => {
         }
       });
       setMediaOptions(state);
-    } else if (result == 'blocked' || result == 'denied') {
-      Alerts('error', 'Please allow permission from settings.');
-    } else if (result == 'unavailable') {
-      Alerts('error', 'This feature is not available on this device.');
+    } else if (result == "blocked" || result == "denied") {
+      Alerts("error", "Please allow permission from settings.");
+    } else if (result == "unavailable") {
+      Alerts("error", "This feature is not available on this device.");
     }
   };
 
-  const handleGallery = state => {
+  const handleGallery = (state) => {
     if (ios) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.IOS.PHOTO_LIBRARY,
-        'gallery',
-        res => {
+        "gallery",
+        (res) => {
           handleGalleryMedia(state, res);
-        },
+        }
       );
     } else if (android) {
       if (OS_VER >= 13) {
-        handleGalleryMedia(state, 'granted');
+        handleGalleryMedia(state, "granted");
       } else {
         handlePermissions.checkMultiplePermissions(
           PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
-          'gallery',
-          res => {
+          "gallery",
+          (res) => {
             handleGalleryMedia(state, res);
-          },
+          }
         );
       }
     }
   };
 
   const handleCameraMedia = async (state, result) => {
-    if (result == 'granted') {
+    if (result == "granted") {
       let options = {
-        mediaType: 'video',
-        videoQuality: 'low',
-        cameraType: 'back',
+        mediaType: "video",
+        videoQuality: "low",
+        cameraType: "back",
       };
 
-      await launchCamera(options, res => {
-        if (res.errorCode == 'others') {
+      await launchCamera(options, (res) => {
+        if (res.errorCode == "others") {
           Alerts(
-            'error',
+            "error",
             res.errorMessage
               ? res.errorMessage
-              : 'Camera support is not available on your device.',
+              : "Camera support is not available on your device."
           );
         } else if (res.didCancel === true) {
         } else if (res?.assets[0]?.height == 0 || res?.assets[0]?.width == 0) {
-          Alerts('error', 'Please select jpeg/png format images.');
+          Alerts("error", "Please select jpeg/png format images.");
         } else {
           let uri = res?.assets[0]?.uri;
           let type = res.assets[0]?.type;
 
-          if (android && !uri.includes('.mp4')) {
-            uri = `${uri}.${type.split('/').pop()}`;
-          } else if (ios && !uri.includes('.mov')) {
-            uri = `${uri}.${type.split('/').pop()}`;
+          if (android && !uri.includes(".mp4")) {
+            uri = `${uri}.${type.split("/").pop()}`;
+          } else if (ios && !uri.includes(".mov")) {
+            uri = `${uri}.${type.split("/").pop()}`;
           }
 
           let obj = {
@@ -368,70 +368,70 @@ const EditProfile = props => {
         }
       });
       setMediaOptions(state);
-    } else if (result == 'blocked' || result == 'denied') {
-      Alerts('error', 'Please allow permission from settings.');
-    } else if (result == 'unavailable') {
-      Alerts('error', 'This feature is not available on this device.');
+    } else if (result == "blocked" || result == "denied") {
+      Alerts("error", "Please allow permission from settings.");
+    } else if (result == "unavailable") {
+      Alerts("error", "This feature is not available on this device.");
     }
   };
 
-  const handleCamera = state => {
+  const handleCamera = (state) => {
     if (ios) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.IOS.CAMERA,
-        'camera',
-        res => {
+        "camera",
+        (res) => {
           handleCameraMedia(state, res);
-        },
+        }
       );
     } else if (android) {
       handlePermissions.checkMultiplePermissions(
         PERMISSIONS.ANDROID.CAMERA,
-        'camera',
-        res => {
+        "camera",
+        (res) => {
           handleCameraMedia(state, res);
-        },
+        }
       );
     }
   };
 
-  const handleRemoveVideo = state => {
+  const handleRemoveVideo = (state) => {
     setVideoUri(null);
     setMediaOptions(state);
   };
 
-  const handleOnSelect = item => {
+  const handleOnSelect = (item) => {
     if (item?.uri) {
       let dummyArr = [...profilePicArr];
-      dummyArr[item.index]['image'] = item;
+      dummyArr[item.index]["image"] = item;
       setProfilePicArr(dummyArr);
       setIsUploadingImage(true);
     }
   };
 
-  const handleOnRemove = index => {
+  const handleOnRemove = (index) => {
     let dummyArr = [...profilePicArr];
-    dummyArr[index]['image'] = null;
+    dummyArr[index]["image"] = null;
     setProfilePicArr(dummyArr);
   };
 
-  const uploadVideo = video => {
+  const uploadVideo = (video) => {
     let formData = new FormData();
-    formData.append('video', video);
+    formData.append("video", video);
 
     OnBoardingServices.uploadVideo(formData, token)
-      .then(res => {
+      .then((res) => {
         if (res.status >= 200 && res.status <= 299) {
           let decodeUrl = decodeURIComponent(res.data?.data);
           setIntroVideo({
-            name: decodeUrl.split('/').pop(),
-            type: 'video',
+            name: decodeUrl.split("/").pop(),
+            type: "video",
             uri: res.data?.data,
           });
-          Alerts('success', res.data.message);
+          Alerts("success", res.data.message);
         }
       })
-      .catch(err => Alerts('error', err?.message.toString()))
+      .catch((err) => Alerts("error", err?.message.toString()))
       .finally(() => {
         setVideoUri(null);
         setLoading(false);
@@ -440,15 +440,15 @@ const EditProfile = props => {
 
   const uploadImages = (formData, video = null) => {
     ProfileServices.updateProfile(formData, token)
-      .then(res => {
+      .then((res) => {
         handleStatusCode(res);
         if (res.data.status >= 200 && res.data.status <= 299) {
           dispatch({
-            type: 'AUTH_USER',
+            type: "AUTH_USER",
             payload: res.data.data.user,
           });
 
-          Alerts('success', res.data.message);
+          Alerts("success", res.data.message);
           setIsUploadingImage(false);
 
           if (video != null) {
@@ -458,10 +458,10 @@ const EditProfile = props => {
           }
         }
       })
-      .catch(err => {
+      .catch((err) => {
         setLoading(false);
-        Alerts('error', err?.message.toString());
-        console.log('updateProfile err:', err);
+        Alerts("error", err?.message.toString());
+        console.log("updateProfile err:", err);
       });
   };
 
@@ -471,7 +471,7 @@ const EditProfile = props => {
     if (videoUri != null && isUploadingImage == false) {
       uploadVideo(videoUri);
     } else if (
-      profilePicArr.some(el => /file/.test(el?.image?.uri)) &&
+      profilePicArr.some((el) => /file/.test(el?.image?.uri)) &&
       isUploadingImage
     ) {
       let formData = new FormData();
@@ -494,7 +494,7 @@ const EditProfile = props => {
         uploadImages(formData);
       }
     } else {
-      Alerts('error', 'Please upload media!');
+      Alerts("error", "Please upload media!");
       setLoading(false);
     }
   };
@@ -504,10 +504,11 @@ const EditProfile = props => {
       style={{
         flex: 1,
         backgroundColor: colors.greyWhite,
-      }}>
+      }}
+    >
       <ActionCard
         isImageAct={true}
-        heading={'Choose an Action'}
+        heading={"Choose an Action"}
         handleGallery={handleGallery}
         handleCamera={handleCamera}
         handleAlert={handleAlert}
@@ -523,37 +524,39 @@ const EditProfile = props => {
               videoUri != null || introVideo != null
                 ? windowHeight * 0.53
                 : windowHeight * 0.1 - 100,
-          }}>
+          }}
+        >
           {(videoUri != null || introVideo != null) && (
             <ProfileVerificationOnBoarding
               type="upload"
               img={videoUri?.uri ? videoUri?.uri : introVideo?.uri}
               conStyle={{
-                width: '65%',
-                height: '25%',
+                width: "65%",
+                height: "25%",
                 marginTop: ios ? 0 : 20,
               }}
             />
           )}
           <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-around',
-              marginTop: videoUri != null || introVideo != null ? '30%' : '8%',
-            }}>
-            {videoButtons.map(item => (
+              flexDirection: "row",
+              justifyContent: "space-around",
+              marginTop: videoUri != null || introVideo != null ? "30%" : "8%",
+            }}
+          >
+            {videoButtons.map((item) => (
               <Button
                 key={item.id}
                 onPress={() => setMediaOptions(true)}
                 OnBoadringBtn
-                YesNoBtnStyle={{width: '45%', paddingVertical: '1.7%'}}
+                YesNoBtnStyle={{ width: "45%", paddingVertical: "1.7%" }}
                 btnTitleStyle={{
                   fontSize: 16,
                   color: colors.primaryPink,
                 }}
                 width={27}
                 height={27}
-                imgStyle={{marginRight: 10}}
+                imgStyle={{ marginRight: 10 }}
                 btnIcon={item.btnIcon}
                 title={item.title}
               />
@@ -563,7 +566,7 @@ const EditProfile = props => {
           <ImageCard
             styleContainer={{
               height: windowHeight * 0.3,
-              marginVertical: '7%',
+              marginVertical: "7%",
               borderRadius: 6,
             }}
             cardStyle={{
@@ -582,12 +585,13 @@ const EditProfile = props => {
             disabled={loading}
             style={styles.btn}
             activeOpacity={0.7}
-            onPress={onSaveMedia}>
+            onPress={onSaveMedia}
+          >
             {loading && (
               <ActivityIndicator
                 size="small"
                 color={colors.primaryPink}
-                style={{marginRight: 7}}
+                style={{ marginRight: 7 }}
               />
             )}
             <Text style={styles.txtStyle}>Save</Text>
@@ -596,21 +600,22 @@ const EditProfile = props => {
           <View style={styles.middleSec}>
             <Text
               style={{
-                marginLeft: '2%',
+                marginLeft: "2%",
                 color: colors.primaryBlue,
-                fontFamily: 'Roboto-Medium',
-                marginVertical: '1%',
-              }}>
+                fontFamily: "Inter-Medium",
+                marginVertical: "1%",
+              }}
+            >
               Share your personality to get the best interactions
             </Text>
 
             <View>
-              {EditOption.map(i => {
+              {EditOption.map((i) => {
                 return (
                   <TouchableOpacity
                     key={i.id}
                     onPress={() =>
-                      props.navigation.navigate('TalhaDemo', {
+                      props.navigation.navigate("TalhaDemo", {
                         paramKey: i.type,
                         paramKey2: i.preferenceName,
                         value: i.value,
@@ -618,11 +623,12 @@ const EditProfile = props => {
                     }
                     style={[
                       styles.detailsView,
-                      {borderBottomWidth: 1, borderColor: '#dddddd'},
-                    ]}>
+                      { borderBottomWidth: 1, borderColor: "#dddddd" },
+                    ]}
+                  >
                     <Text style={styles.detailTxt}>{i.preferenceName}</Text>
                     <Icons.FontAwesome
-                      name={'long-arrow-right'}
+                      name={"long-arrow-right"}
                       size={25}
                       color={colors.primaryBlue}
                     />
@@ -633,12 +639,12 @@ const EditProfile = props => {
           </View>
 
           <View style={styles.middleSec}>
-            {EditOptions.map(i => {
+            {EditOptions.map((i) => {
               return (
                 <TouchableOpacity
                   key={i.id}
                   onPress={() =>
-                    props.navigation.navigate('TalhaDemo', {
+                    props.navigation.navigate("TalhaDemo", {
                       paramKey: i.type,
                       paramKey2: i.preferenceName,
                       value: i.value,
@@ -646,11 +652,12 @@ const EditProfile = props => {
                   }
                   style={[
                     styles.detailsView,
-                    {borderBottomWidth: 1, borderColor: '#dddddd'},
-                  ]}>
+                    { borderBottomWidth: 1, borderColor: "#dddddd" },
+                  ]}
+                >
                   <Text style={styles.detailTxt}>{i.preferenceName} </Text>
                   <Icons.FontAwesome
-                    name={'long-arrow-right'}
+                    name={"long-arrow-right"}
                     size={25}
                     color={colors.primaryBlue}
                   />
@@ -662,12 +669,13 @@ const EditProfile = props => {
             style={[
               styles.txtStyle,
               {
-                alignSelf: 'center',
-                marginTop: '3%',
-                marginBottom: '4%',
+                alignSelf: "center",
+                marginTop: "3%",
+                marginBottom: "4%",
                 fontSize: 16,
               },
-            ]}>
+            ]}
+          >
             Need Help?
           </Text>
         </ScrollView>

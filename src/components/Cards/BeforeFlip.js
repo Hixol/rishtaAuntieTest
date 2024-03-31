@@ -1,39 +1,36 @@
-import React, {useState} from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   ImageBackground,
   ActivityIndicator,
-} from 'react-native';
+} from "react-native";
+import { calculateDateAndTime } from "../../utility/regex";
 
-import styles from './styles';
-import CountryFlag from 'react-native-country-flag';
-import colors from '../../utility/colors';
-import FastImage from 'react-native-fast-image';
-import Countries from '../../assets/countryLists/Countries';
+import styles from "./styles";
+import CountryFlag from "react-native-country-flag";
+import colors from "../../utility/colors";
+import FastImage from "react-native-fast-image";
+import Countries from "../../assets/countryLists/Countries";
 
 const BeforeFlip = props => {
   const [loading, setLoading] = useState(false);
 
   let flagsLiving = null;
-  let date_1 = new Date(props.createdAt);
-  let date_2 = new Date();
-  let difference = date_2.getTime() - date_1.getTime();
-  let TotalDays = Math.ceil(difference / (1000 * 3600 * 24));
 
   Countries.filter(country => {
     if (
-      'otherUser' in props.item &&
+      "otherUser" in props.item &&
       country.en == props.item.otherUser.country
     ) {
       flagsLiving = country.code;
-    } else if ('User' in props.item && country.en == props.item.User.country) {
+    } else if ("User" in props.item && country.en == props.item.User.country) {
       flagsLiving = country.code;
-    } else if ('user' in props.item && country.en == props.item.user.country) {
+    } else if ("user" in props.item && country.en == props.item.user.country) {
       flagsLiving = country.code;
     } else if (
-      'vieweeUser' in props.item &&
+      "vieweeUser" in props.item &&
       country.en == props.item.vieweeUser.country
     ) {
       flagsLiving = country.code;
@@ -43,7 +40,8 @@ const BeforeFlip = props => {
   return (
     <TouchableOpacity
       onPress={props.beforeFlipPress}
-      style={styles.shadowContainer}>
+      style={styles.shadowContainer}
+    >
       {loading && (
         <ActivityIndicator
           animating
@@ -57,14 +55,15 @@ const BeforeFlip = props => {
         onLoadEnd={() => setLoading(false)}
         style={styles.imgBg}
         resizeMode="cover"
-        imageStyle={{borderRadius: 36}}
+        imageStyle={{ borderRadius: 36 }}
         source={
-          props.resourceType === 'USER_MEDIA'
+          props.resourceType === "USER_MEDIA"
             ? props.Image
             : props.resourceType
             ? props.promptImage
             : props.Image
-        }>
+        }
+      >
         <View style={styles.overlay} />
 
         <View style={styles.infoContainer}>
@@ -74,7 +73,7 @@ const BeforeFlip = props => {
           </Text>
           <Text style={styles.locationTxt}>{props.Blocation}</Text>
           <Text style={styles.daysTxt}>
-            {TotalDays <= 1 ? TotalDays + ' Day Ago' : TotalDays + ' Days Ago'}
+            {calculateDateAndTime(props.createdAt)}
           </Text>
           <View style={styles.flagsContainer}>
             <CountryFlag isoCode={flagsLiving} size={18} />
@@ -84,13 +83,14 @@ const BeforeFlip = props => {
 
         <TouchableOpacity
           onPress={props.onPress1}
-          style={styles.diagonalContainer}>
+          style={styles.diagonalContainer}
+        >
           <View style={styles.diagonalInnerContainer}>
             <Text style={styles.viewTxt}>View More</Text>
             <FastImage
               resizeMode="contain"
               style={styles.viewArrow}
-              source={require('../../assets/iconimages/viewMoreArrow.png')}
+              source={require("../../assets/iconimages/viewMoreArrow.png")}
             />
           </View>
         </TouchableOpacity>

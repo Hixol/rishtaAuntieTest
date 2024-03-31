@@ -11,7 +11,7 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   promptHeading: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     color: colors.primaryBlue,
     marginTop: '5%',
   },
@@ -38,14 +38,14 @@ export default StyleSheet.create({
   },
   upgradePrompt: {
     fontSize: 14,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     color: colors.primaryPink,
     marginVertical: '5%',
     marginBottom: '10%',
   },
   addPromptText: {
     fontSize: 15,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     color: colors.primaryPink,
   },
   headingSec: {
@@ -54,7 +54,7 @@ export default StyleSheet.create({
     marginBottom: '7%',
   },
   selectionHeading: {
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     color: colors.primaryBlue,
     fontSize: 18,
   },
@@ -74,7 +74,7 @@ export default StyleSheet.create({
   },
   btnTxt: {
     color: 'black',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     fontSize: 13,
   },
   saveBtn: {
@@ -91,7 +91,7 @@ export default StyleSheet.create({
   },
   saveTxt: {
     color: colors.primaryPink,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     fontSize: 18,
   },
 });

@@ -1,60 +1,72 @@
-import React, {useState, useEffect, useContext} from 'react';
-import {Text, View, Alert, Modal, TouchableOpacity} from 'react-native';
-import {Auth} from 'aws-amplify';
-import {useDispatch, useSelector} from 'react-redux';
-import {CommonActions} from '@react-navigation/native';
-import {SocketContext} from '../../context/SocketContext';
-import {useHelper} from '../../hooks/useHelper';
-import {version} from '../../../package.json';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import styles from './styles';
-import colors from '../../utility/colors';
-import HeaderContainer from '../../components/containers/headerContainer';
-import BasicPrivacySetting from '../../components/containers/BasicPrivacySetting';
-import LoginMethodModalOptions from '../../components/Modal/LoginMethodModalOptions';
-import ProfileServices from '../../services/ProfileServices';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Icons from '../../utility/icons';
-import SettingHeader from '../../components/containers/settingHeader';
-import FastImage from 'react-native-fast-image';
-import ActionBottomModal from '../../components/Modal/ActionBottomModal';
+import React, { useState, useEffect, useContext } from "react";
+import {
+  Text,
+  View,
+  Alert,
+  Modal,
+  Linking,
+  TouchableOpacity,
+} from "react-native";
+import { Auth } from "aws-amplify";
+import { useDispatch, useSelector } from "react-redux";
+import { CommonActions } from "@react-navigation/native";
+import { SocketContext } from "../../context/SocketContext";
+import { useHelper } from "../../hooks/useHelper";
+import { version } from "../../../package.json";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { UserService } from "../../services";
+
+import styles from "./styles";
+import colors from "../../utility/colors";
+import awsmobile from "../../aws-exports";
+import ConnectyCube from "react-native-connectycube";
+import HeaderContainer from "../../components/containers/headerContainer";
+import BasicPrivacySetting from "../../components/containers/BasicPrivacySetting";
+import LoginMethodModalOptions from "../../components/Modal/LoginMethodModalOptions";
+import ProfileServices from "../../services/ProfileServices";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Icons from "../../utility/icons";
+import SettingHeader from "../../components/containers/settingHeader";
+import FastImage from "react-native-fast-image";
+import ActionBottomModal from "../../components/Modal/ActionBottomModal";
+import InAppBrowser from "react-native-inappbrowser-reborn";
 
 const ModalDataArray = [
   {
     id: 1,
-    toggleName: 'Facebook',
-    iconName: 'facebook',
-    toggleStatus: 'toggle',
+    toggleName: "Facebook",
+    iconName: "facebook",
+    toggleStatus: "toggle",
   },
   {
     id: 2,
-    toggleName: 'Instagram',
-    iconName: 'instagram',
-    toggleStatus: 'toggle',
+    toggleName: "Instagram",
+    iconName: "instagram",
+    toggleStatus: "toggle",
   },
   {
     id: 3,
-    toggleName: 'Instagram: Link IG feed to profile',
-    iconName: 'instagram',
-    toggleStatus: 'toggle',
+    toggleName: "Instagram: Link IG feed to profile",
+    iconName: "instagram",
+    toggleStatus: "toggle",
   },
   {
     id: 4,
-    toggleName: 'Google',
-    iconName: 'google',
-    toggleStatus: 'toggle',
+    toggleName: "Google",
+    iconName: "google",
+    toggleStatus: "toggle",
   },
   {
     id: 5,
-    toggleName: 'Phone',
-    iconName: 'phone-portrait-outline',
-    toggleStatus: 'editIcon',
+    toggleName: "Phone",
+    iconName: "phone-portrait-outline",
+    toggleStatus: "editIcon",
   },
   {
     id: 6,
-    toggleName: 'Email Address',
-    iconName: 'email',
-    toggleStatus: 'editIcon',
+    toggleName: "Email Address",
+    iconName: "email",
+    toggleStatus: "editIcon",
   },
 ];
 
@@ -65,25 +77,25 @@ const MySetting = props => {
 
   const socket = useContext(SocketContext);
   const dispatch = useDispatch();
-  const {handleStatusCode} = useHelper();
-  const {token, email, settings} = useSelector(store => store.userReducer);
+  const { handleStatusCode, handleDisablePremium } = useHelper();
+  const { token, email, settings } = useSelector(store => store.userReducer);
 
   const onToggleSwitch = (type, val) => {
     switch (type) {
-      case 'Push Notification':
+      case "Push Notification":
         dispatch({
-          type: 'USER_IS_NOTIFICATION',
+          type: "USER_IS_NOTIFICATION",
           payload: val,
         });
         break;
 
-      case 'Dark Mode':
+      case "Dark Mode":
         dispatch({
-          type: 'USER_IS_DARK_MODE',
+          type: "USER_IS_DARK_MODE",
           payload: val,
         });
         break;
-      case 'login Method':
+      case "login Method":
         break;
       default:
         return false;
@@ -91,42 +103,62 @@ const MySetting = props => {
   };
 
   const logOut = async () => {
-    if (email != '') {
+    // ConnectyCube.chat.disconnect();
+    // await ConnectyCube.destroySession();
+    await UserService.logout(token);
+
+    if (email != "") {
       dispatch({
-        type: 'USER_EMAIL',
-        payload: '',
+        type: "USER_EMAIL",
+        payload: "",
       });
-      Auth.signOut()
-        .then(res => console.log('signOut res:', res))
-        .catch(err => console.log('signOut err:', err));
+      await Auth.signOut().catch(err => console.log("auth signOut err:", err));
+
+      await InAppBrowser.isAvailable();
+
+      const res = await InAppBrowser.openAuth(
+        `https://${awsmobile.oauth.domain}/logout?client_id=${awsmobile.aws_user_pools_web_client_id}&logout_uri=${awsmobile.oauth.redirectSignOut}`,
+        awsmobile.oauth.redirectSignOut,
+        {
+          dismissButtonStyle: "cancel",
+          showTitle: false,
+          enableUrlBarHiding: true,
+          enableDefaultShare: false,
+        }
+      );
+
+      if (res.type == "cancel") {
+      } else if (res.type == "success" && res.url) {
+        Linking.openURL(res.url);
+      }
     }
     dispatch({
-      type: 'AUTH_TOKEN',
+      type: "AUTH_TOKEN",
       payload: null,
     });
     dispatch({
-      type: 'AUTH_USER_STATUS',
+      type: "AUTH_USER_STATUS",
       payload: null,
     });
     dispatch({
-      type: 'routeName',
-      payload: '',
+      type: "routeName",
+      payload: "",
     });
     // dispatch({
     //   type: 'AUTH_USER',
     //   payload: null,
     // });
     dispatch({
-      type: 'USER_MOBILE_NO',
-      payload: '',
+      type: "USER_MOBILE_NO",
+      payload: "",
     });
 
     await AsyncStorage.clear();
     props.navigation.dispatch(
       CommonActions.reset({
         index: 0,
-        routes: [{name: 'WelcomeScreen'}],
-      }),
+        routes: [{ name: "WelcomeScreen" }],
+      })
     );
   };
 
@@ -137,13 +169,13 @@ const MySetting = props => {
   const updateSetting = () => {
     let urlencoded = new URLSearchParams();
 
-    urlencoded.append('isNotificationEnabled', settings.isNotificationEnabled);
-    urlencoded.append('isDarkMode', settings.isDarkMode);
-    urlencoded.append('discoveryMode', settings.discoveryMode);
-    urlencoded.append('hideAge', settings.hideAge);
-    urlencoded.append('chupkeChupke', settings.chupkeChupke);
-    urlencoded.append('hideLiveStatus', settings.hideLiveStatus);
-    urlencoded.append('showMessagePreview', settings.showMessagePreview);
+    urlencoded.append("isNotificationEnabled", settings.isNotificationEnabled);
+    urlencoded.append("isDarkMode", settings.isDarkMode);
+    urlencoded.append("discoveryMode", settings.discoveryMode);
+    urlencoded.append("hideAge", settings.hideAge);
+    urlencoded.append("chupkeChupke", settings.chupkeChupke);
+    urlencoded.append("hideLiveStatus", settings.hideLiveStatus);
+    urlencoded.append("showMessagePreview", settings.showMessagePreview);
 
     if (token != null) {
       ProfileServices.updateUserSettings(urlencoded, token)
@@ -152,7 +184,7 @@ const MySetting = props => {
           if (res.data.status >= 200 && res.data.status <= 299) {
           }
         })
-        .catch(err => console.log('err', err));
+        .catch(err => console.log("updateUserSettings err", err));
     }
   };
 
@@ -168,28 +200,29 @@ const MySetting = props => {
       /> */}
         <SettingHeader
           backPress={() => props.navigation.goBack()}
-          screenTitle={'My settings'}
+          screenTitle={"My settings"}
         />
 
         <View
           style={[
             styles.actionItemsView,
             {
-              marginTop: '5%',
+              marginTop: "5%",
             },
-          ]}>
+          ]}
+        >
           <BasicPrivacySetting
             toggleSwitch
             onToggleSwitch={onToggleSwitch}
             isOn={settings.isNotificationEnabled}
-            toggleOptionText={'Push Notification'}
+            toggleOptionText={"Push Notification"}
           />
           <View style={styles.horizontalLine}></View>
           <BasicPrivacySetting
             toggleSwitch
             onToggleSwitch={onToggleSwitch}
             isOn={settings.isDarkMode}
-            toggleOptionText={'Dark Mode'}
+            toggleOptionText={"Dark Mode"}
           />
         </View>
 
@@ -197,30 +230,33 @@ const MySetting = props => {
           style={[
             styles.actionItemsView,
             {
-              marginTop: '5%',
+              marginTop: "5%",
             },
-          ]}>
+          ]}
+        >
           <TouchableOpacity
-            onPressIn={() => props.navigation.navigate('Paywall')}
+            onPressIn={handleDisablePremium}
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
+              flexDirection: "row",
+              justifyContent: "space-between",
               // marginHorizontal: '5%',
-              alignItems: 'center',
-            }}>
+              alignItems: "center",
+            }}
+          >
             <Text
               style={{
                 fontSize: 14,
-                color: '#374151',
-                fontFamily: 'Inter-Medium',
-              }}>
+                color: "#374151",
+                fontFamily: "Inter-Medium",
+              }}
+            >
               Manage my subscription
             </Text>
             <TouchableOpacity>
               <FastImage
                 resizeMode="contain"
-                style={{width: 20, height: 20}}
-                source={require('../../assets/iconimages/settingarrow.png')}
+                style={{ width: 20, height: 20 }}
+                source={require("../../assets/iconimages/settingarrow.png")}
               />
             </TouchableOpacity>
           </TouchableOpacity>
@@ -237,7 +273,7 @@ const MySetting = props => {
                   style={{
                     fontSize: 22,
                     color: colors.primaryPink,
-                    fontFamily: 'Roboto-Bold',
+                    fontFamily: 'Inter-Bold',
                     marginHorizontal: '3%',
                   }}>
                   Login Options
@@ -277,7 +313,7 @@ const MySetting = props => {
             style={{
               fontSize: 17,
               color: colors.primaryBlue,
-              fontFamily: 'Roboto-Bold',
+              fontFamily: 'Inter-Bold',
               paddingVertical: '1%',
               paddingHorizontal: '2%',
               marginHorizontal: '5%',
@@ -324,50 +360,53 @@ const MySetting = props => {
         }}>
         We Don't post anything to your social media
       </Text> */}
-        <View style={{marginTop: '5%'}}>
+        <View style={{ marginTop: "5%" }}>
           <TouchableOpacity
             onPress={() => logOut()}
             style={[
               styles.buttonContainer,
               {
-                backgroundColor: '#FDEDF1',
+                backgroundColor: "#FDEDF1",
                 borderRadius: 10,
-                justifyContent: 'flex-start',
+                justifyContent: "flex-start",
                 borderWidth: 0.5,
-                paddingVertical: '5%',
-                width: '100%',
+                paddingVertical: "5%",
+                width: "100%",
               },
-            ]}>
-            <Icons.MaterialIcons name={'logout'} size={20} color={'#EF4770'} />
+            ]}
+          >
+            <Icons.MaterialIcons name={"logout"} size={20} color={"#EF4770"} />
             <Text
               style={[
                 styles.btnTitle,
                 {
-                  fontFamily: 'Inter-SemiBold',
+                  fontFamily: "Inter-SemiBold",
                   fontSize: 14,
-                  color: '#EF4770',
+                  color: "#EF4770",
                   left: 10,
                 },
-              ]}>
-              {' '}
-              Log Out{' '}
+              ]}
+            >
+              {" "}
+              Log Out{" "}
             </Text>
           </TouchableOpacity>
         </View>
-        <View style={{marginTop: '5%'}}>
+        <View style={{ marginTop: "5%" }}>
           <TouchableOpacity
             style={[
               styles.buttonContainer,
               {
                 backgroundColor: colors.white,
-                width: '100%',
+                width: "100%",
                 borderRadius: 10,
-                justifyContent: 'flex-start',
+                justifyContent: "flex-start",
                 borderWidth: 0.5,
-                paddingVertical: '5%',
+                paddingVertical: "5%",
               },
             ]}
-            onPress={() => setAction(true)}>
+            onPress={() => setAction(true)}
+          >
             {/* <Icons.AntDesign
             name={'delete'}
             size={15}
@@ -377,11 +416,12 @@ const MySetting = props => {
               style={[
                 styles.btnTitle,
                 {
-                  fontFamily: 'Inter-SemiBold',
+                  fontFamily: "Inter-SemiBold",
                   fontSize: 14,
                   color: colors.black,
                 },
-              ]}>
+              ]}
+            >
               Delete Account
             </Text>
           </TouchableOpacity>
@@ -389,17 +429,19 @@ const MySetting = props => {
         <View
           style={{
             flex: 1,
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            marginBottom: '4%',
-          }}>
+            justifyContent: "flex-end",
+            alignItems: "center",
+            marginBottom: "4%",
+          }}
+        >
           <TouchableOpacity
-            onPress={() => Alert.alert('How may i assist you!')}>
-            <Text style={{color: colors.primaryPink, fontSize: 16}}>
+            onPress={() => Alert.alert("How may i assist you!")}
+          >
+            <Text style={{ color: colors.primaryPink, fontSize: 16 }}>
               Need Help
             </Text>
           </TouchableOpacity>
-          <Text style={{color: colors.primaryBlue}}>Version {version}</Text>
+          <Text style={{ color: colors.primaryBlue }}>Version {version}</Text>
         </View>
       </SafeAreaView>
       {action ? (
@@ -407,7 +449,7 @@ const MySetting = props => {
           deleteAcc
           user={{
             userId: null,
-            userName: '',
+            userName: "",
           }}
           showToast
           toggle={action}

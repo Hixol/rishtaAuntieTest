@@ -6,7 +6,7 @@ export default StyleSheet.create({
   myPrivacySetting: {
     alignSelf: 'center',
     fontSize: 22,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
 
     color: colors.primaryBlue,
     marginVertical: '5%',
@@ -48,7 +48,7 @@ export default StyleSheet.create({
   privacySettingType: {
     alignSelf: 'center',
     fontSize: 18,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
 
     color: '#374151',
   },

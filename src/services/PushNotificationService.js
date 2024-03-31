@@ -1,28 +1,23 @@
-import ConnectyCube from 'react-native-connectycube';
-import {Notifications} from 'react-native-notifications';
-import {getUniqueId} from 'react-native-device-info';
-import invokeApp from 'react-native-invoke-app';
+import { Platform } from "react-native";
+import { android, ios } from "../utility/size";
+import { setCallSession } from "../store/actions";
+import { getUniqueId } from "react-native-device-info";
+import { Notifications } from "react-native-notifications";
 
-import PermissionsService from './permissions-service';
-import {setCallSession} from '../store/actions';
-import {Platform} from 'react-native';
-import {android, ios} from '../utility/size';
+import invokeApp from "react-native-invoke-app";
+import ConnectyCube from "react-native-connectycube";
+import PermissionsService from "./permissions-service";
 
 let store;
-let token;
 
 class PushNotificationsService {
   constructor() {
     this._registerBackgroundTasks();
   }
 
-  getStore = storeFromApp => {
+  getStore(storeFromApp) {
     store = storeFromApp;
-  };
-
-  getToken = tokenFromApp => {
-    token = tokenFromApp;
-  };
+  }
 
   init() {
     if (ios) {
@@ -31,14 +26,14 @@ class PushNotificationsService {
 
     Notifications.getInitialNotification()
       .then(notification => {})
-      .catch(err => console.error('getInitialNotifiation() failed', err));
+      .catch(err => console.error("getInitialNotifiation() failed", err));
 
     Notifications.events().registerRemoteNotificationsRegistered(event => {
       this.subscribeToPushNotifications(event.deviceToken);
     });
 
     Notifications.events().registerRemoteNotificationsRegistrationFailed(
-      event => {},
+      event => {}
     );
 
     // VoIP
@@ -50,8 +45,8 @@ class PushNotificationsService {
 
     Notifications.events().registerNotificationReceivedForeground(
       (notification, completion) => {
-        completion({alert: false, sound: false, badge: false});
-      },
+        completion({ alert: false, sound: false, badge: false });
+      }
     );
 
     Notifications.events().registerNotificationReceivedBackground(
@@ -62,7 +57,7 @@ class PushNotificationsService {
 
             const dummyCallSession = {
               initiatorID: notification.initiatorId,
-              opponentsIDs: notification.opponentsIds.split(','),
+              opponentsIDs: notification.opponentsIds.split(","),
               ID: notification.uuid,
             };
             store.dispatch(setCallSession(dummyCallSession, true, true));
@@ -71,14 +66,14 @@ class PushNotificationsService {
           }
         }
 
-        completion({alert: true, sound: true, badge: false});
-      },
+        completion({ alert: true, sound: true, badge: false });
+      }
     );
 
     Notifications.events().registerNotificationOpened(
       async (notification, completion) => {
         completion();
-      },
+      }
     );
 
     Notifications.registerRemoteNotifications();
@@ -89,13 +84,13 @@ class PushNotificationsService {
   }
 
   static displayNotification(payload) {
-    const extra = {dialog_id: payload.dialog_id, isLocal: true};
+    const extra = { dialog_id: payload.dialog_id, isLocal: true };
 
     const localNotification = Notifications.postLocalNotification({
       body: payload.message,
-      title: 'New message',
+      title: "New message",
       silent: false,
-      category: 'SOME_CATEGORY',
+      category: "SOME_CATEGORY",
       userInfo: extra,
       extra,
     });
@@ -106,16 +101,16 @@ class PushNotificationsService {
       return;
     }
 
-    const {AppRegistry} = require('react-native');
+    const { AppRegistry } = require("react-native");
 
-    AppRegistry.registerHeadlessTask('JSNotifyWhenKilledTask', () => {
+    AppRegistry.registerHeadlessTask("JSNotifyWhenKilledTask", () => {
       return async notificationBundle => {
         if (await PermissionsService.isDrawOverlaysPermisisonGranted()) {
           invokeApp();
 
           const dummyCallSession = {
             initiatorID: notificationBundle.initiatorId,
-            opponentsIDs: notificationBundle.opponentsIds.split(','),
+            opponentsIDs: notificationBundle.opponentsIds.split(","),
             ID: notificationBundle.uuid,
           };
           store.dispatch(setCallSession(dummyCallSession, true, true));
@@ -128,13 +123,13 @@ class PushNotificationsService {
 
   async subscribeToPushNotifications(deviceToken) {
     const params = {
-      notification_channel: ios ? 'apns' : 'gcm',
+      notification_channel: ios ? "apns" : "gcm",
       device: {
         platform: Platform.OS,
         udid: await getUniqueId(),
       },
       push_token: {
-        environment: __DEV__ ? 'development' : 'production',
+        environment: __DEV__ ? "development" : "production",
         client_identification_sequence: deviceToken,
       },
     };
@@ -144,21 +139,21 @@ class PushNotificationsService {
       .then(result => {})
       .catch(error => {
         console.warn(
-          '[PushNotificationsService][subscribeToPushNotifications] Error',
-          error,
+          "[PushNotificationsService][subscribeToPushNotifications] Error",
+          JSON.stringify(error)
         );
       });
   }
 
   async subscribeToVOIPPushNotifications(deviceToken) {
     const params = {
-      notification_channel: 'apns_voip',
+      notification_channel: "apns_voip",
       device: {
         platform: Platform.OS,
         udid: await getUniqueId(),
       },
       push_token: {
-        environment: __DEV__ ? 'development' : 'production',
+        environment: __DEV__ ? "development" : "production",
         client_identification_sequence: deviceToken,
       },
     };
@@ -168,8 +163,8 @@ class PushNotificationsService {
       .then(result => {})
       .catch(error => {
         console.warn(
-          '[PushNotificationsService][subscribeToVOIPPushNotifications] Error',
-          error,
+          "[PushNotificationsService][subscribeToVOIPPushNotifications] Error",
+          error
         );
       });
   }
@@ -190,8 +185,8 @@ class PushNotificationsService {
               .then(result => {})
               .catch(error => {
                 console.warn(
-                  '[PushNotificationsService][deleteSubscription] Error1',
-                  JSON.stringify(error),
+                  "[PushNotificationsService][deleteSubscription] Error1",
+                  JSON.stringify(error)
                 );
               });
           }
@@ -199,8 +194,8 @@ class PushNotificationsService {
       })
       .catch(error => {
         console.warn(
-          '[PushNotificationsService][deleteSubscription] Error2',
-          error,
+          "[PushNotificationsService][deleteSubscription] Error2",
+          error
         );
       });
   }
@@ -208,19 +203,21 @@ class PushNotificationsService {
   sendPushNotification(recipientsUsersIds, params) {
     const payload = JSON.stringify(params);
     const pushParameters = {
-      notification_type: 'push',
-      user: {ids: recipientsUsersIds},
-      environment: __DEV__ ? 'development' : 'production',
+      notification_type: "push",
+      user: { ids: recipientsUsersIds },
+      environment: __DEV__ ? "development" : "production",
       message: ConnectyCube.pushnotifications.base64Encode(payload),
     };
 
     ConnectyCube.pushnotifications.events
       .create(pushParameters)
-      .then(result => {})
+      .then(result => {
+        console.log("[PushNotificationsService][sendPushNotification] Ok");
+      })
       .catch(error => {
         console.warn(
-          '[PushNotificationsService][sendPushNotification] Error',
-          error,
+          "[PushNotificationsService][sendPushNotification] Error",
+          JSON.stringify(error)
         );
       });
   }

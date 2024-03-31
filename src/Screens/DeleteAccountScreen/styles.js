@@ -10,7 +10,7 @@ export default StyleSheet.create({
   deleteText: {
     alignSelf: 'center',
     fontSize: 20,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
 
     color: colors.primaryBlue,
     marginVertical: '3%',
@@ -29,18 +29,18 @@ export default StyleSheet.create({
     color: 'black',
     fontSize: 15,
     textAlign: 'center',
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
   radioBtnRowView: {flexDirection: 'row', alignItems: 'center'},
   optionText: {
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
 
     fontSize: 15,
     color: colors.primaryBlue,
   },
   pleaseExplainText: {
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
 
     fontSize: 18,
     marginBottom: '5%',
@@ -60,13 +60,13 @@ export default StyleSheet.create({
   },
   btnTitle: {
     fontSize: 17,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
 
     color: '#D90368',
   },
   deleteAccountText: {
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
 
     fontSize: 16,
     alignSelf: 'center',
@@ -81,7 +81,7 @@ export default StyleSheet.create({
     marginLeft: '3%',
     fontSize: 16,
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
   radioCircle: {
     height: 16,

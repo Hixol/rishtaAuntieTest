@@ -52,7 +52,7 @@ export default function AboutScreen({user}) {
                   width: (CARDWIDTH - 50) / 2,
                   color: colors.blackBlue,
                   fontSize: 16,
-                  fontFamily: 'Inter-Medium',
+                  fontFamily: 'Inter-SemiBold',
                   textAlign: 'right',
                   flexWrap: 'wrap',
                 }}>

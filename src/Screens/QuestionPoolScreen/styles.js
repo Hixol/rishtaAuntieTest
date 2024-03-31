@@ -24,7 +24,7 @@ export default StyleSheet.create({
   name: {
     fontSize: 24,
     color: 'white',
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     marginBottom: '6%',
     textAlign: 'center',
   },
@@ -118,7 +118,7 @@ export default StyleSheet.create({
   },
   myvibes: {
     color: colors.primaryPink,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     fontSize: windowHeight * 0.028,
     // fontSize: 24,
   },
@@ -186,7 +186,7 @@ export default StyleSheet.create({
   statementTxt: {
     color: colors.primaryBlue,
     fontSize: 16,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
   },
   analystFooter: {
     flexDirection: 'row',
@@ -195,7 +195,7 @@ export default StyleSheet.create({
   locationTxt: {
     fontSize: 16,
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
   },
   matchingSecHeader: {
     flexDirection: 'row',
@@ -206,12 +206,12 @@ export default StyleSheet.create({
   imgCircle: {height: '100%', width: '100%', borderRadius: 50},
   nameTxt: {
     fontSize: 18,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
   },
   ambitiousBttn: {
     color: colors.white,
     fontSize: 15,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
   cardPaginatorView: {
     bottom: '1.3%',
@@ -219,13 +219,13 @@ export default StyleSheet.create({
   },
   lookingForTxt: {
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     fontSize: windowHeight * 0.0235,
     // fontSize: 20,
   },
   perfectLatteTxt: {
     color: colors.primaryPink,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     fontSize: 24,
     marginVertical: '5%',
     alignSelf: 'flex-end',
@@ -260,7 +260,7 @@ export default StyleSheet.create({
   },
   meTxt: {
     color: '#A7A8A8',
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
   lookingForFooter: {
     backgroundColor: colors.primaryBlue,
@@ -276,7 +276,7 @@ export default StyleSheet.create({
   matchingDesc: {
     color: 'white',
     fontSize: 10,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     lineHeight: 15,
   },
   nameView: {
@@ -316,7 +316,7 @@ export default StyleSheet.create({
 //   name: {
 //     fontSize: 24,
 //     color: 'white',
-//     fontFamily: 'Roboto-Regular',
+//     fontFamily: 'Inter-Regular',
 //     marginBottom: '6%',
 //     textAlign: 'center',
 //   },
@@ -409,7 +409,7 @@ export default StyleSheet.create({
 //   },
 //   myvibes: {
 //     color: colors.primaryPink,
-//     fontFamily: 'Roboto-Medium',
+//     fontFamily: 'Inter-Medium',
 //     fontSize: 24,
 //   },
 //   ambBtn: {
@@ -473,7 +473,7 @@ export default StyleSheet.create({
 //   statementTxt: {
 //     color: colors.primaryBlue,
 //     fontSize: 16,
-//     fontFamily: 'Roboto-Regular',
+//     fontFamily: 'Inter-Regular',
 //   },
 //   analystFooter: {
 //     flexDirection: 'row',
@@ -482,7 +482,7 @@ export default StyleSheet.create({
 //   locationTxt: {
 //     fontSize: 16,
 //     color: colors.primaryBlue,
-//     fontFamily: 'Roboto-Regular',
+//     fontFamily: 'Inter-Regular',
 //   },
 //   matchingSecHeader: {
 //     flexDirection: 'row',
@@ -493,12 +493,12 @@ export default StyleSheet.create({
 //   imgCircle: {height: '100%', width: '100%', borderRadius: 50},
 //   nameTxt: {
 //     fontSize: 18,
-//     fontFamily: 'Roboto-Regular',
+//     fontFamily: 'Inter-Regular',
 //   },
 //   ambitiousBttn: {
 //     color: colors.white,
 //     fontSize: 15,
-//     fontFamily: 'Roboto-Medium',
+//     fontFamily: 'Inter-Medium',
 //   },
 //   cardPaginatorView: {
 //     position: 'absolute',
@@ -508,12 +508,12 @@ export default StyleSheet.create({
 //   },
 //   lookingForTxt: {
 //     color: colors.primaryBlue,
-//     fontFamily: 'Roboto-Medium',
+//     fontFamily: 'Inter-Medium',
 //     fontSize: 20,
 //   },
 //   perfectLatteTxt: {
 //     color: colors.primaryPink,
-//     fontFamily: 'Roboto-Medium',
+//     fontFamily: 'Inter-Medium',
 //     fontSize: 24,
 //     marginVertical: '5%',
 //     alignSelf: 'flex-end',
@@ -548,7 +548,7 @@ export default StyleSheet.create({
 //   },
 //   meTxt: {
 //     color: '#A7A8A8',
-//     fontFamily: 'Roboto-Medium',
+//     fontFamily: 'Inter-Medium',
 //   },
 //   lookingForFooter: {
 //     backgroundColor: colors.primaryBlue,
@@ -564,7 +564,7 @@ export default StyleSheet.create({
 //   matchingDesc: {
 //     color: 'white',
 //     fontSize: 10,
-//     fontFamily: 'Roboto-Medium',
+//     fontFamily: 'Inter-Medium',
 //     lineHeight: 15,
 //   },
 //   nameView: {

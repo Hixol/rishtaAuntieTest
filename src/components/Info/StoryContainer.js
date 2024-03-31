@@ -1,20 +1,20 @@
-import React, {useState} from 'react';
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
   StyleSheet,
   TouchableOpacity,
   View,
-} from 'react-native';
-import GestureRecognizer from 'react-native-swipe-gestures';
-import Story from './Story';
-import ProgressArray from './ProgressArray';
+} from "react-native";
+import GestureRecognizer from "react-native-swipe-gestures";
+import Story from "./Story";
+import ProgressArray from "./ProgressArray";
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_WIDTH = Dimensions.get("window").width;
 
 const StoryContainer = props => {
-  const {user} = props;
-  const {stories = {}} = user || {};
+  const { user } = props;
+  const { stories = {} } = user || {};
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPause, setIsPause] = useState(false);
   const [isLoaded, setLoaded] = useState(false);
@@ -47,7 +47,6 @@ const StoryContainer = props => {
       setLoaded(false);
       setDuration(6);
     } else {
-      setCurrentIndex(-1);
       setCurrentIndex(0);
     }
   };
@@ -69,7 +68,7 @@ const StoryContainer = props => {
     if (!isLoaded) {
       return (
         <View style={styles.loading}>
-          <View style={{width: 1, height: 1}}>
+          <View style={{ width: 1, height: 1 }}>
             <Story
               onImageLoaded={onImageLoaded}
               pause
@@ -95,7 +94,8 @@ const StoryContainer = props => {
         delayLongPress={100}
         onPress={e => changeStory(e.nativeEvent)}
         onLongPress={() => onPause(true)}
-        onPressOut={() => onPause(false)}>
+        onPressOut={() => onPause(false)}
+      >
         <View style={styles.container}>
           <Story
             onImageLoaded={onImageLoaded}
@@ -118,7 +118,7 @@ const StoryContainer = props => {
             currentIndex={currentIndex}
             currentStory={stories[currentIndex]}
             length={stories.map((_, i) => i)}
-            progress={{id: currentIndex}}
+            progress={{ id: currentIndex }}
           />
         </View>
       </TouchableOpacity>
@@ -128,52 +128,52 @@ const StoryContainer = props => {
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    width: "100%",
+    justifyContent: "flex-start",
+    alignItems: "center",
     // paddingTop: 30,
   },
 
   userView: {
-    flexDirection: 'row',
-    position: 'absolute',
+    flexDirection: "row",
+    position: "absolute",
     top: 55,
-    width: '98%',
-    alignItems: 'center',
+    width: "98%",
+    alignItems: "center",
   },
   name: {
     fontSize: 18,
-    fontWeight: '500',
+    fontWeight: "500",
     marginLeft: 12,
-    color: 'white',
+    color: "white",
   },
   time: {
     fontSize: 12,
-    fontWeight: '400',
+    fontWeight: "400",
     marginTop: 3,
     marginLeft: 12,
-    color: 'white',
+    color: "white",
   },
-  content: {width: '100%', height: '100%'},
+  content: { width: "100%", height: "100%" },
   loading: {
-    backgroundColor: 'black',
-    height: '100%',
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "black",
+    height: "100%",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
   },
   modal: {
-    width: '100%',
-    height: '90%',
-    backgroundColor: 'white',
+    width: "100%",
+    height: "90%",
+    backgroundColor: "white",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
   bar: {
     width: 50,
     height: 8,
-    backgroundColor: 'gray',
-    alignSelf: 'center',
+    backgroundColor: "gray",
+    alignSelf: "center",
     borderRadius: 4,
     marginTop: 8,
   },

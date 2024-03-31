@@ -1,27 +1,30 @@
-import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {SafeAreaView, View, ScrollView, Text} from 'react-native';
-import {useFocusEffect, useIsFocused} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
-import {SocketContext} from '../../context/SocketContext';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {useHelper} from '../../hooks/useHelper';
-import {ios} from '../../utility/size';
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { SafeAreaView, View, ScrollView, Text } from "react-native";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { SocketContext } from "../../context/SocketContext";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { useHelper } from "../../hooks/useHelper";
+import { ios } from "../../utility/size";
 
-import ChatListItem from '../../components/containers/ChatListItem';
-import ChatServices from '../../services/ChatServices';
-import Loader from '../../components/Loader';
-import CallLog from '../CallLog';
-import colors from '../../utility/colors';
-import styles from './styles';
+import ChatListItem from "../../components/containers/ChatListItem";
+import ChatServices from "../../services/ChatServices";
+import Loader from "../../components/Loader";
+import CallLog from "../CallLog";
+import colors from "../../utility/colors";
+import styles from "./styles";
 
 const Tab = createMaterialTopTabNavigator();
 
 const UserChatList = props => {
+  const userId = props.route.params?.userId;
+  const chatHeadId = props.route.params?.chatHeadId;
+
   const insets = useSafeAreaInsets();
   const socket = useContext(SocketContext);
-  const {handleStatusCode} = useHelper();
-  const {token, userData} = useSelector(store => store.userReducer);
+  const { handleStatusCode } = useHelper();
+  const { token, userData } = useSelector(store => store.userReducer);
 
   const proMember = userData?.UserSetting?.isSubscribed;
 
@@ -44,34 +47,47 @@ const UserChatList = props => {
             let ids = [];
             data.map(el => {
               ids.push(el.ChatMembers[0]?.memberId);
+
+              if (userId != undefined && el.ChatMembers[0].memberId == userId) {
+                props.navigation.navigate("ChatTabView", {
+                  el,
+                  moves: true,
+                });
+              } else if (chatHeadId != undefined && el.id == chatHeadId) {
+                props.navigation.navigate("ChatTabView", {
+                  el,
+                  moves: true,
+                });
+              }
             });
+
             if (socket.connect) {
-              socket.emit('is-online', {
+              socket.emit("is-online", {
                 recipientId: ids,
               });
             }
             setChatHead(data);
           }
         })
-        .catch(err => console.log('ChatHead Err: ', err))
+        .catch(err => console.log("ChatHead Err: ", err))
         .finally(() => setLoading(false));
-    }, [isFocused]),
+    }, [isFocused, chatHeadId])
   );
 
   useEffect(() => {
-    socket.on('is-online', res => {
+    socket.on("is-online", res => {
       setOnlineUsers(res);
     });
 
-    socket.on('message-receive', res => {
-      if (res.status == 'SEND') {
+    socket.on("message-receive", res => {
+      if (res.status == "SEND") {
         setUnreadCount(res);
       }
     });
   }, []);
 
   const ChatList = () => (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{ flex: 1 }}>
       {loading ? (
         <Loader />
       ) : chatHead.length == 0 ? (
@@ -80,15 +96,16 @@ const UserChatList = props => {
         </View>
       ) : (
         <ScrollView>
-          <View style={{borderRadius: 16, overflow: 'hidden'}}>
+          <View style={{ borderRadius: 16, overflow: "hidden" }}>
             {chatHead.length > 0 &&
               chatHead.map(el => {
-                if (el.type != 'GROUP')
+                if (el.type != "GROUP")
                   return (
                     <ChatListItem
                       onPress={() =>
-                        props.navigation.navigate('ChatTabView', {
+                        props.navigation.navigate("ChatTabView", {
                           el,
+                          moves: true,
                         })
                       }
                       key={el.id}
@@ -106,22 +123,24 @@ const UserChatList = props => {
 
   return (
     <Tab.Navigator
+      backBehavior="none"
       screenOptions={{
         tabBarStyle: {
           marginTop: ios ? insets.top : 0,
         },
         tabBarActiveTintColor: proMember ? colors.gold : colors.primaryPink,
-        tabBarInactiveTintColor: 'grey',
+        tabBarInactiveTintColor: "grey",
         tabBarIndicatorStyle: {
           height: 3,
           backgroundColor: proMember ? colors.gold : colors.primaryPink,
         },
-      }}>
+      }}
+    >
       <Tab.Screen name="Chats" component={ChatList} />
       <Tab.Screen
         name="CallLog"
         component={CallLog}
-        options={{tabBarLabel: 'Calls'}}
+        options={{ tabBarLabel: "Calls" }}
       />
     </Tab.Navigator>
   );

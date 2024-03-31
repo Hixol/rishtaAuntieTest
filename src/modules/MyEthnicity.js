@@ -70,7 +70,7 @@ export default function MyEthinicity({user}) {
 //   text: {
 //     fontSize: 22,
 //     color: colors.primaryBlue,
-//     fontFamily: 'Roboto-Medium',
+//     fontFamily: 'Inter-Medium',
 //     marginLeft: 10,
 //     alignSelf: 'center',
 //   },

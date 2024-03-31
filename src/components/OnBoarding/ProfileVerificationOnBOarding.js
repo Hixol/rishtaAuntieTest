@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     color: colors.primaryBlue,
     fontSize: windowHeight * 0.012,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
     bottom: 6,
   },
 });

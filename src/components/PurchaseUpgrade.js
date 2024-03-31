@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   TopText: {
     fontSize: 12,
     color: colors.darkBlue,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     width: '57%',
   },
 
@@ -93,13 +93,13 @@ const styles = StyleSheet.create({
   bottomTopText: {
     fontSize: 18,
     color: colors.darkBlue,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
   },
 
   bottomBottomText: {
     fontSize: 10,
     color: colors.darkBlue,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: 'Inter-Regular',
     textAlign: 'center',
   },
 });

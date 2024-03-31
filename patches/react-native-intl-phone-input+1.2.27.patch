@@ -1,0 +1,45 @@
+diff --git a/node_modules/react-native-intl-phone-input/src/Countries.js b/node_modules/react-native-intl-phone-input/src/Countries.js
+index f71ab78..95d6859 100644
+--- a/node_modules/react-native-intl-phone-input/src/Countries.js
++++ b/node_modules/react-native-intl-phone-input/src/Countries.js
+@@ -160,7 +160,7 @@ const Countries = [
+   { ru:"Северные Марианские острова",lt:"Šiaurinės Marianos salos",tr:"Kuzey Mariana Adaları", en: 'Northern Mariana Islands',flag: '🇲🇵',code: 'MP', dialCode: '+1670', mask: '(999) 999-9999' },
+   { ru:"Норвегия",lt:"Norvegija",tr:"Norveç", en: 'Norway',flag: '🇳🇴',code: 'NO', dialCode: '+47', mask: '999 99 999' },
+   { ru:"Оман",lt:"Omanas",tr:"Umman", en: 'Oman',flag: '🇴🇲',code: 'OM', dialCode: '+968', mask: '9999 9999' },
+-  { ru:"Пакистан",lt:"Pakistanas",tr:"Pakistan", en: 'Pakistan',flag: '🇵🇰',code: 'PK', dialCode: '+92', mask: '9999 9999999' },
++  { ru:"Пакистан",lt:"Pakistanas",tr:"Pakistan", en: 'Pakistan',flag: '🇵🇰',code: 'PK', dialCode: '+92', mask: '999 9999999' },
+   { ru:"Palau",lt:"Palau",tr:"Palau", en: 'Palau',flag: '🇵🇼',code: 'PW', dialCode: '+680', mask: '999 9999' },
+   { ru:"Палестинская территория, оккупированная",lt:"Palestinos teritorija, okupuota",tr:"Filistin Arazisi, İşgal altında", en: 'Palestinian Territory, Occupied',flag: '🇵🇸',code: 'PS', dialCode: '+970', mask: '9999 999 999' },
+   { ru:"Панама",lt:"Panama",tr:"Panama", en: 'Panama',flag: '🇵🇦',code: 'PA', dialCode: '+507', mask: '9999-9999' },
+diff --git a/node_modules/react-native-intl-phone-input/src/IntlPhoneInput.js b/node_modules/react-native-intl-phone-input/src/IntlPhoneInput.js
+index 6856dbb..d03e85f 100644
+--- a/node_modules/react-native-intl-phone-input/src/IntlPhoneInput.js
++++ b/node_modules/react-native-intl-phone-input/src/IntlPhoneInput.js
+@@ -30,6 +30,19 @@ export default class IntlPhoneInput extends React.Component {
+     };
+   }
+ 
++  componentDidUpdate(prevProps) {
++    if(this.props?.defaultCountry != prevProps?.defaultCountry){
++    const defaultCountry = data.filter((obj) => obj.code === this.props?.defaultCountry)[0] || data.filter((obj) => obj.code === 'TR')[0];
++    this.setState({
++      defaultCountry,
++      flag: defaultCountry.flag,
++      dialCode: defaultCountry.dialCode,
++      mask: this.props?.mask || defaultCountry.mask,
++      selectedCountry:defaultCountry,
++    })
++  }
++  }
++
+   onChangePropText=(unmaskedPhoneNumber, phoneNumber) => {
+     const { dialCode, mask, selectedCountry } = this.state;
+     const countOfNumber = mask.match(/9/g).length;
+@@ -182,7 +195,7 @@ renderAction=()=>{
+     } = this.props;
+     return (
+       <View style={{ ...styles.container, ...containerStyle }}>
+       <TouchableOpacity onPress={() => this.showModal()}>
+           <View style={styles.openDialogView}>
+             <Text style={[styles.flagStyle, flagStyle]}>{flag}</Text>
+             <Text style={[styles.dialCodeTextStyle, dialCodeTextStyle]}>{this.state.dialCode}</Text>

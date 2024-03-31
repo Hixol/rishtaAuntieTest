@@ -1,10 +1,10 @@
-import React, {useRef, useState} from 'react';
-import {View, StyleSheet, Pressable} from 'react-native';
-import {windowHeight, windowWidth} from '../../utility/size';
+import React, { useRef, useState } from "react";
+import { View, StyleSheet, Pressable } from "react-native";
+import { windowHeight, windowWidth } from "../../utility/size";
 
-import CardFlip from 'react-native-card-flip';
-import TheirBeforeFlip from './theirBeforeFlip';
-import TheirAfterFlip from './theirAfterFlip';
+import CardFlip from "react-native-card-flip";
+import TheirBeforeFlip from "./theirBeforeFlip";
+import TheirAfterFlip from "./theirAfterFlip";
 
 const FlipCard = props => {
   const card = useRef();
@@ -18,7 +18,8 @@ const FlipCard = props => {
           onPress2={props.onPress2}
           // onPress={() => card.current.flip()}
           BeforeFlip={props.BeforeFlip}
-          AfterFlip={props.AfterFlip}>
+          AfterFlip={props.AfterFlip}
+        >
           <TheirBeforeFlip
             beforeFlipPress={props.beforeFlipPress}
             onPress1={() => {
@@ -43,6 +44,7 @@ const FlipCard = props => {
         </View>
         <View>
           <TheirAfterFlip
+            item={props.item}
             userMediaType={props.userMediaType}
             status={props.status}
             AfterFlipPress={props.afterFlipFlipPress}
@@ -92,28 +94,28 @@ export default FlipCard;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5FCFF",
   },
   cardContainer: {
     width: windowWidth * 0.46,
     height: windowHeight * 0.34,
-    marginVertical: '5%',
+    marginVertical: "5%",
   },
   card: {},
   card1: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
   card2: {
-    backgroundColor: 'grey',
+    backgroundColor: "grey",
   },
   label: {
     lineHeight: 470,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 55,
-    fontFamily: 'System',
-    color: '#ffffff',
-    backgroundColor: 'transparent',
+    fontFamily: "System",
+    color: "#ffffff",
+    backgroundColor: "transparent",
   },
 });

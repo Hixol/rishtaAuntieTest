@@ -85,7 +85,7 @@ const MyMartialHistoryCard = ({item}) => {
                     width: '100%',
                     alignItems: 'center',
                   }}>
-                  <Text style={{fontFamily: 'Roboto-Bold'}}>
+                  <Text style={{fontFamily: 'Inter-Bold'}}>
                     {currentValue}
                   </Text>
                 </View>
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   headingTxt: {
     fontSize: windowHeight * 0.02,
     color: colors.primaryPink,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     marginLeft: '2%',
   },
   detailsSec: {
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
   detailsTxt: {
     fontSize: 13,
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
   sliderView: {
     width: '96%',
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   btnText: {
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
   btnView: {
     marginVertical: '2.5%',

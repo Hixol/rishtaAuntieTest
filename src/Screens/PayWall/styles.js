@@ -1,90 +1,76 @@
-import {StyleSheet} from 'react-native';
-import colors from '../../utility/colors';
+import { StyleSheet } from "react-native";
+import colors from "../../utility/colors";
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 4,
-  },
-  topContainer: {
-    padding: 12,
     backgroundColor: colors.white,
-    borderRadius: 8,
-    marginBottom: '3%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
-  h2: {
-    marginTop: '3%',
-    marginBottom: '2%',
-    textAlign: 'center',
-    fontWeight: '600',
-    fontSize: 18,
-    color: colors.gold,
+  contentStyle: {
+    flexGrow: 1,
+    paddingHorizontal: "4%",
   },
-  h3: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: colors.black,
-    letterSpacing: 3,
-    textTransform: 'capitalize',
-  },
-  headingWrap: {
-    alignItems: 'center',
-    padding: 4,
-    borderRadius: 6,
-    marginVertical: '3%',
-  },
-  premiumTxt: {
-    fontSize: 14,
-    fontWeight: '600',
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-    color: colors.vibeMidGrey,
-  },
-  title: {
-    fontWeight: 'bold',
-    color: colors.black,
-    fontSize: 16,
-  },
-  txt: {
-    lineHeight: 22,
-    fontWeight: '600',
-    color: colors.vibeMidGrey,
+  boxBg: {
+    borderColor: colors.primaryPink,
+    backgroundColor: colors.primaryPinkOpacity,
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
   },
-  mt: {
+  row1: {
+    width: "93%",
+    marginTop: "5%",
+    alignSelf: "center",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  para1: {
+    fontSize: 16,
+    lineHeight: 25,
+    color: colors.blackBlue,
+    fontFamily: "Inter-Medium",
+    paddingTop: "2%",
+    paddingBottom: "3%",
+  },
+  para2Heading: {
+    fontSize: 16,
+    color: colors.blackBlue,
+    fontFamily: "Inter-Bold",
+  },
+  para2: {
+    fontSize: 16,
+    lineHeight: 25,
+    flexShrink: 1,
+    color: colors.blackBlue,
+    fontFamily: "Inter-Regular",
+  },
+  space: {
+    marginTop: "4%",
+  },
+  checkImage: {
+    height: 19,
+    width: 19,
     marginTop: 4,
+    marginRight: 7,
   },
-  ml: {
-    marginLeft: 8,
+  autoTxt: {
+    fontSize: 14,
+    color: colors.slateGrey,
+    fontFamily: "Inter-Medium",
   },
-
-  bannerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: '4%',
-    flexWrap: 'wrap',
+  btn: {
+    width: "93%",
+    alignSelf: "center",
+    marginTop: "5%",
+    paddingVertical: "4%",
+    borderRadius: 10,
+    backgroundColor: colors.primaryPink,
   },
-  banner: {
-    width: '31%',
-    padding: 4,
-    height: 300,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  bannerOne: {
-    backgroundColor: colors.lightSuccess,
-  },
-  bannerTwo: {
-    backgroundColor: colors.success,
-  },
-  bannerThree: {
-    backgroundColor: colors.danger,
+  btnTitle: {
+    fontSize: 14,
+    marginLeft: "5%",
+    color: colors.white,
+    fontFamily: "Inter-SemiBold",
   },
 });

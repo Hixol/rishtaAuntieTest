@@ -125,7 +125,7 @@ const ReportAccountScreen = props => {
                 style={{
                   alignSelf: 'center',
                   marginVertical: '2%',
-                  fontFamily: 'Roboto-Medium',
+                  fontFamily: 'Inter-Medium',
                   fontSize: 20,
                   color: colors.primaryBlue,
                 }}>
@@ -144,7 +144,7 @@ const ReportAccountScreen = props => {
                   style={{
                     fontSize: 17,
                     color: colors.primaryBlue,
-                    fontFamily: 'Roboto-Medium',
+                    fontFamily: 'Inter-Medium',
                   }}>
                   Go home
                 </Text>

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -8,34 +8,44 @@ import {
   ActivityIndicator,
   Linking,
   Pressable,
-} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
-import {useFocusEffect, useIsFocused} from '@react-navigation/native';
-import {OnBoardingServices} from '../../services';
-import {useHelper} from '../../hooks/useHelper';
+} from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
+import { OnBoardingServices } from "../../services";
+import { useHelper } from "../../hooks/useHelper";
+import { useRNIAP } from "../../hooks/useRNIAP";
+import { OS_VER } from "../../utility/size";
 
-import styles from './styles';
-import FastImage from 'react-native-fast-image';
-import colors from '../../utility/colors';
-import ImageContainer from '../../components/containers/imageContainer';
-import InviteFriendsContainer from '../../components/containers/inviteFriendsContainer';
-import PurchaseUpgrade from '../../components/PurchaseUpgrade';
-import SocialButton from '../../components/buttons/SocialButton';
-import ProfileServices from '../../services/ProfileServices';
-import ActionCard from '../../components/Cards/ActionCard';
-import HeaderContainer from '../../components/containers/headerContainer';
-import ChatServices from '../../services/ChatServices';
-import IAPServices from '../../services/IAPServices';
-import Loader from '../../components/Loader';
-import SettingButton from '../../components/buttons/SettingButton';
-import BoostUpgradeCard from '../../components/Cards/BoostUpgradeCard';
+import moment from "moment";
+import styles from "./styles";
+import FastImage from "react-native-fast-image";
+import colors from "../../utility/colors";
+import ImageContainer from "../../components/containers/imageContainer";
+import InviteFriendsContainer from "../../components/containers/inviteFriendsContainer";
+import PurchaseUpgrade from "../../components/PurchaseUpgrade";
+import SocialButton from "../../components/buttons/SocialButton";
+import ProfileServices from "../../services/ProfileServices";
+import ActionCard from "../../components/Cards/ActionCard";
+import HeaderContainer from "../../components/containers/headerContainer";
+import ChatServices from "../../services/ChatServices";
+import IAPServices from "../../services/IAPServices";
+import Loader from "../../components/Loader";
+import SettingButton from "../../components/buttons/SettingButton";
+import BoostUpgradeCard from "../../components/Cards/BoostUpgradeCard";
+import Icons from "../../utility/icons";
+
+let focused = false;
 
 const Settings = props => {
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
-  const {Alerts, handleStatusCode} = useHelper();
-  const {token, userData, status} = useSelector(store => store.userReducer);
-  const {denomination} = useSelector(store => store.profileReducer);
+  const {} = useRNIAP();
+  const { Alerts, handleStatusCode } = useHelper();
+  const { token, userData, status } = useSelector(store => store.userReducer);
+  const { isSpotTimerFinished, isProfileTimerFinished } = useSelector(
+    store => store.timerReducer
+  );
+  const { denomination } = useSelector(store => store.profileReducer);
 
   const proMember = userData?.UserSetting?.isSubscribed;
 
@@ -46,39 +56,39 @@ const Settings = props => {
   const settingsArr = [
     {
       id: 1,
-      title: 'My search preferences',
-      screen: 'SearchPreferences',
-      icon: require('../../assets/iconimages/setting-logo.png'),
+      title: "My Search Preferences",
+      screen: "SearchPreferences",
+      icon: require("../../assets/iconimages/setting-logo.png"),
     },
     {
       id: 2,
-      title: 'My Privacy Settings',
-      screen: 'MyPrivacySetting',
-      icon: require('../../assets/iconimages/setting-lock-closed-outline.png'),
-    },
-    {
-      id: 2,
-      title: 'My Settings',
-      screen: 'MySetting',
-      icon: require('../../assets/iconimages/setting-profile.png'),
+      title: "My Privacy Settings",
+      screen: "MyPrivacySetting",
+      icon: require("../../assets/iconimages/setting-lock-closed-outline.png"),
     },
     {
       id: 3,
-      title: 'Contact Rishta Auntie',
-      screen: '',
-      icon: require('../../assets/iconimages/setting-headset.png'),
+      title: "My Settings",
+      screen: "MySetting",
+      icon: require("../../assets/iconimages/setting-profile.png"),
     },
     {
       id: 4,
-      title: 'Safety Tips',
-      screen: () => handleUrl('safety-tips'),
-      icon: require('../../assets/iconimages/setting-tick-circle.png'),
+      title: "Contact Rishta Auntie",
+      screen: "",
+      icon: require("../../assets/iconimages/setting-headset.png"),
     },
     {
       id: 5,
+      title: "Safety Tips",
+      screen: () => handleUrl("safety-tips"),
+      icon: require("../../assets/iconimages/setting-tick-circle.png"),
+    },
+    {
+      id: 6,
       title: `FAQ`,
-      screen: () => handleUrl('faq'),
-      icon: require('../../assets/iconimages/setting-document-text.png'),
+      screen: () => handleUrl("faq"),
+      icon: require("../../assets/iconimages/setting-document-text.png"),
     },
   ];
 
@@ -94,48 +104,70 @@ const Settings = props => {
               if (data != null && data?.Profile?.personalityType == null) {
                 setMediaOptions(true);
               }
+              if (
+                !data.UserSetting.isSubscribed &&
+                data.lastLogDailyProfilesLimit &&
+                !isProfileTimerFinished?.showtimer
+              ) {
+                let time = moment
+                  .duration(
+                    moment(data.lastLogDailyProfilesLimit?.createdAt).format(
+                      "HH:mm"
+                    )
+                  )
+                  .asSeconds();
+
+                dispatch({
+                  type: "SET_PROFILE_TIMER",
+                  payload: {
+                    userId: data.id,
+                    showtimer: true,
+                    time: time,
+                  },
+                });
+              }
               dispatch({
-                type: 'AUTH_USER',
+                type: "AUTH_USER",
                 payload: data,
               });
               dispatch({
-                type: 'USER_CHUPKE_CHUPKE',
+                type: "USER_CHUPKE_CHUPKE",
                 payload: data?.UserSetting?.chupkeChupke
                   ? data?.UserSetting?.chupkeChupke
                   : false,
               });
               dispatch({
-                type: 'USER_DISCOVERY_MODE',
+                type: "USER_DISCOVERY_MODE",
                 payload: data?.UserSetting?.discoveryMode
                   ? data?.UserSetting?.discoveryMode
                   : false,
               });
               dispatch({
-                type: 'USER_HIDE_AGE',
+                type: "USER_HIDE_AGE",
                 payload: data?.UserSetting?.hideAge
                   ? data?.UserSetting?.hideAge
                   : false,
               });
               dispatch({
-                type: 'USER_HIDE_LIVE_STATUS',
+                type: "USER_HIDE_LIVE_STATUS",
                 payload: data?.UserSetting?.hideLiveStatus
                   ? data?.UserSetting?.hideLiveStatus
                   : false,
               });
               dispatch({
-                type: 'USER_SHOW_MSG_PREV',
+                type: "USER_SHOW_MSG_PREV",
                 payload: data?.UserSetting?.showMessagePreview
                   ? data?.UserSetting?.showMessagePreview
                   : false,
               });
               dispatch({
-                type: 'USER_IS_NOTIFICATION',
+                type: "USER_IS_NOTIFICATION",
                 payload: data?.UserSetting?.isNotificationEnabled
                   ? data?.UserSetting?.isNotificationEnabled
                   : false,
               });
               dispatch({
-                type: 'USER_IS_DARK_MODE',
+                type: "USER_IS_DARK_MODE",
                 payload: data?.UserSetting?.isDarkMode
                   ? data?.UserSetting?.isDarkMode
                   : false,
@@ -144,74 +176,124 @@ const Settings = props => {
               OnBoardingServices.profileValues(
                 encodeURI(
                   JSON.stringify([
-                    'college',
-                    'community',
-                    'denomination',
-                    'familyOrigin',
-                    'language',
-                    'occupation',
-                  ]),
-                ),
+                    "community",
+                    "denomination",
+                    "familyOrigin",
+                    "language",
+                  ])
+                )
               )
                 .then(res => {
                   handleStatusCode(res);
                   if (res.status >= 200 && res.status <= 299) {
                     let data = res?.data?.data;
                     dispatch({
-                      type: 'PROFILE_VALUES',
+                      type: "PROFILE_VALUES",
                       payload: data,
                     });
                   }
                 })
-                .catch(err => console.log('profileValues err', err));
+                .catch(err => console.log("profileValues err", err));
             }
           })
-          .catch(err => console.log('getMyProfile err', err));
+          .catch(err => console.log("getMyProfile err", err));
 
         if (denomination.length > 0) {
           dispatch({
-            type: 'PROFILE_DEN_VALUES',
+            type: "PROFILE_DEN_VALUES",
             payload: denomination[userData?.Profile?.religion]?.map(
-              x => x.name,
+              x => x.name
             ),
           });
         }
       } else {
-        Alerts('error', 'Your token has expired. Please login again.');
+        Alerts("error", "Your token has expired. Please login again.");
       }
-    }, [isFocused]),
+    }, [isFocused])
   );
+
+  useEffect(() => {
+    props.navigation.addListener("focus", () => {
+      focused = true;
+    });
+
+    const blurSubs = props.navigation.addListener("blur", () => {
+      focused = false;
+    });
+
+    return () => {
+      blurSubs();
+    };
+  }, [props.navigation]);
 
   const handleQuiz = state => {
     setMediaOptions(state);
-    props.navigation.navigate('PersonalityQuiz');
+    props.navigation.navigate("PersonalityQuiz");
   };
 
   const handleAlert = state => {
     setMediaOptions(state);
   };
 
-  const handleEnableSpotlight = () => [
-    IAPServices.enableSpotlight(token)
+  const handleEnableSpotlight = () => {
+    if (
+      isSpotTimerFinished?.userId == userData.id &&
+      isSpotTimerFinished?.showtimer
+    ) {
+      Alerts("error", "Spotlight is already enabled");
+    } else {
+      IAPServices.enableSpotlight(token)
+        .then(res => {
+          handleStatusCode(res);
+          if (res.status >= 200 && res.status <= 299) {
+            Alerts("success", res.data.message);
+
+            let copyUser = { ...userData };
+            copyUser.UserSetting = {
+              ...copyUser.UserSetting,
+              noOfSpotlight: userData?.UserSetting?.noOfSpotlight - 1,
+            };
+
+            dispatch({
+              type: "AUTH_USER",
+              payload: copyUser,
+            });
+
+            handleGetProfile();
+          }
+        })
+        .catch(err => Alerts("error", err?.message));
+    }
+  };
+
+  const handleGetProfile = () => {
+    ProfileServices.getMyProfile(token)
       .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
-          Alerts('success', res.data.message);
-
-          let copyUser = {...userData};
-          copyUser.UserSetting = {
-            ...copyUser.UserSetting,
-            noOfSpotlight: userData?.UserSetting?.noOfSpotlight - 1,
-          };
+          let data = res?.data?.data;
 
           dispatch({
-            type: 'AUTH_USER',
-            payload: copyUser,
+            type: "AUTH_USER",
+            payload: data,
+          });
+
+          let time = moment
+            .duration(moment(data?.spotlightEnabled?.createdAt).format("HH:mm"))
+            .asSeconds();
+
+          dispatch({
+            type: "SET_SPOT_TIMER",
+            payload: {
+              userId: userData.id,
+              showtimer: true,
+              time: time,
+            },
           });
         }
       })
-      .catch(err => Alerts('error', err?.message)),
-  ];
+      .catch(err => console.log("getMyOwnProfile err", err));
+  };
 
   const createContactSupport = () => {
     ChatServices.contactSupport(token)
@@ -221,7 +303,7 @@ const Settings = props => {
           getChatHeads();
         }
       })
-      .catch(err => Alerts('error', err?.message))
+      .catch(err => Alerts("error", err?.message))
       .finally(() => setLoading(false));
   };
 
@@ -235,7 +317,7 @@ const Settings = props => {
           let data = res.data.data;
 
           for (let i = 0; i < data.length; i++) {
-            if (data[i].type == 'GROUP') {
+            if (data[i].type == "GROUP") {
               typeFlag = true;
               break;
             }
@@ -243,14 +325,14 @@ const Settings = props => {
 
           if (typeFlag) {
             data.map(el => {
-              if (el.type === 'GROUP') {
-                props.navigation.navigate('BottomTab', {
-                  screen: 'UserChatList',
+              if (el.type === "GROUP") {
+                props.navigation.navigate("BottomTab", {
+                  screen: "UserChatList",
                   params: {
-                    screen: 'ChatTabView',
+                    screen: "ChatTabView",
                     el: el,
                     params: {
-                      screen: 'ChatScreen',
+                      screen: "ChatScreen",
                       el: el,
                     },
                   },
@@ -262,13 +344,13 @@ const Settings = props => {
           }
         }
       })
-      .catch(err => Alerts('error', err?.message))
+      .catch(err => Alerts("error", err?.message))
       .finally(() => setLoading(false));
   };
 
   const handleUrl = endpoint =>
     Linking.openURL(`https://rishtaauntie.app/${endpoint}/`);
-  console.log('STTTATATS', status);
+
   return (
     <SafeAreaView style={styles.container}>
       <HeaderContainer Icon />
@@ -302,118 +384,181 @@ const Settings = props => {
               <Text style={styles.borderBtnTxt}>Join Rishta Auntie Gold</Text>
             </Pressable>
           )} */}
-
-          <View style={styles.actionItemsMainView}>
-            <View style={styles.actionItemsView}>
-              <Text style={styles.actionItemsText}>Action Items</Text>
-              {status === 'COMPLETED' ? null : (
-                <SettingButton
-                  onPress={() =>
-                    props.navigation.navigate('OnBoardingQuestions')
-                  }
-                  title={'Complete my profile'}
-                />
-              )}
-              <SettingButton
-                onPress={() => props.navigation.navigate('PersonalityQuiz')}
-                title={'Take personality quiz to get user insights'}
-              />
+          {/* 
+          {(userData.Profile.personalityType == "" ||
+            userData.Profile.personalityType == null) &&
+          status === "COMPLETED" ? (
+            <View style={styles.actionItemsMainView}>
+              <View style={styles.actionItemsView}>
+                <Text style={styles.actionItemsText}>Action Items</Text>
+                {status === "COMPLETED" ? null : (
+                  <SettingButton
+                    onPress={() =>
+                      props.navigation.navigate("OnBoardingQuestions")
+                    }
+                    title={"Complete my profile"}
+                  />
+                )}
+                {userData.Profile.personalityType == "" ||
+                  (userData.Profile.personalityType == null && (
+                    <SettingButton
+                      onPress={() =>
+                        props.navigation.navigate("PersonalityQuiz")
+                      }
+                      title={"Take personality quiz to get user insights"}
+                    />
+                  ))}
+              </View>
             </View>
-          </View>
+          ) : null} */}
+          {userData?.Profile?.personalityType === null ||
+          status === "INCOMPLETE" ? (
+            <View style={styles.actionItemsMainView}>
+              <View style={styles.actionItemsView}>
+                <Text style={styles.actionItemsText}>Action Items</Text>
+                {status === "INCOMPLETE" ? (
+                  <SettingButton
+                    onPress={() =>
+                      props.navigation.navigate("OnBoardingQuestions")
+                    }
+                    title={"Complete my profile"}
+                  />
+                ) : null}
+                {userData.Profile.personalityType == "" ||
+                  (userData.Profile.personalityType == null && (
+                    <SettingButton
+                      onPress={() =>
+                        props.navigation.navigate("PersonalityQuiz")
+                      }
+                      title={"Take personality quiz to get user insights"}
+                    />
+                  ))}
+              </View>
+            </View>
+          ) : null}
+
           <View style={styles.actionItemsMainView}>
             <View style={styles.actionItemsView}>
               <View
                 style={{
-                  flexDirection: 'row',
-                  alignItems: 'flex-start',
-                  justifyContent: 'space-between',
-                }}>
+                  flexDirection: "row",
+                  alignItems: "flex-start",
+                  justifyContent: "space-between",
+                }}
+              >
                 <View
                   style={{
                     width: 56,
                     height: 56,
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    alignItems: "center",
+                    justifyContent: "center",
                     borderRadius: 56 / 2,
-                  }}>
-                  <FastImage
-                    resizeMode="cover"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      borderRadius: 56 / 2,
-                    }}
-                    source={{
-                      uri:
-                        userData?.UserMedia?.length > 0 &&
-                        userData?.UserMedia[0]?.url,
-                    }}
-                  />
+                  }}
+                >
+                  {userData?.UserMedia?.length > 0 && (
+                    <FastImage
+                      resizeMode="cover"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: 56 / 2,
+                      }}
+                      source={{
+                        uri: userData?.UserMedia[0]?.url,
+                      }}
+                    />
+                  )}
                 </View>
                 <Text
                   style={{
                     fontSize: 16,
-                    fontFamily: 'Inter-Bold',
-                    alignSelf: 'center',
-                    minWidth: '60%',
-                    maxWidth: '70%',
-                    textAlign: 'center',
-                    color: '#111827',
-                  }}>
-                  {userData?.firstName + ' ' + userData?.lastName}
+                    fontFamily: "Inter-Bold",
+                    alignSelf: "center",
+                    minWidth: "60%",
+                    maxWidth: "70%",
+                    textAlign: "center",
+                    color: "#111827",
+                  }}
+                >
+                  {userData?.firstName + " " + userData?.lastName}
                 </Text>
-                {status === 'INCOMPLETE' ? (
-                  <View style={{width: '10%'}}></View>
-                ) : (
-                  <TouchableOpacity
-                    onPress={() => {
-                      props.navigation.navigate('EditProfileScreen');
-                    }}
-                    style={{width: '10%'}}>
-                    <FastImage
-                      resizeMode="contain"
-                      style={{width: '100%', height: 25}}
-                      source={require('../../assets/iconimages/editoutline.png')}
+
+                {status !== "INCOMPLETE" ? (
+                  <>
+                    <Icons.EvilIcons
+                      onPress={() => props.navigation.navigate("ViewProfile")}
+                      name="user"
+                      size={36}
+                      color={colors.primaryPink}
+                      style={{
+                        width: "10%",
+                        bottom: OS_VER >= 13 ? 5.5 : 2.5,
+                      }}
                     />
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        props.navigation.navigate("EditProfileScreen");
+                      }}
+                      style={{ width: "10%" }}
+                    >
+                      <FastImage
+                        resizeMode="contain"
+                        style={{ width: "100%", height: 25 }}
+                        source={require("../../assets/iconimages/editoutline.png")}
+                      />
+                    </TouchableOpacity>
+                  </>
+                ) : (
+                  <View />
                 )}
               </View>
               <SettingButton
-                onPress={() => props.navigation.navigate('MyInsight')}
+                onPress={() => props.navigation.navigate("MyInsight")}
                 sbStyles={{
                   backgroundColor: null,
                   borderColor: colors.primaryPink,
                   borderWidth: 1,
                 }}
-                titleStyles={{color: '#121826'}}
-                title={'View Insights'}
+                titleStyles={{ color: "#121826" }}
+                title={"View Insights"}
               />
             </View>
           </View>
           <View
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
               paddingHorizontal: 20,
-              marginTop: '2%',
-            }}>
+              marginTop: "2%",
+            }}
+          >
             <BoostUpgradeCard
-              onPress={handleEnableSpotlight}
+              onPress={() => {
+                if (userData?.UserSetting?.noOfSpotlight > 0) {
+                  handleEnableSpotlight();
+                } else {
+                  props.navigation.navigate("PaywallSpots");
+                }
+              }}
               typeCount={userData?.UserSetting?.noOfSpotlight}
-              type={'Spotlight:'}
-              imageSource={require('../../assets/iconimages/pinkspotlight.png')}
-              buttonTitle={'Boost'}
-              bottomText={'Boost my visibility'}
+              type="Spotlight:"
+              focused={focused}
+              timer={userData?.spotlightEnabled}
+              imageSource={require("../../assets/iconimages/pinkspotlight.png")}
+              buttonTitle={"Boost"}
+              bottomText={"Boost my visibility"}
             />
             <BoostUpgradeCard
-              memberType={proMember}
-              onPress={() => props.navigation.navigate('Paywall')}
+              proMember={proMember}
+              onPress={() => props.navigation.navigate("Paywall")}
               typeCount={`${userData?.Profile?.noOfProfilesRemaining}/${userData?.Profile?.totalNoOfProfiles}`}
-              type={'Profiles left'}
-              imageSource={require('../../assets/iconimages/pinkprofiles.png')}
-              buttonTitle={'Upgrade'}
-              bottomText={'Upgrade for unlimited daily profiles'}
+              type="Profiles left"
+              focused={focused}
+              timer={userData?.lastLogDailyProfilesLimit}
+              imageSource={require("../../assets/iconimages/pinkprofiles.png")}
+              buttonTitle={"Upgrade"}
+              bottomText={"Upgrade for unlimited daily profiles"}
             />
           </View>
           {/* <View style={styles.topMainContainer}>
@@ -490,17 +635,18 @@ const Settings = props => {
             style={[
               styles.actionItemsMainView,
               {
-                marginTop: '2%',
+                marginTop: "2%",
               },
-            ]}>
+            ]}
+          >
             <View style={styles.actionItemsView}>
               {settingsArr.map((el, index, array) => (
                 <TouchableOpacity
                   key={el.id}
                   onPress={() => {
-                    if (el.title == 'Contact Rishta Auntie') getChatHeads();
+                    if (el.title == "Contact Rishta Auntie") getChatHeads();
                     else if (/Safety Tips|FAQ/.test(el.title)) el.screen();
-                    else if (el.screen != '')
+                    else if (el.screen != "")
                       props.navigation.navigate(el.screen);
                   }}
                   style={[
@@ -508,19 +654,21 @@ const Settings = props => {
                     {
                       borderBottomWidth: index === array?.length - 1 ? 0 : 1,
                     },
-                  ]}>
+                  ]}
+                >
                   <View
                     style={[
                       styles.textIcon,
                       {
-                        width: '80%',
-                        justifyContent: 'flex-start',
+                        width: "80%",
+                        justifyContent: "flex-start",
                       },
-                    ]}>
+                    ]}
+                  >
                     <FastImage
                       source={el?.icon}
                       resizeMode="contain"
-                      style={{width: 20, height: 20}}
+                      style={{ width: 20, height: 20 }}
                     />
                     <Text
                       style={[
@@ -528,7 +676,8 @@ const Settings = props => {
                         {
                           marginLeft: 20,
                         },
-                      ]}>
+                      ]}
+                    >
                       {el.title}
                     </Text>
                   </View>
@@ -536,7 +685,7 @@ const Settings = props => {
                     <FastImage
                       resizeMode="contain"
                       style={styles.arrowIconImage}
-                      source={require('../../assets/iconimages/settingarrow.png')}
+                      source={require("../../assets/iconimages/settingarrow.png")}
                     />
                   </View>
                 </TouchableOpacity>
@@ -550,70 +699,76 @@ const Settings = props => {
                 styles.actionItemsView,
                 {
                   backgroundColor: colors.primaryPink,
-                  flexDirection: 'row',
+                  flexDirection: "row",
                 },
-              ]}>
-              <View style={{width: '60%'}}>
+              ]}
+            >
+              <View style={{ width: "60%" }}>
                 <Text
                   style={{
                     fontSize: 16,
-                    fontFamily: 'Inter-Bold',
+                    fontFamily: "Inter-Bold",
                     color: colors.white,
-                  }}>
+                  }}
+                >
                   Invite a friend and get 1 month free premium
                 </Text>
                 <SettingButton
-                  titleStyles={{color: '#164951'}}
+                  titleStyles={{ color: "#164951" }}
                   sbStyles={{
                     backgroundColor: colors.white,
-                    width: '70%',
-                    marginTop: '10%',
+                    width: "70%",
+                    marginTop: "10%",
                   }}
-                  title={'Invite a friend'}
+                  title={"Invite a friend"}
                 />
               </View>
               <FastImage
                 resizeMode="contain"
-                style={{width: '35%', height: 90}}
-                source={require('../../assets/iconimages/Illustration.png')}
+                style={{ width: "35%", height: 90 }}
+                source={require("../../assets/iconimages/Illustration.png")}
               />
             </View>
           </View>
 
-          <View style={{alignSelf: 'center'}}>
+          <View style={{ alignSelf: "center" }}>
             <Text
               style={{
-                alignSelf: 'center',
+                alignSelf: "center",
                 fontSize: 20,
-                fontFamily: 'Inter-Regular',
+                fontFamily: "Inter-Regular",
                 color: colors.primaryBlue,
-                marginTop: '5%',
-              }}>
+                marginTop: "5%",
+              }}
+            >
               Follow Us!
             </Text>
-            <View style={{width: '50%', marginVertical: '5%'}}>
+            <View style={{ width: "50%", marginVertical: "5%" }}>
               <SocialButton />
             </View>
           </View>
           <View
             style={{
-              flexDirection: 'row',
-              marginHorizontal: '5%',
-              alignItems: 'center',
-              alignSelf: 'center',
-              justifyContent: 'center',
-              marginVertical: '5%',
-              width: '80%',
-            }}>
+              flexDirection: "row",
+              marginHorizontal: "5%",
+              alignItems: "center",
+              alignSelf: "center",
+              justifyContent: "center",
+              marginVertical: "5%",
+              width: "80%",
+            }}
+          >
             <Text
-              onPress={() => handleUrl('terms-of-use')}
-              style={{color: '#374151', fontSize: 15}}>
+              onPress={() => handleUrl("terms-of-use")}
+              style={{ color: "#374151", fontSize: 15 }}
+            >
               Terms of Service
             </Text>
             <View style={styles.verticalLine}></View>
             <Text
-              onPress={() => handleUrl('privacy-policy')}
-              style={{color: '#374151', fontSize: 15}}>
+              onPress={() => handleUrl("privacy-policy")}
+              style={{ color: "#374151", fontSize: 15 }}
+            >
               Privacy Policy
             </Text>
             {/* <View style={styles.verticalLine}></View> */}

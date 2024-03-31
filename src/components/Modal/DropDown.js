@@ -57,7 +57,7 @@ const DropDownView = props => {
               isOn={isEnabled}
               onColor={colors.primaryPink}
               offColor={colors.mediumGrey}
-              labelStyle={{color: 'black', fontFamily: 'Roboto-Regular'}}
+              labelStyle={{color: 'black', fontFamily: 'Inter-Regular'}}
               size="small"
               onToggle={toggleSwitch}
             />
@@ -82,7 +82,7 @@ const DropDownView = props => {
                 backgroundColor: '#f6f7fb',
                 borderRadius: 40,
                 color: colors.black,
-                fontFamily: 'Roboto-Medium',
+                fontFamily: 'Inter-Medium',
               }}
               placeholderTextColor={props.phColor}
               placeholder={props.placeholder}
@@ -107,14 +107,14 @@ const styles = StyleSheet.create({
   detailsTxt: {
     fontSize: 16,
     color: colors.primaryBlue,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
     marginLeft: '1%',
   },
   dropdown2RowStyle: {},
   dropdown2RowTxtStyle: {
     fontSize: 14,
     textAlign: 'center',
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
   dropdownStyle: {
     backgroundColor: '#f6f7fb',
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   dropdownTxt: {
     textAlign: 'left',
     fontSize: 14,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
   },
   dropDownBtn: {
     width: '100%',

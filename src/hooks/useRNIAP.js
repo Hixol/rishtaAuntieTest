@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from "react";
 import {
   useIAP,
   initConnection,
@@ -11,22 +11,25 @@ import {
   clearProductsIOS,
   clearTransactionIOS,
   flushFailedPurchasesCachedAsPendingAndroid,
-} from 'react-native-iap';
-import {Alert, Platform} from 'react-native';
-import {android, ios} from '../utility/size';
-import {useDispatch, useSelector} from 'react-redux';
-import {alerts} from '../utility/regex';
-import IAPServices from '../services/IAPServices';
+} from "react-native-iap";
+import { Alert, Platform } from "react-native";
+import { android, ios } from "../utility/size";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
+import { alerts } from "../utility/regex";
+import IAPServices from "../services/IAPServices";
 
 const product_skus = Platform.select({
-  ios: ['product_002'],
-  android: ['product_001', 'product_003'],
+  ios: ["Spotlight_001", "Spotlight_003", "Spotlight_005"],
+  android: ["product_001", "product_003", "product_005"],
 });
 
 const subscription_skus = Platform.select({
-  ios: ['sub_no_1', 'sub_no_2'],
-  android: ['sub_no_1', 'sub_no_2', 'product_002'],
+  ios: ["sub_no_1", "sub_no_2", "sub_no_3"],
+  android: ["sub_no_1", "sub_no_2", "sub_no_3"],
 });
+
+const titleIcons = ["🌙 ", "💫 ", "🌟 "];
 
 let executedOnce = false;
 let purchaseUpdateSubscription;
@@ -34,8 +37,9 @@ let purchaseErrorSubscription;
 
 export const useRNIAP = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
-  const {token, userData} = useSelector(store => store.userReducer);
+  const { token, userData } = useSelector(store => store.userReducer);
 
   const [loading, setLoading] = useState(true);
   const [proMember, setProMember] = useState(false);
@@ -73,7 +77,7 @@ export const useRNIAP = () => {
           handleGetProducts();
           // handleGetSubscriptions();
         })
-        .catch(err => console.log('initConnection err: ', err));
+        .catch(err => console.log("initConnection err: ", err));
     }
 
     purchaseUpdateSubscription = purchaseUpdatedListener(async purchase => {
@@ -81,24 +85,29 @@ export const useRNIAP = () => {
         return () => {
           if (!executedOnce) {
             executedOnce = true;
-            console.log('[EXECUTED ONCE] Function ran once!');
+            console.log("[EXECUTED ONCE] Function ran once!");
 
             // SPOTLIGHT
-            if (ios && purchase.productId == 'product_002') {
+            if (
+              ios &&
+              /Spotlight_001|Spotlight_003|Spotlight_005/.test(
+                purchase.productId
+              )
+            ) {
               handleBuySpotlight(purchase);
             } else if (
               android &&
-              /product_001|product_003/.test(purchase.productId)
+              /product_001|product_003|product_005/.test(purchase.productId)
             ) {
               handleBuySpotlight(purchase);
             }
 
             // SUBSCRIPTION
-            if (ios && /sub_no_1|sub_no_2/.test(purchase.productId)) {
+            if (ios && /sub_no_1|sub_no_2|sub_no_3/.test(purchase.productId)) {
               handleBuySubscription(purchase);
             } else if (
               android &&
-              /sub_no_1|sub_no_2|product_002/.test(purchase.productId)
+              /sub_no_1|sub_no_2|sub_no_3/.test(purchase.productId)
             ) {
               handleBuySubscription(purchase);
             }
@@ -118,32 +127,40 @@ export const useRNIAP = () => {
     purchaseErrorSubscription = purchaseErrorListener(err => {
       if (!err.responseCode == 2) {
         Alert.alert(
-          'Error',
-          'There has been an error with your purchase, error code' + err.code,
+          "Error",
+          "There has been an error with your purchase, error code" + err.code
         );
       }
     });
   }, []);
 
   const handleGetProducts = () => {
-    getProducts({skus: product_skus})
+    getProducts({ skus: product_skus })
       .then(async res => {
-        console.log('getProducts res: ', products);
-        if (products.length > 0) setProductList(products);
+        console.log("getProducts res: ", products);
+        if (products.length > 0 && ios) {
+          const iosProducts = products.map((el, index) => {
+            return {
+              ...el,
+              title: titleIcons[index] + el.title,
+            };
+          });
+          setProductList(iosProducts);
+        } else setProductList(products);
 
         handleGetSubscriptions();
       })
-      .catch(err => console.log('getProducts err: ', err))
+      .catch(err => console.log("getProducts err: ", err))
       .finally(() => setLoading(false));
   };
 
   const handleGetSubscriptions = () => {
-    getSubscriptions({skus: subscription_skus})
+    getSubscriptions({ skus: subscription_skus })
       .then(res => {
-        console.log('getSubscriptions res: ', subscriptions);
+        console.log("getSubscriptions res: ", subscriptions);
         if (subscriptions.length > 0) setSubscriptionList(subscriptions);
       })
-      .catch(err => console.log('getSubscriptions err: ', err));
+      .catch(err => console.log("getSubscriptions err: ", err));
   };
 
   const checkCurrentPurchase = async () => {
@@ -160,7 +177,7 @@ export const useRNIAP = () => {
         acknowledgeAndConsume(currentPurchase);
       }
     } catch (err) {
-      console.log('checkCurrentPurchase err', err);
+      console.log("checkCurrentPurchase err", err);
     }
   };
 
@@ -168,61 +185,69 @@ export const useRNIAP = () => {
     const body = {
       purchaseToken: ios ? purchase.transactionReceipt : purchase.purchaseToken,
       productId: purchase.productId,
-      packageName: 'com.rishtaaunty',
-      platform: ios ? 'apple' : 'google',
+      packageName: "com.rishtaaunty",
+      platform: ios ? "apple" : "google",
     };
 
     IAPServices.buySpotlight(body, token)
       .then(res => {
-        console.log('buySpotlight res', res.data);
+        console.log("buySpotlight res", res.data);
         if (res.data.status >= 200 && res.data.status <= 299) {
-          alerts('success', res.data.message);
+          alerts("success", res.data.message);
           acknowledgeAndConsume(purchase);
           setProMember(true);
-          
-          let copy = {...userData};
+
+          let copy = { ...userData };
           copy.UserSetting = {
             ...copy.UserSetting,
             isSubscribed: true,
           };
           dispatch({
-            type: 'AUTH_USER',
+            type: "AUTH_USER",
             payload: copy,
           });
+
+          navigation.goBack();
+        } else {
+          alerts("error", res?.error?.message);
         }
       })
-      .catch(err => console.log('buySpotlight err', err));
+      .catch(err => console.log("buySpotlight err", err));
   }, []);
 
   const handleBuySubscription = useCallback(async purchase => {
     const body = {
       purchaseToken: ios ? purchase.transactionReceipt : purchase.purchaseToken,
       productId: purchase.productId,
-      packageName: 'com.rishtaaunty',
-      platform: ios ? 'apple' : 'google',
+      packageName: "com.rishtaaunty",
+      platform: ios ? "apple" : "google",
     };
 
     IAPServices.buySubscription(body, token)
       .then(res => {
-        console.log('buySubscription res', res.data);
+        console.log("buySubscription res", res.data);
         if (res.data.status >= 200 && res.data.status <= 299) {
-          alerts('success', res.data.message);
+          alerts("success", res.data.message);
           acknowledgeAndConsume(purchase, false);
           setProMember(true);
-          // userData?.UserSetting?.isSubscribed
-          let copy = {...userData};
+
+          let copy = { ...userData };
           copy.UserSetting = {
             ...copy.UserSetting,
             isSubscribed: true,
           };
           dispatch({
-            type: 'AUTH_USER',
+            type: "AUTH_USER",
             payload: copy,
           });
+
+          navigation.goBack();
+        } else {
+          alerts("error", res?.error?.message);
         }
       })
       .catch(err => {
-        console.log('buySubscription err', err);
+        console.log("buySubscription err", err);
       });
   }, []);
 
@@ -243,7 +268,7 @@ export const useRNIAP = () => {
 
   useEffect(() => {
     if (currentPurchaseError) {
-      console.log('currentPurchaseError', currentPurchaseError);
+      console.log("currentPurchaseError", currentPurchaseError);
 
       if (currentPurchaseError.code === ErrorCode.E_ALREADY_OWNED) {
         setProMember(true);
@@ -252,7 +277,7 @@ export const useRNIAP = () => {
   }, [currentPurchaseError]);
 
   const isSubscriptionActive = async () => {
-    console.log('isSubscriptionActive ran');
+    console.log("isSubscriptionActive ran");
     const availablePurchases = await getAvailablePurchases();
 
     if (ios) {
@@ -324,7 +349,7 @@ export const useRNIAP = () => {
         // validate receipt
       }
     } catch (err) {
-      console.log('restorePurchases', err);
+      console.log("restorePurchases", err);
     }
   };
 
@@ -338,9 +363,9 @@ export const useRNIAP = () => {
       isConsumable,
     })
       .then(res => {
-        console.log('finishTransaction res', res);
+        console.log("finishTransaction res", res);
       })
-      .catch(err => console.log('finishTransaction err', err))
+      .catch(err => console.log("finishTransaction err", err))
       .finally(() => {
         executedOnce = false;
       });
@@ -369,18 +394,18 @@ export const useRNIAP = () => {
       andDangerouslyFinishTransactionAutomaticallyIOS: false,
     })
       .then(res => {})
-      .catch(err => console.log('requestPurchase err', err))
+      .catch(err => console.log("requestPurchase err", err))
       .finally(() => setDisableBtn(false));
   };
 
   const handleRequestSubscription = async (
     productId,
     offerToken,
-    purchaseToken = '',
+    purchaseToken = ""
   ) => {
     let obj = {};
     setDisableBtn(true);
-    if (activeSubscription?.productId != productId && purchaseToken != '') {
+    if (activeSubscription?.productId != productId && purchaseToken != "") {
       obj = {
         prorationModeAndroid:
           ProrationModesAndroid.IMMEDIATE_AND_CHARGE_PRORATED_PRICE,
@@ -401,17 +426,17 @@ export const useRNIAP = () => {
       }),
     })
       .then(res => {})
-      .catch(err => console.log('requestSubscription err', err))
+      .catch(err => console.log("requestSubscription err", err))
       .finally(() => setDisableBtn(false));
   };
 
   const handleRequestSubscriptionIOS = async productId => {
     setDisableBtn(true);
-    await requestSubscription({sku: productId})
+    await requestSubscription({ sku: productId })
       .then(res => {
-        'handleRequestSubscriptionIOS res', res;
+        "handleRequestSubscriptionIOS res", res;
       })
-      .catch(err => console.log('handleRequestSubscriptionIOS err', err))
+      .catch(err => console.log("handleRequestSubscriptionIOS err", err))
       .finally(() => setDisableBtn(false));
   };
 
@@ -420,7 +445,7 @@ export const useRNIAP = () => {
       handleRequestSubscription(
         productId,
         offerToken,
-        activeSubscription.purchaseToken,
+        activeSubscription.purchaseToken
       );
     } else {
       handleRequestSubscription(productId, offerToken);

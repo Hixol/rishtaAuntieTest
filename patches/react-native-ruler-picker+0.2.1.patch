@@ -1,0 +1,230 @@
+diff --git a/node_modules/react-native-ruler-picker/src/components/RulerPicker.tsx b/node_modules/react-native-ruler-picker/src/components/RulerPicker.tsx
+index 2dd82da..497d508 100644
+--- a/node_modules/react-native-ruler-picker/src/components/RulerPicker.tsx
++++ b/node_modules/react-native-ruler-picker/src/components/RulerPicker.tsx
+@@ -9,19 +9,14 @@ import {
+   TextInput,
+ } from 'react-native';
+ import type { NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+-
+ import { AnimatedFlashList, ListRenderItem } from '@shopify/flash-list';
+-
+ import { RulerPickerItem, RulerPickerItemProps } from './RulerPickerItem';
+ import { calculateCurrentValue } from '../utils/';
+-
+ export type RulerPickerTextProps = Pick<
+   TextStyle,
+   'color' | 'fontSize' | 'fontWeight'
+ >;
+-
+ const { width: windowWidth } = Dimensions.get('window');
+-
+ export type RulerPickerProps = {
+   /**
+    * Width of the ruler picker
+@@ -115,7 +110,6 @@ export type RulerPickerProps = {
+    */
+   onValueChangeEnd?: (value: string) => void;
+ } & Partial<RulerPickerItemProps>;
+-
+ export const RulerPicker = ({
+   width = windowWidth,
+   height = 500,
+@@ -123,13 +117,13 @@ export const RulerPicker = ({
+   max,
+   step = 1,
+   initialValue = min,
+-  fractionDigits = 1,
++  fractionDigits = 2,
+   unit = 'cm',
+   indicatorHeight = 80,
+-  gapBetweenSteps = 10,
++  gapBetweenSteps = 12,
+   shortStepHeight = 20,
+   longStepHeight = 40,
+-  stepWidth = 2,
++  stepWidth = 1,
+   indicatorColor = 'black',
+   shortStepColor = 'lightgray',
+   longStepColor = 'darkgray',
+@@ -141,16 +135,15 @@ export const RulerPicker = ({
+ }: RulerPickerProps) => {
+   const itemAmount = (max - min) / step;
+   const arrData = Array.from({ length: itemAmount + 1 }, (_, index) => index);
+-
+   const stepTextRef = useRef<TextInput>(null);
+   const prevValue = useRef<string>(initialValue.toFixed(fractionDigits));
+   const prevMomentumValue = useRef<string>(
+     initialValue.toFixed(fractionDigits)
+   );
+   const scrollPosition = useRef(new Animated.Value(0)).current;
+-
+   const valueCallback: Animated.ValueListenerCallback = useCallback(
+     ({ value }) => {
++      
+       const newStep = calculateCurrentValue(
+         value,
+         stepWidth,
+@@ -159,26 +152,55 @@ export const RulerPicker = ({
+         max,
+         step,
+         fractionDigits
+-      );
+-
++        );
++        console.log('VALUE',newStep);
+       if (prevValue.current !== newStep) {
++        function cmToFeetAndInches(cm) {
++          const totalInches = cm / 2.54;
++          const feet = Math.floor(totalInches / 12);
++          const inches = totalInches % 12;
++        
++          let inchesString;
++        
++          if (inches >= 10) {
++            inchesString = inches.toFixed(0);
++          } else if (inches >= 0 && inches < 10) {
++            inchesString = inches.toFixed(0);
++          }
++        
++          return feet + '.' + inchesString;
++        }
++        
++        // Example usage:
++        const centimeters = newStep; // Change this to your desired value
++        const result = cmToFeetAndInches(centimeters);
++        console.log('RESULT',result);
++
++
++
++
++
++
++
++
++
++
++
++
++
+         onValueChange?.(newStep);
+-        stepTextRef.current?.setNativeProps({ text: newStep });
++        stepTextRef.current?.setNativeProps({ text: (result.split('.')[0])+`'`+(result.split('.')[1])+`"`});
+       }
+-
+       prevValue.current = newStep;
+     },
+     [fractionDigits, gapBetweenSteps, stepWidth, max, min, onValueChange, step]
+   );
+-
+   useEffect(() => {
+     scrollPosition.addListener(valueCallback);
+-
+     return () => {
+       scrollPosition.removeAllListeners();
+     };
+   }, [scrollPosition, valueCallback]);
+-
+   const scrollHandler = Animated.event(
+     [
+       {
+@@ -193,12 +215,10 @@ export const RulerPicker = ({
+       useNativeDriver: true,
+     }
+   );
+-
+   const renderSeparator = useCallback(
+     () => <View style={{ width: width * 0.5 - stepWidth * 0.5 }} />,
+     [stepWidth, width]
+   );
+-
+   const renderItem: ListRenderItem<unknown> = useCallback(
+     ({ index }) => {
+       return (
+@@ -224,7 +244,6 @@ export const RulerPicker = ({
+       shortStepHeight,
+     ]
+   );
+-
+   const onMomentumScrollEnd = useCallback(
+     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+       const newStep = calculateCurrentValue(
+@@ -236,11 +255,9 @@ export const RulerPicker = ({
+         step,
+         fractionDigits
+       );
+-
+       if (prevMomentumValue.current !== newStep) {
+         onValueChangeEnd?.(newStep);
+       }
+-
+       prevMomentumValue.current = newStep;
+     },
+     [
+@@ -253,7 +270,6 @@ export const RulerPicker = ({
+       step,
+     ]
+   );
+-
+   return (
+     <View style={{ width, height }}>
+       <AnimatedFlashList
+@@ -283,14 +299,14 @@ export const RulerPicker = ({
+           styles.indicator,
+           {
+             transform: [
+-              { translateX: -stepWidth * 0.5 },
++              { translateX: -stepWidth * 0.3 },
+               {
+                 translateY:
+                   -indicatorHeight * 0.5 -
+                   (valueTextStyle?.fontSize ?? styles.valueText.fontSize),
+               },
+             ],
+-            left: stepWidth * 0.5,
++            left: stepWidth * 0.4,
+           },
+         ]}
+       >
+@@ -303,7 +319,7 @@ export const RulerPicker = ({
+                 {
+                   translateY:
+                     -(valueTextStyle?.fontSize ?? styles.valueText.fontSize) *
+-                    0.5,
++                    0.4,
+                 },
+               ],
+             },
+@@ -311,7 +327,10 @@ export const RulerPicker = ({
+         >
+           <TextInput
+             ref={stepTextRef}
+-            defaultValue={initialValue.toFixed(fractionDigits)}
++            defaultValue={
++             
++              initialValue.toFixed(1)
++            }
+             style={[
+               {
+                 lineHeight:
+@@ -349,7 +368,6 @@ export const RulerPicker = ({
+     </View>
+   );
+ };
+-
+ const styles = StyleSheet.create({
+   indicator: {
+     position: 'absolute',
+diff --git a/node_modules/react-native-ruler-picker/src/components/RulerPickerItem.tsx b/node_modules/react-native-ruler-picker/src/components/RulerPickerItem.tsx
+index e95a6d7..2690c74 100644
+--- a/node_modules/react-native-ruler-picker/src/components/RulerPickerItem.tsx
++++ b/node_modules/react-native-ruler-picker/src/components/RulerPickerItem.tsx
+@@ -57,7 +57,7 @@ export const RulerPickerItem = React.memo(
+     shortStepColor,
+     longStepColor,
+   }: Props) => {
+-    const isLong = index % 10 === 0;
++    const isLong = index % 12 === 0;
+     const height = isLong ? longStepHeight : shortStepHeight;
+ 
+     return (

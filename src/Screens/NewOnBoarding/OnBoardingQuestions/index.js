@@ -1,45 +1,35 @@
-import {useFocusEffect} from '@react-navigation/native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
-  Alert,
   Text,
   TouchableOpacity,
   StyleSheet,
   Keyboard,
-  TouchableWithoutFeedback,
   ScrollView,
   ActivityIndicator,
   TextInput,
   Animated,
-  Dimensions,
-  Platform,
-  KeyboardAvoidingView,
-} from 'react-native';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { OnBoardingServices, UserService } from "../../../services";
+import { useHelper } from "../../../hooks/useHelper";
+import { alerts } from "../../../utility/regex";
+import { useDispatch, useSelector } from "react-redux";
+import { RulerPicker } from "react-native-ruler-picker";
+import { android, ios, windowHeight, windowWidth } from "../../../utility/size";
 
-import colors from '../../../utility/colors';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import FastImage from 'react-native-fast-image';
-import BottomButton from '../../../components/buttons/BottomButton';
+import colors from "../../../utility/colors";
+import FastImage from "react-native-fast-image";
+import BottomButton from "../../../components/buttons/BottomButton";
+import SliderView from "../../../components/Modal/Slider";
+import NewOnBoardingDesign from "../../../components/NewOnBoardingDesign";
+import OnBoardingSearch from "../../../components/OnBoardingSearch";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-import {OnBoardingServices, UserService} from '../../../services';
-import {useHelper} from '../../../hooks/useHelper';
-
-import SliderView from '../../../components/Modal/Slider';
-import NewOnBoardingDesign from '../../../components/NewOnBoardingDesign';
-import OnBoardingSearch from '../../../components/OnBoardingSearch';
-import {alerts, measureUnits} from '../../../utility/regex';
-import {useDispatch, useSelector} from 'react-redux';
-import {RulerPicker} from 'react-native-ruler-picker';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {android, ios, userDevice} from '../../../utility/size';
 let filtered = [];
-let percentage = '';
 
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
-const OnBoardingQuestions = ({navigation}) => {
-  const {token} = useSelector(store => store.userReducer);
+const OnBoardingQuestions = ({ navigation }) => {
+  const { token, userData } = useSelector(store => store.userReducer);
   const {
     vibes,
     promptsPool,
@@ -83,9 +73,9 @@ const OnBoardingQuestions = ({navigation}) => {
 
   const scrollIndicatorPosition = Animated.multiply(
     scrollIndicator,
-    visibleScrollBarHeight / completeScrollBarHeight,
+    visibleScrollBarHeight / completeScrollBarHeight
   ).interpolate({
-    extrapolate: 'clamp',
+    extrapolate: "clamp",
     inputRange: [0, difference],
     outputRange: [0, difference],
   });
@@ -95,14 +85,19 @@ const OnBoardingQuestions = ({navigation}) => {
 
   const onLayout = ({
     nativeEvent: {
-      layout: {height},
+      layout: { height },
     },
   }) => {
     setVisibleScrollBarHeight(height);
   };
 
-  const {handleLocation, handleStatusCode, Alerts, setOffset, keyboardOffset} =
-    useHelper();
+  const {
+    handleLocation,
+    handleStatusCode,
+    Alerts,
+    setOffset,
+    keyboardOffset,
+  } = useHelper();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selctedVibe, setSelectedVibe] = useState([]);
   const [selectedReligion, setSelectedReligion] = useState(null);
@@ -121,9 +116,9 @@ const OnBoardingQuestions = ({navigation}) => {
   const [selectedLanguage, setSelectedLanguage] = useState([]);
   const [selectedEL, setSelectedEL] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
-  const [occupation, setOccupation] = useState('');
-  const [tagline, setTagline] = useState('');
+  const [searchValue, setSearchValue] = useState("");
+  const [occupation, setOccupation] = useState("");
+  const [tagline, setTagline] = useState("");
   let [sliderVal, setSliderVal] = useState([1]);
   let [sliderMarriageVal, setSliderMarriageVal] = useState([1]);
   const [selectedHeight, setSelectedHeight] = useState(null);
@@ -134,25 +129,29 @@ const OnBoardingQuestions = ({navigation}) => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
     const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
+      "keyboardDidShow",
       () => {
         setKeyboardVisible(true);
-      },
+      }
     );
     const keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
+      "keyboardDidHide",
       () => {
         setKeyboardVisible(false);
-      },
+      }
     );
 
     return () => {
       keyboardDidHideListener.remove();
       keyboardDidShowListener.remove();
     };
-  }, []);
-  console.log('ISKEYBOARDVISIBLE', isKeyboardVisible);
+  }, [ppCheck]);
+
   useEffect(() => {
     if (vibes && vibes.length > 0) {
       setSelectedVibe(vibes);
@@ -164,7 +163,6 @@ const OnBoardingQuestions = ({navigation}) => {
       setSelectedFO(familyOrigin);
     }
     if (height !== null) {
-      console.log('HEIGHT123 5', height);
       setSelectedHeight(height);
     }
 
@@ -183,32 +181,39 @@ const OnBoardingQuestions = ({navigation}) => {
     if (denomination) {
       setSelectedDenomination(denomination);
     }
-    if (practicingLevel) {
-      if (practicingLevel === 'Rarely Religious') {
-        setSliderVal([1]);
-      } else if (practicingLevel === 'Somewhat Religious') {
-        setSliderVal([2]);
-      } else if (practicingLevel === 'Religious') {
-        setSliderVal([3]);
-      } else if (practicingLevel === 'Strongly Religious') {
-        setSliderVal([4]);
-      } else {
-        setSliderVal([1]);
-      }
+
+    if (practicingLevel === "Rarely Religious") {
+      setSliderVal([1]);
+    } else if (practicingLevel === "Somewhat Religious") {
+      setSliderVal([2]);
+    } else if (practicingLevel === "Religious") {
+      setSliderVal([3]);
+    } else if (practicingLevel === "Strongly Religious") {
+      setSliderVal([4]);
+    } else {
+      dispatch({
+        type: "practicingLevel",
+        payload: "Rarely Religious",
+      });
+      setSliderVal([1]);
     }
-    if (marriageTimeline) {
-      if (marriageTimeline === '1 Year') {
-        setSliderMarriageVal([1]);
-      } else if (marriageTimeline === '2 Years') {
-        setSliderMarriageVal([2]);
-      } else if (marriageTimeline === '3 Years') {
-        setSliderMarriageVal([3]);
-      } else if (marriageTimeline === '4 Years') {
-        setSliderMarriageVal([4]);
-      } else {
-        setSliderMarriageVal([1]);
-      }
+
+    if (marriageTimeline === "1 Year") {
+      setSliderMarriageVal([1]);
+    } else if (marriageTimeline === "2 Years") {
+      setSliderMarriageVal([2]);
+    } else if (marriageTimeline === "3 Years") {
+      setSliderMarriageVal([3]);
+    } else if (marriageTimeline === "4 Years") {
+      setSliderMarriageVal([4]);
+    } else {
+      dispatch({
+        type: "marriageTimeline",
+        payload: "1 Year",
+      });
+      setSliderMarriageVal([1]);
     }
+
     if (pray) {
       setSelectedPray(pray);
     }
@@ -241,89 +246,89 @@ const OnBoardingQuestions = ({navigation}) => {
   const [array, setArray] = useState([
     {
       id: 1,
-      type: 'Main Vibes',
+      type: "Main Vibes",
       question: `What are your vibes?`,
-      ask: 'Share your essence with others by selecting 8 vibes.',
+      ask: "Share your essence with others by selecting 8 vibes.",
       options: [],
       search: false,
       multiSelect: true,
-      heading: 'Main Vibes',
+      heading: "Main Vibes",
     },
     {
       id: 2,
-      type: 'Prompts Pool',
+      type: "Prompts Pool",
       question: `Spark conversations`,
-      ask: 'Share yourself with 3 prompts.',
+      ask: "Share yourself with 3 prompts.",
       options: [],
       search: false,
       multiSelect: true,
-      heading: 'Prompts Pool',
+      heading: "Prompts Pool",
     },
     {
       id: 3,
-      type: 'Height',
+      type: "Height",
       question: `What’s your height?`,
-      ask: '',
+      ask: "",
       options: [],
       search: false,
       multiSelect: false,
-      heading: 'About me',
+      heading: "About me",
     },
     {
       id: 4,
-      type: 'Family Origin',
+      type: "Family Origin",
       question: `What is your family origin?`,
-      ask: '',
+      ask: "",
       options: [],
       search: true,
       multiSelect: true,
-      heading: 'Ethnicity',
+      heading: "Ethnicity",
     },
     {
       id: 5,
-      type: 'Community',
+      type: "Community",
       question: `What is your community?`,
-      ask: '',
+      ask: "",
       options: [],
       search: true,
       multiSelect: true,
-      heading: 'Ethnicity',
+      heading: "Ethnicity",
     },
     {
       id: 6,
-      type: 'Language',
+      type: "Language",
       question: `What is your language?`,
-      ask: '',
+      ask: "",
       options: [],
       search: true,
       multiSelect: true,
-      heading: 'Ethnicity',
+      heading: "Ethnicity",
     },
     {
       id: 7,
-      type: 'Education Level',
+      type: "Education Level",
       question: `What is your education level?`,
-      ask: '',
+      ask: "",
       options: [
-        {name: 'High School'},
-        {name: 'Bachelors'},
-        {name: 'Doctorate'},
-        {name: 'Masters'},
+        { name: "High School" },
+        { name: "Bachelors" },
+        { name: "Masters" },
+        { name: "Doctorate" },
       ],
       search: false,
       multiSelect: false,
-      heading: 'Education and career',
+      heading: "Education and career",
     },
 
     {
       id: 8,
-      type: 'Occupation',
+      type: "Occupation",
       question: `What is your occupation?`,
-      ask: '',
+      ask: "",
       options: [],
       search: false,
       multiSelect: false,
-      heading: 'Education and career',
+      heading: "Education and career",
     },
     // {
     //   id: 8,
@@ -336,131 +341,131 @@ const OnBoardingQuestions = ({navigation}) => {
     // },
     {
       id: 9,
-      type: 'Denomination',
+      type: "Denomination",
       question: `What is your denomination?`,
-      ask: '',
+      ask: "",
       options: [],
       search: false,
       multiSelect: false,
-      heading: 'Religion',
+      heading: "Religion",
     },
     {
       id: 10,
-      type: 'Practicing Level',
+      type: "Practicing Level",
       question: `What is your practicing level?`,
-      ask: '',
+      ask: "",
       options: [
-        {index: 0, stepLabel: 'Rarely Religious'},
-        {index: 1, stepLabel: 'Somewhat Religious'},
-        {index: 2, stepLabel: 'Religious'},
-        {index: 3, stepLabel: 'Strongly Religious'},
+        { index: 0, stepLabel: "Rarely Religious" },
+        { index: 1, stepLabel: "Somewhat Religious" },
+        { index: 2, stepLabel: "Religious" },
+        { index: 3, stepLabel: "Strongly Religious" },
       ],
       search: false,
       multiSelect: false,
-      heading: 'Religion',
+      heading: "Religion",
     },
     {
       id: 11,
-      type: 'Pray',
+      type: "Pray",
       question: `How often do you pray?`,
-      ask: '',
+      ask: "",
       options: [
-        {name: "Don't pray"},
-        {name: 'Sometimes'},
-        {name: 'Often'},
-        {name: 'Regularly'},
+        { name: "Don't pray" },
+        { name: "Sometimes" },
+        { name: "Often" },
+        { name: "Regularly" },
       ],
       search: false,
       multiSelect: false,
-      heading: 'Religion',
+      heading: "Religion",
     },
     {
       id: 12,
-      type: 'Drink',
+      type: "Drink",
       question: `Do you drink?`,
-      ask: '',
+      ask: "",
       options: [
         {
-          name: 'I Drink',
-          icon: require('../../../assets/iconimages/yes-drink.png'),
+          name: "I Drink",
+          icon: require("../../../assets/iconimages/yes-drink.png"),
         },
         {
-          name: 'Sometimes, Socially',
-          icon: require('../../../assets/iconimages/socially-drink.png'),
+          name: "Sometimes, Socially",
+          icon: require("../../../assets/iconimages/socially-drink.png"),
         },
         {
           name: `I Don’t Drink`,
-          icon: require('../../../assets/iconimages/no-drinks.png'),
+          icon: require("../../../assets/iconimages/no-drinks.png"),
         },
       ],
       search: false,
       multiSelect: false,
-      heading: 'Lifestyle',
+      heading: "Lifestyle",
     },
     {
       id: 13,
-      type: 'Smoke',
+      type: "Smoke",
       question: `Do you smoke?`,
-      ask: '',
+      ask: "",
       options: [
         {
-          name: 'Hookah',
-          icon: require('../../../assets/iconimages/hookahicon.png'),
+          name: "Hookah",
+          icon: require("../../../assets/iconimages/hookahicon.png"),
         },
         {
-          name: 'Cigarette',
-          icon: require('../../../assets/iconimages/cigaretteicon.png'),
+          name: "Cigarette",
+          icon: require("../../../assets/iconimages/cigaretteicon.png"),
         },
         {
           name: `Weed`,
-          icon: require('../../../assets/iconimages/weedicon.png'),
+          icon: require("../../../assets/iconimages/weedicon.png"),
         },
         {
           name: `None`,
-          icon: require('../../../assets/iconimages/smileyicon.png'),
+          icon: require("../../../assets/iconimages/smileyicon.png"),
         },
       ],
       search: false,
       multiSelect: true,
-      heading: 'Lifestyle',
+      heading: "Lifestyle",
     },
     {
       id: 14,
-      type: 'Diet',
+      type: "Diet",
       question: `What are your diet choices?`,
-      ask: '',
+      ask: "",
       options: [
         {
-          name: 'Halal',
-          icon: require('../../../assets/iconimages/halalicon.png'),
+          name: "Halal",
+          icon: require("../../../assets/iconimages/halalicon.png"),
         },
         {
-          name: 'Vegan',
-          icon: require('../../../assets/iconimages/veganicon.png'),
+          name: "Vegan",
+          icon: require("../../../assets/iconimages/veganicon.png"),
         },
         {
           name: `Anything`,
-          icon: require('../../../assets/iconimages/dieticon.png'),
+          icon: require("../../../assets/iconimages/dieticon.png"),
         },
       ],
       search: false,
       multiSelect: true,
-      heading: 'Lifestyle',
+      heading: "Lifestyle",
     },
     {
       id: 15,
-      type: 'Marital History',
+      type: "Marital History",
       question: `Marital History`,
-      ask: '',
+      ask: "",
       options: [
         {
-          name: 'None',
+          name: "None",
         },
         {
-          name: 'Annulled',
+          name: "Annulled",
         },
         {
-          name: `Divorces`,
+          name: `Divorced`,
         },
         {
           name: `Widowed`,
@@ -468,82 +473,82 @@ const OnBoardingQuestions = ({navigation}) => {
       ],
       search: false,
       multiSelect: false,
-      heading: 'Marital history',
+      heading: "Marital history",
     },
     {
       id: 16,
-      type: 'Marriage Timeline',
+      type: "Marriage Timeline",
       question: `When do you want to get married?`,
-      ask: '',
+      ask: "",
       options: [
-        {index: 0, stepLabel: '1 Year'},
-        {index: 1, stepLabel: '2 Years'},
-        {index: 2, stepLabel: '3 Years'},
-        {index: 3, stepLabel: '4 Years'},
+        { index: 0, stepLabel: "1 Year" },
+        { index: 1, stepLabel: "2 Years" },
+        { index: 2, stepLabel: "3 Years" },
+        { index: 3, stepLabel: "4 Years" },
       ],
       search: false,
       multiSelect: false,
-      heading: 'Marital history',
+      heading: "Marital history",
     },
     {
       id: 17,
-      type: 'Have Kids',
+      type: "Have Kids",
       question: `Do you have Kids?`,
-      ask: '',
+      ask: "",
       options: [
         {
-          name: 'Yes',
+          name: "Yes",
         },
         {
-          name: 'No',
+          name: "No",
         },
       ],
       search: false,
       multiSelect: false,
-      heading: 'Marital history',
+      heading: "Marital history",
     },
     {
       id: 18,
-      type: 'Want Kids',
+      type: "Want Kids",
       question: `Do you want Kids?`,
-      ask: '',
+      ask: "",
       options: [
         {
-          name: 'Yes',
+          name: "Yes",
         },
         {
-          name: 'No',
+          name: "No",
         },
       ],
       search: false,
       multiSelect: false,
-      heading: 'Marital history',
+      heading: "Marital history",
     },
     {
       id: 19,
-      type: 'Relocate',
+      type: "Relocate",
       question: `Are you willing to relocate?`,
-      ask: '',
+      ask: "",
       options: [
         {
-          name: 'Yes',
+          name: "Yes",
         },
         {
-          name: 'No',
+          name: "No",
         },
       ],
       search: false,
       multiSelect: false,
-      heading: 'Marital history',
+      heading: "Marital history",
     },
     {
       id: 20,
-      type: 'Tagline',
+      type: "Tagline",
       question: `Write something witty to introduce yourself?`,
       options: [],
       search: false,
       multiSelect: false,
-      heading: 'Tagline',
+      heading: "Tagline",
     },
   ]);
 
@@ -554,35 +559,48 @@ const OnBoardingQuestions = ({navigation}) => {
       .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
-          console.log('VIBESS SSSS', res);
+          let sortedData = res?.data?.data
+            .map(x => ({ name: x?.name, id: x?.id }))
+            .sort((a, b) => {
+              if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+              if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+              return 0;
+            });
+
           dispatch({
-            type: 'allVibes',
-            payload: res?.data?.data,
+            type: "allVibes",
+            payload: sortedData,
           });
 
           let find = copyarr.findIndex((item, index) => {
-            return item?.type === 'Main Vibes';
+            return item?.type === "Main Vibes";
           });
+
           copyarr[find] = {
             ...copyarr[find],
-            options: res?.data?.data,
+            options: sortedData,
           };
 
           UserService.getQuestions()
             .then(res => {
               handleStatusCode(res);
               if (res.status >= 200 && res.status <= 299) {
-                console.log('PRONPTS SSSS', res);
+                let sortedData = res.data.data.sort((a, b) => {
+                  if (a.title.toLowerCase() < b.title.toLowerCase()) return -1;
+                  if (a.title.toLowerCase() > b.title.toLowerCase()) return 1;
+                  return 0;
+                });
+
                 dispatch({
-                  type: 'allPrompts',
-                  payload: res?.data?.data,
+                  type: "allPrompts",
+                  payload: sortedData,
                 });
                 let findIndex = copyarr.findIndex(item => {
-                  return item?.type === 'Prompts Pool';
+                  return item?.type === "Prompts Pool";
                 });
                 copyarr[findIndex] = {
                   ...copyarr[findIndex],
-                  options: res?.data?.data,
+                  options: sortedData,
                 };
 
                 setArray(copyarr);
@@ -596,51 +614,49 @@ const OnBoardingQuestions = ({navigation}) => {
                 // );
               }
             })
-            .catch(err => console.log('Questions err', err));
+            .catch(err => console.log("getQuestions err", err));
         }
       })
-      .catch(err => console.log('err', err));
+      .catch(err => console.log("vibesListing err", err));
+
     OnBoardingServices.profileValues(
       encodeURI(
         JSON.stringify([
-          'college',
-          'community',
-          'denomination',
-          'familyOrigin',
-          'language',
-          'occupation',
-        ]),
-      ),
+          "community",
+          "denomination",
+          "familyOrigin",
+          "language",
+        ])
+      )
     )
       .then(async res => {
-        console.log('PROFILE VALUES', res);
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
-            type: 'allProfileValues',
+            type: "allProfileValues",
             payload: res?.data?.data,
           });
 
           let data = res?.data?.data;
 
           let find = copyarr.findIndex(item => {
-            return item?.type === 'Family Origin';
+            return item?.type === "Family Origin";
           });
           let findCommunityIndex = copyarr.findIndex(item => {
-            return item?.type === 'Community';
+            return item?.type === "Community";
           });
           let findLanguageIndex = copyarr.findIndex(item => {
-            return item?.type === 'Language';
+            return item?.type === "Language";
           });
           let findReligionIndex = copyarr.findIndex(item => {
-            return item?.type === 'Religion';
+            return item?.type === "Religion";
           });
           let findDenominationIndex = copyarr.findIndex(item => {
-            return item?.type === 'Denomination';
+            return item?.type === "Denomination";
           });
 
           let religionArray = await Object.keys(data?.denomination)
-            .map(x => ({name: x}))
+            .map(x => ({ name: x }))
             .sort((a, b) => {
               if (a.name < b.name) return -1;
               if (a.name > b.name) return 1;
@@ -673,10 +689,8 @@ const OnBoardingQuestions = ({navigation}) => {
           setArray(copyarr);
         }
       })
-      .catch(err => console.log('err', err))
-      .finally(() => {
-        setLoading(false);
-      });
+      .catch(err => console.log("profileValues err", err))
+      .finally(() => setLoading(false));
   }, []);
 
   const selectVibe = (item, index) => {
@@ -687,8 +701,9 @@ const OnBoardingQuestions = ({navigation}) => {
     if (arr.length < 8 && check === false) {
       arr.push(item);
       setSelectedVibe(arr);
+
       dispatch({
-        type: 'vibes',
+        type: "vibes",
         payload: arr,
       });
     } else if (check === true) {
@@ -697,7 +712,7 @@ const OnBoardingQuestions = ({navigation}) => {
       });
       setSelectedVibe(filtered);
       dispatch({
-        type: 'vibes',
+        type: "vibes",
         payload: filtered,
       });
     }
@@ -711,7 +726,7 @@ const OnBoardingQuestions = ({navigation}) => {
       arr.push(item);
       setSelectedPP(arr);
       dispatch({
-        type: 'promptsPool',
+        type: "promptsPool",
         payload: arr,
       });
     } else if (check === true) {
@@ -720,7 +735,7 @@ const OnBoardingQuestions = ({navigation}) => {
       });
       setSelectedPP(filtered);
       dispatch({
-        type: 'promptsPool',
+        type: "promptsPool",
         payload: filtered,
       });
     }
@@ -771,11 +786,10 @@ const OnBoardingQuestions = ({navigation}) => {
   const selectHeight = number => {
     setSelectedHeight(number);
     dispatch({
-      type: 'height',
+      type: "height",
       payload: number,
     });
   };
-  console.log('HEIGHT1234', selectedHeight, height);
 
   const selectFO = (item, index) => {
     let arr = [...selectedFO];
@@ -785,50 +799,50 @@ const OnBoardingQuestions = ({navigation}) => {
     });
 
     let check = arr.some(item1 => {
-      return item1?.name === 'Not Specified';
+      return item1?.name === "Not Specified";
     });
-    if (check && item?.name !== 'Not Specified') {
+    if (check && item?.name !== "Not Specified") {
       arr = [];
       arr.push(item);
       setSelectedFO(arr);
       dispatch({
-        type: 'familyOrigin',
+        type: "familyOrigin",
         payload: arr,
       });
-    } else if (check && item?.name === 'Not Specified') {
+    } else if (check && item?.name === "Not Specified") {
       arr = [];
       setSelectedFO(arr);
       dispatch({
-        type: 'familyOrigin',
+        type: "familyOrigin",
         payload: arr,
       });
-    } else if (item?.name === 'Not Specified' && !check) {
+    } else if (item?.name === "Not Specified" && !check) {
       arr = [];
       arr.push(item);
       setSelectedFO(arr);
       dispatch({
-        type: 'familyOrigin',
+        type: "familyOrigin",
         payload: arr,
       });
     } else if (
       !check &&
-      item?.name !== 'Not Specified' &&
+      item?.name !== "Not Specified" &&
       !check2 &&
       selectedFO.length < 6
     ) {
       arr.push(item);
       setSelectedFO(arr);
       dispatch({
-        type: 'familyOrigin',
+        type: "familyOrigin",
         payload: arr,
       });
-    } else if (!check && item?.name !== 'Not Specified' && check2) {
+    } else if (!check && item?.name !== "Not Specified" && check2) {
       let filtered = arr.filter(item1 => {
         return item1?.name !== item?.name;
       });
       setSelectedFO(filtered);
       dispatch({
-        type: 'familyOrigin',
+        type: "familyOrigin",
         payload: filtered,
       });
     }
@@ -841,45 +855,45 @@ const OnBoardingQuestions = ({navigation}) => {
     });
 
     let check = arr.some(item1 => {
-      return item1?.name === 'Not Specified';
+      return item1?.name === "Not Specified";
     });
-    if (check && item?.name !== 'Not Specified') {
+    if (check && item?.name !== "Not Specified") {
       arr = [];
       arr.push(item);
       setSelectedCommunity(arr);
       dispatch({
-        type: 'community',
+        type: "community",
         payload: arr,
       });
-    } else if (check && item?.name === 'Not Specified') {
+    } else if (check && item?.name === "Not Specified") {
       arr = [];
       setSelectedCommunity(arr);
       dispatch({
-        type: 'community',
+        type: "community",
         payload: arr,
       });
-    } else if (item?.name === 'Not Specified' && !check) {
+    } else if (item?.name === "Not Specified" && !check) {
       arr = [];
       arr.push(item);
       setSelectedCommunity(arr);
       dispatch({
-        type: 'community',
+        type: "community",
         payload: arr,
       });
-    } else if (!check && item?.name !== 'Not Specified' && !check2) {
+    } else if (!check && item?.name !== "Not Specified" && !check2) {
       arr.push(item);
       setSelectedCommunity(arr);
       dispatch({
-        type: 'community',
+        type: "community",
         payload: arr,
       });
-    } else if (!check && item?.name !== 'Not Specified' && check2) {
+    } else if (!check && item?.name !== "Not Specified" && check2) {
       let filtered = arr.filter(item1 => {
         return item1?.name !== item?.name;
       });
       setSelectedCommunity(filtered);
       dispatch({
-        type: 'community',
+        type: "community",
         payload: filtered,
       });
     }
@@ -892,45 +906,45 @@ const OnBoardingQuestions = ({navigation}) => {
     });
 
     let check = arr.some(item1 => {
-      return item1?.name === 'Other';
+      return item1?.name === "Other";
     });
-    if (check && item?.name !== 'Other') {
+    if (check && item?.name !== "Other") {
       arr = [];
       arr.push(item);
       setSelectedLanguage(arr);
       dispatch({
-        type: 'language',
+        type: "language",
         payload: arr,
       });
-    } else if (check && item?.name === 'Other') {
+    } else if (check && item?.name === "Other") {
       arr = [];
       setSelectedLanguage(arr);
       dispatch({
-        type: 'language',
+        type: "language",
         payload: arr,
       });
-    } else if (item?.name === 'Other' && !check) {
+    } else if (item?.name === "Other" && !check) {
       arr = [];
       arr.push(item);
       setSelectedLanguage(arr);
       dispatch({
-        type: 'language',
+        type: "language",
         payload: arr,
       });
-    } else if (!check && item?.name !== 'Other' && !check2) {
+    } else if (!check && item?.name !== "Other" && !check2) {
       arr.push(item);
       setSelectedLanguage(arr);
       dispatch({
-        type: 'language',
+        type: "language",
         payload: arr,
       });
-    } else if (!check && item?.name !== 'Other' && check2) {
+    } else if (!check && item?.name !== "Other" && check2) {
       let filtered = arr.filter(item1 => {
         return item1?.name !== item?.name;
       });
       setSelectedLanguage(filtered);
       dispatch({
-        type: 'language',
+        type: "language",
         payload: filtered,
       });
     }
@@ -938,7 +952,7 @@ const OnBoardingQuestions = ({navigation}) => {
   const selectEL = (item, index) => {
     setSelectedEL(item);
     dispatch({
-      type: 'educationLevel',
+      type: "educationLevel",
       payload: item,
     });
   };
@@ -948,14 +962,14 @@ const OnBoardingQuestions = ({navigation}) => {
   const selectDenomination = (item, index) => {
     setSelectedDenomination(item);
     dispatch({
-      type: 'denomination',
+      type: "denomination",
       payload: item,
     });
   };
   const selectPray = (item, index) => {
     setSelectedPray(item);
     dispatch({
-      type: 'pray',
+      type: "pray",
       payload: item,
     });
   };
@@ -963,7 +977,7 @@ const OnBoardingQuestions = ({navigation}) => {
   const selectDrink = (item, index) => {
     setSelectedDrink(item);
     dispatch({
-      type: 'drink',
+      type: "drink",
       payload: item,
     });
   };
@@ -975,45 +989,45 @@ const OnBoardingQuestions = ({navigation}) => {
     });
 
     let check = arr.some(item1 => {
-      return item1?.name === 'None';
+      return item1?.name === "None";
     });
-    if (check && item?.name !== 'None') {
+    if (check && item?.name !== "None") {
       arr = [];
       arr.push(item);
       setSelectedSmoke(arr);
       dispatch({
-        type: 'smoke',
+        type: "smoke",
         payload: arr,
       });
-    } else if (check && item?.name === 'None') {
+    } else if (check && item?.name === "None") {
       arr = [];
       setSelectedSmoke(arr);
       dispatch({
-        type: 'smoke',
+        type: "smoke",
         payload: arr,
       });
-    } else if (item?.name === 'None' && !check) {
+    } else if (item?.name === "None" && !check) {
       arr = [];
       arr.push(item);
       setSelectedSmoke(arr);
       dispatch({
-        type: 'smoke',
+        type: "smoke",
         payload: arr,
       });
-    } else if (!check && item?.name !== 'None' && !check2) {
+    } else if (!check && item?.name !== "None" && !check2) {
       arr.push(item);
       setSelectedSmoke(arr);
       dispatch({
-        type: 'smoke',
+        type: "smoke",
         payload: arr,
       });
-    } else if (!check && item?.name !== 'None' && check2) {
+    } else if (!check && item?.name !== "None" && check2) {
       let filtered = arr.filter(item1 => {
         return item1?.name !== item?.name;
       });
       setSelectedSmoke(filtered);
       dispatch({
-        type: 'smoke',
+        type: "smoke",
         payload: filtered,
       });
     }
@@ -1026,45 +1040,45 @@ const OnBoardingQuestions = ({navigation}) => {
     });
 
     let check = arr.some(item1 => {
-      return item1?.name === 'Anything';
+      return item1?.name === "Anything";
     });
-    if (check && item?.name !== 'Anything') {
+    if (check && item?.name !== "Anything") {
       arr = [];
       arr.push(item);
       setSelectedDiet(arr);
       dispatch({
-        type: 'dietChoices',
+        type: "dietChoices",
         payload: arr,
       });
-    } else if (check && item?.name === 'Anything') {
+    } else if (check && item?.name === "Anything") {
       arr = [];
       setSelectedDiet(arr);
       dispatch({
-        type: 'dietChoices',
+        type: "dietChoices",
         payload: arr,
       });
-    } else if (item?.name === 'Anything' && !check) {
+    } else if (item?.name === "Anything" && !check) {
       arr = [];
       arr.push(item);
       setSelectedDiet(arr);
       dispatch({
-        type: 'dietChoices',
+        type: "dietChoices",
         payload: arr,
       });
-    } else if (!check && item?.name !== 'Anything' && !check2) {
+    } else if (!check && item?.name !== "Anything" && !check2) {
       arr.push(item);
       setSelectedDiet(arr);
       dispatch({
-        type: 'dietChoices',
+        type: "dietChoices",
         payload: arr,
       });
-    } else if (!check && item?.name !== 'Anything' && check2) {
+    } else if (!check && item?.name !== "Anything" && check2) {
       let filtered = arr.filter(item1 => {
         return item1?.name !== item?.name;
       });
       setSelectedDiet(filtered);
       dispatch({
-        type: 'dietChoices',
+        type: "dietChoices",
         payload: filtered,
       });
     }
@@ -1072,60 +1086,60 @@ const OnBoardingQuestions = ({navigation}) => {
   const selectMh = (item, index) => {
     setSelectedMH(item);
     dispatch({
-      type: 'maritalHistory',
+      type: "maritalHistory",
       payload: item,
     });
   };
   const selectHK = (item, index) => {
     setSelectedHK(item);
     dispatch({
-      type: 'haveKids',
+      type: "haveKids",
       payload: item,
     });
   };
   const selectWK = (item, index) => {
     setSelectedWK(item);
     dispatch({
-      type: 'wantKids',
+      type: "wantKids",
       payload: item,
     });
   };
   const selectRelocate = (item, index) => {
     setSelectedRelocate(item);
     dispatch({
-      type: 'relocate',
+      type: "relocate",
       payload: item,
     });
   };
   const handleSliderValue = (label, val) => {
     setSliderVal(val);
     dispatch({
-      type: 'practicingLevel',
+      type: "practicingLevel",
       payload:
         val[0] === 1
-          ? 'Rarely Religious'
+          ? "Rarely Religious"
           : val[0] === 2
-          ? 'Somewhat Religious'
+          ? "Somewhat Religious"
           : val[0] === 3
-          ? 'Religious'
+          ? "Religious"
           : val[0] === 4
-          ? 'Strongly Religious'
+          ? "Strongly Religious"
           : null,
     });
   };
   const handleSliderMarriageValue = (label, val) => {
     setSliderMarriageVal(val);
     dispatch({
-      type: 'marriageTimeline',
+      type: "marriageTimeline",
       payload:
         val[0] === 1
-          ? '1 Year'
+          ? "1 Year"
           : val[0] === 2
-          ? '2 Years'
+          ? "2 Years"
           : val[0] === 3
-          ? '3 Years'
+          ? "3 Years"
           : val[0] === 4
-          ? '4 Years'
+          ? "4 Years"
           : null,
     });
   };
@@ -1143,13 +1157,13 @@ const OnBoardingQuestions = ({navigation}) => {
 
   const selectAnswers = async (text, index, findIndex) => {
     await dispatch({
-      type: 'wholeArray',
+      type: "wholeArray",
       payload: array,
     });
     let copyArray = await [...wholeArray];
     let newArray = await [...wholeArray[currentIndex]?.options];
     if (findIndex?.includes(index)) {
-      newArray[index] = await {...newArray[index], answer: text};
+      newArray[index] = await { ...newArray[index], answer: text };
     }
 
     copyArray[currentIndex] = await {
@@ -1157,7 +1171,7 @@ const OnBoardingQuestions = ({navigation}) => {
       options: newArray,
     };
     await dispatch({
-      type: 'wholeArray',
+      type: "wholeArray",
       payload: copyArray,
     });
     let rArray = [];
@@ -1165,7 +1179,7 @@ const OnBoardingQuestions = ({navigation}) => {
       return findIndex?.includes(index) ? rArray.push(item) : null;
     });
     await dispatch({
-      type: 'promptsPool',
+      type: "promptsPool",
       payload: rArray,
     });
     await setSelectedPP(rArray);
@@ -1173,12 +1187,11 @@ const OnBoardingQuestions = ({navigation}) => {
   };
 
   const continuePress = () => {
-    console.log('CHOICESSS', array[currentIndex]?.type);
-    if (array[currentIndex]?.type === 'Main Vibes' && selctedVibe?.length < 1) {
-      alerts('error', 'Please select any vibe to continue');
-    } else if (array[currentIndex]?.type === 'Prompts Pool') {
+    if (array[currentIndex]?.type === "Main Vibes" && selctedVibe?.length < 1) {
+      alerts("error", "Please select any vibe to continue");
+    } else if (array[currentIndex]?.type === "Prompts Pool") {
       if (selectedPP?.length < 3) {
-        alerts('error', 'Please select atleast 3 prompt pools');
+        alerts("error", "Please select atleast 3 prompt pools");
       } else {
         setPPCheck(true);
         if (!ppCheck) {
@@ -1186,118 +1199,118 @@ const OnBoardingQuestions = ({navigation}) => {
         } else if (ppCheck && ppIndex < selectedPP.length - 1) {
           if (
             promptsPool[ppIndex]?.answer &&
-            promptsPool[ppIndex]?.answer !== ''
+            promptsPool[ppIndex]?.answer !== ""
           ) {
             setPPIndex(prev => prev + 1);
           } else {
-            alerts('error', 'Please write your answer');
+            alerts("error", "Please write your answer");
           }
         } else {
           if (
             promptsPool[ppIndex]?.answer &&
-            promptsPool[ppIndex]?.answer !== ''
+            promptsPool[ppIndex]?.answer !== ""
           ) {
             setPPCheck(false);
             setCurrentIndex(prev => prev + 1);
           } else {
-            alerts('error', 'Please write your answer');
+            alerts("error", "Please write your answer");
           }
         }
       }
     } else if (
-      array[currentIndex]?.type === 'Family Origin' &&
+      array[currentIndex]?.type === "Family Origin" &&
       selectedFO?.length === 0
     ) {
-      alerts('error', 'Please select atleast one Family Origin');
+      alerts("error", "Please select atleast one Family Origin");
     } else if (
-      array[currentIndex]?.type === 'Community' &&
+      array[currentIndex]?.type === "Community" &&
       selectedCommunity?.length === 0
     ) {
-      alerts('error', 'Please select atleast one Community');
+      alerts("error", "Please select atleast one Community");
     } else if (
-      array[currentIndex]?.type === 'Language' &&
+      array[currentIndex]?.type === "Language" &&
       selectedLanguage?.length === 0
     ) {
-      alerts('error', 'Please select atleast one Language');
+      alerts("error", "Please select atleast one Language");
     } else if (
-      array[currentIndex]?.type === 'Education Level' &&
+      array[currentIndex]?.type === "Education Level" &&
       selectedEL?.length === 0
     ) {
-      alerts('error', 'Please select atleast one Education Level');
+      alerts("error", "Please select atleast one Education Level");
     } else if (
-      array[currentIndex]?.type === 'Occupation' &&
+      array[currentIndex]?.type === "Occupation" &&
       occupation?.length < 3
     ) {
-      alerts('error', 'Please enter valid occupation');
+      alerts("error", "Please enter valid occupation");
     } else if (
-      array[currentIndex]?.type === 'Denomination' &&
+      array[currentIndex]?.type === "Denomination" &&
       selectedDenomination === null
     ) {
-      alerts('error', 'Please select Denomination');
-    } else if (array[currentIndex]?.type === 'Pray' && selectedPray === null) {
-      alerts('error', 'Please select how often do you pray');
+      alerts("error", "Please select Denomination");
+    } else if (array[currentIndex]?.type === "Pray" && selectedPray === null) {
+      alerts("error", "Please select how often do you pray");
     } else if (
-      array[currentIndex]?.type === 'Drink' &&
+      array[currentIndex]?.type === "Drink" &&
       selectedDrink === null
     ) {
-      alerts('error', 'Please select if you Drink or not');
+      alerts("error", "Please select if you Drink or not");
     } else if (
-      array[currentIndex]?.type === 'Smoke' &&
+      array[currentIndex]?.type === "Smoke" &&
       selectedSmoke.length === 0
     ) {
-      alerts('error', 'Please select if you Smoke or not');
+      alerts("error", "Please select if you Smoke or not");
     } else if (
-      array[currentIndex]?.type === 'Diet' &&
+      array[currentIndex]?.type === "Diet" &&
       selectedDiet.length === 0
     ) {
-      alerts('error', 'Please select what are your Diet Choices');
+      alerts("error", "Please select what are your Diet Choices");
     } else if (
-      array[currentIndex]?.type === 'Marital History' &&
+      array[currentIndex]?.type === "Marital History" &&
       selectedMH === null
     ) {
-      alerts('error', 'Please select your Marital History');
+      alerts("error", "Please select your Marital History");
     } else if (
-      array[currentIndex]?.type === 'Have Kids' &&
+      array[currentIndex]?.type === "Have Kids" &&
       selectedHK === null
     ) {
-      alerts('error', 'Please select one of the following');
+      alerts("error", "Please select one of the following");
     } else if (
-      array[currentIndex]?.type === 'Want Kids' &&
+      array[currentIndex]?.type === "Want Kids" &&
       selectedWK === null
     ) {
-      alerts('error', 'Please select one of the following');
+      alerts("error", "Please select one of the following");
     } else if (
-      array[currentIndex]?.type === 'Relocate' &&
+      array[currentIndex]?.type === "Relocate" &&
       selectedRelocate === null
     ) {
-      alerts('error', 'Please select one of the following');
-    } else if (array[currentIndex]?.type === 'Tagline' && tagline === '') {
-      alerts('error', 'Please write something to introduce yourself');
+      alerts("error", "Please select one of the following");
+    } else if (array[currentIndex]?.type === "Tagline" && tagline === "") {
+      alerts("error", "Please write something to introduce yourself");
     } else {
       if (currentIndex === array?.length - 1) {
-        setButtonLoader(true);
+        // setButtonLoader(true);
         const formData = new FormData();
-        formData.append('height', height / 30.48);
-        formData.append('familyOrigin', familyOrigin[0]?.name);
-        formData.append('community', community[0]?.name);
+        formData.append("height", height);
+        formData.append("familyOrigin", familyOrigin[0]?.name);
+        formData.append("community", community[0]?.name);
         language.map(el => {
           formData.append(`languages[]`, el?.name);
         });
-        formData.append('denomination', denomination?.name);
-        formData.append('practiceLevel', practicingLevel);
-        formData.append('iPray', pray?.name);
-        formData.append('iDrink', drink?.name);
-        formData.append('education', educationLevel?.name);
-        formData.append('occupation', occupation1);
-        formData.append('marriageTimeline', marriageTimeline);
-        formData.append('maritalHistory', maritalHistory?.name);
-        formData.append('haveKids', haveKids?.name === 'Yes' ? true : false);
-        formData.append('wantKids', wantKids?.name === 'Yes' ? true : false);
+        formData.append("denomination", denomination?.name);
+        formData.append("practiceLevel", practicingLevel);
+        formData.append("iPray", pray?.name);
+        formData.append("iDrink", drink?.name);
+        formData.append("education", educationLevel?.name);
+        formData.append("occupation", occupation1);
+        formData.append("marriageTimeline", marriageTimeline);
+        formData.append("maritalHistory", maritalHistory?.name);
+        formData.append("haveKids", haveKids?.name === "Yes" ? true : false);
+        formData.append("wantKids", wantKids?.name === "Yes" ? true : false);
         formData.append(
-          'willingToRelocate',
-          relocate?.name === 'Yes' ? true : false,
+          "willingToRelocate",
+          relocate?.name === "Yes" ? true : false
         );
-        formData.append('tagline', tagline);
+        formData.append("tagline", tagline);
         smoke.map((x, index) => {
           formData.append(`smokeChoices[]`, x?.name);
         });
@@ -1311,26 +1324,25 @@ const OnBoardingQuestions = ({navigation}) => {
         selectedPP.map((el, ind) => {
           formData.append(`profilePrompts[${ind}][questionId]`, el?.id);
           formData.append(`profilePrompts[${ind}][answer]`, el.answer);
-          formData.append(`profilePrompts[${ind}][operation]`, 'add');
+          formData.append(`profilePrompts[${ind}][operation]`, "add");
         });
-        console.log('FORMDATA124', formData);
+
         UserService.updateNewProfile(formData, token)
           .then(res => {
-            console.log('UPDATE res', res);
             if (res?.status >= 200 && res?.status <= 299) {
-              Alerts('success', 'Profile updated successfully');
+              Alerts("success", "Profile updated successfully");
               dispatch({
-                type: 'AUTH_USER_STATUS',
+                type: "AUTH_USER_STATUS",
                 payload: res?.data?.data?.user?.status,
               });
-              navigation.navigate('PersonalityQuizNew');
+              navigation.navigate("PersonalityQuizNew");
             } else {
-              Alerts('error', res?.data?.error?.message);
+              Alerts("error", res?.data?.error?.message);
             }
           })
           .catch(e => {
             // Alerts('Error', e?.data?.error?.message);
-            console.log('e', e);
+            console.log("updateNewProfile err", e);
           })
           .finally(() => {
             setButtonLoader(false);
@@ -1338,7 +1350,7 @@ const OnBoardingQuestions = ({navigation}) => {
       } else {
         setCurrentIndex(prev => prev + 1);
         filtered = [];
-        setSearchValue('');
+        setSearchValue("");
       }
     }
   };
@@ -1422,926 +1434,997 @@ const OnBoardingQuestions = ({navigation}) => {
       />
     );
   };
-  console.log('selectedHeight 111', height);
+
   return loading ? (
     <View
       style={{
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: "center",
+        justifyContent: "center",
         flex: 1,
         backgroundColor: colors.white,
-      }}>
-      <ActivityIndicator size={'large'} color={colors.primaryPink} />
+      }}
+    >
+      <ActivityIndicator size={"large"} color={colors.primaryPink} />
     </View>
   ) : (
-    <SafeAreaView style={{flex: 1, padding: 20, backgroundColor: colors.white}}>
-      <TouchableOpacity
-        onPress={() => {
-          if (
-            currentIndex > 0 &&
-            !ppCheck &&
-            array[currentIndex]?.type !== 'Height'
-          ) {
-            setCurrentIndex(prev => prev - 1);
-          } else if (currentIndex > 0 && ppCheck) {
-            if (ppIndex === 0 && ppCheck) {
-              setPPIndex(0);
-              setPPCheck(false);
-            } else {
-              setPPIndex(prev => prev - 1);
-            }
-          } else if (array[currentIndex]?.type === 'Height') {
-            console.log('HELLO HEIGHt');
-            setCurrentIndex(prev => prev - 1);
-            setPPCheck(true);
-            setPPIndex(selectedPP?.length - 1);
-          } else {
-            navigation.goBack();
-          }
-        }}>
-        <FastImage
-          resizeMode="contain"
-          style={{width: 20, height: 30}}
-          source={require('../../../assets/iconimages/arrow-back.png')}
-        />
-      </TouchableOpacity>
+    <>
+      <SafeAreaView
+        style={{ flex: 1, padding: 20, backgroundColor: colors.white }}
+      >
+        <KeyboardAwareScrollView
+          enableOnAndroid={ppCheck && android ? true : false}
+          extraScrollHeight={ppCheck && android ? 150 : 0}
+          // style={{ flex: 1 }}
+          contentContainerStyle={ppCheck && android ? null : { flex: 1 }}
+          keyboardShouldPersistTaps={"handled"}
+          showsVerticalScrollIndicator={false}
+        >
+          <TouchableOpacity
+            onPress={() => {
+              if (
+                currentIndex > 0 &&
+                !ppCheck &&
+                array[currentIndex]?.type !== "Height"
+              ) {
+                setCurrentIndex(prev => prev - 1);
+              } else if (currentIndex > 0 && ppCheck) {
+                if (ppIndex === 0 && ppCheck) {
+                  setPPIndex(0);
+                  setPPCheck(false);
+                } else {
+                  setPPIndex(prev => prev - 1);
+                }
+              } else if (array[currentIndex]?.type === "Height") {
+                setCurrentIndex(prev => prev - 1);
+                setPPCheck(true);
+                setPPIndex(selectedPP?.length - 1);
+              } else {
+                navigation.goBack();
+              }
+            }}
+          >
+            <FastImage
+              resizeMode="contain"
+              style={{ width: 20, height: 30 }}
+              source={require("../../../assets/iconimages/arrow-back.png")}
+            />
+          </TouchableOpacity>
 
-      <View style={[styles.typeandCountView]}>
-        <Text style={styles.type}>{array[currentIndex]?.heading}</Text>
-        {ppCheck || array[currentIndex]?.type === 'Main Vibes' ? (
-          <View style={styles.countView}>
-            <Text style={styles.countText}>
-              {ppCheck
-                ? ppIndex + 1 + ' / ' + promptsPool?.length
-                : array[currentIndex]?.type === 'Main Vibes'
-                ? selctedVibe?.length + ' / ' + '8'
+          <View style={[styles.typeandCountView]}>
+            <Text style={styles.type}>{array[currentIndex]?.heading}</Text>
+            {ppCheck || array[currentIndex]?.type === "Main Vibes" ? (
+              <View style={styles.countView}>
+                <Text style={styles.countText}>
+                  {ppCheck
+                    ? ppIndex + 1 + " / " + promptsPool?.length
+                    : array[currentIndex]?.type === "Main Vibes"
+                    ? selctedVibe?.length + " / " + "8"
+                    : null}
+                </Text>
+              </View>
+            ) : !ppCheck && array[currentIndex]?.type === "Prompts Pool" ? (
+              <View style={styles.countView}>
+                <Text style={styles.countText}>
+                  {selectedPP?.length + " / "}
+                  {userData?.UserSetting?.isSubscribed ? "5" : "3"}
+                </Text>
+              </View>
+            ) : null}
+          </View>
+
+          <View
+            style={{
+              width: "100%",
+              alignItems: "flex-start",
+              justifyContent: "center",
+              height: "1%",
+              borderRadius: 10,
+              backgroundColor: "#E6E8EC",
+              marginVertical: "5%",
+            }}
+          >
+            <View
+              style={{
+                width: `${(100 / array.length) * (currentIndex + 1)}%`,
+                backgroundColor: colors.primaryPink,
+                height: "100%",
+                borderRadius: 10,
+              }}
+            ></View>
+          </View>
+
+          <Text style={styles.question}>{array[currentIndex]?.question}</Text>
+          {array[currentIndex]?.ask !== "" && !ppCheck ? (
+            <Text style={[styles.ask]}>{array[currentIndex]?.ask}</Text>
+          ) : ppCheck ? (
+            <Text style={styles.ask}>
+              {ppCheck && ppIndex === 0
+                ? "The first question you selected was:"
+                : ppCheck && ppIndex === 1
+                ? "The second question you selected was:"
+                : ppCheck && ppIndex === 2
+                ? "The last question you selected was:"
                 : null}
             </Text>
-          </View>
-        ) : null}
-      </View>
+          ) : null}
 
-      <View
-        style={{
-          width: '100%',
-          alignItems: 'flex-start',
-          justifyContent: 'center',
-          height: '1%',
-          borderRadius: 10,
-          backgroundColor: '#E6E8EC',
-          marginVertical: '5%',
-        }}>
-        <View
-          style={{
-            width: `${(100 / array.length) * (currentIndex + 1)}%`,
-            backgroundColor: colors.primaryPink,
-            height: '100%',
-            borderRadius: 10,
-          }}></View>
-      </View>
+          <View style={{ width: "100%", height: "65%" }}>
+            {array[currentIndex]?.type === "Main Vibes" ? (
+              <>
+                <View style={styles.scrollContainer}>
+                  <ScrollView
+                    onContentSizeChange={onContentSizeChange}
+                    onLayout={onLayout}
+                    onScroll={Animated.event(
+                      [
+                        {
+                          nativeEvent: {
+                            contentOffset: { y: scrollIndicator },
+                          },
+                        },
+                      ],
+                      { useNativeDriver: false }
+                    )}
+                    scrollEventThrottle={16}
+                    showsVerticalScrollIndicator={false}
+                    style={{ marginVertical: "5%" }}
+                  >
+                    {array[currentIndex]?.options?.length > 0 &&
+                      array[currentIndex]?.options.map((item, index) => {
+                        let findIndex = selctedVibe.map(newItem => {
+                          return array[currentIndex]?.options.findIndex(
+                            item => item.id === newItem.id
+                          );
+                        });
+                        return (
+                          <NewOnBoardingDesign
+                            mainOnPress={() => selectVibe(item, index)}
+                            findIndex={findIndex}
+                            index={index}
+                            item={item}
+                            multiSelect={array[currentIndex]?.multiSelect}
+                            nameorid={"name"}
+                            search={array[currentIndex]?.search}
+                          />
+                        );
+                      })}
+                  </ScrollView>
+                  <View style={styles.customScrollBarBackground}>
+                    {/* <Animated.View
+                      style={[
+                        styles.customScrollBar,
+                        {
+                          height: scrollIndicatorSize,
+                          transform: [{ translateY: scrollIndicatorPosition }],
+                        },
+                      ]}
+                    /> */}
+                  </View>
+                </View>
+              </>
+            ) : array[currentIndex]?.type === "Prompts Pool" ? (
+              !ppCheck ? (
+                <View style={styles.scrollContainer}>
+                  <ScrollView
+                    onContentSizeChange={onContentSizeChange}
+                    onLayout={onLayout}
+                    onScroll={Animated.event(
+                      [
+                        {
+                          nativeEvent: {
+                            contentOffset: { y: scrollIndicator },
+                          },
+                        },
+                      ],
+                      { useNativeDriver: false }
+                    )}
+                    scrollEventThrottle={16}
+                    showsVerticalScrollIndicator={false}
+                    style={{ marginVertical: "5%" }}
+                  >
+                    {array[currentIndex]?.options?.length > 0 &&
+                      array[currentIndex]?.options.map((item, index) => {
+                        let findIndex = selectedPP.map(newItem => {
+                          return array[currentIndex]?.options.findIndex(
+                            item => item?.id === newItem?.id
+                          );
+                        });
 
-      <Text style={styles.question}>{array[currentIndex]?.question}</Text>
-      {array[currentIndex]?.ask !== '' && !ppCheck ? (
-        <Text style={[styles.ask]}>{array[currentIndex]?.ask}</Text>
-      ) : ppCheck ? (
-        <Text style={styles.ask}>
-          {ppCheck && ppIndex === 0
-            ? 'The first question you selected was:'
-            : ppCheck && ppIndex === 1
-            ? 'The second question you selected was:'
-            : ppCheck && ppIndex === 2
-            ? 'The last question you selected was:'
-            : null}
-        </Text>
-      ) : null}
-
-      <View style={{width: '100%', height: '65%'}}>
-        {array[currentIndex]?.type === 'Main Vibes' ? (
-          <>
-            <View style={styles.scrollContainer}>
-              <ScrollView
-                onContentSizeChange={onContentSizeChange}
-                onLayout={onLayout}
-                onScroll={Animated.event(
-                  [{nativeEvent: {contentOffset: {y: scrollIndicator}}}],
-                  {useNativeDriver: false},
-                )}
-                scrollEventThrottle={16}
-                showsVerticalScrollIndicator={false}
-                style={{marginVertical: '5%'}}>
+                        return (
+                          <>
+                            <NewOnBoardingDesign
+                              mainOnPress={() => selectPP(item, index)}
+                              findIndex={findIndex}
+                              index={index}
+                              item={item}
+                              multiSelect={array[currentIndex]?.multiSelect}
+                              nameorid={"title"}
+                              search={array[currentIndex]?.search}
+                            />
+                          </>
+                        );
+                      })}
+                  </ScrollView>
+                  <View style={styles.customScrollBarBackground}>
+                    <Animated.View
+                      style={[
+                        styles.customScrollBar,
+                        {
+                          height: scrollIndicatorSize,
+                          transform: [{ translateY: scrollIndicatorPosition }],
+                        },
+                      ]}
+                    />
+                  </View>
+                </View>
+              ) : (
+                <View>
+                  <View
+                    style={{
+                      width: "100%",
+                      borderWidth: 0.5,
+                      borderColor: "#EBECEF",
+                      marginVertical: "10%",
+                    }}
+                  ></View>
+                  <Text style={styles.question}>
+                    {"“" + selectedPP[ppIndex]?.title + "”"}
+                  </Text>
+                  <View
+                    style={{
+                      marginVertical: ios ? "5%" : "3%",
+                      width: "95%",
+                      backgroundColor: "#F9FAFB",
+                      paddingVertical: "5%",
+                      alignSelf: "center",
+                    }}
+                  >
+                    <TextInput
+                      numberOfLines={1}
+                      style={styles.textinput}
+                      value={
+                        selectedPP[ppIndex]?.answer
+                          ? selectedPP[ppIndex]?.answer
+                          : ""
+                      }
+                      onChangeText={text => {
+                        let copy = [...selectedPP];
+                        copy[ppIndex] = {
+                          ...copy[ppIndex],
+                          answer: text,
+                        };
+                        setSelectedPP(copy);
+                        dispatch({
+                          type: "promptsPool",
+                          payload: copy,
+                        });
+                      }}
+                      placeholder={`Remember first impressions count 😉`}
+                      placeholderTextColor={"#9CA3AF"}
+                    />
+                  </View>
+                </View>
+              )
+            ) : array[currentIndex]?.type === "Height" ? (
+              <View
+                style={{
+                  width: "100%",
+                  marginTop: "15%",
+                  backgroundColor: "#F9FAFB",
+                  // paddingVertical: "5%",
+                  borderRadius: 10,
+                  height: windowHeight * 0.2,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <RulerPicker
+                  value={selectedHeight / 30.48}
+                  onValueChangeEnd={number =>
+                    selectHeight((number / 30.48).toFixed(1))
+                  }
+                  onValueChange={number => {
+                    console.log("NUMBer", number);
+                  }}
+                  min={122}
+                  max={245}
+                  unit="ft"
+                  height={100}
+                  width={windowWidth * 0.8}
+                  indicatorHeight={40}
+                  indicatorColor={colors.primaryPink}
+                  shortStepHeight={20}
+                  longStepHeight={50}
+                  valueTextStyle={{ color: colors.primaryPink, fontSize: 20 }}
+                  unitTextStyle={{ color: colors.primaryPink, fontSize: 17 }}
+                  step={2.54}
+                  initialValue={122 / 30.48}
+                />
+              </View>
+            ) : array[currentIndex]?.type === "Family Origin" ? (
+              <>
+                <OnBoardingSearch
+                  onChangeText={text =>
+                    search(text, array[currentIndex]?.type, currentIndex)
+                  }
+                  array={array}
+                  currentIndex={currentIndex}
+                  searchValue={searchValue}
+                  search={array[currentIndex]?.search}
+                />
+                <View style={styles.scrollContainer}>
+                  <View style={{ height: windowHeight * 0.5 }}>
+                    <ScrollView
+                      onContentSizeChange={onContentSizeChange}
+                      onLayout={onLayout}
+                      onScroll={Animated.event(
+                        [
+                          {
+                            nativeEvent: {
+                              contentOffset: { y: scrollIndicator },
+                            },
+                          },
+                        ],
+                        { useNativeDriver: false }
+                      )}
+                      scrollEventThrottle={16}
+                      showsVerticalScrollIndicator={false}
+                      style={{
+                        marginVertical: "5%",
+                      }}
+                    >
+                      {filtered?.length > 0
+                        ? filtered[currentIndex]?.options.map((item, index) => {
+                            let findIndex = selectedFO.map(newItem => {
+                              return filtered[currentIndex]?.options.findIndex(
+                                item => item?.name === newItem?.name
+                              );
+                            });
+                            return (
+                              <NewOnBoardingDesign
+                                mainOnPress={() => selectFO(item, index)}
+                                findIndex={findIndex}
+                                index={index}
+                                item={item}
+                                multiSelect={array[currentIndex]?.multiSelect}
+                                nameorid={"name"}
+                                search={array[currentIndex]?.search}
+                                radio={true}
+                              />
+                            );
+                          })
+                        : array[currentIndex]?.options?.length > 0 &&
+                          array[currentIndex]?.options.map((item, index) => {
+                            let findIndex = selectedFO.map(newItem => {
+                              return array[currentIndex]?.options.findIndex(
+                                item => item?.name === newItem?.name
+                              );
+                            });
+                            return (
+                              <NewOnBoardingDesign
+                                mainOnPress={() => selectFO(item, index)}
+                                findIndex={findIndex}
+                                index={index}
+                                item={item}
+                                multiSelect={array[currentIndex]?.multiSelect}
+                                nameorid={"name"}
+                                search={array[currentIndex]?.search}
+                                radio={true}
+                              />
+                            );
+                          })}
+                    </ScrollView>
+                  </View>
+                  <View
+                    style={[
+                      styles.customScrollBarBackground,
+                      { height: "80%", marginTop: "5%" },
+                    ]}
+                  >
+                    <Animated.View
+                      style={[
+                        styles.customScrollBar,
+                        {
+                          height: scrollIndicatorSize,
+                          transform: [{ translateY: scrollIndicatorPosition }],
+                        },
+                      ]}
+                    />
+                  </View>
+                </View>
+              </>
+            ) : array[currentIndex]?.type === "Community" ? (
+              <>
+                <OnBoardingSearch
+                  onChangeText={text =>
+                    search(text, array[currentIndex]?.type, currentIndex)
+                  }
+                  array={array}
+                  currentIndex={currentIndex}
+                  searchValue={searchValue}
+                  search={array[currentIndex]?.search}
+                />
+                <View style={styles.scrollContainer}>
+                  <View style={{ height: windowHeight * 0.5 }}>
+                    <ScrollView
+                      onContentSizeChange={onContentSizeChange}
+                      onLayout={onLayout}
+                      onScroll={Animated.event(
+                        [
+                          {
+                            nativeEvent: {
+                              contentOffset: { y: scrollIndicator },
+                            },
+                          },
+                        ],
+                        { useNativeDriver: false }
+                      )}
+                      scrollEventThrottle={16}
+                      showsVerticalScrollIndicator={false}
+                      style={{
+                        marginVertical: "5%",
+                      }}
+                    >
+                      {filtered?.length > 0
+                        ? filtered[currentIndex]?.options.map((item, index) => {
+                            let findIndex = selectedCommunity.map(newItem => {
+                              return filtered[currentIndex]?.options.findIndex(
+                                item => item?.name === newItem?.name
+                              );
+                            });
+                            return (
+                              <NewOnBoardingDesign
+                                mainOnPress={() => selectCommunity(item, index)}
+                                findIndex={findIndex}
+                                index={index}
+                                item={item}
+                                multiSelect={array[currentIndex]?.multiSelect}
+                                nameorid={"name"}
+                                search={array[currentIndex]?.search}
+                                radio={true}
+                              />
+                            );
+                          })
+                        : array[currentIndex]?.options?.length > 0 &&
+                          array[currentIndex]?.options.map((item, index) => {
+                            let findIndex = selectedCommunity.map(newItem => {
+                              return array[currentIndex]?.options.findIndex(
+                                item => item?.name === newItem?.name
+                              );
+                            });
+                            return (
+                              <NewOnBoardingDesign
+                                mainOnPress={() => selectCommunity(item, index)}
+                                findIndex={findIndex}
+                                index={index}
+                                item={item}
+                                multiSelect={array[currentIndex]?.multiSelect}
+                                nameorid={"name"}
+                                search={array[currentIndex]?.search}
+                                radio={true}
+                              />
+                            );
+                          })}
+                    </ScrollView>
+                  </View>
+                  <View
+                    style={[
+                      styles.customScrollBarBackground,
+                      { height: "80%", marginTop: "5%" },
+                    ]}
+                  >
+                    <Animated.View
+                      style={[
+                        styles.customScrollBar,
+                        {
+                          height: scrollIndicatorSize,
+                          transform: [{ translateY: scrollIndicatorPosition }],
+                        },
+                      ]}
+                    />
+                  </View>
+                </View>
+              </>
+            ) : array[currentIndex]?.type === "Language" ? (
+              <>
+                <OnBoardingSearch
+                  onChangeText={text =>
+                    search(text, array[currentIndex]?.type, currentIndex)
+                  }
+                  array={array}
+                  currentIndex={currentIndex}
+                  searchValue={searchValue}
+                  search={array[currentIndex]?.search}
+                />
+                <View style={styles.scrollContainer}>
+                  <View style={{ height: windowHeight * 0.5 }}>
+                    <ScrollView
+                      onContentSizeChange={onContentSizeChange}
+                      onLayout={onLayout}
+                      onScroll={Animated.event(
+                        [
+                          {
+                            nativeEvent: {
+                              contentOffset: { y: scrollIndicator },
+                            },
+                          },
+                        ],
+                        { useNativeDriver: false }
+                      )}
+                      scrollEventThrottle={16}
+                      showsVerticalScrollIndicator={false}
+                      style={{
+                        marginVertical: "5%",
+                      }}
+                    >
+                      {filtered?.length > 0
+                        ? filtered[currentIndex]?.options.map((item, index) => {
+                            let findIndex = selectedLanguage.map(newItem => {
+                              return filtered[currentIndex]?.options.findIndex(
+                                item => item?.name === newItem?.name
+                              );
+                            });
+                            return (
+                              <NewOnBoardingDesign
+                                mainOnPress={() => selectLanguage(item, index)}
+                                findIndex={findIndex}
+                                index={index}
+                                item={item}
+                                multiSelect={array[currentIndex]?.multiSelect}
+                                nameorid={"name"}
+                                search={array[currentIndex]?.search}
+                                radio={true}
+                              />
+                            );
+                          })
+                        : array[currentIndex]?.options?.length > 0 &&
+                          array[currentIndex]?.options.map((item, index) => {
+                            let findIndex = selectedLanguage.map(newItem => {
+                              return array[currentIndex]?.options.findIndex(
+                                item => item?.name === newItem?.name
+                              );
+                            });
+                            return (
+                              <NewOnBoardingDesign
+                                mainOnPress={() => selectLanguage(item, index)}
+                                findIndex={findIndex}
+                                index={index}
+                                item={item}
+                                multiSelect={array[currentIndex]?.multiSelect}
+                                nameorid={"name"}
+                                search={array[currentIndex]?.search}
+                                radio={true}
+                              />
+                            );
+                          })}
+                    </ScrollView>
+                  </View>
+                  <View
+                    style={[
+                      styles.customScrollBarBackground,
+                      { height: "80%", marginTop: "5%" },
+                    ]}
+                  >
+                    <Animated.View
+                      style={[
+                        styles.customScrollBar,
+                        {
+                          height: scrollIndicatorSize,
+                          transform: [{ translateY: scrollIndicatorPosition }],
+                        },
+                      ]}
+                    />
+                  </View>
+                </View>
+              </>
+            ) : array[currentIndex]?.type === "Education Level" ? (
+              <ScrollView style={{ marginVertical: "5%" }}>
                 {array[currentIndex]?.options?.length > 0 &&
                   array[currentIndex]?.options.map((item, index) => {
-                    let findIndex = selctedVibe.map(newItem => {
-                      return array[currentIndex]?.options.findIndex(
-                        item => item.id === newItem.id,
-                      );
-                    });
+                    let findIndex = array[currentIndex]?.options.findIndex(
+                      (item, index) => {
+                        return item?.name === selectedEL?.name;
+                      }
+                    );
                     return (
                       <NewOnBoardingDesign
-                        mainOnPress={() => selectVibe(item, index)}
+                        mainOnPress={() => selectEL(item, index)}
                         findIndex={findIndex}
                         index={index}
                         item={item}
                         multiSelect={array[currentIndex]?.multiSelect}
-                        nameorid={'id'}
+                        nameorid={"name"}
                         search={array[currentIndex]?.search}
+                        radio={true}
                       />
                     );
                   })}
               </ScrollView>
-              <View style={styles.customScrollBarBackground}>
-                <Animated.View
-                  style={[
-                    styles.customScrollBar,
-                    {
-                      height: scrollIndicatorSize,
-                      transform: [{translateY: scrollIndicatorPosition}],
-                    },
-                  ]}
-                />
-              </View>
-            </View>
-          </>
-        ) : array[currentIndex]?.type === 'Prompts Pool' ? (
-          !ppCheck ? (
-            <View style={styles.scrollContainer}>
-              <ScrollView
-                onContentSizeChange={onContentSizeChange}
-                onLayout={onLayout}
-                onScroll={Animated.event(
-                  [{nativeEvent: {contentOffset: {y: scrollIndicator}}}],
-                  {useNativeDriver: false},
-                )}
-                scrollEventThrottle={16}
-                showsVerticalScrollIndicator={false}
-                style={{marginVertical: '5%'}}>
-                {array[currentIndex]?.options?.length > 0 &&
-                  array[currentIndex]?.options.map((item, index) => {
-                    let findIndex = selectedPP.map(newItem => {
-                      return array[currentIndex]?.options.findIndex(
-                        item => item?.id === newItem?.id,
-                      );
-                    });
-
-                    return (
-                      <>
-                        <NewOnBoardingDesign
-                          mainOnPress={() => selectPP(item, index)}
-                          findIndex={findIndex}
-                          index={index}
-                          item={item}
-                          multiSelect={array[currentIndex]?.multiSelect}
-                          nameorid={'title'}
-                          search={array[currentIndex]?.search}
-                        />
-                      </>
-                    );
-                  })}
-              </ScrollView>
-              <View style={styles.customScrollBarBackground}>
-                <Animated.View
-                  style={[
-                    styles.customScrollBar,
-                    {
-                      height: scrollIndicatorSize,
-                      transform: [{translateY: scrollIndicatorPosition}],
-                    },
-                  ]}
-                />
-              </View>
-            </View>
-          ) : (
-            <View>
+            ) : array[currentIndex]?.type === "Occupation" ? (
               <View
                 style={{
-                  width: '100%',
-                  borderWidth: 0.5,
-                  borderColor: '#EBECEF',
-                  marginVertical: '10%',
-                }}></View>
-              <Text style={styles.question}>
-                {'“' + selectedPP[ppIndex]?.title + '”'}
-              </Text>
-              <View
-                style={{
-                  marginVertical: Platform.OS === 'ios' ? '5%' : '3%',
-                  width: '95%',
-                  backgroundColor: '#F9FAFB',
-                  paddingVertical: '5%',
-                  alignSelf: 'center',
-                }}>
+                  marginVertical: ios ? "5%" : "3%",
+                  width: "90%",
+                  backgroundColor: "#F9FAFB",
+                  paddingVertical: "5%",
+                  alignSelf: "center",
+                }}
+              >
                 <TextInput
                   numberOfLines={1}
                   style={styles.textinput}
-                  value={
-                    selectedPP[ppIndex]?.answer
-                      ? selectedPP[ppIndex]?.answer
-                      : ''
-                  }
+                  value={occupation}
                   onChangeText={text => {
-                    let copy = [...selectedPP];
-                    copy[ppIndex] = {
-                      ...copy[ppIndex],
-                      answer: text,
-                    };
-                    setSelectedPP(copy);
+                    setOccupation(text);
                     dispatch({
-                      type: 'promptsPool',
-                      payload: copy,
+                      type: "occupation1",
+                      payload: text,
+                    });
+                  }}
+                  placeholder={`Occupation Ex.Designer etc`}
+                  placeholderTextColor={"#9CA3AF"}
+                />
+              </View>
+            ) : array[currentIndex]?.type === "Religion" ? (
+              <ScrollView style={{ marginVertical: "5%" }}>
+                {array[currentIndex]?.options?.length > 0 &&
+                  array[currentIndex]?.options.map((item, index) => {
+                    let findIndex = array[currentIndex]?.options.findIndex(
+                      (item, index) => {
+                        return item?.name === selectedReligion?.name;
+                      }
+                    );
+                    return (
+                      <NewOnBoardingDesign
+                        mainOnPress={() => selectReligion(item, index)}
+                        findIndex={findIndex}
+                        index={index}
+                        item={item}
+                        multiSelect={array[currentIndex]?.multiSelect}
+                        nameorid={"name"}
+                        search={array[currentIndex]?.search}
+                        radio={true}
+                      />
+                    );
+                  })}
+              </ScrollView>
+            ) : array[currentIndex]?.type === "Denomination" ? (
+              <ScrollView style={{ marginVertical: "5%" }}>
+                {array[currentIndex]?.options?.length > 0 &&
+                  array[currentIndex]?.options?.map((item, index) => {
+                    let findIndex = array[currentIndex]?.options?.findIndex(
+                      (item, index) => {
+                        return item?.name === selectedDenomination?.name;
+                      }
+                    );
+                    return (
+                      <NewOnBoardingDesign
+                        mainOnPress={() => selectDenomination(item, index)}
+                        findIndex={findIndex}
+                        index={index}
+                        item={item}
+                        multiSelect={array[currentIndex]?.multiSelect}
+                        nameorid={"name"}
+                        search={array[currentIndex]?.search}
+                        radio={true}
+                      />
+                    );
+                  })}
+              </ScrollView>
+            ) : array[currentIndex]?.type === "Practicing Level" ? (
+              <View style={{ marginVertical: "5%" }}>
+                <RenderSlider
+                  min={1}
+                  max={4}
+                  stepsAs={array[currentIndex]?.options}
+                  showSteps={true}
+                  showStepLabels={true}
+                  // prefName="Please make a selection:"
+                  customLabel={"practicingLevel"}
+                />
+              </View>
+            ) : array[currentIndex]?.type === "Pray" ? (
+              <ScrollView style={{ marginVertical: "5%" }}>
+                {array[currentIndex]?.options.map((item, index) => {
+                  let findIndex = array[currentIndex]?.options.findIndex(
+                    (item, index) => {
+                      return item?.name === selectedPray?.name;
+                    }
+                  );
+                  return (
+                    <NewOnBoardingDesign
+                      mainOnPress={() => selectPray(item, index)}
+                      findIndex={findIndex}
+                      index={index}
+                      item={item}
+                      multiSelect={array[currentIndex]?.multiSelect}
+                      nameorid={"name"}
+                      search={array[currentIndex]?.search}
+                      radio={true}
+                    />
+                  );
+                })}
+              </ScrollView>
+            ) : array[currentIndex]?.type === "Drink" ? (
+              <ScrollView style={{ marginVertical: "5%" }}>
+                {array[currentIndex]?.options.map((item, index) => {
+                  let findIndex = array[currentIndex]?.options.findIndex(
+                    (item, index) => {
+                      return item?.name === selectedDrink?.name;
+                    }
+                  );
+                  return (
+                    <NewOnBoardingDesign
+                      mainOnPress={() => selectDrink(item, index)}
+                      findIndex={findIndex}
+                      index={index}
+                      item={item}
+                      multiSelect={array[currentIndex]?.multiSelect}
+                      nameorid={"name"}
+                      search={array[currentIndex]?.search}
+                      icon={true}
+                    />
+                  );
+                })}
+              </ScrollView>
+            ) : array[currentIndex]?.type === "Smoke" ? (
+              <ScrollView style={{ marginVertical: "5%" }}>
+                {array[currentIndex]?.options.map((item, index) => {
+                  let findIndex = selectedSmoke.map(newItem => {
+                    return array[currentIndex]?.options.findIndex(
+                      item => item?.name === newItem?.name
+                    );
+                  });
+                  return (
+                    <NewOnBoardingDesign
+                      mainOnPress={() => selectSmoke(item, index)}
+                      findIndex={findIndex}
+                      index={index}
+                      item={item}
+                      multiSelect={array[currentIndex]?.multiSelect}
+                      nameorid={"name"}
+                      search={array[currentIndex]?.search}
+                      icon={true}
+                    />
+                  );
+                })}
+              </ScrollView>
+            ) : array[currentIndex]?.type === "Diet" ? (
+              <ScrollView style={{ marginVertical: "5%" }}>
+                {array[currentIndex]?.options.map((item, index) => {
+                  let findIndex = selectedDiet.map(newItem => {
+                    return array[currentIndex]?.options.findIndex(
+                      item => item?.name === newItem?.name
+                    );
+                  });
+                  return (
+                    <NewOnBoardingDesign
+                      mainOnPress={() => selectDiet(item, index)}
+                      findIndex={findIndex}
+                      index={index}
+                      item={item}
+                      multiSelect={array[currentIndex]?.multiSelect}
+                      nameorid={"name"}
+                      search={array[currentIndex]?.search}
+                      icon={true}
+                    />
+                  );
+                })}
+              </ScrollView>
+            ) : array[currentIndex]?.type === "Marital History" ? (
+              <ScrollView style={{ marginVertical: "5%" }}>
+                {array[currentIndex]?.options.map((item, index) => {
+                  let findIndex = array[currentIndex]?.options.findIndex(
+                    (item, index) => {
+                      return item?.name === selectedMH?.name;
+                    }
+                  );
+                  return (
+                    <NewOnBoardingDesign
+                      mainOnPress={() => selectMh(item, index)}
+                      findIndex={findIndex}
+                      index={index}
+                      item={item}
+                      multiSelect={array[currentIndex]?.multiSelect}
+                      nameorid={"name"}
+                      search={array[currentIndex]?.search}
+                      radio={true}
+                    />
+                  );
+                })}
+              </ScrollView>
+            ) : array[currentIndex]?.type === "Marriage Timeline" ? (
+              <View style={{ marginVertical: "5%" }}>
+                <RenderMarriageSlider
+                  min={1}
+                  max={4}
+                  stepsAs={array[currentIndex]?.options}
+                  showSteps={true}
+                  showStepLabels={true}
+                  // prefName="Please make a selection:"
+                  customLabel={"marriageTimeline"}
+                />
+              </View>
+            ) : array[currentIndex]?.type === "Have Kids" ? (
+              <ScrollView style={{ marginVertical: "5%" }}>
+                {array[currentIndex]?.options.map((item, index) => {
+                  let findIndex = array[currentIndex]?.options.findIndex(
+                    (item, index) => {
+                      return item?.name === selectedHK?.name;
+                    }
+                  );
+                  return (
+                    <NewOnBoardingDesign
+                      mainOnPress={() => selectHK(item, index)}
+                      findIndex={findIndex}
+                      index={index}
+                      item={item}
+                      multiSelect={array[currentIndex]?.multiSelect}
+                      nameorid={"name"}
+                      search={array[currentIndex]?.search}
+                      radio={true}
+                    />
+                  );
+                })}
+              </ScrollView>
+            ) : array[currentIndex]?.type === "Want Kids" ? (
+              <ScrollView style={{ marginVertical: "5%" }}>
+                {array[currentIndex]?.options.map((item, index) => {
+                  let findIndex = array[currentIndex]?.options.findIndex(
+                    (item, index) => {
+                      return item?.name === selectedWK?.name;
+                    }
+                  );
+                  return (
+                    <NewOnBoardingDesign
+                      mainOnPress={() => selectWK(item, index)}
+                      findIndex={findIndex}
+                      index={index}
+                      item={item}
+                      multiSelect={array[currentIndex]?.multiSelect}
+                      nameorid={"name"}
+                      search={array[currentIndex]?.search}
+                      radio={true}
+                    />
+                  );
+                })}
+              </ScrollView>
+            ) : array[currentIndex]?.type === "Relocate" ? (
+              <ScrollView style={{ marginVertical: "5%" }}>
+                {array[currentIndex]?.options.map((item, index) => {
+                  let findIndex = array[currentIndex]?.options.findIndex(
+                    (item, index) => {
+                      return item?.name === selectedRelocate?.name;
+                    }
+                  );
+                  return (
+                    <NewOnBoardingDesign
+                      mainOnPress={() => selectRelocate(item, index)}
+                      findIndex={findIndex}
+                      index={index}
+                      item={item}
+                      multiSelect={array[currentIndex]?.multiSelect}
+                      nameorid={"name"}
+                      search={array[currentIndex]?.search}
+                      radio={true}
+                    />
+                  );
+                })}
+              </ScrollView>
+            ) : array[currentIndex]?.type === "Tagline" ? (
+              <View
+                style={{
+                  marginVertical: ios ? "5%" : "3%",
+                  width: "90%",
+                  backgroundColor: "#F9FAFB",
+                  paddingVertical: "5%",
+                  alignSelf: "center",
+                }}
+              >
+                <TextInput
+                  style={styles.textinput}
+                  value={tagline}
+                  onChangeText={text => {
+                    setTagline(text);
+                    dispatch({
+                      type: "tagline1",
+                      payload: text,
                     });
                   }}
                   placeholder={`Remember first impressions count 😉`}
-                  placeholderTextColor={'#9CA3AF'}
+                  placeholderTextColor={"#9CA3AF"}
                 />
               </View>
-            </View>
-          )
-        ) : array[currentIndex]?.type === 'Height' ? (
-          <View
-            style={{
-              width: '100%',
-              alignItems: 'center',
-              marginTop: '15%',
-              backgroundColor: '#F9FAFB',
-              paddingVertical: '5%',
-              borderRadius: 10,
-            }}>
-            <RulerPicker
-              value={selectedHeight / 30.48}
-              onValueChangeEnd={number =>
-                selectHeight((number / 30.48).toFixed(1))
-              }
-              min={92}
-              max={252}
-              unit="ft"
-              height={100}
-              width={windowWidth * 0.8}
-              indicatorHeight={40}
-              indicatorColor={colors.primaryPink}
-              shortStepHeight={20}
-              longStepHeight={50}
-              valueTextStyle={{color: colors.primaryPink, fontSize: 20}}
-              unitTextStyle={{color: colors.primaryPink, fontSize: 17}}
-              step={2.55}
-              initialValue={92 / 30.48}
-            />
-            {console.log('HELLLLLOOOOO REDUX', height)}
+            ) : null}
           </View>
-        ) : array[currentIndex]?.type === 'Family Origin' ? (
-          <>
-            <OnBoardingSearch
-              onChangeText={text =>
-                search(text, array[currentIndex]?.type, currentIndex)
-              }
-              array={array}
-              currentIndex={currentIndex}
-              searchValue={searchValue}
-              search={array[currentIndex]?.search}
-            />
-            <View style={styles.scrollContainer}>
-              <View style={{height: windowHeight * 0.5}}>
-                <ScrollView
-                  onContentSizeChange={onContentSizeChange}
-                  onLayout={onLayout}
-                  onScroll={Animated.event(
-                    [{nativeEvent: {contentOffset: {y: scrollIndicator}}}],
-                    {useNativeDriver: false},
-                  )}
-                  scrollEventThrottle={16}
-                  showsVerticalScrollIndicator={false}
-                  style={{
-                    marginVertical: '5%',
-                  }}>
-                  {filtered?.length > 0
-                    ? filtered[currentIndex]?.options.map((item, index) => {
-                        let findIndex = selectedFO.map(newItem => {
-                          return filtered[currentIndex]?.options.findIndex(
-                            item => item?.name === newItem?.name,
-                          );
-                        });
-                        return (
-                          <NewOnBoardingDesign
-                            mainOnPress={() => selectFO(item, index)}
-                            findIndex={findIndex}
-                            index={index}
-                            item={item}
-                            multiSelect={array[currentIndex]?.multiSelect}
-                            nameorid={'name'}
-                            search={array[currentIndex]?.search}
-                            radio={true}
-                          />
-                        );
-                      })
-                    : array[currentIndex]?.options?.length > 0 &&
-                      array[currentIndex]?.options.map((item, index) => {
-                        let findIndex = selectedFO.map(newItem => {
-                          return array[currentIndex]?.options.findIndex(
-                            item => item?.name === newItem?.name,
-                          );
-                        });
-                        return (
-                          <NewOnBoardingDesign
-                            mainOnPress={() => selectFO(item, index)}
-                            findIndex={findIndex}
-                            index={index}
-                            item={item}
-                            multiSelect={array[currentIndex]?.multiSelect}
-                            nameorid={'name'}
-                            search={array[currentIndex]?.search}
-                            radio={true}
-                          />
-                        );
-                      })}
-                </ScrollView>
-              </View>
-              <View
-                style={[
-                  styles.customScrollBarBackground,
-                  {height: '80%', marginTop: '5%'},
-                ]}>
-                <Animated.View
-                  style={[
-                    styles.customScrollBar,
-                    {
-                      height: scrollIndicatorSize,
-                      transform: [{translateY: scrollIndicatorPosition}],
-                    },
-                  ]}
-                />
-              </View>
-            </View>
-          </>
-        ) : array[currentIndex]?.type === 'Community' ? (
-          <>
-            <OnBoardingSearch
-              onChangeText={text =>
-                search(text, array[currentIndex]?.type, currentIndex)
-              }
-              array={array}
-              currentIndex={currentIndex}
-              searchValue={searchValue}
-              search={array[currentIndex]?.search}
-            />
-            <View style={styles.scrollContainer}>
-              <View style={{height: windowHeight * 0.5}}>
-                <ScrollView
-                  onContentSizeChange={onContentSizeChange}
-                  onLayout={onLayout}
-                  onScroll={Animated.event(
-                    [{nativeEvent: {contentOffset: {y: scrollIndicator}}}],
-                    {useNativeDriver: false},
-                  )}
-                  scrollEventThrottle={16}
-                  showsVerticalScrollIndicator={false}
-                  style={{
-                    marginVertical: '5%',
-                  }}>
-                  {filtered?.length > 0
-                    ? filtered[currentIndex]?.options.map((item, index) => {
-                        let findIndex = selectedCommunity.map(newItem => {
-                          return filtered[currentIndex]?.options.findIndex(
-                            item => item?.name === newItem?.name,
-                          );
-                        });
-                        return (
-                          <NewOnBoardingDesign
-                            mainOnPress={() => selectCommunity(item, index)}
-                            findIndex={findIndex}
-                            index={index}
-                            item={item}
-                            multiSelect={array[currentIndex]?.multiSelect}
-                            nameorid={'name'}
-                            search={array[currentIndex]?.search}
-                            radio={true}
-                          />
-                        );
-                      })
-                    : array[currentIndex]?.options?.length > 0 &&
-                      array[currentIndex]?.options.map((item, index) => {
-                        let findIndex = selectedCommunity.map(newItem => {
-                          return array[currentIndex]?.options.findIndex(
-                            item => item?.name === newItem?.name,
-                          );
-                        });
-                        return (
-                          <NewOnBoardingDesign
-                            mainOnPress={() => selectCommunity(item, index)}
-                            findIndex={findIndex}
-                            index={index}
-                            item={item}
-                            multiSelect={array[currentIndex]?.multiSelect}
-                            nameorid={'name'}
-                            search={array[currentIndex]?.search}
-                            radio={true}
-                          />
-                        );
-                      })}
-                </ScrollView>
-              </View>
-              <View
-                style={[
-                  styles.customScrollBarBackground,
-                  {height: '80%', marginTop: '5%'},
-                ]}>
-                <Animated.View
-                  style={[
-                    styles.customScrollBar,
-                    {
-                      height: scrollIndicatorSize,
-                      transform: [{translateY: scrollIndicatorPosition}],
-                    },
-                  ]}
-                />
-              </View>
-            </View>
-          </>
-        ) : array[currentIndex]?.type === 'Language' ? (
-          <>
-            <OnBoardingSearch
-              onChangeText={text =>
-                search(text, array[currentIndex]?.type, currentIndex)
-              }
-              array={array}
-              currentIndex={currentIndex}
-              searchValue={searchValue}
-              search={array[currentIndex]?.search}
-            />
-            <View style={styles.scrollContainer}>
-              <View style={{height: windowHeight * 0.5}}>
-                <ScrollView
-                  onContentSizeChange={onContentSizeChange}
-                  onLayout={onLayout}
-                  onScroll={Animated.event(
-                    [{nativeEvent: {contentOffset: {y: scrollIndicator}}}],
-                    {useNativeDriver: false},
-                  )}
-                  scrollEventThrottle={16}
-                  showsVerticalScrollIndicator={false}
-                  style={{
-                    marginVertical: '5%',
-                  }}>
-                  {filtered?.length > 0
-                    ? filtered[currentIndex]?.options.map((item, index) => {
-                        let findIndex = selectedLanguage.map(newItem => {
-                          return filtered[currentIndex]?.options.findIndex(
-                            item => item?.name === newItem?.name,
-                          );
-                        });
-                        return (
-                          <NewOnBoardingDesign
-                            mainOnPress={() => selectLanguage(item, index)}
-                            findIndex={findIndex}
-                            index={index}
-                            item={item}
-                            multiSelect={array[currentIndex]?.multiSelect}
-                            nameorid={'name'}
-                            search={array[currentIndex]?.search}
-                            radio={true}
-                          />
-                        );
-                      })
-                    : array[currentIndex]?.options?.length > 0 &&
-                      array[currentIndex]?.options.map((item, index) => {
-                        let findIndex = selectedLanguage.map(newItem => {
-                          return array[currentIndex]?.options.findIndex(
-                            item => item?.name === newItem?.name,
-                          );
-                        });
-                        return (
-                          <NewOnBoardingDesign
-                            mainOnPress={() => selectLanguage(item, index)}
-                            findIndex={findIndex}
-                            index={index}
-                            item={item}
-                            multiSelect={array[currentIndex]?.multiSelect}
-                            nameorid={'name'}
-                            search={array[currentIndex]?.search}
-                            radio={true}
-                          />
-                        );
-                      })}
-                </ScrollView>
-              </View>
-              <View
-                style={[
-                  styles.customScrollBarBackground,
-                  {height: '80%', marginTop: '5%'},
-                ]}>
-                <Animated.View
-                  style={[
-                    styles.customScrollBar,
-                    {
-                      height: scrollIndicatorSize,
-                      transform: [{translateY: scrollIndicatorPosition}],
-                    },
-                  ]}
-                />
-              </View>
-            </View>
-          </>
-        ) : array[currentIndex]?.type === 'Education Level' ? (
-          <ScrollView style={{marginVertical: '5%'}}>
-            {array[currentIndex]?.options?.length > 0 &&
-              array[currentIndex]?.options.map((item, index) => {
-                let findIndex = array[currentIndex]?.options.findIndex(
-                  (item, index) => {
-                    return item?.name === selectedEL?.name;
-                  },
-                );
-                return (
-                  <NewOnBoardingDesign
-                    mainOnPress={() => selectEL(item, index)}
-                    findIndex={findIndex}
-                    index={index}
-                    item={item}
-                    multiSelect={array[currentIndex]?.multiSelect}
-                    nameorid={'name'}
-                    search={array[currentIndex]?.search}
-                    radio={true}
-                  />
-                );
-              })}
-          </ScrollView>
-        ) : array[currentIndex]?.type === 'Occupation' ? (
-          <View
-            style={{
-              marginVertical: Platform.OS === 'ios' ? '5%' : '3%',
-              width: '90%',
-              backgroundColor: '#F9FAFB',
-              paddingVertical: '5%',
-              alignSelf: 'center',
-            }}>
-            <TextInput
-              numberOfLines={1}
-              style={styles.textinput}
-              value={occupation}
-              onChangeText={text => {
-                setOccupation(text);
-                dispatch({
-                  type: 'occupation1',
-                  payload: text,
-                });
-              }}
-              placeholder={`Occupation Ex.Designer etc`}
-              placeholderTextColor={'#9CA3AF'}
-            />
-          </View>
-        ) : array[currentIndex]?.type === 'Religion' ? (
-          <ScrollView style={{marginVertical: '5%'}}>
-            {array[currentIndex]?.options?.length > 0 &&
-              array[currentIndex]?.options.map((item, index) => {
-                let findIndex = array[currentIndex]?.options.findIndex(
-                  (item, index) => {
-                    return item?.name === selectedReligion?.name;
-                  },
-                );
-                return (
-                  <NewOnBoardingDesign
-                    mainOnPress={() => selectReligion(item, index)}
-                    findIndex={findIndex}
-                    index={index}
-                    item={item}
-                    multiSelect={array[currentIndex]?.multiSelect}
-                    nameorid={'name'}
-                    search={array[currentIndex]?.search}
-                    radio={true}
-                  />
-                );
-              })}
-          </ScrollView>
-        ) : array[currentIndex]?.type === 'Denomination' ? (
-          <ScrollView style={{marginVertical: '5%'}}>
-            {array[currentIndex]?.options?.length > 0 &&
-              array[currentIndex]?.options?.map((item, index) => {
-                let findIndex = array[currentIndex]?.options?.findIndex(
-                  (item, index) => {
-                    return item?.name === selectedDenomination?.name;
-                  },
-                );
-                return (
-                  <NewOnBoardingDesign
-                    mainOnPress={() => selectDenomination(item, index)}
-                    findIndex={findIndex}
-                    index={index}
-                    item={item}
-                    multiSelect={array[currentIndex]?.multiSelect}
-                    nameorid={'name'}
-                    search={array[currentIndex]?.search}
-                    radio={true}
-                  />
-                );
-              })}
-          </ScrollView>
-        ) : array[currentIndex]?.type === 'Practicing Level' ? (
-          <View style={{marginVertical: '5%'}}>
-            <RenderSlider
-              min={1}
-              max={4}
-              stepsAs={array[currentIndex]?.options}
-              showSteps={true}
-              showStepLabels={true}
-              // prefName="Please make a selection:"
-              customLabel={'practicingLevel'}
-            />
-          </View>
-        ) : array[currentIndex]?.type === 'Pray' ? (
-          <ScrollView style={{marginVertical: '5%'}}>
-            {array[currentIndex]?.options.map((item, index) => {
-              let findIndex = array[currentIndex]?.options.findIndex(
-                (item, index) => {
-                  return item?.name === selectedPray?.name;
-                },
-              );
-              return (
-                <NewOnBoardingDesign
-                  mainOnPress={() => selectPray(item, index)}
-                  findIndex={findIndex}
-                  index={index}
-                  item={item}
-                  multiSelect={array[currentIndex]?.multiSelect}
-                  nameorid={'name'}
-                  search={array[currentIndex]?.search}
-                  radio={true}
-                />
-              );
-            })}
-          </ScrollView>
-        ) : array[currentIndex]?.type === 'Drink' ? (
-          <ScrollView style={{marginVertical: '5%'}}>
-            {array[currentIndex]?.options.map((item, index) => {
-              let findIndex = array[currentIndex]?.options.findIndex(
-                (item, index) => {
-                  return item?.name === selectedDrink?.name;
-                },
-              );
-              return (
-                <NewOnBoardingDesign
-                  mainOnPress={() => selectDrink(item, index)}
-                  findIndex={findIndex}
-                  index={index}
-                  item={item}
-                  multiSelect={array[currentIndex]?.multiSelect}
-                  nameorid={'name'}
-                  search={array[currentIndex]?.search}
-                  icon={true}
-                />
-              );
-            })}
-          </ScrollView>
-        ) : array[currentIndex]?.type === 'Smoke' ? (
-          <ScrollView style={{marginVertical: '5%'}}>
-            {array[currentIndex]?.options.map((item, index) => {
-              let findIndex = selectedSmoke.map(newItem => {
-                return array[currentIndex]?.options.findIndex(
-                  item => item?.name === newItem?.name,
-                );
-              });
-              return (
-                <NewOnBoardingDesign
-                  mainOnPress={() => selectSmoke(item, index)}
-                  findIndex={findIndex}
-                  index={index}
-                  item={item}
-                  multiSelect={array[currentIndex]?.multiSelect}
-                  nameorid={'name'}
-                  search={array[currentIndex]?.search}
-                  icon={true}
-                />
-              );
-            })}
-          </ScrollView>
-        ) : array[currentIndex]?.type === 'Diet' ? (
-          <ScrollView style={{marginVertical: '5%'}}>
-            {array[currentIndex]?.options.map((item, index) => {
-              let findIndex = selectedDiet.map(newItem => {
-                return array[currentIndex]?.options.findIndex(
-                  item => item?.name === newItem?.name,
-                );
-              });
-              return (
-                <NewOnBoardingDesign
-                  mainOnPress={() => selectDiet(item, index)}
-                  findIndex={findIndex}
-                  index={index}
-                  item={item}
-                  multiSelect={array[currentIndex]?.multiSelect}
-                  nameorid={'name'}
-                  search={array[currentIndex]?.search}
-                  icon={true}
-                />
-              );
-            })}
-          </ScrollView>
-        ) : array[currentIndex]?.type === 'Marital History' ? (
-          <ScrollView style={{marginVertical: '5%'}}>
-            {array[currentIndex]?.options.map((item, index) => {
-              let findIndex = array[currentIndex]?.options.findIndex(
-                (item, index) => {
-                  return item?.name === selectedMH?.name;
-                },
-              );
-              return (
-                <NewOnBoardingDesign
-                  mainOnPress={() => selectMh(item, index)}
-                  findIndex={findIndex}
-                  index={index}
-                  item={item}
-                  multiSelect={array[currentIndex]?.multiSelect}
-                  nameorid={'name'}
-                  search={array[currentIndex]?.search}
-                  radio={true}
-                />
-              );
-            })}
-          </ScrollView>
-        ) : array[currentIndex]?.type === 'Marriage Timeline' ? (
-          <View style={{marginVertical: '5%'}}>
-            <RenderMarriageSlider
-              min={1}
-              max={4}
-              stepsAs={array[currentIndex]?.options}
-              showSteps={true}
-              showStepLabels={true}
-              // prefName="Please make a selection:"
-              customLabel={'marriageTimeline'}
-            />
-          </View>
-        ) : array[currentIndex]?.type === 'Have Kids' ? (
-          <ScrollView style={{marginVertical: '5%'}}>
-            {array[currentIndex]?.options.map((item, index) => {
-              let findIndex = array[currentIndex]?.options.findIndex(
-                (item, index) => {
-                  return item?.name === selectedHK?.name;
-                },
-              );
-              return (
-                <NewOnBoardingDesign
-                  mainOnPress={() => selectHK(item, index)}
-                  findIndex={findIndex}
-                  index={index}
-                  item={item}
-                  multiSelect={array[currentIndex]?.multiSelect}
-                  nameorid={'name'}
-                  search={array[currentIndex]?.search}
-                  radio={true}
-                />
-              );
-            })}
-          </ScrollView>
-        ) : array[currentIndex]?.type === 'Want Kids' ? (
-          <ScrollView style={{marginVertical: '5%'}}>
-            {array[currentIndex]?.options.map((item, index) => {
-              let findIndex = array[currentIndex]?.options.findIndex(
-                (item, index) => {
-                  return item?.name === selectedWK?.name;
-                },
-              );
-              return (
-                <NewOnBoardingDesign
-                  mainOnPress={() => selectWK(item, index)}
-                  findIndex={findIndex}
-                  index={index}
-                  item={item}
-                  multiSelect={array[currentIndex]?.multiSelect}
-                  nameorid={'name'}
-                  search={array[currentIndex]?.search}
-                  radio={true}
-                />
-              );
-            })}
-          </ScrollView>
-        ) : array[currentIndex]?.type === 'Relocate' ? (
-          <ScrollView style={{marginVertical: '5%'}}>
-            {array[currentIndex]?.options.map((item, index) => {
-              let findIndex = array[currentIndex]?.options.findIndex(
-                (item, index) => {
-                  return item?.name === selectedRelocate?.name;
-                },
-              );
-              return (
-                <NewOnBoardingDesign
-                  mainOnPress={() => selectRelocate(item, index)}
-                  findIndex={findIndex}
-                  index={index}
-                  item={item}
-                  multiSelect={array[currentIndex]?.multiSelect}
-                  nameorid={'name'}
-                  search={array[currentIndex]?.search}
-                  radio={true}
-                />
-              );
-            })}
-          </ScrollView>
-        ) : array[currentIndex]?.type === 'Tagline' ? (
-          <View
-            style={{
-              marginVertical: Platform.OS === 'ios' ? '5%' : '3%',
-              width: '90%',
-              backgroundColor: '#F9FAFB',
-              paddingVertical: '5%',
-              alignSelf: 'center',
-            }}>
-            <TextInput
-              style={styles.textinput}
-              value={tagline}
-              onChangeText={text => {
-                setTagline(text);
-                dispatch({
-                  type: 'tagline1',
-                  payload: text,
-                });
-              }}
-              placeholder={`Remember first impressions count 😉`}
-              placeholderTextColor={'#9CA3AF'}
-            />
-          </View>
-        ) : null}
-      </View>
+        </KeyboardAwareScrollView>
+      </SafeAreaView>
       <BottomButton
-        bottomStyles={{bottom: isKeyboardVisible && android ? 2 : 15}}
+        bottomStyles={{ bottom: isKeyboardVisible && android ? 2 : 15 }}
         loading={buttonLoader}
         onPress={() => continuePress()}
       />
-    </SafeAreaView>
+    </>
   );
 };
 const styles = StyleSheet.create({
   typeandCountView: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
-    paddingVertical: '2%',
-    marginVertical: '2%',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    paddingVertical: "2%",
+    marginVertical: "2%",
   },
-  type: {fontSize: 16, color: colors.black, fontFamily: 'Inter-SemiBold'},
+  type: { fontSize: 16, color: colors.black, fontFamily: "Inter-SemiBold" },
   countView: {
-    paddingHorizontal: '4%',
-    paddingVertical: '2%',
+    paddingHorizontal: "4%",
+    paddingVertical: "2%",
     borderRadius: 7,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#23262F',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#23262F",
   },
-  countText: {fontSize: 14, color: colors.white, fontFamily: 'Inter-Regular'},
+  countText: { fontSize: 14, color: colors.white, fontFamily: "Inter-Regular" },
   question: {
     fontSize: 22,
-    color: '#111827',
-    fontFamily: 'Inter-Bold',
-    marginVertical: '2%',
-    maxWidth: '90%',
+    color: "#111827",
+    fontFamily: "Inter-Bold",
+    marginVertical: "2%",
+    maxWidth: "90%",
   },
   ask: {
     fontSize: 16,
     color: colors.textGrey1,
-    fontFamily: 'Inter-Regular',
-    marginVertical: '1%',
-    maxWidth: '90%',
+    fontFamily: "Inter-Regular",
+    marginVertical: "1%",
+    maxWidth: "90%",
   },
   vibesListing: {
-    width: '80%',
-    paddingVertical: '3%',
-    backgroundColor: '#F9FAFB',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    marginVertical: '3%',
-    alignSelf: 'center',
-    paddingHorizontal: '5%',
+    width: "80%",
+    paddingVertical: "3%",
+    backgroundColor: "#F9FAFB",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexDirection: "row",
+    marginVertical: "3%",
+    alignSelf: "center",
+    paddingHorizontal: "5%",
     borderRadius: 10,
   },
   radioView: {
     width: 25,
     height: 25,
-    borderColor: '#EBECEF',
+    borderColor: "#EBECEF",
     borderRadius: 25 / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   textinputView: {
-    width: '90%',
-    alignSelf: 'center',
-    paddingHorizontal: '5%',
-    paddingVertical: '5%',
+    width: "90%",
+    alignSelf: "center",
+    paddingHorizontal: "5%",
+    paddingVertical: "5%",
     borderRadius: 10,
-    backgroundColor: '#F9FAFB',
-    marginVertical: '5%',
-    flexDirection: 'row',
+    backgroundColor: "#F9FAFB",
+    marginVertical: "5%",
+    flexDirection: "row",
   },
   textinput: {
     // minWidth: '60%',
     // maxWidth: '80%',
     fontSize: 14,
     color: colors.black,
-    paddingVertical: '2%',
-    paddingHorizontal: '3%',
+    paddingVertical: "2%",
+    paddingHorizontal: "3%",
+    marginBottom: 20,
   },
   scrollContainer: {
-    flexDirection: 'row',
-    width: '100%',
+    flexDirection: "row",
+    width: "100%",
   },
   scrollViewContainer: {
-    width: '100%',
+    width: "100%",
   },
   customScrollBar: {
     backgroundColor: colors.primaryPink,
@@ -2349,9 +2432,9 @@ const styles = StyleSheet.create({
     width: 6,
   },
   customScrollBarBackground: {
-    backgroundColor: '#D903680D',
+    backgroundColor: "#D903680D",
     borderRadius: 3,
-    height: '95%',
+    height: "95%",
     width: 6,
   },
 });

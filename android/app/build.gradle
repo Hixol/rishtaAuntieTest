@@ -233,7 +233,7 @@ dependencies {
     implementation project(':react-native-notifications')
     implementation 'com.google.android.gms:play-services-maps:+'
     implementation 'com.google.android.gms:play-services-location:18.0.0'
-    implementation 'com.google.firebase:firebase-core:16.0.0'
+    implementation 'com.google.firebase:firebase-core:21.1.1'
 
     implementation project(':react-native-audio-recorder-player')
     implementation 'androidx.appcompat:appcompat:1.1.0'

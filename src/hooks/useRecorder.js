@@ -1,18 +1,19 @@
-import {useCallback, useState} from 'react';
+import { useCallback, useState } from "react";
 import AudioRecorderPlayer, {
   AudioEncoderAndroidType,
   AudioSourceAndroidType,
   AVEncoderAudioQualityIOSType,
   AVEncodingOption,
   AVModeIOSOption,
-} from 'react-native-audio-recorder-player';
-import appConfig from '../config/appConfig';
-import {ios} from '../utility/size';
+  OutputFormatAndroidType,
+} from "react-native-audio-recorder-player";
+import appConfig from "../config/appConfig";
+import { ios } from "../utility/size";
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 
-export const useRecorder = () => {
-  const [recordTime, setRecordTime] = useState('00:00');
+export const useRecorder = chat => {
+  const [recordTime, setRecordTime] = useState("00:00");
   const [recordSecs, setRecordSecs] = useState(false);
   const [audioUri, setAudioUri] = useState(null);
   const [recordView, setRecordView] = useState(false);
@@ -25,6 +26,7 @@ export const useRecorder = () => {
       AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
       AudioSourceAndroid: AudioSourceAndroidType.MIC,
       AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
+      ...(!chat && { OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS }),
       AVNumberOfChannelsKeyIOS: 2,
       AVFormatIDKeyIOS: AVEncodingOption.aac,
       AVModeIOS: AVModeIOSOption.videochat,
@@ -42,7 +44,7 @@ export const useRecorder = () => {
       audioRecorderPlayer.addRecordBackListener(e => {
         setRecordSecs(e.currentPosition);
         setRecordTime(
-          audioRecorderPlayer.mmss(Math.floor(e.currentPosition / 1000)),
+          audioRecorderPlayer.mmss(Math.floor(e.currentPosition / 1000))
         );
         setAudioUri(uri);
         return;
@@ -57,7 +59,7 @@ export const useRecorder = () => {
       await audioRecorderPlayer.pauseRecorder();
       setPauseView(true);
     } catch (err) {
-      console.log('pauseRecord err', err);
+      console.log("pauseRecord err", err);
     }
   }, []);
 
@@ -67,11 +69,13 @@ export const useRecorder = () => {
   }, []);
 
   const onStopRecord = useCallback(async () => {
-    setPauseView(false);
+    await audioRecorderPlayer.stopRecorder();
     audioRecorderPlayer.removeRecordBackListener();
+    setPauseView(false);
     setRecordSecs(0);
-    setRecordTime('00:00');
+    setRecordTime("00:00");
     setRecordView(false);
+    setAudioUri(null);
   }, []);
 
   const onSendAudio = async () => {
@@ -79,14 +83,16 @@ export const useRecorder = () => {
     audioRecorderPlayer.removeRecordBackListener();
 
     let audioFile = {
-      name: ios ? 'rishtaaunty-1234.aac' : 'rishtaaunty-1234.m4a',
-      type: `audio/${audioUri.split('.').pop()}`,
+      name: ios ? "rishtaaunty-1234.aac" : "rishtaaunty-1234.m4a",
+      type: `audio/${audioUri.split(".").pop()}`,
       uri: audioUri,
     };
 
+    setPauseView(false);
     setRecordSecs(0);
-    setRecordTime('00:00');
+    setRecordTime("00:00");
     setRecordView(false);
+    setAudioUri(null);
     return audioFile;
   };
 

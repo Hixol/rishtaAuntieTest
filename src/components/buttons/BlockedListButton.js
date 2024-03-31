@@ -29,12 +29,12 @@ const styles = StyleSheet.create({
   },
   btnTitle: {
     fontSize: 17,
-    fontFamily: 'Roboto-Bold',
+    fontFamily: 'Inter-Bold',
     color: colors.white,
   },
   bloackedListButtonText: {
     fontSize: 15,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Inter-Medium',
 
     color: colors.primaryPink,
   },

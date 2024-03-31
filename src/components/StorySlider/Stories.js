@@ -1,13 +1,12 @@
-import React, {useRef, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import React, { useRef, useState } from "react";
+import { StyleSheet, View } from "react-native";
 
-import StoryContainer from './StoryContainer';
+import StoryContainer from "./StoryContainer";
 
 const Stories = props => {
-  
   const [currentUserIndex, setCurrentUserIndex] = useState(0);
   const modalScroll = useRef(null);
-  const AllStories = [{stories: props.images}];
+  const AllStories = [{ stories: props.images }];
 
   const onStoryNext = isScroll => {
     if (AllStories.length > 1) {
@@ -34,16 +33,18 @@ const Stories = props => {
   return (
     <View style={styles.container}>
       {AllStories.map((item, index) => (
-        <StoryContainer
-          isPaused={props.isPaused}
-          imageCurrentIndex={props.imageCurrentIndex}
-          onClose={() => {}}
-          onStoryNext={onStoryNext}
-          onStoryPrevious={onStoryPrevious}
-          user={item}
-          isNewStory={index !== currentUserIndex}
-          blurView={props.blurView}
-        />
+        <>
+          <StoryContainer
+            isPaused={props.isPaused}
+            imageCurrentIndex={props.imageCurrentIndex}
+            onClose={() => {}}
+            onStoryNext={onStoryNext}
+            onStoryPrevious={onStoryPrevious}
+            user={item}
+            isNewStory={index !== currentUserIndex}
+            blurView={props.blurView}
+          />
+        </>
       ))}
     </View>
   );
@@ -59,14 +60,14 @@ const styles = StyleSheet.create({
     height: 66,
     borderRadius: 33,
     borderWidth: 2,
-    borderColor: '#72bec5',
+    borderColor: "#72bec5",
   },
   modal: {
     flex: 1,
   },
   title: {
     fontSize: 9,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });
 

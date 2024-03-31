@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
-import {StyleSheet} from 'react-native';
+import React, { useState } from "react";
+import { StyleSheet } from "react-native";
 
-import Card from './Card';
-import Stories from '../components/Info/Stories';
+import Card from "./Card";
+import Stories from "../components/Info/Stories";
 
-export default function CardCarousel({user}) {
+export default function CardCarousel({ user }) {
   const [state, setState] = useState({
     myindex: 0,
     images: [1, 2, 3, 4, 5],
@@ -13,10 +13,10 @@ export default function CardCarousel({user}) {
   const [card, setcard] = useState(
     [1, 2, 3, 4, 5, 6]
       .map((im, i) => {
-        if (im !== '') {
+        if (im !== "") {
           return {
             id: im,
-            type: 'image',
+            type: "image",
             duration: 6,
             isSeen: false,
             isReadMore: true,
@@ -24,7 +24,7 @@ export default function CardCarousel({user}) {
           };
         }
       })
-      .filter(a => a),
+      .filter((a) => a)
   );
 
   return (
@@ -37,10 +37,9 @@ export default function CardCarousel({user}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical:'5%',
-    alignSelf: 'center',
-    justifyContent: 'center',
-    // marginBottom: 25,
-    // backgroundColor: 'blue',
+    paddingVertical: "5%",
+    alignSelf: "center",
+    justifyContent: "center",
+    width: "100%",
   },
 });
