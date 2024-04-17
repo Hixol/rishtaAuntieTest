@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import { CommonActions } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
@@ -19,7 +25,7 @@ import ActionCard from "../../../components/Cards/ActionCard";
 import Video from "react-native-video";
 import Countries from "../../../assets/countryLists/Countries";
 import DeviceInfo from "react-native-device-info";
-
+import * as Progress from "react-native-progress";
 const UploadVideo = ({ navigation, route }) => {
   const edit = route?.params;
 
@@ -47,6 +53,7 @@ const UploadVideo = ({ navigation, route }) => {
   const [isPausedButton, setIsPausedButton] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const [progress, setProgress] = useState(0);
   useEffect(() => {
     if (edit) {
       let find = userData?.UserMedia.filter(item => {
@@ -76,6 +83,17 @@ const UploadVideo = ({ navigation, route }) => {
       }
     }
   }, []);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (progress < 1) {
+        setProgress(progress + 0.1);
+      } else {
+        clearInterval(timer);
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [progress]);
 
   const handleCameraMedia = async (state, result) => {
     try {
@@ -786,6 +804,22 @@ const UploadVideo = ({ navigation, route }) => {
           )}
         </TouchableOpacity>
       </View>
+      {loading && (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#D90368" />
+          <Text style={styles.uploadingText}>Uploading...</Text>
+          <View style={styles.progressBar}>
+            <Progress.Bar
+              progress={progress}
+              width={200}
+              height={300}
+              color="#D90368"
+              borderWidth={0}
+              animated={true}
+            />
+          </View>
+        </View>
+      )}
       <BottomButton
         loading={loading}
         text={
@@ -808,6 +842,31 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginTop: "3%",
     color: colors.textGrey,
+  },
+  loaderContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    position: "absolute",
+    left: 0,
+    bottom: 0,
+    top: 0,
+    right: 0,
+  },
+  uploadingText: {
+    marginTop: 10,
+    color: "#ffffff",
+    fontSize: 25,
+    fontWeight: "500",
+  },
+  progressBar: {
+    marginTop: 20,
+    width: "80%",
+    height: 10,
+    backgroundColor: "#ffff",
+    borderRadius: 15,
+    overflow: "hidden",
   },
 });
 
