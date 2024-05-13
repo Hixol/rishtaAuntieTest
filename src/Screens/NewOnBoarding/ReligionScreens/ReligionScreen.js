@@ -92,6 +92,10 @@ const ReligionScreen = ({ navigation, route }) => {
     )
       .then(async res => {
         if (res.status >= 200 && res.status <= 299) {
+          dispatch({
+            type: "allProfileValues",
+            payload: res?.data?.data,
+          });
           let data = res?.data?.data;
           let findReligionIndex = copyarr.findIndex(item => {
             return item?.type === "Religion";
@@ -116,6 +120,7 @@ const ReligionScreen = ({ navigation, route }) => {
   }, []);
 
   const selectReligion = (item, index) => {
+    console.log("Selected Religion:", item);
     setSelectedReligion(item);
     dispatch({
       type: "religion",
@@ -154,7 +159,10 @@ const ReligionScreen = ({ navigation, route }) => {
       let formData = new FormData();
       formData.append("religion", selectedReligion?.name);
       await updateUser(formData, token);
-      navigation.goBack();
+      // navigation.goBack();
+      navigation.navigate("Denominations", {
+        religions: selectedReligion,
+      });
     } else if (preferenceEdit) {
       await updateUserPreference(token, "religion", [selectedReligion?.name]);
       navigation.goBack();
@@ -165,9 +173,35 @@ const ReligionScreen = ({ navigation, route }) => {
           payload: selectedReligion === null ? religion : selectedReligion,
         });
         navigation.navigate("UploadSelfie");
+        // navigation.navigate("Denominations", {
+        //   religions: selectedReligion,
+        //   // Other parameters if needed
+        // });
       }
     }
   };
+  // const createProfile = async () => {
+  //   if (edit) {
+  //     let formData = new FormData();
+  //     formData.append("religion", selectedReligion?.name);
+  //     await updateUser(formData, token);
+  //     navigation.goBack();
+  //   } else if (preferenceEdit) {
+  //     // If preference is being edited, navigate to Denominations screen
+  //     await updateUserPreference(token, "religion", [selectedReligion?.name]);
+  //     navigation.navigate("Denominations", {
+  //       religions: selectedReligion,
+  //     });
+  //   } else {
+  //     if (selectedReligion !== null) {
+  //       dispatch({
+  //         type: "religion",
+  //         payload: selectedReligion === null ? religion : selectedReligion,
+  //       });
+  //       navigation.navigate("UploadSelfie");
+  //     }
+  //   }
+  // };
 
   const search = (text, type, currentIndex) => {
     setSearchValue(text);
@@ -335,7 +369,12 @@ const ReligionScreen = ({ navigation, route }) => {
         ) : null}
       </View>
       <BottomButton
-        text={edit ? "Update" : "Save search preference"}
+        text={edit ? "Update Search Preference" : "Save Search preference"}
+        // text={
+        //   edit || preferenceEdit || selectReligion === "Denomination"
+        //     ? "Update Search preferences"
+        //     : "Save Search preferences"
+        // }
         onPress={() => createProfile()}
       />
     </SafeAreaView>
