@@ -55,6 +55,7 @@ import ProfilePicturesScreen from "../Screens/NewOnBoarding/ProfilePicturesScree
 import PersonalityQuizNew from "../Screens/NewOnBoarding/PersonalityQuizNew";
 import EditProfileScreen from "../Screens/EditProfileScreen.js";
 import EditScreenSetting from "../Screens/EditScreenSetting";
+import Denominations from "../Screens/NewOnBoarding/ReligionScreens/Denominations.js";
 
 const Stack = createNativeStackNavigator();
 
@@ -177,6 +178,8 @@ const StackNavigations = props => {
       <Stack.Screen name="SearchPreferences" component={SearchPreferences} />
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
       <Stack.Screen name="EditScreenSetting" component={EditScreenSetting} />
+      <Stack.Screen name="Denominations" component={Denominations} />
+
       <Stack.Screen
         name="PersonalDetailsScreen1"
         component={PersonalDetailsScreen1}
