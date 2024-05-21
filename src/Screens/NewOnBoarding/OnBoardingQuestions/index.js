@@ -17,7 +17,6 @@ import { alerts } from "../../../utility/regex";
 import { useDispatch, useSelector } from "react-redux";
 import { RulerPicker } from "react-native-ruler-picker";
 import { android, ios, windowHeight, windowWidth } from "../../../utility/size";
-
 import colors from "../../../utility/colors";
 import FastImage from "react-native-fast-image";
 import BottomButton from "../../../components/buttons/BottomButton";
@@ -80,6 +79,31 @@ const OnBoardingQuestions = ({ navigation }) => {
     outputRange: [0, difference],
   });
 
+  const scrollViewRef = useRef(null);
+
+  const resetScrollPosition = () => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ y: 0, animated: false });
+    }
+  };
+  const handleOptionSelection = (item, index) => {
+    if (array[currentIndex]?.type === "Main Vibes") {
+      selectVibe(item, index);
+    } else if (array[currentIndex]?.type === "Prompts Pool") {
+      selectPP(item, index);
+    } else if (array[currentIndex]?.type === "Family Origin") {
+      selectFO(item, index);
+    } else if (array[currentIndex]?.type === "Community") {
+      selectCommunity(item, index);
+    } else if (array[currentIndex]?.type === "Language") {
+      selectLanguage(item, index);
+    }
+  };
+  const handleNextQuestion = () => {
+    // Reset scroll position to top when transitioning to the next question
+    resetScrollPosition();
+    // Add any additional logic for transitioning to the next question here
+  };
   const onContentSizeChange = (_, contentHeight) =>
     setCompleteScrollBarHeight(contentHeight);
 
@@ -1553,6 +1577,7 @@ const OnBoardingQuestions = ({ navigation }) => {
               <>
                 <View style={styles.scrollContainer}>
                   <ScrollView
+                    ref={scrollViewRef}
                     onContentSizeChange={onContentSizeChange}
                     onLayout={onLayout}
                     onScroll={Animated.event(
@@ -1578,7 +1603,9 @@ const OnBoardingQuestions = ({ navigation }) => {
                         });
                         return (
                           <NewOnBoardingDesign
-                            mainOnPress={() => selectVibe(item, index)}
+                            mainOnPress={() =>
+                              handleOptionSelection(item, index)
+                            }
                             findIndex={findIndex}
                             index={index}
                             item={item}
@@ -1606,6 +1633,7 @@ const OnBoardingQuestions = ({ navigation }) => {
               !ppCheck ? (
                 <View style={styles.scrollContainer}>
                   <ScrollView
+                    ref={scrollViewRef}
                     onContentSizeChange={onContentSizeChange}
                     onLayout={onLayout}
                     onScroll={Animated.event(
@@ -1633,7 +1661,9 @@ const OnBoardingQuestions = ({ navigation }) => {
                         return (
                           <>
                             <NewOnBoardingDesign
-                              mainOnPress={() => selectPP(item, index)}
+                              mainOnPress={() =>
+                                handleOptionSelection(item, index)
+                              }
                               findIndex={findIndex}
                               index={index}
                               item={item}
@@ -1755,6 +1785,7 @@ const OnBoardingQuestions = ({ navigation }) => {
                 <View style={styles.scrollContainer}>
                   <View style={{ height: windowHeight * 0.5 }}>
                     <ScrollView
+                      ref={scrollViewRef}
                       onContentSizeChange={onContentSizeChange}
                       onLayout={onLayout}
                       onScroll={Animated.event(
@@ -1782,7 +1813,10 @@ const OnBoardingQuestions = ({ navigation }) => {
                             });
                             return (
                               <NewOnBoardingDesign
-                                mainOnPress={() => selectFO(item, index)}
+                                // mainOnPress={() => selectFO(item, index)}
+                                mainOnPress={() =>
+                                  handleOptionSelection(item, index)
+                                }
                                 findIndex={findIndex}
                                 index={index}
                                 item={item}
@@ -1847,6 +1881,7 @@ const OnBoardingQuestions = ({ navigation }) => {
                 <View style={styles.scrollContainer}>
                   <View style={{ height: windowHeight * 0.5 }}>
                     <ScrollView
+                      ref={scrollViewRef}
                       onContentSizeChange={onContentSizeChange}
                       onLayout={onLayout}
                       onScroll={Animated.event(
@@ -1874,7 +1909,10 @@ const OnBoardingQuestions = ({ navigation }) => {
                             });
                             return (
                               <NewOnBoardingDesign
-                                mainOnPress={() => selectCommunity(item, index)}
+                                // mainOnPress={() => selectCommunity(item, index)}
+                                mainOnPress={() =>
+                                  handleOptionSelection(item, index)
+                                }
                                 findIndex={findIndex}
                                 index={index}
                                 item={item}
@@ -1939,6 +1977,7 @@ const OnBoardingQuestions = ({ navigation }) => {
                 <View style={styles.scrollContainer}>
                   <View style={{ height: windowHeight * 0.5 }}>
                     <ScrollView
+                      ref={scrollViewRef}
                       onContentSizeChange={onContentSizeChange}
                       onLayout={onLayout}
                       onScroll={Animated.event(
@@ -1966,7 +2005,10 @@ const OnBoardingQuestions = ({ navigation }) => {
                             });
                             return (
                               <NewOnBoardingDesign
-                                mainOnPress={() => selectLanguage(item, index)}
+                                // mainOnPress={() => selectLanguage(item, index)}
+                                mainOnPress={() =>
+                                  handleOptionSelection(item, index)
+                                }
                                 findIndex={findIndex}
                                 index={index}
                                 item={item}
@@ -2342,7 +2384,10 @@ const OnBoardingQuestions = ({ navigation }) => {
       <BottomButton
         bottomStyles={{ bottom: isKeyboardVisible && android ? 2 : 15 }}
         loading={buttonLoader}
-        onPress={() => continuePress()}
+        onPress={() => {
+          continuePress(); // Call your existing function
+          handleNextQuestion(); // Call handleNextQuestion to transition to the next question
+        }}
       />
     </>
   );
