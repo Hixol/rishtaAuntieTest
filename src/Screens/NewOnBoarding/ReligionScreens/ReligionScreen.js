@@ -145,12 +145,14 @@ const ReligionScreen = ({ navigation, route }) => {
         name: userData?.Profile?.religion,
       };
       setSelectedReligion(copy);
-    } else if (preferenceEdit) {
-      let copy = {
-        ...copy,
-        name: userData?.UserPreference?.religion,
-      };
-      setSelectedReligion(copy);
+      // } else if (preferenceEdit) {
+      //   let copy = {
+      //     ...copy,
+      //     name: userData?.UserPreference?.religion,
+      //   };
+      //   console.log("ELSE>>>>", preferenceEdit);
+      //   setSelectedReligion(copy);
+      // }
     }
   }, []);
 
@@ -173,35 +175,9 @@ const ReligionScreen = ({ navigation, route }) => {
           payload: selectedReligion === null ? religion : selectedReligion,
         });
         navigation.navigate("UploadSelfie");
-        // navigation.navigate("Denominations", {
-        //   religions: selectedReligion,
-        //   // Other parameters if needed
-        // });
       }
     }
   };
-  // const createProfile = async () => {
-  //   if (edit) {
-  //     let formData = new FormData();
-  //     formData.append("religion", selectedReligion?.name);
-  //     await updateUser(formData, token);
-  //     navigation.goBack();
-  //   } else if (preferenceEdit) {
-  //     // If preference is being edited, navigate to Denominations screen
-  //     await updateUserPreference(token, "religion", [selectedReligion?.name]);
-  //     navigation.navigate("Denominations", {
-  //       religions: selectedReligion,
-  //     });
-  //   } else {
-  //     if (selectedReligion !== null) {
-  //       dispatch({
-  //         type: "religion",
-  //         payload: selectedReligion === null ? religion : selectedReligion,
-  //       });
-  //       navigation.navigate("UploadSelfie");
-  //     }
-  //   }
-  // };
 
   const search = (text, type, currentIndex) => {
     setSearchValue(text);
@@ -298,9 +274,11 @@ const ReligionScreen = ({ navigation, route }) => {
                             findIndex={findIndex}
                             index={index}
                             item={item}
-                            multiSelect={array[currentIndex]?.multiSelect}
+                            multiSelect={
+                              array.filtered[currentIndex]?.multiSelect
+                            }
                             nameorid={"name"}
-                            search={array[currentIndex]?.search}
+                            search={array.filtered[currentIndex]?.search}
                             radio={true}
                           />
                         );
@@ -369,12 +347,7 @@ const ReligionScreen = ({ navigation, route }) => {
         ) : null}
       </View>
       <BottomButton
-        text={edit ? "Update Search Preference" : "Save Search preference"}
-        // text={
-        //   edit || preferenceEdit || selectReligion === "Denomination"
-        //     ? "Update Search preferences"
-        //     : "Save Search preferences"
-        // }
+        text={edit ? "Update" : "Save Search preference"}
         onPress={() => createProfile()}
       />
     </SafeAreaView>

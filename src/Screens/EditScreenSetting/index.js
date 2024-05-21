@@ -1225,6 +1225,7 @@ const EditScreenSetting = props => {
     let denArr = selectedDenomination.map(el => el.name);
     if (edit) {
       let formData = new FormData();
+      // console.log("FormDATA", type);
       if (type === "Prompts Pool") {
         if (selectedPP?.length < 3) {
           alerts("error", "Please select atleast 3 prompt pools");
@@ -2481,7 +2482,6 @@ const EditScreenSetting = props => {
                       >
                         Select all
                       </Text> */}
-
                       {userData?.UserPreference?.religion !== undefined &&
                         userData?.UserPreference?.religion.map(
                           (rel, relIndex) =>
@@ -2839,7 +2839,7 @@ const EditScreenSetting = props => {
       <BottomButton
         bottomStyles={{ bottom: isKeyboardVisible && android ? 2 : 15 }}
         loading={buttonLoader}
-        text={"Save search preference"}
+        text={edit ? "Update" : "Save Search preferences"}
         onPress={updateProfile}
       />
     </>
