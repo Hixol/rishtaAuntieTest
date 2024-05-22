@@ -104,51 +104,64 @@ const UploadPicture = ({ navigation, route }) => {
     }
   };
 
-  const getIds = userData.UserMedia.map(item => item.id);
+  // const getIds = userData.UserMedia.map(item => item.id);
+  // console.log(getIds, "idss");
+
+  let getIds = [];
+  if (userData && Array.isArray(userData.UserMedia)) {
+    const getIds = userData.UserMedia.map(item => item.id);
+  }
   console.log(getIds, "idss");
 
   const handleOnRemove = async index => {
     try {
-      const idToRemove = getIds[index];
-      if (idToRemove) {
-        const url =
-          "https://api.rishtaauntie.app/dev/rishta_auntie/api/v1/user/remove-media";
-        const requestOptions = {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": token, // Assuming token is already defined
-          },
-          body: JSON.stringify({ userMediaIds: [idToRemove] }), // Adjusted payload format
-        };
+      if (!userData || !Array.isArray(userData.UserMedia)) {
+        console.error("User data or UserMedia is invalid.");
+        return;
+      }
 
-        const response = await fetch(url, requestOptions);
-        const data = await response.json();
+      const idToRemove = userData.UserMedia[index]?.id;
+      if (!idToRemove) {
+        console.error("Invalid ID to remove:", idToRemove);
+        return;
+      }
 
-        if (response.ok) {
-          // Check if media was successfully removed (based on the response status)
-          if (response.status === 200) {
-            let dummyArr = [...profilePicArr];
-            dummyArr[index]["image"] = null;
-            setProfilePicArr(dummyArr);
-            // Display success alert
-            alerts("success", data.message);
-          } else {
-            // Handle unsuccessful removal
-            console.error("Media removal unsuccessful:", data.message);
-          }
+      const url =
+        "https://api.rishtaauntie.app/dev/rishta_auntie/api/v1/user/remove-media";
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-auth-token": token, // Assuming token is already defined
+        },
+        body: JSON.stringify({ userMediaIds: [idToRemove] }), // Adjusted payload format
+      };
+
+      const response = await fetch(url, requestOptions);
+      const data = await response.json();
+
+      if (response.ok) {
+        // Check if media was successfully removed (based on the response status)
+        if (response.status === 200) {
+          let dummyArr = [...profilePicArr];
+          dummyArr[index]["image"] = null;
+          setProfilePicArr(dummyArr);
+          // Display success alert
+          alerts("success", data.message);
         } else {
-          // Handle error response
-          console.error("Error removing media:", data);
+          // Handle unsuccessful removal
+          console.error("Media removal unsuccessful:", data.message);
         }
       } else {
-        console.error("Invalid ID to remove:", idToRemove);
+        // Handle error response
+        console.error("Error removing media:", data);
       }
     } catch (error) {
       // Handle any network or unexpected errors here
       console.error("Error removing media:", error);
     }
   };
+
   const handleCameraMedia = async (state, result) => {
     try {
       if (result == "granted") {
