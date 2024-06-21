@@ -102,7 +102,6 @@ const OnBoardingQuestions = ({ navigation }) => {
   const handleNextQuestion = () => {
     // Reset scroll position to top when transitioning to the next question
     resetScrollPosition();
-    // Add any additional logic for transitioning to the next question here
   };
   const onContentSizeChange = (_, contentHeight) =>
     setCompleteScrollBarHeight(contentHeight);
@@ -1359,7 +1358,15 @@ const OnBoardingQuestions = ({ navigation }) => {
                 type: "AUTH_USER_STATUS",
                 payload: res?.data?.data?.user?.status,
               });
-              navigation.navigate("PersonalityQuizNew");
+
+              // Check if the user has already completed the personality quiz
+              if (userData?.Profile?.personalityType) {
+                navigation.navigate("BottomTab", {
+                  screen: "Settings",
+                });
+              } else {
+                navigation.navigate("PersonalityQuizNew");
+              }
             } else {
               Alerts("error", res?.data?.error?.message);
             }
