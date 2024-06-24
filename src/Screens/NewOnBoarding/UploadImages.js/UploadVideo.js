@@ -172,6 +172,88 @@ const UploadVideo = ({ navigation, route }) => {
     }
   };
 
+  const handleSkipNow = async () => {
+    setLoading(true);
+    if (coords.city == "" && coords.state == "" && coords.country == "") {
+      alerts(
+        "error",
+        "Please enable location and open google maps to sync location!"
+      );
+      handleLocation();
+      setLoading(false);
+    } else {
+      setLoading(true);
+      handleLocation();
+
+      let code = Countries.filter(item => {
+        return item?.en === coords?.country;
+      });
+      code = code[0]?.dialCode;
+
+      let versionCode = DeviceInfo.getVersion();
+      let userDevice = DeviceInfo.getModel();
+      let OSVersion = DeviceInfo.getSystemVersion();
+      let OSName = android ? `Android ${OSVersion}` : `iOS ${OSVersion}`;
+
+      let formData = new FormData();
+      formData.append("versionCode", versionCode);
+      formData.append("userDevice", userDevice);
+      formData.append("OSVersion", OSVersion);
+      formData.append("OSName", OSName);
+      formData.append("firstName", firstName);
+      formData.append("lastName", lastName);
+      formData.append("dob", moment(dob).format("YYYY-MM-DD"));
+      formData.append("longitude", coords.lat);
+      formData.append("latitude", coords.lng);
+      formData.append("city", coords.city);
+      formData.append("country", coords.country);
+      formData.append("countryCode", code);
+      formData.append("address", coords.state);
+      formData.append("gender", gender);
+      formData.append("religion", religion?.name);
+      formData.append("verificationPicture", selfie);
+
+      profilePictures.map((x, index) => {
+        if (x?.image) {
+          formData.append(`profilePic${index + 1}`, {
+            name: x?.image?.name,
+            type: x?.image.type,
+            uri: x?.image?.uri,
+          });
+        }
+      });
+
+      if (token !== null) {
+        setLoading(true);
+        UserService.createNewProfile(formData, token)
+          .then(res => {
+            console.log("Profile", res.data);
+            console.log("FormData", formData);
+            handleStatusCode(res);
+            if (res.status >= 200 && res.status <= 299) {
+              clearNewRedux();
+              Alerts("success", res?.data?.message);
+
+              navigation.dispatch(
+                CommonActions.reset({
+                  index: 0,
+                  routes: [{ name: "BottomTab" }],
+                })
+              );
+            }
+          })
+          .catch(e => {
+            console.log("createNewProfile err", e);
+            Alerts("error", e?.message.toString());
+          })
+          .finally(() => setLoading(false));
+      } else {
+        setLoading(false);
+        alerts("error", "Please upload video to continue");
+      }
+    }
+  };
+
   const continuePress = async => {
     if (edit && videoUri != null) {
       setLoading(true);
@@ -558,6 +640,8 @@ const UploadVideo = ({ navigation, route }) => {
         handleCamera={handleCamera}
         handleAlert={handleAlert}
         handleRemoveImage={handleRemoveImage}
+        handleSkipNow={handleSkipNow}
+        showSkipButton={true} // Add this line
         alert={showAlert}
       />
       <TouchableOpacity onPress={() => navigation.goBack()}>
