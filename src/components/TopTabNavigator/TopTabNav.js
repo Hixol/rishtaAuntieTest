@@ -800,14 +800,15 @@ const TabViewExample = props => {
                         }}
                         Image={{
                           uri:
-                            selectedItems[0] === "Views"
+                            selectedItems && selectedItems[0] === "Views"
                               ? item?.vieweeUser?.UserMedia[0]?.url
                               : item?.resource?.type === "image"
                               ? item?.resource?.url
-                              : item?.resource?.type === "video"
+                              : item?.resource?.type === "video" &&
+                                item?.otherUser?.UserMedia
                               ? item?.otherUser?.UserMedia.filter(
                                   item => item?.sequence == 1
-                                )[0].url
+                                )[0]?.url
                               : null,
                         }}
                         Bname={

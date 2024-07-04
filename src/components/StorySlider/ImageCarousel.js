@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, TouchableNativeFeedback } from "react-native";
 import { WIDTH, HEIGHT } from "../../constants/Constants";
-
+import { useNavigation } from "@react-navigation/native";
 import Stories from "./Stories";
 import Colors from "../../constants/Colors";
 import FastImage from "react-native-fast-image";
@@ -19,6 +19,7 @@ export default function ImageCarousel({
 }) {
   const [index, setIndex] = useState(0);
   const [images, setimages] = useState([]);
+  const navigation = useNavigation();
   useEffect(() => {
     setimages(
       imageUris
@@ -35,7 +36,7 @@ export default function ImageCarousel({
             };
           }
         })
-        .filter((a) => a)
+        .filter(a => a)
     );
   }, [imageUris]);
   return (
@@ -97,6 +98,7 @@ export default function ImageCarousel({
               )}
               onPress={() => {
                 onIconHeartPress(images[index]);
+                navigation.goBack(); // Navigation inside the condition
               }}
             />
           </View>
