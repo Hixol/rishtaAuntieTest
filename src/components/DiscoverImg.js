@@ -7,15 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import {
-  ios,
-  OS_VER,
-  windowHeight,
-  windowWidth,
-  screenHeight,
-} from "../utility/size";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
 import FastImage from "react-native-fast-image";
 import CountryFlag from "react-native-country-flag";
 import ActionButton from "./buttons/FloatingActionButton";
@@ -24,6 +16,13 @@ import convertToProxyURL from "react-native-video-cache";
 import colors from "../utility/colors";
 import Icons from "../utility/icons";
 import Countries from "../assets/countryLists/Countries";
+import {
+  ios,
+  OS_VER,
+  windowHeight,
+  windowWidth,
+  screenHeight,
+} from "../utility/size";
 
 const DiscoverImg = ({
   item,
@@ -56,7 +55,13 @@ const DiscoverImg = ({
     setIsPausedButton(!isPausedButton);
     setIsPaused(!isPaused);
   };
+
   useEffect(() => {
+    console.log(
+      "Effect: check, userId, isFocused, paused, pausedButton changed"
+    );
+    console.log({ check, userId, isFocused, paused, pausedButton });
+
     if (check) {
       setIsPaused(true);
       setIsPausedButton(false);
@@ -67,7 +72,7 @@ const DiscoverImg = ({
     }
 
     pausedButton === false ? setIsPausedButton(false) : setIsPausedButton(true);
-  }, [userId, isFocused, check]);
+  }, [check, userId, isFocused, paused, pausedButton]);
 
   Countries.filter(country => {
     if (country.en == item.country) {
@@ -89,224 +94,224 @@ const DiscoverImg = ({
   } else {
     adjustHeight = windowHeight - tabBarHeight - 24;
   }
+
+  const videoUrl =
+    video?.length > 0 ? convertToProxyURL(video[0]?.url.split("?")[0]) : null;
+
   return (
-    <>
-      <Pressable
-        onPress={() => pausePlay()}
-        style={[
-          styles.container,
-          {
-            height:
-              (windowHeight <= 640 || windowHeight < 790) &&
-              !(windowHeight <= 770)
-                ? adjustHeight
-                : (windowHeight < 755 || windowHeight < 880) &&
-                  !(
-                    windowHeight <= 770 ||
-                    (windowHeight > 830 && windowHeight < 845)
-                  ) &&
-                  OS_VER == 13
-                ? adjustHeight
-                : ios
-                ? windowHeight - tabBarHeight - insets.top
-                : windowHeight - tabBarHeight,
-          },
-        ]}
-      >
-        {video?.length > 0 ? (
-          <>
-            <View>
-              {isPreloading && (
-                <ActivityIndicator
-                  animating
-                  color={colors.primaryPink}
-                  size="large"
-                  style={{
-                    flex: 1,
-                    position: "absolute",
-                    top: "50%",
-                    left: "45%",
-                    zIndex: 1,
-                  }}
-                />
-              )}
-              <View
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  zIndex: 1,
-                  position: "absolute",
-                }}
-              >
-                <FastImage
-                  resizeMode="cover"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    overflow: "hidden",
-                  }}
-                  source={require("../assets/iconimages/opacity-02.png")}
-                />
-              </View>
-              <Video
-                onLoadStart={() => setIsPreloading(true)}
-                resizeMode={"cover"}
-                repeat={true}
-                onReadyForDisplay={() => setIsPreloading(false)}
-                playInBackground={false}
-                playWhenInactive={false}
-                paused={isPaused}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                }}
-                source={{
-                  uri: convertToProxyURL(video[0]?.url),
-                }}
-              />
-              {isPausedButton ? (
-                <View
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    position: "absolute",
-                    opacity: 0.4,
-                  }}
-                >
-                  <FastImage
-                    resizeMode="contain"
-                    source={require("../assets/iconimages/playIcon.png")}
-                    style={{
-                      width: 60,
-                      height: 60,
-                    }}
-                  />
-                </View>
-              ) : null}
-            </View>
-          </>
-        ) : (
-          <View>
-            {isPreloadingImage && (
-              <ActivityIndicator
-                animating
-                color={colors.primaryPink}
-                size="large"
-                style={{
-                  flex: 1,
-                  position: "absolute",
-                  top: "50%",
-                  left: "45%",
-                  zIndex: 1,
-                }}
-              />
-            )}
+    <Pressable
+      onPress={() => pausePlay()}
+      style={[
+        styles.container,
+        {
+          height:
+            (windowHeight <= 640 || windowHeight < 790) &&
+            !(windowHeight <= 770)
+              ? adjustHeight
+              : (windowHeight < 755 || windowHeight < 880) &&
+                !(
+                  windowHeight <= 770 ||
+                  (windowHeight > 830 && windowHeight < 845)
+                ) &&
+                OS_VER == 13
+              ? adjustHeight
+              : ios
+              ? windowHeight - tabBarHeight - insets.top
+              : windowHeight - tabBarHeight,
+        },
+      ]}
+    >
+      {videoUrl ? (
+        <View>
+          {isPreloading && (
+            <ActivityIndicator
+              animating
+              color={colors.primaryPink}
+              size="large"
+              style={{
+                flex: 1,
+                position: "absolute",
+                top: "50%",
+                left: "45%",
+                zIndex: 1,
+              }}
+            />
+          )}
+          <View
+            style={{
+              width: "100%",
+              height: "100%",
+              zIndex: 1,
+              position: "absolute",
+            }}
+          >
+            <FastImage
+              resizeMode="cover"
+              style={{
+                width: "100%",
+                height: "100%",
+                overflow: "hidden",
+              }}
+              source={require("../assets/iconimages/opacity-02.png")}
+            />
+          </View>
+          <Video
+            onLoadStart={() => setIsPreloading(true)}
+            resizeMode={"cover"}
+            repeat={true}
+            onReadyForDisplay={() => setIsPreloading(false)}
+            playInBackground={false}
+            playWhenInactive={false}
+            paused={isPaused}
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+            source={{
+              uri: videoUrl,
+            }}
+            onError={e => console.log("Video error:", e)}
+          />
+          {isPausedButton ? (
             <View
               style={{
                 width: "100%",
                 height: "100%",
-                zIndex: 1,
+                alignItems: "center",
+                justifyContent: "center",
                 position: "absolute",
+                opacity: 0.4,
               }}
             >
               <FastImage
-                resizeMode="cover"
+                resizeMode="contain"
+                source={require("../assets/iconimages/playIcon.png")}
                 style={{
-                  width: "100%",
-                  height: "100%",
-                  overflow: "hidden",
+                  width: 60,
+                  height: 60,
                 }}
-                source={require("../assets/iconimages/opacity-02.png")}
               />
             </View>
-            <FastImage
-              onLoadStart={() => setIsPreloadingImage(true)}
-              onLoadEnd={() => setIsPreloadingImage(false)}
-              source={
-                images === undefined
-                  ? "https://images.unsplash.com/photo-1657214059264-99456d9aae24?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
-                  : { uri: images }
-              }
-              style={{ width: "100%", height: "100%", zIndex: 0 }}
-            />
-          </View>
-        )}
-        <View style={styles.imgHeader}>
-          <TouchableOpacity style={styles.iconImg} onPress={searchPress}>
-            <FastImage
-              style={{ height: "72%", width: "60%" }}
-              source={require("../assets/iconimages/heart-discover.png")}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={onDotsPress}>
-            <Icons.MaterialCommunityIcons
-              name="dots-vertical"
-              size={34}
-              color={"white"}
-            />
-          </TouchableOpacity>
+          ) : null}
         </View>
-
-        <View style={styles.imgFooter}>
+      ) : (
+        <View>
+          {isPreloadingImage && (
+            <ActivityIndicator
+              animating
+              color={colors.primaryPink}
+              size="large"
+              style={{
+                flex: 1,
+                position: "absolute",
+                top: "50%",
+                left: "45%",
+                zIndex: 1,
+              }}
+            />
+          )}
           <View
             style={{
-              alignItems: "flex-end",
-              bottom: 120,
+              width: "100%",
+              height: "100%",
+              zIndex: 1,
+              position: "absolute",
             }}
           >
-            <ActionButton
-              onPressCommentInteraction={onPressCommentInteraction}
-              onPressVoiceInteraction={onPressVoiceInteraction}
-              onPressLikeInteraction={onPressLikeInteraction}
-              imageRound={images}
+            <FastImage
+              resizeMode="cover"
+              style={{
+                width: "100%",
+                height: "100%",
+                overflow: "hidden",
+              }}
+              source={require("../assets/iconimages/opacity-02.png")}
             />
           </View>
+          <FastImage
+            onLoadStart={() => setIsPreloadingImage(true)}
+            onLoadEnd={() => setIsPreloadingImage(false)}
+            source={
+              images === undefined
+                ? "https://images.unsplash.com/photo-1657214059264-99456d9aae24?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
+                : { uri: images }
+            }
+            style={{ width: "100%", height: "100%", zIndex: 0 }}
+          />
+        </View>
+      )}
+      <View style={styles.imgHeader}>
+        <TouchableOpacity style={styles.iconImg} onPress={searchPress}>
+          <FastImage
+            style={{ height: "72%", width: "60%" }}
+            source={require("../assets/iconimages/heart-discover.png")}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onDotsPress}>
+          <Icons.MaterialCommunityIcons
+            name="dots-vertical"
+            size={34}
+            color={"white"}
+          />
+        </TouchableOpacity>
+      </View>
 
-          <Text numberOfLines={1} style={styles.nameTxt}>
-            {item.firstName}
-          </Text>
-          <Text
-            style={[
-              styles.analystTxt,
-              {
-                width: "80%",
-              },
-            ]}
-          >
-            {item.Profile.age}, {item.Profile.occupation}
-          </Text>
+      <View style={styles.imgFooter}>
+        <View
+          style={{
+            alignItems: "flex-end",
+            bottom: 120,
+          }}
+        >
+          <ActionButton
+            onPressCommentInteraction={onPressCommentInteraction}
+            onPressVoiceInteraction={onPressVoiceInteraction}
+            onPressLikeInteraction={onPressLikeInteraction}
+            imageRound={images}
+          />
+        </View>
 
-          {/* <Text style={styles.statementTxt}>{item.Profile.tagline}</Text> */}
-          <View style={styles.lastFooter}>
-            <View style={styles.flagContainer}>
-              <CountryFlag isoCode={`${flagsLiving}`} size={18} />
-              <View style={{ marginLeft: "20%" }}>
-                <CountryFlag isoCode={`${flagsOrigin}`} size={18} />
-              </View>
-            </View>
-            <View
-              style={{
-                width: "10%",
-                height: 20,
-              }}
-            ></View>
-            <View style={styles.location}>
-              <Icons.Ionicons
-                name="location-outline"
-                size={20}
-                color={colors.textGrey1}
-              />
-              <Text style={[styles.name, { width: "60%" }]}>
-                {item.city},{" "}
-                {item.country == "United States" ? countryCode : item.country}
-              </Text>
+        <Text numberOfLines={1} style={styles.nameTxt}>
+          {item.firstName}
+        </Text>
+        <Text
+          style={[
+            styles.analystTxt,
+            {
+              width: "80%",
+            },
+          ]}
+        >
+          {item.Profile.age}, {item.Profile.occupation}
+        </Text>
+
+        <View style={styles.lastFooter}>
+          <View style={styles.flagContainer}>
+            <CountryFlag isoCode={`${flagsLiving}`} size={18} />
+            <View style={{ marginLeft: "20%" }}>
+              <CountryFlag isoCode={`${flagsOrigin}`} size={18} />
             </View>
           </View>
+          <View
+            style={{
+              width: "10%",
+              height: 20,
+            }}
+          ></View>
+          <View style={styles.location}>
+            <Icons.Ionicons
+              name="location-outline"
+              size={20}
+              color={colors.textGrey1}
+            />
+            <Text style={[styles.name, { width: "60%" }]}>
+              {item.city},{" "}
+              {item.country == "United States" ? countryCode : item.country}
+            </Text>
+          </View>
         </View>
-      </Pressable>
-    </>
+      </View>
+    </Pressable>
   );
 };
 
