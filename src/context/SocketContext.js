@@ -11,7 +11,7 @@ const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const socket = io.connect("https://api.rishtaauntie.app", {
+    const socket = io.connect("https://api.rishtaauntie.link", {
       reconnection: true,
       reconnectionDelay: 5000,
       query: {
