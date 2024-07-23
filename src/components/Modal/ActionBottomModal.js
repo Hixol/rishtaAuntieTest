@@ -434,7 +434,7 @@ const ActionBottomModal = ({
     } else {
       let config = {
         method: "DELETE",
-        url: `https://api.rishtaauntie.app/dev/rishta_auntie/api/v1/user/${userData?.id}`,
+        url: `https://api.rishtaauntie.link/dev/rishta_auntie/api/v1/user/${userData?.id}`,
         headers: {
           "x-auth-token": `${token}`,
         },

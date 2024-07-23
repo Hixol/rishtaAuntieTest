@@ -23,7 +23,7 @@ const DeleteAccountScreen = props => {
   const deleteAccount = () => {
     axios
       .delete(
-        `https://api.rishtaauntie.app/dev/rishta_auntie/api/v1'/user/${id}`
+        `https://api.rishtaauntie.link/dev/rishta_auntie/api/v1'/user/${id}`
       )
       .then(res => {
         handleStatusCode(res);
