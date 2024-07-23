@@ -254,16 +254,12 @@ const UploadVideo = ({ navigation, route }) => {
     }
   };
 
-  const continuePress = async => {
+  const continuePress = async () => {
     if (edit && videoUri != null) {
       setLoading(true);
 
       const formData1 = new URLSearchParams();
-      // console.log("Videoo", video);
       formData1.append("mediaName", video.name);
-      // formData1.append("video",  video);
-      // console.log("FormData", formData1);
-      // formData1.append("mediaName", mediaName); // Use the provided media name
       formData1.append("mediaType", "video/mp4");
 
       OnBoardingServices.getPresignedUrl(formData1, token)
@@ -273,9 +269,7 @@ const UploadVideo = ({ navigation, route }) => {
           if (res.status >= 200 && res.status <= 299) {
             const responseData = res.data;
             const { url, key } = responseData.data;
-            // console.log("response-URL", url);
-            // console.log("response-KEY", key);
-
+            const baseUrl = url.split("?")[0]; // Get the base URL
             alerts("success", res.data.message);
 
             const videoFileUri = video.uri;
@@ -285,23 +279,20 @@ const UploadVideo = ({ navigation, route }) => {
             const uploadResponse = await fetch(url, {
               method: "PUT",
               headers: {
-                "Content-Type": "video/mp4", // Adjust content type if necessary
+                "Content-Type": "video/mp4",
               },
               body: videoBlob,
             });
 
-            // console.log("Upload response", uploadResponse);
-
             if (uploadResponse.ok) {
               // Video uploaded successfully, now inform the backend API
               const backendPayload = {
-                videoUrl: url, // Include the videoUrl in the payload
+                videoUrl: baseUrl, // Send the base URL to the backend
               };
               // Handle the response of the PUT request here if needed
               // Once the video is uploaded successfully, notify the backend API
               OnBoardingServices.uploadVideo(backendPayload, token)
                 .then(res => {
-                  // console.log("Uploaded video response:", res.data);
                   handleStatusCode(res);
                   if (res.status >= 200 && res.status <= 299) {
                     let copy = JSON.parse(JSON.stringify(userData));
@@ -338,7 +329,6 @@ const UploadVideo = ({ navigation, route }) => {
         })
         .catch(err => {
           console.error("Error:", err);
-          // Handle errors from the fetch or other operations
         });
     } else {
       if (videoObj !== null || video !== null) {
@@ -357,7 +347,6 @@ const UploadVideo = ({ navigation, route }) => {
             return item?.en === coords?.country;
           });
           code = code[0]?.dialCode;
-
           // Step 1: Get pre-signed URL from backend
           const formData1 = new URLSearchParams();
           formData1.append("mediaName", video.name);
@@ -369,11 +358,9 @@ const UploadVideo = ({ navigation, route }) => {
               if (res.status >= 200 && res.status <= 299) {
                 const responseData = res.data;
                 const { url } = responseData.data;
-                console.log("response-URL", url);
-                // console.log("response-KEY", key);
-
+                const baseUrl = url.split("?")[0]; // Get the base URL
+                console.log("Url Response", baseUrl);
                 alerts("success", res.data.message);
-
                 // Step 2: Upload video to the signed URL
                 const videoFileUri = video.uri;
                 const videoFile = await fetch(videoFileUri);
@@ -386,18 +373,16 @@ const UploadVideo = ({ navigation, route }) => {
                   },
                   body: videoBlob,
                 });
-                console.log("Upload response", uploadResponse);
 
                 if (uploadResponse.ok) {
                   // Step 3: Inform backend API after successful upload
                   const backendPayload = {
-                    videoUrl: url,
+                    videoUrl: baseUrl, // Send the base URL to the backend
                   };
                   console.log("BackendPayload", backendPayload);
                   OnBoardingServices.uploadVideo(backendPayload, token)
                     .then(res => {
                       handleStatusCode(res);
-                      console.log("Video upload Response", res.data);
                       if (res.status >= 200 && res.status <= 299) {
                         dispatch({
                           type: "SET_VIDEO_FLAG",
@@ -405,7 +390,6 @@ const UploadVideo = ({ navigation, route }) => {
                         });
                         alerts("success", res.data.message);
 
-                        // Add the additional part here
                         let versionCode = DeviceInfo.getVersion();
                         let userDevice = DeviceInfo.getModel();
                         let OSVersion = DeviceInfo.getSystemVersion();
@@ -448,8 +432,6 @@ const UploadVideo = ({ navigation, route }) => {
                           setLoading(true);
                           UserService.createNewProfile(formData, token)
                             .then(res => {
-                              console.log("Profile", res.data);
-                              console.log("FormData", formData);
                               handleStatusCode(res);
                               if (res.status >= 200 && res.status <= 299) {
                                 clearNewRedux();
@@ -640,8 +622,8 @@ const UploadVideo = ({ navigation, route }) => {
         handleCamera={handleCamera}
         handleAlert={handleAlert}
         handleRemoveImage={handleRemoveImage}
-        handleSkipNow={handleSkipNow}
-        showSkipButton={true} // Add this line
+        // handleSkipNow={handleSkipNow}
+        // showSkipButton={true} // Add this line
         alert={showAlert}
       />
       <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -904,17 +886,49 @@ const UploadVideo = ({ navigation, route }) => {
           </View>
         </View>
       )}
-      <BottomButton
-        loading={loading}
-        text={
-          edit && videoUri
-            ? "Update"
-            : videoObj || video
-            ? "View profiles now"
-            : "Upload your discovery video"
-        }
-        onPress={() => continuePress()}
-      />
+      <View
+        style={{
+          top: 55,
+        }}
+      >
+        <BottomButton
+          loading={loading}
+          text={
+            edit && videoUri
+              ? "Update"
+              : videoObj || video
+              ? "View profiles now"
+              : "Upload your discovery video"
+          }
+          onPress={() => continuePress()}
+        />
+      </View>
+      <View
+        style={{
+          width: "90%",
+          paddingVertical: "5%",
+          borderRadius: 10,
+          backgroundColor: colors.error300,
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1,
+          position: "absolute",
+          alignSelf: "center",
+          bottom: 20,
+        }}
+      >
+        <TouchableOpacity onPress={() => handleSkipNow()}>
+          <Text
+            style={{
+              fontSize: 15,
+              color: colors.white,
+              fontFamily: "Inter-Medium",
+            }}
+          >
+            Continue with Photo
+          </Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
