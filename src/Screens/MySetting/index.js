@@ -78,20 +78,16 @@ const MySetting = props => {
   const socket = useContext(SocketContext);
   const dispatch = useDispatch();
   const { handleStatusCode, handleDisablePremium } = useHelper();
-  const { token, email, settings } = useSelector(store => store.userReducer);
+  const { token, email, settings, userData } = useSelector(
+    store => store.userReducer
+  );
+  const proMember = userData?.UserSetting?.isSubscribed;
 
   const onToggleSwitch = (type, val) => {
     switch (type) {
       case "Push Notification":
         dispatch({
           type: "USER_IS_NOTIFICATION",
-          payload: val,
-        });
-        break;
-
-      case "Dark Mode":
-        dispatch({
-          type: "USER_IS_DARK_MODE",
           payload: val,
         });
         break;
@@ -103,8 +99,6 @@ const MySetting = props => {
   };
 
   const logOut = async () => {
-    // ConnectyCube.chat.disconnect();
-    // await ConnectyCube.destroySession();
     await UserService.logout(token);
 
     if (email != "") {
@@ -217,50 +211,82 @@ const MySetting = props => {
             isOn={settings.isNotificationEnabled}
             toggleOptionText={"Push Notification"}
           />
-          <View style={styles.horizontalLine}></View>
+          {/* <View style={styles.horizontalLine}></View>
           <BasicPrivacySetting
             toggleSwitch
             onToggleSwitch={onToggleSwitch}
             isOn={settings.isDarkMode}
             toggleOptionText={"Dark Mode"}
-          />
+          /> */}
         </View>
 
-        <View
-          style={[
-            styles.actionItemsView,
-            {
-              marginTop: "5%",
-            },
-          ]}
-        >
-          <TouchableOpacity
-            onPressIn={handleDisablePremium}
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              // marginHorizontal: '5%',
-              alignItems: "center",
-            }}
+        {proMember ? (
+          <View
+            style={[
+              styles.actionItemsView,
+              {
+                marginTop: "5%",
+              },
+            ]}
           >
-            <Text
+            <TouchableOpacity
+              onPressIn={handleDisablePremium}
               style={{
-                fontSize: 14,
-                color: "#374151",
-                fontFamily: "Inter-Medium",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                // marginHorizontal: '5%',
+                alignItems: "center",
               }}
             >
-              Manage my subscription
-            </Text>
-            <TouchableOpacity>
-              <FastImage
-                resizeMode="contain"
-                style={{ width: 20, height: 20 }}
-                source={require("../../assets/iconimages/settingarrow.png")}
-              />
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: "#374151",
+                  fontFamily: "Inter-Medium",
+                }}
+              >
+                Manage my subscription
+              </Text>
+              <TouchableOpacity>
+                <FastImage
+                  resizeMode="contain"
+                  style={{ width: 20, height: 20 }}
+                  source={require("../../assets/iconimages/settingarrow.png")}
+                />
+              </TouchableOpacity>
             </TouchableOpacity>
-          </TouchableOpacity>
-        </View>
+          </View>
+        ) : (
+          <View
+            style={[
+              styles.actionItemsView,
+              {
+                marginTop: "5%",
+                backgroundColor: "#D90368",
+              },
+            ]}
+          >
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate("Paywall")}
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: "#ffff",
+                  fontFamily: "Inter-Medium",
+                  fontWeight: "600",
+                }}
+              >
+                Upgrade now to Rishta Auntie Gold
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
         {/* <View>
         <Modal animationType="fade" transparent={true} visible={modalVisible}>
           <TouchableOpacity
@@ -390,6 +416,17 @@ const MySetting = props => {
               {" "}
               Log Out{" "}
             </Text>
+            <View
+              style={{
+                marginLeft: "70%",
+              }}
+            >
+              <FastImage
+                resizeMode="contain"
+                style={{ width: 20, height: 20 }}
+                source={require("../../assets/iconimages/settingarrow.png")}
+              />
+            </View>
           </TouchableOpacity>
         </View>
         <View style={{ marginTop: "5%" }}>
@@ -424,24 +461,18 @@ const MySetting = props => {
             >
               Delete Account
             </Text>
+            <View
+              style={{
+                marginLeft: "63%",
+              }}
+            >
+              <FastImage
+                resizeMode="contain"
+                style={{ width: 20, height: 20 }}
+                source={require("../../assets/iconimages/settingarrow.png")}
+              />
+            </View>
           </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "flex-end",
-            alignItems: "center",
-            marginBottom: "4%",
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => Alert.alert("How may i assist you!")}
-          >
-            <Text style={{ color: colors.primaryPink, fontSize: 16 }}>
-              Need Help
-            </Text>
-          </TouchableOpacity>
-          <Text style={{ color: colors.primaryBlue }}>Version {version}</Text>
         </View>
       </SafeAreaView>
       {action ? (
@@ -460,4 +491,5 @@ const MySetting = props => {
     </>
   );
 };
+
 export default MySetting;
