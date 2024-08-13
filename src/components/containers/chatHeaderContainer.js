@@ -93,7 +93,7 @@ const ChatHeaderContainer = ({
         </View>
       </View>
       <View style={styles.row}>
-        {selected ? (
+        {/* {selected ? (
           <>
             <TouchableOpacity
               onPress={starCallback}
@@ -134,17 +134,15 @@ const ChatHeaderContainer = ({
                   />
                 </TouchableOpacity>
               </>
-            )}
-            {type === "GROUP" ? null : (
-              <TouchableOpacity onPress={optionsPress}>
-                <Icons.Ionicons
-                  name="ellipsis-vertical-sharp"
-                  size={26}
-                  color={colors.blackBlue}
-                />
-              </TouchableOpacity>
-            )}
-          </>
+            )} */}
+        {type === "GROUP" ? null : (
+          <TouchableOpacity onPress={optionsPress}>
+            <Icons.Ionicons
+              name="ellipsis-vertical-sharp"
+              size={26}
+              color={colors.blackBlue}
+            />
+          </TouchableOpacity>
         )}
       </View>
     </View>
