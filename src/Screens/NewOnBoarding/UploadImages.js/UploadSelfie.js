@@ -84,12 +84,6 @@ const UploadSelfie = ({ reverify, navigation, route }) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (reverify && selfieObj) {
-      handleUploadSelfie();
-    }
-  }, [selfieObj]);
-
   const handleUploadSelfie = () => {
     if (selfieObj == null) {
       alerts("error", "Please upload selfie.");
@@ -288,10 +282,10 @@ const UploadSelfie = ({ reverify, navigation, route }) => {
             />
           </Pressable>
         ) : (
-          <Pressable onPressIn={handleCameraMode}>
+          <Pressable onPressIn={handleCameraMode} style={styles.retake}>
             <FastImage
-              style={styles.featureIcons}
               resizeMode="contain"
+              style={{ width: 20, height: 20 }}
               source={require("../../../assets/iconimages/retake.png")}
             />
           </Pressable>
@@ -368,7 +362,16 @@ const UploadSelfie = ({ reverify, navigation, route }) => {
           </TouchableOpacity>
         )}
       </View>
-      {reverify ? null : <BottomButton onPress={() => continuePress()} />}
+      {reverify ? (
+        <TouchableOpacity
+          style={styles.submitButton}
+          onPress={handleUploadSelfie}
+        >
+          <Text style={styles.submitButtonText}>Submit</Text>
+        </TouchableOpacity>
+      ) : (
+        <BottomButton onPress={() => continuePress()} />
+      )}
     </SafeAreaView>
   );
 };
@@ -441,5 +444,22 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     justifyContent: "center",
     alignItems: "center",
+  },
+  submitButton: {
+    width: "90%",
+    paddingVertical: "5%",
+    borderRadius: 10,
+    backgroundColor: colors.primaryPink,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1,
+    position: "absolute",
+    alignSelf: "center",
+    bottom: 15,
+  },
+  submitButtonText: {
+    color: colors.white,
+    fontSize: 18,
+    fontFamily: "Inter-Bold",
   },
 });
