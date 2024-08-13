@@ -131,7 +131,7 @@ const ActionCard = props => {
                       color={colors.primaryBlue}
                       size={40}
                     />
-                    <Text style={styles.iconTxt}>Remove</Text>
+                    <Text style={styles.iconTxt}>Cancel</Text>
                   </TouchableOpacity>
                 ) : null}
                 {props.showSkipButton && (

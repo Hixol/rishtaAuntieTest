@@ -898,7 +898,7 @@ const UploadVideo = ({ navigation, route }) => {
               ? "Update"
               : videoObj || video
               ? "View profiles now"
-              : "Upload your discovery video"
+              : "Upload your discover video"
           }
           onPress={() => continuePress()}
         />
@@ -908,10 +908,11 @@ const UploadVideo = ({ navigation, route }) => {
           width: "90%",
           paddingVertical: "5%",
           borderRadius: 10,
-          backgroundColor: colors.error300,
+          backgroundColor: "#FDEDF1",
           alignItems: "center",
           justifyContent: "center",
           zIndex: 1,
+          borderColor: "#F9B5C6",
           position: "absolute",
           alignSelf: "center",
           bottom: 20,
@@ -921,11 +922,11 @@ const UploadVideo = ({ navigation, route }) => {
           <Text
             style={{
               fontSize: 15,
-              color: colors.white,
+              color: "#EF4770",
               fontFamily: "Inter-Medium",
             }}
           >
-            Continue with Photo
+            Use my picture instead
           </Text>
         </TouchableOpacity>
       </View>
