@@ -1,4 +1,11 @@
-import React, { useRef, useState, useEffect, memo, useCallback } from "react";
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  memo,
+  useCallback,
+  useReducer,
+} from "react";
 import {
   SafeAreaView,
   FlatList,
@@ -9,6 +16,7 @@ import {
   Text,
   TouchableOpacity,
   Pressable,
+  Dimensions,
 } from "react-native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { UserService } from "../../services";
@@ -41,10 +49,11 @@ import ActionBottomModal from "../../components/Modal/ActionBottomModal";
 import FastImage from "react-native-fast-image";
 import OutOfProfilesDay from "../../components/OutOfProfilesDay";
 import UploadSelfie from "../NewOnBoarding/UploadImages.js/UploadSelfie";
+import FeedbackModal from "../../components/Modal/FeedBackModal";
 
 let limit = 15;
 let offset = 0;
-let profileIds = [];
+// let profileIds = [];
 
 const adUnitId = __DEV__
   ? TestIds.REWARDED
@@ -56,26 +65,107 @@ const admob = RewardedAd.createForAdRequest(adUnitId, {
   requestNonPersonalizedAdsOnly: true,
 });
 
+const initialState = {
+  userId: undefined,
+  userName: undefined,
+  reverify: false,
+  userMediaVideo: null,
+  userMediaImage: null,
+  profilesList: [],
+  totalProfiles: 0,
+  remainingProfiles: 0,
+  action: false,
+  blockAlert: false,
+  isBlocked: false,
+  imageModal: false,
+  modalType: "",
+  skeleton: false,
+  index: undefined,
+  check: false,
+  loaded: false,
+  adLoad: false,
+  isModalVisible: false,
+};
+
+// Reducer function
+function reducer(state, action) {
+  switch (action.type) {
+    case "SHOW_MODAL":
+      return { ...state, isModalVisible: true };
+    case "HIDE_MODAL":
+      return { ...state, isModalVisible: false };
+
+    case "SKIP_MODAL":
+      // Handle the case when the user skips the modal
+      // You might want to save the skip time in local storage
+      AsyncStorage.setItem("lastSkipped", new Date().toISOString());
+      return { ...state, isModalVisible: false };
+    case "SET_USER_ID":
+      return { ...state, userId: action.payload };
+    case "SET_USER_NAME":
+      return { ...state, userName: action.payload };
+    case "SET_REVERIFY":
+      return { ...state, reverify: action.payload };
+    case "SET_USER_MEDIA_VIDEO":
+      return { ...state, userMediaVideo: action.payload };
+    case "SET_USER_MEDIA_IMAGE":
+      return { ...state, userMediaImage: action.payload };
+    case "SET_PROFILES_LIST":
+      return { ...state, profilesList: action.payload };
+    case "SET_TOTAL_PROFILES":
+      return { ...state, totalProfiles: action.payload };
+    case "SET_REMAINING_PROFILES":
+      return { ...state, remainingProfiles: action.payload };
+    case "SET_ACTION":
+      return { ...state, action: action.payload };
+    case "SET_BLOCK_ALERT":
+      return { ...state, blockAlert: action.payload };
+    case "SET_IS_BLOCKED":
+      return { ...state, isBlocked: action.payload };
+    case "SET_IMAGE_MODAL":
+      return { ...state, imageModal: action.payload };
+    case "SET_MODAL_TYPE":
+      return { ...state, modalType: action.payload };
+    case "SET_SKELETON":
+      return { ...state, skeleton: action.payload };
+    case "SET_INDEX":
+      return { ...state, index: action.payload };
+    case "SET_CHECK":
+      return { ...state, check: action.payload };
+    case "SET_LOADED":
+      return { ...state, loaded: action.payload };
+    case "SET_AD_LOAD":
+      return { ...state, adLoad: action.payload };
+    default:
+      return state;
+  }
+}
+
 const HomeOne = props => {
-  const [userId, setUserId] = useState();
-  const [userName, setUserName] = useState();
-  const [reverify, setReverify] = useState(false);
-  const [userMediaVideo, setUserMediaVideo] = useState(null);
-  const [userMediaImage, setUserMediaImage] = useState(null);
-  const [profilesList, setProfilesList] = useState([]);
-  const [totalProfiles, setTotalProfiles] = useState(0);
-  const [remainingProfiles, setRemainingProfiles] = useState(0);
-  const [action, setAction] = useState(false);
-  const [blockAlert, setBlockAlert] = useState(false);
-  const [isBlocked, setIsBlocked] = useState(false);
-  const [imageModal, setImageModal] = useState(false);
-  const [modalType, setModalType] = useState("");
+  const [state1, dispatch1] = useReducer(reducer, initialState);
+
+  const {
+    userId,
+    userName,
+    reverify,
+    userMediaVideo,
+    userMediaImage,
+    profilesList,
+    totalProfiles,
+    remainingProfiles,
+    action,
+    blockAlert,
+    isBlocked,
+    imageModal,
+    modalType,
+    skeleton,
+    index,
+    check,
+    loaded,
+    adLoad,
+  } = state1;
+
   const tabBarHeight = useBottomTabBarHeight();
-  const [skeleton, setSkeleton] = useState(true);
-  const [index, setIndex] = useState();
-  const [check, setCheck] = useState(false);
-  const [loaded, setLoaded] = useState(false);
-  const [adLoad, setAdLoad] = useState(false);
   const flatListRef = useRef(null);
   const dispatch = useDispatch();
   const { handlePlayerId, handleStatusCode, Alerts } = useHelper();
@@ -253,25 +343,23 @@ const HomeOne = props => {
     discoverUserIndex,
     preferenceFilter,
     userData,
+    profileIndex,
   } = useSelector(store => store.userReducer);
   const { religion, vibes } = useSelector(store => store.NewOnBoardingReducer);
 
   const isFocused = useIsFocused();
   const handleBlockAlert = state => {
-    setIsBlocked(true);
-    setBlockAlert(state);
+    // setBlockAlert(state);
   };
 
   const handleHomeScreen = () => {
-    setAction(false);
-    setIsBlocked(false);
-    setBlockAlert(false);
+    // setBlockAlert(false);
     getAllUser(limit, offset);
   };
 
   const handleBlockedScreen = state => {
     props.navigation.navigate("BlockedList");
-    setBlockAlert(false);
+    // setBlockAlert(false);
   };
 
   const handleReportAlert = state => {
@@ -279,33 +367,100 @@ const HomeOne = props => {
       userId: userId,
       userName: userName,
     });
-    setAction(false);
   };
 
   const handleAlert = state => {
-    setAction(state);
+    // setAction(state);
+    dispatch1({ type: "SET_ACTION", payload: state });
   };
 
   const handleDotsPress = useCallback(() => {
     if (isBlocked) {
-      setBlockAlert(true);
+      // setBlockAlert(true);
+      dispatch1({ type: "SET_BLOCK_ALERT", payload: true });
     } else {
-      setAction(true);
+      // setAction(true);
+      dispatch1({ type: "SET_ACTION", payload: true });
     }
   }, []);
 
-  const getMyProfile = () => {
+  // useEffect(() => {
+  //   const showFeedbackModal = async () => {
+  //     const lastSkippedDate = await AsyncStorage.getItem("lastSkipped");
+  //     const now = new Date();
+  //     const shouldShowModal =
+  //       !lastSkippedDate ||
+  //       new Date() - new Date(lastSkippedDate) >= 7 * 24 * 60 * 60 * 1000;
+
+  //     if (shouldShowModal) {
+  //       dispatch1({ type: "SHOW_MODAL" });
+  //     }
+  //   };
+
+  //   showFeedbackModal();
+  // }, []);
+
+  // useEffect(() => {
+  //   // Example: Show the modal when the component mounts
+  //   dispatch1({ type: "SHOW_MODAL" });
+  // }, []);
+
+  // const handleSkipModal = async () => {
+  //   await AsyncStorage.setItem("lastSkipped", new Date().toISOString());
+  //   dispatch1({ type: "SKIP_MODAL" });
+  // };
+
+  // const handleCloseModal = () => {
+  //   dispatch1({ type: "HIDE_MODAL" });
+  // };
+  const showFeedbackModal = async () => {
+    try {
+      const lastSkippedDate = await AsyncStorage.getItem("lastSkipped");
+      const shouldShowModal =
+        !lastSkippedDate ||
+        new Date() - new Date(lastSkippedDate) >= 7 * 24 * 60 * 60 * 1000;
+
+      if (shouldShowModal) {
+        dispatch1({ type: "SHOW_MODAL" });
+      }
+    } catch (error) {
+      console.error(
+        "Error retrieving last skipped date from AsyncStorage:",
+        error
+      );
+    }
+  };
+
+  // const handleSkipModal = async () => {
+  //   await AsyncStorage.setItem("lastSkipped", new Date().toISOString());
+  //   dispatch1({ type: "SKIP_MODAL" });
+  // };
+
+  const handleCloseModal = async () => {
+    try {
+      await AsyncStorage.setItem("lastSkipped", new Date().toISOString());
+      dispatch1({ type: "HIDE_MODAL" });
+    } catch (error) {
+      console.error("Error updating last skipped date in AsyncStorage:", error);
+    }
+  };
+  const getMyProfile = async () => {
     if (token != null) {
-      ProfileServices.getMyProfile(token)
-        .then(res => {
+      await ProfileServices.getMyProfile(token)
+        .then(async res => {
+          console.log("UAISUIODUIODUIODOIDU", res);
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
-            let data = res?.data?.data;
+            let data = await res?.data?.data;
             dispatch({
               type: "religion",
               payload: data?.Profile?.religion,
             });
-            setReverify(data?.needToReverify);
+            await dispatch1({
+              type: "SET_REVERIFY",
+              payload: data?.needToReverify,
+            });
+            // setReverify(data?.needToReverify);
 
             dispatch({
               type: "AUTH_USER_STATUS",
@@ -334,18 +489,26 @@ const HomeOne = props => {
     }
   };
 
-  const getAllUser = (limit, offset, pagination) => {
+  const getAllUser = useCallback((limit, offset, pagination) => {
+    // console.log("ENTEREEEEED", status);
+    const limitValue = limit; // or a default value if needed
+    const offsetValue = offset * limit;
     if (
       status === "ACTIVE" ||
       status === "INCOMPLETE" ||
       status === "INACTIVE" ||
-      status === "COMPLETED"
+      status === "COMPLETED" ||
+      status === null
     ) {
-      UserService.getAllUser(token, `limit=${limit}&offset=${offset * limit}`)
-        .then(res => {
+      UserService.getAllUser(token, {
+        limit: limitValue,
+        offset: offsetValue,
+      })
+        .then(async res => {
           handleStatusCode(res);
+          console.log("PROFILES RESSSSSS", res.data);
           if (res.status >= 200 && res.status <= 299) {
-            let data = res?.data?.data;
+            let data = await res?.data?.data;
             if (data?.totalProfiles === 0 && data?.noOfProfilesRemaining >= 0) {
               dispatch({
                 type: "AUTH_USER_SCREEN_INDEX",
@@ -357,39 +520,52 @@ const HomeOne = props => {
                 payload: true,
               });
             }
-
-            setRemainingProfiles(data?.noOfProfilesRemaining);
-            setTotalProfiles(data?.totalProfiles);
+            dispatch1({
+              type: "SET_REMAINING_PROFILES",
+              payload: data?.noOfProfilesRemaining,
+            });
+            // setRemainingProfiles(data?.noOfProfilesRemaining);
+            dispatch1({
+              type: "SET_TOTAL_PROFILES",
+              payload: data?.totalProfiles,
+            });
+            // setTotalProfiles(data?.totalProfiles);
 
             if (preferenceFilter) {
               dispatch({
                 type: "SET_PREFERENCE_FILTER",
                 payload: false,
               });
-              setProfilesList(
-                data?.profiles?.filter(
-                  el =>
-                    el.Profile.gender.toLowerCase() !=
-                    userData.Profile?.gender.toLowerCase()
-                )
-              );
-            } else if (!preferenceFilter && pagination) {
-              setProfilesList(prevState => [
-                ...prevState,
-                ...data?.profiles.filter(
+              dispatch1({
+                type: "SET_PROFILES_LIST",
+                payload: data?.profiles?.filter(
                   el =>
                     el.Profile.gender.toLowerCase() !=
                     userData.Profile?.gender.toLowerCase()
                 ),
-              ]);
-            } else {
-              setProfilesList(
-                data?.profiles.filter(
+              });
+            } else if (!preferenceFilter && pagination) {
+              const updatedProfiles = [
+                ...profilesList,
+                ...data?.profiles.filter(
                   el =>
-                    el.Profile.gender.toLowerCase() !=
+                    el?.Profile?.gender.toLowerCase() !==
+                    userData?.Profile?.gender.toLowerCase()
+                ),
+              ];
+              dispatch1({
+                type: "SET_PROFILES_LIST",
+                payload: updatedProfiles,
+              });
+            } else {
+              await dispatch1({
+                type: "SET_PROFILES_LIST",
+                payload: data?.profiles.filter(
+                  el =>
+                    el.Profile.gender.toLowerCase() !==
                     userData.Profile?.gender.toLowerCase()
-                )
-              );
+                ),
+              });
             }
           }
         })
@@ -404,107 +580,128 @@ const HomeOne = props => {
             payload: false,
           });
         })
-        .finally(() => setSkeleton(false));
-    } else setSkeleton(false);
-  };
-
-  let foundIndex = profilesList.findIndex(el => el.id == discoverUserIndex);
-
-  useFocusEffect(
-    useCallback(() => {
-      dispatch({
-        type: "SET_FOCUSED_SCREEN",
-        payload: true,
-      });
-
-      if (foundIndex !== -1 && profilesList.length > 0) {
-        setProfilesList(prevState =>
-          prevState.filter(el => el.id != discoverUserIndex)
-        );
-      }
-
-      dispatch({
-        type: "SET_DISCOVER_INDEX",
-        payload: null,
-      });
-    }, [foundIndex !== -1])
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      if (preferenceFilter) {
-        offset = 0;
-        getAllUser(limit, offset);
-      }
-    }, [preferenceFilter])
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      if (profileIds.length > 0 && profilesList.length > 0) {
-        dispatch({
-          type: "AUTH_USER_SCREEN_INDEX",
-          payload: true,
-        });
-
-        setProfilesList(prevState =>
-          prevState.filter(el => profileIds.every(id => id != el.id))
-        );
-
-        profileIds = [];
-      }
-
-      if (profilesList.length == 0) {
-        dispatch({
-          type: "AUTH_USER_SCREEN_INDEX",
-          payload: false,
-        });
-      }
-    }, [profileIds, profilesList])
-  );
-
-  useEffect(() => {
-    if (token != null && mobileNumber != "") {
-      connectyCubeInitialization(token, mobileNumber);
-    } else if (token != null && email != "") {
-      connectyCubeInitialization(token, email);
-    }
-
-    getMyProfile();
+        .finally(() => dispatch1({ type: "SET_SKELETON", payload: false }));
+    } else dispatch1({ type: "SET_SKELETON", payload: false });
   }, []);
 
-  useEffect(() => {
-    setSkeleton(true);
+  // const getAllUser = (limit, offset, pagination) => {
+  //   if (
+  //     status === "ACTIVE" ||
+  //     status === "INCOMPLETE" ||
+  //     status === "INACTIVE" ||
+  //     status === "COMPLETED"
+  //   ) {
+  //     UserService.getAllUser(token, limit=${limit}&offset=${offset * limit})
+  //       .then((res) => {
+  //         handleStatusCode(res);
+  //         if (res.status >= 200 && res.status <= 299) {
+  //           let data = res?.data?.data;
+  //           if (data?.totalProfiles === 0 && data?.noOfProfilesRemaining >= 0) {
+  //             dispatch({
+  //               type: "AUTH_USER_SCREEN_INDEX",
+  //               payload: false,
+  //             });
+  //           } else if (!swipeScreenIndex) {
+  //             dispatch({
+  //               type: "AUTH_USER_SCREEN_INDEX",
+  //               payload: true,
+  //             });
+  //           }
 
-    getAllUser(limit, offset);
-  }, [status]);
+  //           setRemainingProfiles(data?.noOfProfilesRemaining);
+  //           setTotalProfiles(data?.totalProfiles);
 
-  useEffect(() => {
-    const unsubscribeLoaded = admob.addAdEventListener(
-      RewardedAdEventType.LOADED,
-      () => {
-        setLoaded(true);
-        setAdLoad(false);
+  //           // Logic for handling seen profiles
+  //           const filteredProfiles = data?.profiles.filter(
+  //             (el) =>
+  //               el.Profile.gender.toLowerCase() !==
+  //               userData.Profile?.gender.toLowerCase()
+  //           );
 
-        if (admob.loaded) {
-          admob.show();
-        }
+  //           if (preferenceFilter) {
+  //             dispatch({
+  //               type: "SET_PREFERENCE_FILTER",
+  //               payload: false,
+  //             });
+  //             dispatch1({type:"SET_PROFILES_LIST",payload:filteredProfiles);
+  //           } else if (!preferenceFilter && pagination) {
+  //             // Remove previously seen profiles
+  //             const newProfilesList = filteredProfiles.filter(
+  //               (profile) => !seenProfiles.includes(profile.id)
+  //             );
+  //             dispatch1({type:"SET_PROFILES_LIST",payload:(prevState) => [
+  //               ...prevState,
+  //               ...newProfilesList,
+  //             ]);
+  //           } else {
+  //             // Remove previously seen profiles
+  //             const newProfilesList = filteredProfiles.filter(
+  //               (profile) => !seenProfiles.includes(profile.id)
+  //             );
+  //             dispatch1({type:"SET_PROFILES_LIST",payload:newProfilesList);
+  //           }
+  //         }
+  //       })
+  //       .catch((err) => {
+  //         if (err?.message.includes("Network")) {
+  //           Alerts("error", err.message);
+  //         } else {
+  //           console.log("getAllUser err:", err);
+  //         }
+  //         dispatch({
+  //           type: "AUTH_USER_SCREEN_INDEX",
+  //           payload: false,
+  //         });
+  //       })
+  //       .finally(() => dispatch1({type:"SET_SKELETON",payload:false}));
+  //   } else dispatch1({type:"SET_SKELETON",payload:false});
+  // };
 
-        unsubscribeLoaded();
-      }
-    );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     dispatch({
+  //       type: "SET_FOCUSED_SCREEN",
+  //       payload: true,
+  //     });
 
-    const unsubscribeEarned = admob.addAdEventListener(
-      RewardedAdEventType.EARNED_REWARD,
-      reward => {
-        setLoaded(false);
-        setAdLoad(false);
-        console.log("User earned reward of ", reward);
-        handleGetReward();
-        unsubscribeEarned();
-      }
-    );
-  }, []);
+  //     if (foundIndex !== -1 && profilesList.length > 0) {
+  //       dispatch1({
+  //         type: "SET_PROFILES_LIST", payload: (prevState) =>
+  //           prevState.filter((el) => el.id != discoverUserIndex)
+  //       });
+
+  //     }
+
+  //     dispatch({
+  //       type: "SET_DISCOVER_INDEX",
+  //       payload: null,
+  //     });
+  //   }, [foundIndex !== -1])
+  // );
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     if (profileIds.length > 0 && profilesList.length > 0) {
+  //       dispatch({
+  //         type: "AUTH_USER_SCREEN_INDEX",
+  //         payload: true,
+  //       });
+
+  //       dispatch1({type:"SET_PROFILES_LIST",payload:(prevState) =>
+  //         prevState.filter((el) => profileIds.every((id) => id != el.id))
+  //       );
+
+  //       profileIds = [];
+  //     }
+
+  //     if (profilesList.length == 0) {
+  //       dispatch({
+  //         type: "AUTH_USER_SCREEN_INDEX",
+  //         payload: false,
+  //       });
+  //     }
+  //   }, [profileIds, profilesList])
+  // );
 
   const handleGetReward = () => {
     UserService.adReward(token)
@@ -529,94 +726,88 @@ const HomeOne = props => {
 
   const handleWatchAd = async () => {
     if (!loaded) {
-      setAdLoad(true);
+      dispatch1({ type: "SET_AD_LOAD", payload: true });
       admob.load();
     }
   };
 
   const onViewableItemsChanged = useRef(({ viewableItems }) => {
-    setUserMediaImage(null);
-    setUserMediaVideo(null);
+    dispatch1({ type: "SET_USER_MEDIA_IMAGE", payload: null });
+    dispatch1({ type: "SET_USER_MEDIA_VIDEO", payload: null });
+    // setUserMediaVideo(null);
+    console.log("Viewable", viewableItems);
     for (var i = 0; i < viewableItems?.length; i++) {
+      AsyncStorage.setItem(
+        "moveIndex",
+        JSON.stringify(viewableItems[0]?.index)
+      );
       viewableItems[i]?.item?.UserMedia?.map(item => {
         if (item?.type == "video" && item?.sequence == null) {
-          setUserMediaVideo(item);
+          dispatch1({ type: "SET_USER_MEDIA_VIDEO", payload: item });
         } else if (item?.type == "image" && item?.sequence == 1) {
-          setUserMediaImage(item);
+          dispatch1({ type: "SET_USER_MEDIA_IMAGE", payload: item });
         }
       });
       if (viewableItems[i]?.item?.Profile?.personalityType != null) {
         personalityMatch(viewableItems[i]?.item?.Profile?.personalityType);
       }
-      setIndex(viewableItems[i].index);
-      setUserId(viewableItems[i].item.id);
-      setUserName(viewableItems[i].item?.firstName);
-      viewIntercation(viewableItems[i].item.id);
-      if (!profileIds.includes(viewableItems[i].item.id)) {
-        profileIds.push(viewableItems[i].item.id);
-      }
+      // setIndex(viewableItems[i].index);
+      dispatch1({ type: "SET_INDEX", payload: viewableItems[i].index });
+
+      dispatch1({ type: "SET_USER_ID", payload: viewableItems[i].item?.id });
+      dispatch1({
+        type: "SET_USER_NAME",
+        payload: viewableItems[i].item?.firstName,
+      });
+      // setUserId(viewableItems[i].item?.id);
+      // setUserName(viewableItems[i].item?.firstName);
+      viewIntercation(viewableItems[i].item?.id);
+      // if (!profileIds.includes(viewableItems[i].item?.id)) {
+      //   profileIds.push(viewableItems[i].item?.id);
+      // }
       props.navigation.navigate("Discover", {
         enableees: swipeIndex,
-        userId: viewableItems[i].item.id,
+        userId: viewableItems[i].item?.id,
         userDetails: viewableItems[i].item,
       });
     }
   });
 
-  useEffect(() => {
-    if (imageModal || action) {
-      dispatch({
-        type: "AUTH_USER_SCREEN_INDEX",
-        payload: false,
-      });
-    } else if (
-      profilesList.length > 0 &&
-      (imageModal == false || action == false)
-    ) {
-      dispatch({
-        type: "AUTH_USER_SCREEN_INDEX",
-        payload: true,
-      });
-    }
-    if (android) {
-      PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
-      );
-    }
-  }, [imageModal, action]);
-
   const loadMoreData = () => {
+    console.log("ENTEREEEEED 11");
     offset += 1;
     getAllUser(limit, offset, true);
   };
 
   const onMicPress = () => {
-    setImageModal(true);
-    setModalType("mic");
+    dispatch1({ type: "SET_IMAGE_MODAL", payload: true });
+    // setImageModal(true);
+    dispatch1({ type: "SET_MODAL_TYPE", payload: "mic" });
+    showFeedbackModal();
+    // setModalType("mic");
   };
 
   const onCommentPress = () => {
-    setImageModal(true);
-    setModalType("comment");
+    dispatch1({ type: "SET_IMAGE_MODAL", payload: true });
+
+    dispatch1({ type: "SET_MODAL_TYPE", payload: "comment" });
+
+    showFeedbackModal();
   };
 
   const handleBackButton = () => {
     if (imageModal || action) {
-      setImageModal(false);
-      setAction(false);
+      // setImageModal(false);
+      dispatch1({ type: "SET_IMAGE_MODAL", payload: false });
+
+      // setAction(false);
+      dispatch1({ type: "SET_ACTION", payload: false });
     } else {
       BackHandler.exitApp();
     }
 
     return true;
   };
-
-  useEffect(() => {
-    BackHandler.addEventListener("hardwareBackPress", handleBackButton);
-    return () => {
-      BackHandler.removeEventListener("hardwareBackPress", handleBackButton);
-    };
-  }, [imageModal, action]);
 
   const onHeartPress = id => {
     UserService.likeInteraction(
@@ -631,14 +822,23 @@ const HomeOne = props => {
       .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
-          setProfilesList(prevState => prevState.filter(el => el.id !== id));
+          dispatch1(prevState => {
+            const updatedProfilesList = prevState.profilesList.filter(
+              el => el.id !== id
+            );
+            return {
+              type: "SET_PROFILES_LIST",
+              payload: updatedProfilesList,
+            };
+          });
 
           Alerts(
             "success",
             `You Liked ${userName}'s ${
-              userMediaVideo != null ? "discover video" : "picture"
+              userMediaVideo != null ? "  video" : "picture"
             } successfully`
           );
+          showFeedbackModal();
         }
       })
       .catch(error => {
@@ -646,277 +846,383 @@ const HomeOne = props => {
       });
   };
 
+  const getMoveIndex = async () => {
+    let moveIndex = await AsyncStorage.getItem("moveIndex");
+
+    return moveIndex;
+  };
+  useEffect(() => {
+    dispatch1({ type: "SET_SKELETON", payload: true });
+    if (preferenceFilter) {
+      let offset = 0;
+      getAllUser(limit, offset);
+    } else {
+      console.log("ENTERED");
+      getAllUser(limit, offset);
+    }
+
+    getMyProfile();
+  }, []);
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     if (preferenceFilter) {
+  //       offset = 0;
+  //       getAllUser(limit, offset);
+  //     }
+  //   }, [preferenceFilter])
+  // );
+
+  // useEffect(() => {
+  //   if (imageModal || action) {
+  //     dispatch({
+  //       type: "AUTH_USER_SCREEN_INDEX",
+  //       payload: false,
+  //     });
+  //   } else if (
+  //     profilesList.length > 0 &&
+  //     (imageModal == false || action == false)
+  //   ) {
+  //     dispatch({
+  //       type: "AUTH_USER_SCREEN_INDEX",
+  //       payload: true,
+  //     });
+  //   }
+  //   if (android) {
+  //     PermissionsAndroid.request(
+  //       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+  //     );
+  //   }
+  //   BackHandler.addEventListener("hardwareBackPress", handleBackButton);
+  //   return () => {
+  //     BackHandler.removeEventListener("hardwareBackPress", handleBackButton);
+  //   };
+  // }, [imageModal, action]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (token != null && mobileNumber != "") {
+        connectyCubeInitialization(token, mobileNumber);
+      } else if (token != null && email != "") {
+        connectyCubeInitialization(token, email);
+      }
+
+      const unsubscribeLoaded = admob.addAdEventListener(
+        RewardedAdEventType.LOADED,
+        () => {
+          dispatch1({ type: "SET_LOADED", payload: true });
+          dispatch1({ type: "SET_AD_LOAD", payload: false });
+
+          if (admob.loaded) {
+            admob.show();
+          }
+
+          unsubscribeLoaded();
+        }
+      );
+
+      const unsubscribeEarned = admob.addAdEventListener(
+        RewardedAdEventType.EARNED_REWARD,
+        reward => {
+          dispatch1({ type: "SET_LOADED", payload: false });
+          dispatch1({ type: "SET_AD_LOAD", payload: false });
+          console.log("User earned reward of ", reward);
+          handleGetReward();
+          unsubscribeEarned();
+        }
+      );
+      // getMoveIndex()
+    }, [])
+  );
+
+  useFocusEffect(
+    useCallback(async () => {
+      if (preferenceFilter) {
+        dispatch1({ type: "SET_SKELETON", payload: true });
+        console.log("ENTERED U DDD");
+        let offset = 0;
+        getAllUser(limit, offset);
+      }
+      let index = await getMoveIndex();
+      console.log("IS FOCUSES", isFocused, index);
+      setTimeout(() => {
+        if (isFocused && flatListRef.current && index > 0) {
+          flatListRef?.current?.scrollToIndex({
+            index: index,
+            animated: false,
+          });
+        }
+      }, 200);
+    }, [isFocused])
+  );
+
+  const renderItem = useCallback(({ item }) => {
+    let sortedImage = [...item?.UserMedia]
+      .filter(media => media.type != "video")
+      .sort((a, b) => a.sequence - b.sequence)[0].url;
+
+    // console.log("sortedImage", sortedImage);
+    return (
+      <>
+        <DiscoverImg
+          key={item?.id}
+          item={item}
+          userId={userId}
+          images={sortedImage}
+          check={check}
+          video={item?.UserMedia?.filter(el => {
+            return el?.type == "video";
+          })}
+          paused={true}
+          pausedButton={false}
+          isFocused={isFocused}
+          tabBarHeight={tabBarHeight}
+          searchPress={() => props.navigation.navigate("SearchPreferences")}
+          onPressCommentInteraction={() => {
+            if (status === "INACTIVE" || status === "INCOMPLETE") {
+              dispatch1({ type: "SET_CHECK", payload: true });
+            } else {
+              onCommentPress();
+            }
+          }}
+          onPressVoiceInteraction={() =>
+            status === "INACTIVE" || status === "INCOMPLETE"
+              ? dispatch1({ type: "SET_CHECK", payload: true })
+              : onMicPress()
+          }
+          onPressLikeInteraction={() =>
+            status === "INACTIVE" || status === "INCOMPLETE"
+              ? dispatch1({ type: "SET_CHECK", payload: true })
+              : onHeartPress(item?.id)
+          }
+          onDotsPress={handleDotsPress}
+        />
+        {check ? (
+          <>
+            <View
+              style={{
+                flex: 1,
+                width: "100%",
+                height: "100%",
+                zIndex: 1,
+                position: "absolute",
+                backgroundColor: colors.black,
+                opacity: 0.8,
+              }}
+            ></View>
+            <Pressable
+              onPress={() => dispatch1({ type: "SET_CHECK", payload: false })}
+              style={{
+                flex: 1,
+                position: "absolute",
+                width: "100%",
+                height: "100%",
+                zIndex: 2,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <View
+                style={{
+                  width: "90%",
+                  height: 250,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: colors.white,
+                  borderRadius: 16,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 20,
+                    fontFamily: "Inter-Medium",
+                    color: colors.black,
+                  }}
+                >
+                  Warning
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontFamily: "Inter-Regular",
+                    color: "#6B7280",
+                    marginTop: "5%",
+                    marginHorizontal: "3%",
+                  }}
+                >
+                  Please complete your profile to interact with other users,
+                  thank you!
+                </Text>
+
+                <TouchableOpacity
+                  onPress={() => {
+                    props.navigation.navigate("OnBoardingQuestions");
+                    dispatch1({ type: "SET_CHECK", payload: false });
+                  }}
+                  style={{
+                    width: "80%",
+                    paddingVertical: "3%",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 5,
+                    backgroundColor: colors.primaryPink,
+                    marginTop: "5%",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontFamily: "Inter-Regular",
+                      color: colors.white,
+                    }}
+                  >
+                    Complete Profile
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    dispatch1({ type: "SET_CHECK", payload: false });
+                  }}
+                  style={{
+                    width: "80%",
+                    paddingVertical: "3%",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 5,
+                    backgroundColor: colors.white,
+                    marginTop: "5%",
+                    borderWidth: 1,
+                    borderColor: colors.primaryPink,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontFamily: "Inter-Regular",
+                      color: colors.primaryPink,
+                    }}
+                  >
+                    Later
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </Pressable>
+          </>
+        ) : null}
+      </>
+    );
+  });
+
   return (
     <>
-      {skeleton ? (
+      {state1.skeleton ? (
         <DiscoverSkeleton tabBarHeight={tabBarHeight} />
-      ) : totalProfiles === 0 && remainingProfiles > 0 ? (
+      ) : state1.userData?.Profile?.noOfProfilesRemaining === 0 &&
+        state1.userData?.Profile?.totalNoOfProfiles > 0 ? (
         renderOutProfiles()
       ) : (
         <SafeAreaView style={styles.container}>
-          {reverify ? (
+          {state1.reverify ? (
             <UploadSelfie reverify />
-          ) : status == "FAILED" ? (
+          ) : state1.status === "FAILED" ? (
             renderFailed()
-          ) : totalProfiles === 0 && remainingProfiles === 0 ? (
+          ) : state1.userData?.Profile?.noOfProfilesRemaining === 0 ? (
             <OutOfProfilesDay
-              adLoad={adLoad}
+              adLoad={state1.adLoad}
               adPress={handleWatchAd}
               navigation={props.navigation}
             />
-          ) : profilesList.length > 0 ? (
+          ) : state1.profilesList.length > 0 ? (
             <FlatList
-              scrollEnabled={check ? false : true}
+              scrollEnabled={true}
               keyboardShouldPersistTaps="handled"
               removeClippedSubviews={false}
               ref={flatListRef}
+              onScrollToIndexFailed={info => {
+                const wait = new Promise(resolve => setTimeout(resolve, 500));
+                wait.then(() => {
+                  flatListRef.current?.scrollToIndex({ index: info.index });
+                });
+              }}
               viewabilityConfig={viewConfigRef.current}
               onViewableItemsChanged={onViewableItemsChanged.current}
               showsVerticalScrollIndicator={false}
               inverted={false}
               pagingEnabled
-              initialNumToRender={1}
               snapToAlignment={"start"}
-              data={profilesList}
-              onEndReachedThreshold={0.5}
+              data={state1.profilesList}
               onEndReached={loadMoreData}
-              keyExtractor={item => item.id}
-              renderItem={({ item }) => {
-                let sortedImage = [...item?.UserMedia]
-                  .filter(media => media.type != "video")
-                  .sort((a, b) => a.sequence - b.sequence)[0].url;
-
-                return (
-                  <>
-                    <DiscoverImg
-                      key={item?.id}
-                      item={item}
-                      userId={userId}
-                      images={sortedImage}
-                      check={check}
-                      video={item?.UserMedia?.filter(el => {
-                        return el?.type == "video";
-                      })}
-                      paused={true}
-                      pausedButton={false}
-                      isFocused={isFocused}
-                      tabBarHeight={tabBarHeight}
-                      searchPress={() =>
-                        props.navigation.navigate("SearchPreferences")
-                      }
-                      onPressCommentInteraction={() => {
-                        if (status === "INACTIVE" || status === "INCOMPLETE") {
-                          setCheck(true);
-                        } else {
-                          onCommentPress();
-                        }
-                      }}
-                      onPressVoiceInteraction={() =>
-                        status === "INACTIVE" || status === "INCOMPLETE"
-                          ? setCheck(true)
-                          : onMicPress()
-                      }
-                      onPressLikeInteraction={() =>
-                        status === "INACTIVE" || status === "INCOMPLETE"
-                          ? setCheck(true)
-                          : onHeartPress(item?.id)
-                      }
-                      onDotsPress={handleDotsPress}
-                    />
-                    {check ? (
-                      <>
-                        <View
-                          style={{
-                            flex: 1,
-                            width: "100%",
-                            height: "100%",
-                            zIndex: 1,
-                            position: "absolute",
-                            backgroundColor: colors.black,
-                            opacity: 0.8,
-                          }}
-                        ></View>
-                        <Pressable
-                          onPress={() => setCheck(false)}
-                          style={{
-                            flex: 1,
-                            position: "absolute",
-                            width: "100%",
-                            height: "100%",
-                            zIndex: 2,
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <View
-                            style={{
-                              width: "90%",
-                              height: 250,
-                              alignItems: "center",
-                              justifyContent: "center",
-                              backgroundColor: colors.white,
-                              borderRadius: 16,
-                            }}
-                          >
-                            <Text
-                              style={{
-                                fontSize: 20,
-                                fontFamily: "Inter-Medium",
-                                color: colors.black,
-                              }}
-                            >
-                              Warning
-                            </Text>
-                            <Text
-                              style={{
-                                fontSize: 16,
-                                fontFamily: "Inter-Regular",
-                                color: "#6B7280",
-                                marginTop: "5%",
-                                marginHorizontal: "3%",
-                              }}
-                            >
-                              Please complete your profile to interact with
-                              other users, thank you!
-                            </Text>
-
-                            <TouchableOpacity
-                              onPress={() => {
-                                props.navigation.navigate(
-                                  "OnBoardingQuestions"
-                                );
-                                setCheck(false);
-                              }}
-                              style={{
-                                width: "80%",
-                                paddingVertical: "3%",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                borderRadius: 5,
-                                backgroundColor: colors.primaryPink,
-                                marginTop: "5%",
-                              }}
-                            >
-                              <Text
-                                style={{
-                                  fontSize: 16,
-                                  fontFamily: "Inter-Regular",
-                                  color: colors.white,
-                                }}
-                              >
-                                Complete Profile
-                              </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                              onPress={() => {
-                                setCheck(false);
-                              }}
-                              style={{
-                                width: "80%",
-                                paddingVertical: "3%",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                borderRadius: 5,
-                                backgroundColor: colors.white,
-                                marginTop: "5%",
-                                borderWidth: 1,
-                                borderColor: colors.primaryPink,
-                              }}
-                            >
-                              <Text
-                                style={{
-                                  fontSize: 16,
-                                  fontFamily: "Inter-Regular",
-                                  color: colors.primaryPink,
-                                }}
-                              >
-                                Later
-                              </Text>
-                            </TouchableOpacity>
-                          </View>
-                        </Pressable>
-                      </>
-                    ) : null}
-                  </>
-                );
-              }}
+              keyExtractor={item => item?.id}
+              renderItem={renderItem}
             />
           ) : (
             renderOutProfiles()
           )}
-          {imageModal ? (
+          {state1.imageModal ? (
             <GestureHandlerRootView
               style={{
                 width: "100%",
                 backgroundColor: "#00000061",
-                height: imageModal ? windowHeight * 1 : 0,
+                height: state1.imageModal ? windowHeight * 1 : 0,
                 bottom: 0,
                 position: "absolute",
                 zIndex: 1,
               }}
             >
               <BottomImageInteraction
-                setUserProfilesData={setProfilesList}
-                userProfilesData={profilesList}
-                listRef={flatListRef}
-                index={index}
-                userId={userId}
-                userName={userName}
-                userPhotosId={
-                  userMediaVideo != null
-                    ? userMediaVideo?.id
-                    : userMediaImage?.id
+                setUserProfilesData={data =>
+                  dispatch1({ type: "SET_PROFILES_LIST", payload: data })
                 }
-                userMediaVideo={userMediaVideo}
-                onDismiss={() => setImageModal(false)}
-                fastImage={userMediaImage != null ? userMediaImage?.url : null}
-                toggle={imageModal}
-                setToggle={setImageModal}
-                modalType={modalType}
-                offset={userDevice.includes("Pro Max") ? 75 : 70}
+                userProfilesData={state1.profilesList}
+                listRef={flatListRef}
+                index={state1.index}
+                userId={state1.userId}
+                userName={state1.userName}
+                userPhotosId={
+                  state1.userMediaVideo != null
+                    ? state1.userMediaVideo?.id
+                    : state1.userMediaImage?.id
+                }
+                userMediaVideo={state1.userMediaVideo}
+                onDismiss={() =>
+                  dispatch1({ type: "SET_IMAGE_MODAL", payload: false })
+                }
+                fastImage={
+                  state1.userMediaImage != null
+                    ? state1.userMediaImage?.url
+                    : null
+                }
+                toggle={state1.imageModal}
+                setToggle={value =>
+                  dispatch1({ type: "SET_IMAGE_MODAL", payload: value })
+                }
+                modalType={state1.modalType}
+                offset={state1.userDevice.includes("Pro Max") ? 75 : 70}
               />
             </GestureHandlerRootView>
           ) : null}
-          {action ? (
+          {state1.action ? (
             <ActionBottomModal
               discover
               user={{
-                userId,
-                userName: userName,
+                userId: state1.userId,
+                userName: state1.userName,
               }}
               showToast
-              toggle={action}
-              setAction={setAction}
-              onDismiss={() => setAction(false)}
+              toggle={state1.action}
+              setAction={value =>
+                dispatch1({ type: "SET_ACTION", payload: value })
+              }
+              onDismiss={() =>
+                dispatch1({ type: "SET_ACTION", payload: false })
+              }
             />
           ) : null}
-          {/* {action === true && isBlocked == false ? (
-            <ActionCard
-              heading={'Profile Privacy'}
-              handleReportAlert={handleReportAlert}
-              handleBlockAlert={handleBlockAlert}
-              handleAlert={handleAlert}
-              alert={action}
-              userId={userId}
-              showToast={true}
-              userName={userName}
-              tabBarHeight={tabBarHeight}
-              handleBlockedScreen={handleBlockedScreen}
-              isBlocked={isBlocked}
-            />
-          ) : blockAlert === true && isBlocked == true ? (
-            <ActionCard
-              heading={`You Have Blocked ${userName}`}
-              handleAlert={handleAlert}
-              handleBlockAlert={handleBlockAlert}
-              blockAlert={false}
-              tabBarHeight={tabBarHeight}
-              handleBlockedScreen={handleBlockedScreen}
-              userId={userId}
-              handleHomeScreen={handleHomeScreen}
-              isBlocked={isBlocked}
-            />
-          ) : null} */}
+          <FeedbackModal
+            visible={state1.isModalVisible}
+            onClose={handleCloseModal}
+            // onSkip={() => dispatch1({ type: "SKIP_MODAL" })}
+          />
         </SafeAreaView>
       )}
     </>

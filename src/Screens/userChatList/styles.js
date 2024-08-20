@@ -149,4 +149,16 @@ export default StyleSheet.create({
     // marginLeft: 60, // Add margin to separate from the input
     left: 60,
   },
+  backButton: {
+    position: "absolute",
+    left: 10,
+    // padding: 15,
+    zIndex: 1, // Ensure it's above other elements
+  },
+  backIcon: {
+    width: 24,
+    height: 20,
+    left: 10,
+    tintColor: colors.black, // Optional: Set the icon color
+  },
 });

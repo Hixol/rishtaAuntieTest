@@ -11,6 +11,13 @@ const SliderView = props => {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(!isEnabled);
 
+  const allowedDistances = [25, 50, 100, 250, 500];
+
+  function snapToAllowedValue(value) {
+    return allowedDistances.reduce((prev, curr) =>
+      Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev
+    );
+  }
   return (
     <View
       style={[
@@ -156,7 +163,15 @@ const SliderView = props => {
               ? windowWidth * 0.93
               : windowWidth * 0.8
           }
-          onValuesChangeFinish={props.multiSliderValuesChange}
+          // onValuesChangeFinish={props.multiSliderValuesChange}
+          onValuesChange={values => {
+            const snappedValue = snapToAllowedValue(values[0]);
+            props.multiSliderValuesChange([snappedValue]);
+          }}
+          onValuesChangeFinish={values => {
+            const snappedValue = snapToAllowedValue(values[0]);
+            props.multiSliderValuesChange([snappedValue]);
+          }}
           min={props.min}
           max={props.max}
           step={props.step}

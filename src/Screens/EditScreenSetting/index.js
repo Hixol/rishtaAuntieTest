@@ -180,6 +180,14 @@ const EditScreenSetting = props => {
     },
   ]);
 
+  const allowedDistances = [25, 50, 100, 250, 500];
+
+  function snapToAllowedValue(value) {
+    return allowedDistances.reduce((prev, curr) =>
+      Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev
+    );
+  }
+
   let [sliderVal, setSliderVal] = useState([1]);
   let [sliderMarriageVal, setSliderMarriageVal] = useState([1]);
 
@@ -1674,7 +1682,7 @@ const EditScreenSetting = props => {
                         ]}
                         multiSliderValuesChange={DistanceSlider}
                         min={0}
-                        max={2000}
+                        max={500}
                         // preferenceName={"Distance"}
                         customLabel="mi"
                         enableLabel={true}

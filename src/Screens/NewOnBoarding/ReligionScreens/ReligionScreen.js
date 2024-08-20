@@ -92,10 +92,10 @@ const ReligionScreen = ({ navigation, route }) => {
     )
       .then(async res => {
         if (res.status >= 200 && res.status <= 299) {
-          dispatch({
-            type: "allProfileValues",
-            payload: res?.data?.data,
-          });
+          // dispatch({
+          //   type: "allProfileValues",
+          //   payload: res?.data?.data,
+          // });
           let data = res?.data?.data;
           let findReligionIndex = copyarr.findIndex(item => {
             return item?.type === "Religion";

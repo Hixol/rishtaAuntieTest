@@ -10,29 +10,29 @@ import {
   TextInput,
   Platform,
 } from "react-native";
-import { useFocusEffect, useIsFocused } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useIsFocused,
+  useNavigation,
+} from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { SocketContext } from "../../context/SocketContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useHelper } from "../../hooks/useHelper";
-import { ios } from "../../utility/size";
-
 import ChatListItem from "../../components/containers/ChatListItem";
 import ChatServices from "../../services/ChatServices";
 import Loader from "../../components/Loader";
-import CallLog from "../CallLog";
 import colors from "../../utility/colors";
-import MyInsight from "../MyInsight";
-import HeaderContainer from "../../components/containers/headerContainer";
-import { container } from "aws-amplify";
+import FastImage from "react-native-fast-image";
 import styles from "../userChatList/styles";
+
 const Tab = createMaterialTopTabNavigator();
 
 const UserChatList = props => {
   const userId = props.route.params?.userId;
   const chatHeadId = props.route.params?.chatHeadId;
-
+  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const socket = useContext(SocketContext);
   const { handleStatusCode } = useHelper();
@@ -158,13 +158,39 @@ const UserChatList = props => {
 
   return (
     <View style={{ flex: 1 }}>
-      <View
-        style={{
-          // top: 45,
-          flex: 0.1,
-        }}
-      >
-        <HeaderContainer Icon />
+      <View>
+        <View
+          style={{
+            width: "100%",
+            flexDirection: "row",
+            paddingVertical: "2%",
+            paddingHorizontal: "3%",
+            backgroundColor: "#ffffff",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {nonGroupChats.length === 0 && (
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.navigate("HomeOne")}
+            >
+              <Image
+                source={require("../../assets/iconimages/back-arrow.png")}
+                style={styles.backIcon}
+              />
+            </TouchableOpacity>
+          )}
+          <FastImage
+            resizeMode="contain"
+            style={{ width: 40, height: 50 }}
+            source={
+              proMember
+                ? require("../../assets/iconimages/logo-gold.png")
+                : require("../../assets/iconimages/header-icon.png")
+            }
+          />
+        </View>
       </View>
       {loading ? (
         <Loader />
@@ -173,7 +199,7 @@ const UserChatList = props => {
       ) : (
         <SafeAreaView style={{ flex: 1 }}>
           <ScrollView>
-            <View style={{ top: "5%", borderRadius: 16, overflow: "hidden" }}>
+            <View style={{ borderRadius: 16, overflow: "hidden" }}>
               {nonGroupChats.map(el => (
                 <ChatListItem
                   onPress={() =>

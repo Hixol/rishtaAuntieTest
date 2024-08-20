@@ -26,6 +26,7 @@ import Icons from "../utility/icons";
 import Countries from "../assets/countryLists/Countries";
 import InAppBrowser from "react-native-inappbrowser-reborn";
 import DeviceInfo from "react-native-device-info";
+import analytics from "@react-native-firebase/analytics";
 
 const LoginSignup = props => {
   let webviewRef = useRef(null);
@@ -187,6 +188,12 @@ const LoginSignup = props => {
           props.props.navigation.navigate("OtpScreen", {
             phoneNum: fullNumber,
             otp: res.data.data.otp,
+          });
+
+          // Log the sign-in event
+          analytics().logEvent("sign_in", {
+            method: "phone",
+            phoneNumber: fullNumber,
           });
         }
       })
@@ -390,16 +397,37 @@ const LoginSignup = props => {
   const signIn = () => {
     if (phoneNumber === "") {
       setError("Phone Number is required...!");
+      // Log the error event
+      analytics().logEvent("sign_in_attempt", {
+        success: false,
+        error: "Phone Number is required",
+      });
     } else {
       setLoading(true);
       if (fullNumber != "") {
         if (fullNumber == mobileNumber) {
           handleLoginService();
+          // Log the sign-in attempt event
+          analytics().logEvent("sign_in_attempt", {
+            success: true,
+            phoneNumber,
+          });
         } else if (fullNumber != mobileNumber) {
           clearRedux();
           clearNewRedux();
           handleLoginService();
+          // Log the sign-in attempt event
+          analytics().logEvent("sign_in_attempt", {
+            success: true,
+            phoneNumber,
+          });
         }
+      } else {
+        // Log the error event
+        analytics().logEvent("sign_in_attempt", {
+          success: false,
+          error: "Full number is empty",
+        });
       }
     }
   };
@@ -473,19 +501,39 @@ const LoginSignup = props => {
             phoneNum: fullNumber,
             otp: res.data.data.otp,
           });
+
+          // Log the sign-up event
+          analytics().logEvent("sign_up", {
+            method: "phone",
+            phoneNumber: fullNumber,
+          });
         }
       })
       .catch(err => Alerts("error", err?.message.toString()))
       .finally(() => setLoading(false));
   };
-
   const signUp = () => {
     if (phoneNumber === "" && check === false) {
       setError("Phone Number is required...!");
+      // Log the error event
+      analytics().logEvent("sign_up_attempt", {
+        success: false,
+        error: "Phone Number is required",
+      });
     } else if (phoneNumber !== "" && check === false) {
       setError("Please accept our Terms of Service...!");
+      // Log the error event
+      analytics().logEvent("sign_up_attempt", {
+        success: false,
+        error: "Terms of Service not accepted",
+      });
     } else if (check === true && phoneNumber === "") {
       setError("Phone Number is required...!");
+      // Log the error event
+      analytics().logEvent("sign_up_attempt", {
+        success: false,
+        error: "Phone Number is required",
+      });
     } else {
       if (phoneNumber !== "" && check === true) {
         setLoading(true);
@@ -496,6 +544,11 @@ const LoginSignup = props => {
           clearNewRedux();
           handleSignupService();
         }
+        // Log the sign-up attempt event
+        analytics().logEvent("sign_up_attempt", {
+          success: true,
+          phoneNumber,
+        });
       }
     }
   };

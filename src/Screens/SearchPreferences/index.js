@@ -379,8 +379,13 @@ const SearchPreferences = props => {
         <View style={styles.preferenceRow}>
           <Text style={styles.basicPreferenceType}>Gold Preferences</Text>
           <Text
-            onPress={() => handleClearPref("premium")}
-            style={styles.clearTxt}
+            onPress={() => premiumPrivacySetting && handleClearPref("premium")}
+            style={[
+              styles.clearTxt,
+              {
+                color: premiumPrivacySetting ? "#D90368" : colors.textGrey,
+              },
+            ]}
           >
             Clear all
           </Text>

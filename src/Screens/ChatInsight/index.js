@@ -141,9 +141,9 @@ const ChatInsight = props => {
                 color: "#D90368",
               }}
             >
-              {userData?.firstName +
+              {el.ChatMembers[0].User.firstName +
                 " " +
-                userData?.lastName +
+                el.ChatMembers[0].User.lastName +
                 " " +
                 "Insights"}
             </Text>
