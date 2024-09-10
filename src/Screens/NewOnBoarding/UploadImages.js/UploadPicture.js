@@ -14,6 +14,7 @@ import ImagePicker from "react-native-image-crop-picker";
 import BottomButton from "../../../components/buttons/BottomButton";
 import ActionCard from "../../../components/Cards/ActionCard";
 import ImageCard from "../../../components/Cards/ImageCard";
+import analytics from '@react-native-firebase/analytics';
 
 const UploadPicture = ({ navigation, route }) => {
   let edit = route?.params;
@@ -230,38 +231,49 @@ const UploadPicture = ({ navigation, route }) => {
   };
 
   const continuePress = async () => {
-    if (edit) {
-      setLoader(true);
-      let formData = new FormData();
-      profilePicArr.map((x, index) => {
-        if (x?.image && !x?.image?.uri?.includes("https")) {
-          formData.append(`profilePic${index + 1}`, {
-            name: x?.image?.name,
-            type: x?.image.type,
-            uri: x?.image?.uri,
-          });
-        }
+    try {
+      // Log an analytics event for the picture upload
+      await analytics().logEvent('upload_picture', {
+        description: 'User uploaded profile pictures',
+        pictureCount: profilePicArr.filter(pic => pic.image).length, // Number of pictures uploaded
       });
-
-      await updateUser(formData, token);
-      setLoader(false);
-      navigation.goBack();
-    } else {
-      let check = profilePicArr.some(item => {
-        return item?.image;
-      });
-
-      if (check) {
-        dispatch({
-          type: "profilePictures",
-          payload: profilePicArr,
+  
+      if (edit) {
+        setLoader(true);
+        let formData = new FormData();
+        profilePicArr.map((x, index) => {
+          if (x?.image && !x?.image?.uri?.includes("https")) {
+            formData.append(`profilePic${index + 1}`, {
+              name: x?.image?.name,
+              type: x?.image.type,
+              uri: x?.image?.uri,
+            });
+          }
         });
-        navigation.navigate("UploadVideo");
+  
+        await updateUser(formData, token);
+        setLoader(false);
+        navigation.goBack();
       } else {
-        alerts("error", "Please atleast upload one image");
+        let check = profilePicArr.some(item => {
+          return item?.image;
+        });
+  
+        if (check) {
+          dispatch({
+            type: "profilePictures",
+            payload: profilePicArr,
+          });
+          navigation.navigate("UploadVideo");
+        } else {
+          alerts("error", "Please at least upload one image");
+        }
       }
+    } catch (error) {
+      console.error('Error logging analytics event:', error);
     }
   };
+  
 
   const handleGalleryMedia = async (state, result) => {
     try {

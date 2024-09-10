@@ -30,6 +30,7 @@ import SettingHeader from "../../components/containers/settingHeader";
 import FastImage from "react-native-fast-image";
 import ActionBottomModal from "../../components/Modal/ActionBottomModal";
 import InAppBrowser from "react-native-inappbrowser-reborn";
+import analytics from "@react-native-firebase/analytics";
 
 const ModalDataArray = [
   {
@@ -99,60 +100,85 @@ const MySetting = props => {
   };
 
   const logOut = async () => {
-    await UserService.logout(token);
-
-    if (email != "") {
-      dispatch({
-        type: "USER_EMAIL",
-        payload: "",
-      });
-      await Auth.signOut().catch(err => console.log("auth signOut err:", err));
-
-      await InAppBrowser.isAvailable();
-
-      const res = await InAppBrowser.openAuth(
-        `https://${awsmobile.oauth.domain}/logout?client_id=${awsmobile.aws_user_pools_web_client_id}&logout_uri=${awsmobile.oauth.redirectSignOut}`,
-        awsmobile.oauth.redirectSignOut,
+    Alert.alert(
+      "Logout",
+      "Do you want to logout?",
+      [
         {
-          dismissButtonStyle: "cancel",
-          showTitle: false,
-          enableUrlBarHiding: true,
-          enableDefaultShare: false,
-        }
-      );
+          text: "No",
+          onPress: () => console.log("Logout cancelled"),
+          style: "cancel",
+        },
+        {
+          text: "Yes",
+          onPress: async () => {
+            try {
+              // Log the logout event before performing logout actions
+              await analytics().logEvent("logout", {
+                email: email !== "" ? email : "Anonymous",
+                phoneNumber:
+                  userData?.mobileNumber !== ""
+                    ? userData.mobileNumber
+                    : "Anonymous",
+              });
 
-      if (res.type == "cancel") {
-      } else if (res.type == "success" && res.url) {
-        Linking.openURL(res.url);
-      }
-    }
-    dispatch({
-      type: "AUTH_TOKEN",
-      payload: null,
-    });
-    dispatch({
-      type: "AUTH_USER_STATUS",
-      payload: null,
-    });
-    dispatch({
-      type: "routeName",
-      payload: "",
-    });
-    // dispatch({
-    //   type: 'AUTH_USER',
-    //   payload: null,
-    // });
-    dispatch({
-      type: "USER_MOBILE_NO",
-      payload: "",
-    });
+              // Call the UserService logout method with the token
+              await UserService.logout(token);
 
-    await AsyncStorage.clear();
-    props.navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: "WelcomeScreen" }],
-      })
+              if (email !== "") {
+                dispatch({ type: "USER_EMAIL", payload: "" });
+
+                // Sign out from AWS Cognito
+                await Auth.signOut().catch(err =>
+                  console.log("auth signOut err:", err)
+                );
+
+                if (await InAppBrowser.isAvailable()) {
+                  // Attempt to open the InAppBrowser for logout (code commented out as in original)
+                  // const res = await InAppBrowser.openAuth(
+                  //   https://${awsmobile.oauth.domain}/logout?client_id=${awsmobile.aws_user_pools_web_client_id}&logout_uri=${awsmobile.oauth.redirectSignOut},
+                  //   awsmobile.oauth.redirectSignOut,
+                  //   {
+                  //     dismissButtonStyle: "cancel",
+                  //     showTitle: false,
+                  //     enableUrlBarHiding: true,
+                  //     enableDefaultShare: false,
+                  //   }
+                  // );
+                  // if (res.type == "cancel") {
+                  //   // Handle cancel
+                  // } else if (res.type == "success" && res.url) {
+                  //   Linking.openURL(res.url);
+                  // }
+                }
+              }
+
+              // Clear user-related state
+              dispatch({ type: "AUTH_TOKEN", payload: null });
+              dispatch({ type: "AUTH_USER_STATUS", payload: null });
+              dispatch({ type: "routeName", payload: "" });
+              dispatch({ type: "USER_MOBILE_NO", payload: "" });
+
+              // Clear AsyncStorage and reset navigation to the Welcome screen
+              await AsyncStorage.clear();
+              props.navigation.dispatch(
+                CommonActions.reset({
+                  index: 0,
+                  routes: [{ name: "WelcomeScreen" }],
+                })
+              );
+            } catch (error) {
+              console.log("Logout error:", error);
+
+              // Log an error event in Firebase Analytics
+              await analytics().logEvent("logout_error", {
+                error: error.message,
+              });
+            }
+          },
+        },
+      ],
+      { cancelable: false }
     );
   };
 

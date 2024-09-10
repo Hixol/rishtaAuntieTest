@@ -1,42 +1,42 @@
-import React from 'react';
-import {View, Text} from 'react-native';
-import {Divider} from 'react-native-elements';
-import {CARDWIDTH} from '../constants/Constants';
-import {measureUnits} from '../utility/regex';
+import React from "react";
+import { View, Text } from "react-native";
+import { Divider } from "react-native-elements";
+import { CARDWIDTH } from "../constants/Constants";
+import { measureUnits } from "../utility/regex";
 
-import colors from '../utility/colors';
-import DiscoverItem from './DiscoverItem';
-import styles from './styles';
-import FastImage from 'react-native-fast-image';
-import DiscoverLocation from './DiscoverLocation';
+import colors from "../utility/colors";
+import DiscoverItem from "./DiscoverItem";
+import styles from "./styles";
+import FastImage from "react-native-fast-image";
+import DiscoverLocation from "./DiscoverLocation";
 
-export default function AboutScreen({user}) {
+export default function AboutScreen({ user }) {
   return (
     <View style={styles.container}>
       <View
         style={{
-          width: '100%',
-          justifyContent: 'center',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
+          width: "100%",
+          justifyContent: "center",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <View style={styles.header}>
           <Text style={styles.text}>About Me</Text>
           <FastImage
             resizeMode="contain"
-            style={{width: 50, height: 50}}
-            source={require('../assets/iconimages/AboutMe.png')}
+            style={{ width: 50, height: 50 }}
+            source={require("../assets/iconimages/AboutMe.png")}
           />
         </View>
-        <Divider style={[styles.divider, {width: '100%', marginTop: '2%'}]} />
+        <Divider style={[styles.divider, { width: "100%", marginTop: "2%" }]} />
       </View>
 
       <View style={styles.MainView}>
         <DiscoverItem
           title="Height"
-          value={measureUnits.convertCentimetertoFeetAndInches(
-            user?.Profile?.height,
-          )}
+          //remove this in value "{measureUnits.convertCentimetertoFeetAndInches}" to show height
+          value={user?.Profile?.height}
         />
         <Divider style={styles.divider} />
         <DiscoverItem title="Age" value={user?.Profile?.age} />
@@ -52,10 +52,11 @@ export default function AboutScreen({user}) {
                   width: (CARDWIDTH - 50) / 2,
                   color: colors.blackBlue,
                   fontSize: 16,
-                  fontFamily: 'Inter-SemiBold',
-                  textAlign: 'right',
-                  flexWrap: 'wrap',
-                }}>
+                  fontFamily: "Inter-SemiBold",
+                  textAlign: "right",
+                  flexWrap: "wrap",
+                }}
+              >
                 {user?.city}, {user?.country}
               </Text>
             </View>

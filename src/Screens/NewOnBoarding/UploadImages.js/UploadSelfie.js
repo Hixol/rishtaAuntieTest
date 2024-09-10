@@ -12,7 +12,7 @@ import { alerts, handlePermissions } from "../../../utility/regex";
 import { PERMISSIONS } from "react-native-permissions";
 import { useDispatch, useSelector } from "react-redux";
 import { useHelper } from "../../../hooks/useHelper";
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { RNCamera } from "react-native-camera";
 import { Camera, useCameraDevices } from "react-native-vision-camera";
 import { Svg, Defs, Rect, Mask, Circle } from "react-native-svg";
@@ -26,14 +26,15 @@ import colors from "../../../utility/colors";
 import FastImage from "react-native-fast-image";
 import BottomButton from "../../../components/buttons/BottomButton";
 import ProfileServices from "../../../services/ProfileServices";
+import analytics from "@react-native-firebase/analytics";
 
-const UploadSelfie = ({ reverify, navigation, route }) => {
+const UploadSelfie = ({ reverify, route }) => {
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
   const { handleStatusCode } = useHelper();
   const { token } = useSelector(store => store.userReducer);
   const { selfie } = useSelector(store => store.NewOnBoardingReducer);
-
+  const navigation = useNavigation();
   const FDOptions = {
     landmarkMode: FaceDetectorLandmarkMode.ALL,
     contourMode: FaceDetectorContourMode.ALL,
@@ -84,30 +85,115 @@ const UploadSelfie = ({ reverify, navigation, route }) => {
     }
   }, []);
 
-  const handleUploadSelfie = () => {
-    if (selfieObj == null) {
-      alerts("error", "Please upload selfie.");
-    } else {
-      let formData = new FormData();
-      formData.append("verificationPicture", selfieObj);
+  // const handleUploadSelfie = async () => {
+  //   try {
+  //     if (selfieObj == null) {
+  //       alerts("error", "Please upload selfie.");
+  //     } else {
+  //       // Log the start of the selfie upload process
+  //       await analytics().logEvent('start_selfie_upload', {
+  //         description: 'User started selfie upload process',
+  //       });
 
-      ProfileServices.updateProfile(formData, token)
-        .then(res => {
-          handleStatusCode(res);
-          if (res.data.status >= 200 && res.data.status <= 299) {
-            dispatch({
-              type: "AUTH_USER",
-              payload: res.data.data.user,
+  //       let formData = new FormData();
+  //       formData.append("verificationPicture", selfieObj);
+
+  //       ProfileServices.updateProfile(formData, token)
+  //         .then(async res => {
+  //           handleStatusCode(res);
+  //           if (res.data.status >= 200 && res.data.status <= 299) {
+  //             dispatch({
+  //               type: "AUTH_USER",
+  //               payload: res.data.data.user,
+  //             });
+
+  //             // Log successful selfie upload
+  //             await analytics().logEvent('selfie_upload_success', {
+  //               description: 'Selfie uploaded successfully',
+  //               userId: res.data.data.user.id || 'unknown',
+  //             });
+
+  //             setSelfieObj(null);
+  //             alerts("success", res.data.message);
+  //           }
+  //         })
+  //         .catch(async err => {
+  //           // Log the error if selfie upload fails
+  //           await analytics().logEvent('selfie_upload_failure', {
+  //             description: 'Failed to upload selfie',
+  //             error: err.message,
+  //           });
+  //           alerts("error", err?.message.toString());
+  //         });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error during selfie upload process:", error);
+  //     // Log any unexpected errors
+  //     await analytics().logEvent('selfie_upload_failure', {
+  //       description: 'Unexpected error during selfie upload process',
+  //       error: error.message,
+  //     });
+  //   }
+  // };
+
+  const handleUploadSelfie = async () => {
+    try {
+      if (selfieObj == null) {
+        alerts("error", "Please upload selfie.");
+      } else {
+        // Log the start of the selfie upload process
+        await analytics().logEvent("start_selfie_upload", {
+          description: "User started selfie upload process",
+        });
+
+        let formData = new FormData();
+        formData.append("verificationPicture", selfieObj);
+
+        ProfileServices.updateProfile(formData, token)
+          .then(async res => {
+            handleStatusCode(res);
+            if (res.data.status >= 200 && res.data.status <= 299) {
+              dispatch({
+                type: "AUTH_USER",
+                payload: res.data.data.user,
+              });
+
+              // Log successful selfie upload
+              await analytics().logEvent("selfie_upload_success", {
+                description: "Selfie uploaded successfully",
+                userId: res.data.data.user.id || "unknown",
+              });
+
+              setSelfieObj(null);
+              alerts("success", res.data.message);
+
+              // Navigate to HomeOne after successful selfie upload
+              navigation.navigate("HomeOne");
+            }
+          })
+          .catch(async err => {
+            // Log the error if selfie upload fails
+            await analytics().logEvent("selfie_upload_failure", {
+              description: "Failed to upload selfie",
+              error: err.message,
             });
-
-            setSelfieObj(null);
-            alerts("success", res.data.message);
-          }
-        })
-        .catch(err => alerts("error", err?.message.toString()));
+            alerts("error", err?.message.toString());
+          });
+      }
+    } catch (error) {
+      console.error("Error during selfie upload process:", error);
+      // Log any unexpected errors
+      await analytics().logEvent("selfie_upload_failure", {
+        description: "Unexpected error during selfie upload process",
+        error: error.message,
+      });
     }
   };
-
+  useEffect(() => {
+    if (reverify) {
+      handleUploadSelfie(); // Automatically start upload if reverify is true
+    }
+  }, [reverify]);
   const handleCamera = state => {
     if (ios) {
       handlePermissions.checkMultiplePermissions(
@@ -213,6 +299,7 @@ const UploadSelfie = ({ reverify, navigation, route }) => {
   };
 
   const handleRetake = () => setSelfieObj(null);
+  console.log("FFFFFFF", reverify);
 
   return cameraRef != null && showCamera ? (
     <View style={styles.cameraBg}>
@@ -296,6 +383,13 @@ const UploadSelfie = ({ reverify, navigation, route }) => {
     <SafeAreaView
       style={{ flex: 1, padding: 20, backgroundColor: colors.white }}
     >
+      <TouchableOpacity onPress={() => navigation.navigate("HomeOne")}>
+        <FastImage
+          resizeMode="contain"
+          style={{ width: 20, height: 30 }}
+          source={require("../../../assets/iconimages/arrow-back.png")}
+        />
+      </TouchableOpacity>
       {reverify ? null : (
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <FastImage

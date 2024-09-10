@@ -774,7 +774,7 @@ const TabViewExample = props => {
                       <FlipCard
                         beforeFlipPress={() =>
                           navigation.navigate("userDetailScreen", {
-                            userId: item?.otherUser?.id,
+                            userId: item?.otherUser?.id || item?.vieweeUser?.id,
                           })
                         }
                         item={item}

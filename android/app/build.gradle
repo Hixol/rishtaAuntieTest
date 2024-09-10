@@ -1,4 +1,6 @@
 apply plugin: "com.android.application"
+apply plugin: 'com.google.firebase.crashlytics'
+apply plugin: 'com.google.gms.google-services'
 
 import com.android.build.OutputFile
 /**
@@ -137,8 +139,8 @@ android {
         applicationId "com.rishtaaunty"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 5
-        versionName "1.0"
+        versionCode 11
+        versionName "0.0.11"
         missingDimensionStrategy 'react-native-camera', 'general'
         missingDimensionStrategy "store", "play"
     }
@@ -227,13 +229,22 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation project(':react-native-audiowaveform')
-    implementation "com.facebook.react:react-native:0.66.4!!"  // From node_modules
+    implementation "com.facebook.react:react-native:0.66.4"  // From node_modules
     implementation "com.onesignal:OneSignal:[4.0.0, 4.99.99]"
-    
+    // implementation 'com.google.android.exoplayer:exoplayer:2.18.1'
+    // implementation 'com.google.android.exoplayer:extension-okhttp:2.18.1'
+    // implementation 'com.danikula:videocache:2.7.2'
     implementation project(':react-native-notifications')
     implementation 'com.google.android.gms:play-services-maps:+'
     implementation 'com.google.android.gms:play-services-location:18.0.0'
     implementation 'com.google.firebase:firebase-core:21.1.1'
+
+    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+
+    // Add the dependencies for the Crashlytics and Analytics libraries
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-analytics")
 
     implementation project(':react-native-audio-recorder-player')
     implementation 'androidx.appcompat:appcompat:1.1.0'
@@ -270,4 +281,3 @@ task copyDownloadableDepsToLibs(type: Copy) {
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
-apply plugin: 'com.google.gms.google-services'

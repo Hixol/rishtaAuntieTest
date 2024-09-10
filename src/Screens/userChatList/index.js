@@ -9,34 +9,34 @@ import {
   Image,
   TextInput,
   Platform,
+  StatusBar,
+  Dimensions,
 } from "react-native";
-import { useFocusEffect, useIsFocused } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { SocketContext } from "../../context/SocketContext";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { useHelper } from "../../hooks/useHelper";
-import { ios } from "../../utility/size";
-
 import ChatListItem from "../../components/containers/ChatListItem";
 import ChatServices from "../../services/ChatServices";
 import Loader from "../../components/Loader";
-import CallLog from "../CallLog";
 import colors from "../../utility/colors";
-import MyInsight from "../MyInsight";
-import HeaderContainer from "../../components/containers/headerContainer";
-import { container } from "aws-amplify";
-import styles from "../userChatList/styles";
+import FastImage from "react-native-fast-image";
+import { useHelper } from "../../hooks/useHelper";
+import styles from '../userChatList/styles'
 const Tab = createMaterialTopTabNavigator();
 
-const UserChatList = props => {
+const UserChatList = (props) => {
+  const { width, height } = Dimensions.get("window");
+  const isIPhoneXOrLater =
+    Platform.OS === "ios" && (height >= 812 || width >= 812);
+  const topPadding = isIPhoneXOrLater ? 44 : 20;
+
   const userId = props.route.params?.userId;
   const chatHeadId = props.route.params?.chatHeadId;
-
-  const insets = useSafeAreaInsets();
+  const navigation =useNavigation();
   const socket = useContext(SocketContext);
   const { handleStatusCode } = useHelper();
-  const { token, userData } = useSelector(store => store.userReducer);
+  const { token, userData } = useSelector((store) => store.userReducer);
 
   const proMember = userData?.UserSetting?.isSubscribed;
 
@@ -52,12 +52,12 @@ const UserChatList = props => {
       setUnreadCount(null);
       setLoading(true);
       ChatServices.chatHead(token)
-        .then(res => {
+        .then((res) => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             let data = res.data.data;
             let ids = [];
-            data.forEach(el => {
+            data.forEach((el) => {
               ids.push(el.ChatMembers[0]?.memberId);
 
               if (
@@ -84,33 +84,34 @@ const UserChatList = props => {
             setChatHead(data);
           }
         })
-        .catch(err => console.log("ChatHead Err: ", err))
+        .catch((err) => console.log("ChatHead Err: ", err))
         .finally(() => setLoading(false));
     }, [isFocused, chatHeadId])
   );
 
   useEffect(() => {
-    socket.on("is-online", res => {
+    socket.on("is-online", (res) => {
       setOnlineUsers(res);
     });
 
-    socket.on("message-receive", res => {
+    socket.on("message-receive", (res) => {
       if (res.status === "SEND") {
         setUnreadCount(res);
       }
     });
   }, []);
 
-  const nonGroupChats = chatHead.filter(el => el.type !== "GROUP");
+  const nonGroupChats = chatHead.filter((el) => el.type !== "GROUP");
 
   const DefaultMessages = () => (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.centerContainer}>
           <View style={styles.demoChatContainer}>
-            <Image
-              source={require("../../assets/iconimages/settinglogo1.png")}
+            <FastImage
+              resizeMode="contain"
               style={styles.logo}
+              source={require("../../assets/iconimages/header-icon.png")}
             />
             <Text style={styles.messageBox}>
               You have no active matches right now 🙁
@@ -158,13 +159,27 @@ const UserChatList = props => {
 
   return (
     <View style={{ flex: 1 }}>
-      <View
-        style={{
-          // top: 45,
-          flex: 0.1,
-        }}
-      >
-        <HeaderContainer Icon />
+      <View style={[styles.headerContainer, { paddingTop: topPadding }]}>
+      {nonGroupChats.length === 0 && (
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.navigate('HomeOne')}
+            >
+              <Image
+                source={require("../../assets/iconimages/back-arrow.png")}
+                style={styles.backIcon}
+              />
+            </TouchableOpacity>
+          )}
+        <FastImage
+          resizeMode="contain"
+          style={styles.logo}
+          source={
+            proMember
+              ? require("../../assets/iconimages/logo-gold.png")
+              : require("../../assets/iconimages/header-icon.png")
+          }
+        />
       </View>
       {loading ? (
         <Loader />
@@ -173,8 +188,8 @@ const UserChatList = props => {
       ) : (
         <SafeAreaView style={{ flex: 1 }}>
           <ScrollView>
-            <View style={{ top: "5%", borderRadius: 16, overflow: "hidden" }}>
-              {nonGroupChats.map(el => (
+            <View style={styles.chatListContainer}>
+              {nonGroupChats.map((el) => (
                 <ChatListItem
                   onPress={() =>
                     props.navigation.navigate("ChatTabView", {
@@ -197,3 +212,4 @@ const UserChatList = props => {
 };
 
 export default UserChatList;
+

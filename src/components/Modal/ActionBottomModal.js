@@ -31,6 +31,8 @@ import NewOnBoardingDesign from "../NewOnBoardingDesign";
 import { alerts } from "../../utility/regex";
 import axios from "axios";
 import { CommonActions } from "@react-navigation/native";
+import { Alert } from "react-native";
+import analytics from "@react-native-firebase/analytics";
 
 const ActionBottomModal = ({
   discover,
@@ -432,42 +434,60 @@ const ActionBottomModal = ({
     if (deleteText !== "DELETE") {
       alerts("error", "Please type DELETE");
     } else {
-      let config = {
-        method: "DELETE",
-        url: `https://api.rishtaauntie.link/dev/rishta_auntie/api/v1/user/${userData?.id}`,
-        headers: {
-          "x-auth-token": `${token}`,
-        },
-      };
+      Alert.alert(
+        "Delete Account",
+        "Are you sure you want to delete your account? This action cannot be undone.",
+        [
+          {
+            text: "No",
+            onPress: () => console.log("Account deletion canceled"),
+            style: "cancel",
+          },
+          {
+            text: "Yes",
+            onPress: async () => {
+              let config = {
+                method: "DELETE",
+                url: `https://api.rishtaauntie.link/dev/rishta_auntie/api/v1/user/${userData?.id}`,
+                headers: {
+                  "x-auth-token": `${token}`,
+                },
+              };
 
-      axios
-        .request(config)
-        .then(res => {
-          if (res?.status >= 200 && res?.status <= 299) {
-            alerts("success", "User Deleted Successfully");
-            dispatch({
-              type: "AUTH_USER",
-              payload: null,
-            });
-            dispatch({
-              type: "AUTH_USER_STATUS",
-              payload: null,
-            });
-            dispatch({
-              type: "AUTH_TOKEN",
-              payload: null,
-            });
-            navigation.dispatch(
-              CommonActions.reset({
-                index: 0,
-                routes: [{ name: "WelcomeScreen" }],
-              })
-            );
-          }
-        })
-        .catch(e => {
-          console.log("deleteUser err", e);
-        });
+              try {
+                const res = await axios.request(config);
+                if (res?.status >= 200 && res?.status <= 299) {
+                  // Log the account delete event in Firebase Analytics
+                  await analytics().logEvent("account_delete", {
+                    userId: userData?.id,
+                    userEmail: userData?.email,
+                  });
+
+                  alerts("success", "User Deleted Successfully");
+                  dispatch({ type: "AUTH_USER", payload: null });
+                  dispatch({ type: "AUTH_USER_STATUS", payload: null });
+                  dispatch({ type: "AUTH_TOKEN", payload: null });
+
+                  navigation.dispatch(
+                    CommonActions.reset({
+                      index: 0,
+                      routes: [{ name: "WelcomeScreen" }],
+                    })
+                  );
+                }
+              } catch (e) {
+                console.log("deleteUser err", e);
+                // Log an error event in Firebase Analytics
+                await analytics().logEvent("account_delete_error", {
+                  userId: userData?.id,
+                  error: e.message,
+                });
+              }
+            },
+          },
+        ],
+        { cancelable: false }
+      );
     }
   };
 

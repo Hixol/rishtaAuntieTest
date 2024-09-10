@@ -1,81 +1,75 @@
-import * as ACTION_TYPES from '../types';
+// reducers.js
+import {
+  SET_CALL_SESSION,
+  ADD_OR_UPDATE_STREAMS,
+  REMOVE_STREAM,
+  RESET_ACTIVE_CALL,
+  ACCEPT_CALL,
+  EARLY_ACCEPT_CALL,
+  MUTE_MICROPHONE,
+  INCOMING_UPDATE,
+} from "../actions/ActiveCall";
 
-let ActiveCall = {
+const initialState = {
   session: null,
-  isIcoming: false,
-  isAccepted: false,
-  isEarlyAccepted: false, // used when accepted via Call Kit, but the call session is not arrived yet
-  isDummySession: false, // used when got incoming call on Android in bg/killed
-  isMicrophoneMuted: false,
   streams: [],
+  isAccepted: false,
+  isEarlyAccepted: false,
+  isDummySession: false,
+  incoming: false,
 };
 
-export default (state = ActiveCall, action) => {
+const activeCallReducer = (state = initialState, action) => {
   switch (action.type) {
-    case ACTION_TYPES.SET_CALL_SESSION:
-      const {session, isIcoming, isDummySession} = action;
+    case SET_CALL_SESSION:
       return {
         ...state,
-        session,
-        isIcoming,
-        isDummySession,
+        session: action.payload.session,
+        isDummySession: action.payload.isDummySession,
       };
-
-    case ACTION_TYPES.MUTE_MICROPHONE:
+    case ADD_OR_UPDATE_STREAMS:
+      // update or add streams logic
       return {
         ...state,
-        isMicrophoneMuted: action.isMuted,
+        streams: [
+          ...state.streams.filter(
+            stream => !action.payload.find(s => s.userId === stream.userId)
+          ),
+          ...action.payload,
+        ],
       };
-
-    case ACTION_TYPES.ACCEPT_CALL:
+    case REMOVE_STREAM:
+      return {
+        ...state,
+        streams: state.streams.filter(
+          stream => stream.userId !== action.payload.userId
+        ),
+      };
+    case RESET_ACTIVE_CALL:
+      return initialState;
+    case ACCEPT_CALL:
       return {
         ...state,
         isAccepted: true,
       };
-
-    case ACTION_TYPES.DELAYED_ACCEPT_CALL:
+    case EARLY_ACCEPT_CALL:
       return {
         ...state,
         isEarlyAccepted: true,
       };
-
-    case ACTION_TYPES.ADD_OR_UPDATE_STREAMS:
-      const {streams} = action;
-
-      let updatedStreams = [...state.streams];
-      for (let stream of streams) {
-        const existingStream = updatedStreams.find(
-          s => s.userId === stream.userId,
-        );
-        updatedStreams = existingStream
-          ? updatedStreams.map(s => (s.userId !== stream.userId ? s : stream)) // replace
-          : [...updatedStreams, stream]; // add
-      }
-
+    case MUTE_MICROPHONE:
       return {
         ...state,
-        streams: updatedStreams,
+        isMuted: action.payload,
       };
-
-    case ACTION_TYPES.REMOVE_STREAM:
+    case INCOMING_UPDATE:
       return {
         ...state,
-        streams: state.streams.filter(s => s.userId !== action.stream.userId),
+        incoming: action.payload,
       };
-
-    case ACTION_TYPES.RESET_ACTIVE_CALL:
-      return {
-        ...state,
-        session: null,
-        isIcoming: false,
-        isAccepted: false,
-        isEarlyAccepted: false,
-        isDummySession: false,
-        isMicrophoneMuted: false,
-        streams: [],
-      };
-
     default:
       return state;
   }
 };
+
+export default activeCallReducer;

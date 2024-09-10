@@ -56,6 +56,7 @@ import PersonalityQuizNew from "../Screens/NewOnBoarding/PersonalityQuizNew";
 import EditProfileScreen from "../Screens/EditProfileScreen.js";
 import EditScreenSetting from "../Screens/EditScreenSetting";
 import Denominations from "../Screens/NewOnBoarding/ReligionScreens/Denominations.js";
+import SocailScreen from "../Screens/SocailScreen/index.js";
 
 const Stack = createNativeStackNavigator();
 
@@ -223,6 +224,7 @@ const StackNavigations = props => {
         })}
       />
       <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+      <Stack.Screen name="SocailScreen" component={SocailScreen} />
       <Stack.Screen name="MyVibes" component={MyVibes} />
       <Stack.Screen
         name="OtpScreen"

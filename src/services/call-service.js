@@ -18,6 +18,7 @@ import {
   acceptCall,
   earlyAcceptCall,
   muteMicrophone,
+  incomingUpdate,
 } from "../store/actions";
 import { Platform } from "react-native";
 import { alerts } from "../utility/regex";
@@ -150,19 +151,23 @@ class CallService {
     // store streams
     const streams = [{ userId: LOCAL_STREAM_USER_ID, stream: stream }];
     for (const uId of usersIds) {
+      console.log("STREAMS ", streams);
       streams.push({ userId: uId, stream: null });
     }
+
     store.dispatch(addOrUpdateStreams(streams));
+    store.dispatch(incomingUpdate(true));
 
     this.callSession.call({ options });
 
-    const userName = `${this.currentUser.firstName} ${this.currentUser.lastName}`;
+    // const userName = `${this.currentUser.firstName}``${this.currentUser.lastName}`;
     const receivedNames = await getCallRecipientString(usersIds);
-
+    console.log("stststststststs", streams);
     // report to CallKit (iOS only)
     this.reportStartCall(
       this.callSession.ID,
-      userName,
+      // userName,
+      "sfsf",
       receivedNames,
       "generic",
       type === "video"
@@ -320,271 +325,88 @@ class CallService {
   //
 
   // Use startCall to ask the system to start a call - Initiate an outgoing call from this point
-  reportStartCall(callUUID, handle, contactIdentifier, handleType, hasVideo) {
-    if (Platform.OS !== "ios") {
-      return;
-    }
-
-    // Your normal start call action
-    RNCallKeep.startCall(
-      callUUID,
-      handle,
-      contactIdentifier,
-      handleType,
-      hasVideo
-    );
+  reportStartCall(callUUID, handle, contactIdentifier, isVideoCall) {
+    RNCallKeep.startCall(callUUID, handle, contactIdentifier, isVideoCall);
   }
 
-  reportAcceptCall(callUUID) {
-    if (Platform.OS !== "ios") {
-      return;
-    }
-
-    // Your normal start call action
-    RNCallKeep.answerIncomingCall(callUUID);
+  // Use reportConnecting to update the system after the outgoing call has started connecting
+  reportConnectingOutgoingCall(callUUID) {
+    RNCallKeep.reportConnectingOutgoingCall(callUUID);
   }
 
-  reportRejectCall(callUUID) {
-    if (Platform.OS !== "ios") {
-      return;
-    }
+  // Use reportConnected to update the system once the call is connected
 
-    RNCallKeep.rejectCall(callUUID);
-  }
-
+  // Use endCall to tell the system that the call has ended
   reportEndCall(callUUID) {
-    if (Platform.OS !== "ios") {
-      return;
-    }
-
     RNCallKeep.endCall(callUUID);
   }
 
-  reportMutedCall(callUUID, isMuted) {
-    if (Platform.OS !== "ios") {
-      return;
-    }
-
-    RNCallKeep.setMutedCall(callUUID, isMuted);
+  // Use endAllCalls to tell the system that all calls have ended
+  reportEndAllCalls() {
+    RNCallKeep.endAllCalls();
   }
 
-  reportEndCallWithoutUserInitiating(callUUID, reason) {
-    if (Platform.OS !== "ios") {
-      return;
-    }
-
-    store.dispatch(setCallSession(null));
-    RNCallKeep.reportEndCallWithUUID(callUUID, reason);
+  // Use displayIncomingCall to display incoming call to the system
+  async reportIncomingCall(
+    callUUID,
+    handle,
+    contactIdentifier,
+    isVideo,
+    hasVideo
+  ) {
+    RNCallKeep.displayIncomingCall(
+      callUUID,
+      handle,
+      contactIdentifier,
+      isVideo,
+      hasVideo
+    );
+    const data = await getUserById(callUUID);
+    showToast(alerts.incoming_call, data);
   }
 
-  // Call callbacks
+  // Use answerCall to tell the system that the call has been answered
+  reportAnswerCall(callUUID) {
+    RNCallKeep.answerIncomingCall(callUUID);
+  }
+
+  // Use rejectCall to tell the system that the call has been rejected
+  reportRejectCall(callUUID) {
+    RNCallKeep.rejectCall(callUUID);
+  }
+
+  reportMutedCall(callUUID, muted) {
+    RNCallKeep.reportMutedCall(callUUID, muted);
+  }
+
+  // CallKit Events
   //
 
-  onPostCallLog(payload, token) {
-    ChatServices.postCallLog(payload, token)
-      .then(res => {
-        if (res.status >= 200 && res.status <= 299) {
-        } else if (res.status >= 300 && res.status <= 399) {
-          alerts(
-            "error",
-            "You need to perform further actions to complete the request!"
-          );
-        } else if (res.status >= 400 && res.status <= 499) {
-          alerts("error", res.data?.error?.message);
-        } else if (res.status >= 500 && res.status <= 599) {
-          alerts(
-            "error",
-            "Internal server error! Your server is probably down."
-          );
-        } else {
-          alerts("error", "Something went wrong. Please try again later!");
-        }
-      })
-      .catch(err => console.log("postCallLog err:", err));
-  }
-
-  async _onCallListener(session, extension) {
-    this.token = extension.options.token;
-    this.otherUserId = extension.options.userId;
-
-    // if already on a call
-    if (this.callSession && !this.isDummySession) {
-      this.rejectCall(session, { already_on_call: true });
-      return;
-    }
-
-    this.playSound("incoming");
-
-    if (this.isEarlyAccepted && !this.isAccepted) {
-      setTimeout(() => {
-        // wait until redux updated the data
-        this.acceptCall();
-      });
-    }
-
-    store.dispatch(setCallSession(session, true));
-  }
-
-  async _onAcceptCallListener(session, userId, extension) {
-    if (this.callSession) {
-      this.stopSounds();
-    }
-
-    getUserById(userId, "full_name").then(res => {
-      showToast(`${res.firstName} has accepted the call`);
-    });
-  }
-
-  async _onRejectCallListener(session, userId, extension) {
-    store.dispatch(removeStream({ userId }));
-
-    getUserById(userId, "full_name").then(res => {
-      const message = extension.already_on_call
-        ? `${res.firstName} is busy (already on a call)`
-        : `${res.firstName} rejected the call request`;
-
-      showToast(message);
-    });
-  }
-
-  resetValues() {
-    this.token = null;
-    this.otherUserId = null;
-    this.startDate = 0;
-    this.endDate = 0;
-  }
-
-  async _onStopCallListener(session, userId, extension) {
-    this.stopSounds();
-
-    getUserById(userId, "full_name").then(res => {
-      showToast(`${res.firstName} has left the call`);
-    });
-
-    store.dispatch(removeStream({ userId }));
-    if (this.streams.length <= 1) {
-      store.dispatch(resetActiveCall());
-
-      // report to CallKit (iOS only)
-      //
-      this.reportEndCallWithoutUserInitiating(
-        session.ID,
-        CK_CONSTANTS.END_CALL_REASONS.REMOTE_ENDED
-      );
-    }
-
-    this.endDate = moment(Date.now());
-    let diff = moment.duration(this.endDate.diff(this.startDate));
-    let seconds = Math.floor(diff.asSeconds());
-
-    let obj = {
-      otherUserId: this.otherUserId,
-      duration: this.startDate == 0 ? 0 : seconds,
-      callType:
-        CallService.CALL_TYPE[session.callType == 2 ? "voice" : "video"],
-      logType:
-        this.startDate == 0
-          ? CallService.LOG_TYPE.missed
-          : CallService.LOG_TYPE.received,
-    };
-
-    if (this.token) {
-      var runOnlyOnce = (() => {
-        return () => {
-          if (!this.executed) {
-            this.executed = true;
-            console.log("[RECEIVED] Function ran once!");
-            this.onPostCallLog(obj, this.token);
-          }
-        };
-      })();
-      runOnlyOnce();
-    }
-    this.resetValues();
-  }
-
-  async _onUserNotAnswerListener(session, userId) {
-    getUserById(userId, "full_name").then(res => {
-      showToast(`${res.firstName} did not answer`);
-    });
-    store.dispatch(removeStream({ userId }));
-
-    let obj = {
-      otherUserId: this.otherUserId,
-      duration: 0,
-      callType:
-        CallService.CALL_TYPE[session.callType == 2 ? "voice" : "video"],
-      logType: CallService.LOG_TYPE.missed,
-    };
-
-    if (this.token) {
-      var runOnlyOnce = (() => {
-        return () => {
-          if (!this.executed) {
-            this.executed = true;
-            console.log("[MISSED] Function ran once!");
-            this.onPostCallLog(obj, this.token);
-          }
-        };
-      })();
-      runOnlyOnce();
-    }
-    this.resetValues();
-  }
-
-  async _onRemoteStreamListener(session, userId, stream) {
-    store.dispatch(addOrUpdateStreams([{ userId, stream }]));
-  }
-
   onAnswerCallAction = data => {
-    // Called when the user answers an incoming call via Call Kit
+    const { callUUID } = data;
     if (!this.isAccepted) {
       // by some reason, this event could fire > 1 times
       this.acceptCall({}, true);
     }
   };
 
-  onEndCallAction = async data => {
-    let { callUUID } = data;
-
-    if (this.callSession) {
-      if (this.isAccepted) {
-        this.stopCall({}, true);
-      } else {
-        this.rejectCall({}, true);
-      }
-    } else {
-      const voipIncomingCallSessions = await RNUserdefaults.get(
-        "voipIncomingCallSessions"
-      );
-      if (voipIncomingCallSessions) {
-        const sessionInfo = voipIncomingCallSessions[callUUID];
-        if (sessionInfo) {
-          const initiatorId = sessionInfo["initiatorId"];
-
-          // most probably this is a call reject, so let's reject it via HTTP API
-          ConnectyCube.videochat
-            .callRejectRequest({
-              sessionID: callUUID,
-              platform: Platform.OS,
-              recipientId: initiatorId,
-            })
-            .then(() => {});
-        }
-      }
-    }
+  onEndCallAction = data => {
+    this.stopCall({}, true);
   };
 
   onToggleMute = data => {
-    let { muted } = data;
+    const { muted } = data;
+
     this.muteMicrophone(muted, true);
   };
 
   onChangeAudioRoute = data => {
-    // could be Speaker or Receiver
+    const { output, portName } = data;
+    console.log("[CallKitService][onChangeAudioRoute] output:", output);
+    console.log("[CallKitService][onChangeAudioRoute] portName:", portName);
   };
 
-  onLoadWithEvents = events => {
+  onLoadWithEvents = data => {
     let callDataToAdd = null;
     let callDataToAnswer = null;
     let callDataToReject = null;
@@ -610,7 +432,135 @@ class CallService {
         }
       }
     }
+
+    const missedCalls = data.filter(
+      d => d.name === CK_CONSTANTS.DID_DISPLAY_INCOMING_CALL
+    );
+    if (missedCalls && missedCalls.length > 0) {
+      const lastMissedCall = missedCalls[missedCalls.length - 1];
+      const { callUUID } = lastMissedCall;
+      this.rejectCall({ callUUID });
+    }
   };
+
+  // ConnectyCube Video Chat listeners
+  //
+
+  _onCallListener(session, extension) {
+    const sessionId = session?.ID;
+
+    if (this.callSession) {
+      const errorMessage = "You already have a call session.";
+      showToast(alerts.error, errorMessage);
+      session.reject({ reason: errorMessage });
+      return;
+    }
+
+    if (!sessionId) {
+      const errorMessage = "Call session ID is undefined.";
+      showToast(alerts.error, errorMessage);
+      session.reject({ reason: errorMessage });
+      return;
+    }
+    store.dispatch(incomingUpdate(true));
+    if (this.isEarlyAccepted && !this.isAccepted) {
+      setTimeout(() => {
+        // wait until redux updated the data
+        this.acceptCall();
+      });
+    }
+    store.dispatch(
+      setCallSession(
+        session,
+        extension?.callType !== CallService.CALL_TYPE.video
+      )
+    );
+
+    // if (Platform.OS === "ios") {
+    // report to CallKit (iOS only)
+    // this.reportIncomingCall(
+    //   sessionId,
+    //   `${this.currentUser.firstName}``${this.currentUser.lastName}`,
+    //   "user_id",
+    //   extension.callType === CallService.CALL_TYPE.video,
+    //   extension.callType === CallService.CALL_TYPE.video
+    // );
+    // }
+
+    this.playSound("incoming");
+  }
+
+  _onAcceptCallListener(session, userId, extension) {
+    console.log("onAcceptCallListener, userId: ", userId);
+
+    this.stopSounds();
+    const userIdInt = parseInt(userId, 10);
+    const stream = this.streams.filter(s => s.userId === userIdInt)[0];
+
+    if (stream) {
+      stream.stream = session.connection.getRemoteMediaStream(userIdInt);
+    } else {
+      const newStream = {
+        userId: userIdInt,
+        stream: session.connection.getRemoteMediaStream(userIdInt),
+      };
+
+      store.dispatch(addOrUpdateStreams([newStream]));
+    }
+  }
+
+  _onRejectCallListener(session, userId, extension) {
+    console.log("onRejectCallListener, userId: ", userId);
+
+    const userIdInt = parseInt(userId, 10);
+    store.dispatch(removeStream({ userId: userIdInt }));
+
+    if (this.streams.length === 0) {
+      this.stopCall({}, true);
+    }
+  }
+
+  _onStopCallListener(session, userId, extension) {
+    console.log("onStopCallListener, userId: ", userId);
+
+    const userIdInt = parseInt(userId, 10);
+    store.dispatch(removeStream({ userId: userIdInt }));
+
+    if (this.streams.length === 0) {
+      this.stopCall({}, true);
+    }
+  }
+
+  _onUserNotAnswerListener(session, userId) {
+    console.log("onUserNotAnswerListener, userId: ", userId);
+
+    const userIdInt = parseInt(userId, 10);
+    store.dispatch(removeStream({ userId: userIdInt }));
+
+    if (this.streams.length === 0) {
+      this.stopCall({}, true);
+    }
+  }
+
+  _onRemoteStreamListener(session, userId, stream) {
+    console.log("onRemoteStreamListener, userId: ", userId);
+
+    const userIdInt = parseInt(userId, 10);
+    const streams = this.streams.filter(s => s.userId === userIdInt);
+
+    if (streams.length) {
+      streams.forEach(s => {
+        s.stream = stream;
+      });
+    } else {
+      const newStream = {
+        userId: userIdInt,
+        stream: stream,
+      };
+
+      store.dispatch(addOrUpdateStreams([newStream]));
+    }
+  }
 }
 
 const callService = new CallService();

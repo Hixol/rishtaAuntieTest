@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { LogBox } from "react-native";
 import {
   NavigationContainer,
@@ -20,6 +20,7 @@ import pushNotificationService from "./src/services/PushNotificationService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import messaging from "@react-native-firebase/messaging";
 import Toast from "react-native-toast-message";
+import { firebase } from "@react-native-firebase/analytics";
 
 enableFreeze();
 enableScreens();
@@ -99,9 +100,30 @@ const notificationListener = async () => {
 };
 
 const App = () => {
-  const navigationRef = createNavigationContainerRef();
+  const navigationRef = useRef(createNavigationContainerRef());
+  const routeNameRef = useRef();
   const { mobileNumber, email } = useSelector(store => store.userReducer);
 
+  useEffect(() => {
+    initAnalytics();
+  }, []);
+
+  const initAnalytics = async () => {
+    await firebase.analytics().setAnalyticsCollectionEnabled(true);
+  };
+
+  const onStateChange = async () => {
+    const previousRouteName = routeNameRef.current;
+    const currentRouteName = navigationRef.current?.getCurrentRoute()?.name;
+
+    if (previousRouteName !== currentRouteName) {
+      await firebase.analytics().logScreenView({
+        screen_name: currentRouteName,
+        screen_class: currentRouteName,
+      });
+      routeNameRef.current = currentRouteName;
+    }
+  };
   // OneSignal Initialization
   OneSignal.initialize("04e507aa-792a-45f8-9d6d-55859c8dbd92");
 
@@ -164,7 +186,7 @@ const App = () => {
 
   return (
     <SocketProvider>
-      <NavigationContainer ref={navigationRef}>
+      <NavigationContainer ref={navigationRef} onStateChange={onStateChange}>
         <StackNavigations />
         <Toast />
       </NavigationContainer>

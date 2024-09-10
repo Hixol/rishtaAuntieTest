@@ -177,6 +177,10 @@ const SliderView = props => {
           minMarkerOverlapDistance={10}
           enableLabel={props.enableLabel}
           customLabel={sliderPosition => {
+            console.log(
+              "sliderPositionsliderPosition",
+              sliderPosition?.oneMarkerValue
+            );
             return (
               <>
                 {props.customLabel == "simple" ? (
@@ -327,7 +331,7 @@ const SliderView = props => {
                       position: "absolute",
                       left:
                         sliderPosition.oneMarkerValue === 0
-                          ? sliderPosition.oneMarkerLeftPosition - 15
+                          ? sliderPosition.oneMarkerLeftPosition - 20
                           : sliderPosition.oneMarkerLeftPosition - 40,
                       top: 40,
                     }}
@@ -343,7 +347,18 @@ const SliderView = props => {
                       <Text
                         style={{ color: colors.primaryPink, fontWeight: "600" }}
                       >
-                        {sliderPosition.oneMarkerValue} mi
+                        {sliderPosition.oneMarkerValue === 0
+                          ? "25"
+                          : sliderPosition.oneMarkerValue === 1
+                          ? "50"
+                          : sliderPosition.oneMarkerValue === 2
+                          ? "100"
+                          : sliderPosition.oneMarkerValue === 3
+                          ? "250"
+                          : sliderPosition.oneMarkerValue === 4
+                          ? "500"
+                          : 0}{" "}
+                        mi
                       </Text>
                     )}
                   </View>

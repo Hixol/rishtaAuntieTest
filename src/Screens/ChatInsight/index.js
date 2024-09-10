@@ -14,11 +14,11 @@ import FastImage from "react-native-fast-image";
 import colors from "../../utility/colors";
 import SettingButton from "../../components/buttons/SettingButton";
 
-const ChatInsight = props => {
+const ChatInsight = (props) => {
   const navProps = props.props;
   const { el } = navProps.route.params;
   const { Alerts, handleStatusCode } = useHelper();
-  const { token, userData } = useSelector(store => store.userReducer);
+  const { token, userData } = useSelector((store) => store.userReducer);
   const proMember = userData?.UserSetting?.isSubscribed;
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
@@ -51,7 +51,7 @@ const ChatInsight = props => {
     if (Object.keys(el).length > 0 && token != null) {
       setLoading(true);
       ChatServices.getChatInsight(el.ChatMembers[0].User.id, token)
-        .then(res => {
+        .then((res) => {
           console.log("🚀 getChatInsight res:", res);
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
@@ -59,7 +59,7 @@ const ChatInsight = props => {
             getUserBadge();
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log("getChatInsight err:", err);
         })
         .finally(() => setLoading(false));
@@ -69,7 +69,7 @@ const ChatInsight = props => {
   const getUserBadge = () => {
     setLoading(true);
     BadgeServices.getUserBadges(el.ChatMembers[0].User.id, token)
-      .then(res => {
+      .then((res) => {
         console.log("getUserBadges res", res);
         if (res.status >= 200 && res.status <= 299) {
           setBadges(res.data.data);
@@ -93,7 +93,7 @@ const ChatInsight = props => {
           Alerts("error", "Something went wrong. Please try again later!");
         }
       })
-      .catch(err => console.log("getUserBadges err:", err))
+      .catch((err) => console.log("getUserBadges err:", err))
       .finally(() => setLoading(false));
   };
 
@@ -107,14 +107,19 @@ const ChatInsight = props => {
     <Loader />
   ) : (
     <SafeAreaView style={styles.container}>
-      {proMember ? (
-        <>
-          <Text style={styles.tagline1}>Welcome to Chat Insights!</Text>
-          <Text style={styles.tagline}>
-            Users you chat with can see your insights. Play it smart. 😉
-          </Text>
-        </>
-      ) : (
+      <Text
+        style={{
+          fontSize: 24,
+          fontWeight: "700",
+          fontFamily: "Inter-Bold",
+          alignSelf: "center",
+          textAlign: "center",
+          color: "#D90368",
+        }}
+      ></Text>
+
+      {/* Texts for Free Users */}
+      {!proMember && (
         <>
           <Text style={styles.tagline1}>Unlock Chat Insights!</Text>
           <Text style={styles.tagline}>
@@ -122,31 +127,32 @@ const ChatInsight = props => {
           </Text>
         </>
       )}
-      <View style={styles.paddingContainer}>
-        {error.length > 0 && (
-          <Text style={{ color: "red", marginLeft: "3%", fontWeight: "bold" }}>
-            {error}
-          </Text>
-        )}
 
-        {userData != null && Object.keys(userData).length > 0 && (
-          <View>
-            <Text
-              style={{
-                fontSize: 24,
-                fontWeight: "700",
-                fontFamily: "Inter-Bold",
-                alignSelf: "center",
-                textAlign: "center",
-                color: "#D90368",
-              }}
-            >
-              {userData?.firstName +
-                " " +
-                userData?.lastName +
-                " " +
-                "Insights"}
+      {proMember ? (
+        <View>
+          <Text style={styles.tagline1}>Welcome to Match Insights!</Text>
+          <Text style={styles.tagline}>
+            Users you chat with can see your insights. Play it smart. 😉
+          </Text>
+          <View style={styles.paddingContainer}>
+            <Text   style={{
+              fontSize: 24,
+              fontWeight: "700",
+              fontFamily: "Inter-Bold",
+              alignSelf: "center",
+              textAlign: "center",
+              color: "#D90368",
+            }}>
+              {el.ChatMembers[0].User.firstName} {el.ChatMembers[0].User.lastName}'s Insights
             </Text>
+
+
+            {error.length > 0 && (
+              <Text style={{ color: "red", marginLeft: "3%", fontWeight: "bold" }}>
+                {error}
+              </Text>
+            )}
+
             <View style={styles.row}>
               <View style={styles.iconContainer}>
                 <FastImage
@@ -159,34 +165,69 @@ const ChatInsight = props => {
                 {calculateDateAndTime()}
               </View>
             </View>
-          </View>
-        )}
 
-        {badges.length > 0 &&
-          badges.map(el =>
-            insightsArr.map((item, index) => {
-              if (el.name == item.title) {
-                return (
-                  <View key={index} style={styles.row}>
-                    <View style={styles.iconContainer}>
-                      <FastImage
-                        source={item.icon}
-                        style={styles.icon}
-                        resizeMode="contain"
-                      />
-                    </View>
-                    <View style={{ flex: 1, marginLeft: "4%" }}>
-                      <Text style={styles.heading}>{item.title}</Text>
-                      <Text style={styles.description}>{item.desc}</Text>
-                    </View>
-                  </View>
-                );
-              } else {
-                return null;
-              }
-            })
-          )}
-      </View>
+            {badges.length > 0 &&
+              badges.map((el) =>
+                insightsArr.map((item, index) => {
+                  if (el.name == item.title) {
+                    return (
+                      <View key={index} style={styles.row}>
+                        <View style={styles.iconContainer}>
+                          <FastImage
+                            source={item.icon}
+                            style={styles.icon}
+                            resizeMode="contain"
+                          />
+                        </View>
+                        <View style={{ flex: 1, marginLeft: "4%" }}>
+                          <Text style={styles.heading}>{item.title}</Text>
+                          <Text style={styles.description}>{item.desc}</Text>
+                        </View>
+                      </View>
+                    );
+                  } else {
+                    return null;
+                  }
+                })
+              )}
+          </View>
+        </View>
+
+      ) : (
+        <View style={styles.paddingContainer}>
+          <Text
+            style={{
+              fontSize: 24,
+              fontWeight: "700",
+              fontFamily: "Inter-Bold",
+              alignSelf: "center",
+              textAlign: "center",
+              color: "#D90368",
+            }}
+          >
+            {`${userData.firstName} ${userData.lastName}`}'s Insights
+            {/* {el.ChatMembers[0].User.firstName} {el.ChatMembers[0].User.lastName} */}
+          </Text>
+          <Text style={styles.tagline}>
+            Upgrade to see insights of  {`${el.ChatMembers[0].User.firstName} ${el.ChatMembers[0].User.lastName}`}.
+          </Text>
+         
+          <View style={styles.row}>
+              <View style={styles.iconContainer}>
+                <FastImage
+                  source={insightsArr[0].icon}
+                  style={styles.icon}
+                  resizeMode="contain"
+                />
+              </View>
+              <View style={{ flex: 1, marginLeft: "4%" }}>
+                {calculateDateAndTime()}
+              </View>
+            </View>
+
+        </View>
+      )}
+
       {!proMember && (
         <View style={styles.actionItemsView}>
           <View style={styles.typeMainView}>
@@ -213,3 +254,5 @@ const ChatInsight = props => {
 };
 
 export default ChatInsight;
+
+

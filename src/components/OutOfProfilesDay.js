@@ -14,7 +14,7 @@ const OutOfProfilesDay = ({ adPress, adLoad, navigation }) => {
       </Text>
       <Text style={styles.resetTxt}>
         Resets in
-        <Text style={styles.boldTxt}> 12</Text> hours{" "}
+        <Text style={styles.boldTxt}> 14</Text> hours{" "}
         <Text style={styles.boldTxt}>12</Text> minutes
       </Text>
 

@@ -135,7 +135,7 @@ const WelcomeScreen = props => {
             titleStyle={styles.titleStyle}
           />
           <Button
-            onPress={() => props.navigation.navigate("SignUp")}
+            onPress={() => props.navigation.navigate("SocailScreen")}
             title="Get Started"
             buttonStyle={styles.btnContainer}
             titleStyle={styles.titleStyle}
