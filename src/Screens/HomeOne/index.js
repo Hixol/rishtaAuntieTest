@@ -17,6 +17,8 @@ import {
   TouchableOpacity,
   Pressable,
   Dimensions,
+  Platform,
+  Alert,
 } from "react-native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { UserService } from "../../services";
@@ -49,8 +51,8 @@ import ActionBottomModal from "../../components/Modal/ActionBottomModal";
 import FastImage from "react-native-fast-image";
 import OutOfProfilesDay from "../../components/OutOfProfilesDay";
 import UploadSelfie from "../NewOnBoarding/UploadImages.js/UploadSelfie";
-import FeedbackModal from "../../components/Modal/FeedBackModal";
-
+// import FeedbackModal from "../../components/Modal/FeedBackModal";
+import analytics from '@react-native-firebase/analytics'
 let limit = 15;
 let offset = 0;
 // let profileIds = [];
@@ -84,22 +86,22 @@ const initialState = {
   check: false,
   loaded: false,
   adLoad: false,
-  isModalVisible: false,
+  // isModalVisible: false,
 };
 
 // Reducer function
 function reducer(state, action) {
   switch (action.type) {
-    case "SHOW_MODAL":
-      return { ...state, isModalVisible: true };
-    case "HIDE_MODAL":
-      return { ...state, isModalVisible: false };
+    // case "SHOW_MODAL":
+    //   return { ...state, isModalVisible: true };
+    // case "HIDE_MODAL":
+    //   return { ...state, isModalVisible: false };
 
-    case "SKIP_MODAL":
-      // Handle the case when the user skips the modal
-      // You might want to save the skip time in local storage
-      AsyncStorage.setItem("lastSkipped", new Date().toISOString());
-      return { ...state, isModalVisible: false };
+    // case "SKIP_MODAL":
+    //   // Handle the case when the user skips the modal
+    //   // You might want to save the skip time in local storage
+    //   AsyncStorage.setItem("lastSkipped", new Date().toISOString());
+    //   return { ...state, isModalVisible: false };
     case "SET_USER_ID":
       return { ...state, userId: action.payload };
     case "SET_USER_NAME":
@@ -384,53 +386,21 @@ const HomeOne = props => {
     }
   }, []);
 
-  // useEffect(() => {
-  //   const showFeedbackModal = async () => {
-  //     const lastSkippedDate = await AsyncStorage.getItem("lastSkipped");
-  //     const now = new Date();
+  // const showFeedbackModal = async () => {
+  //   try {
+  //     const lastSkippedDate = await AsyncStorage.getItem('lastSkipped');
   //     const shouldShowModal =
-  //       !lastSkippedDate ||
+  //       !lastSkippedDate || 
   //       new Date() - new Date(lastSkippedDate) >= 7 * 24 * 60 * 60 * 1000;
-
+  
   //     if (shouldShowModal) {
   //       dispatch1({ type: "SHOW_MODAL" });
   //     }
-  //   };
-
-  //   showFeedbackModal();
-  // }, []);
-
-  // useEffect(() => {
-  //   // Example: Show the modal when the component mounts
-  //   dispatch1({ type: "SHOW_MODAL" });
-  // }, []);
-
-  // const handleSkipModal = async () => {
-  //   await AsyncStorage.setItem("lastSkipped", new Date().toISOString());
-  //   dispatch1({ type: "SKIP_MODAL" });
+  //   } catch (error) {
+  //     console.error('Error retrieving last skipped date from AsyncStorage:', error);
+  //   }
   // };
-
-  // const handleCloseModal = () => {
-  //   dispatch1({ type: "HIDE_MODAL" });
-  // };
-  const showFeedbackModal = async () => {
-    try {
-      const lastSkippedDate = await AsyncStorage.getItem("lastSkipped");
-      const shouldShowModal =
-        !lastSkippedDate ||
-        new Date() - new Date(lastSkippedDate) >= 7 * 24 * 60 * 60 * 1000;
-
-      if (shouldShowModal) {
-        dispatch1({ type: "SHOW_MODAL" });
-      }
-    } catch (error) {
-      console.error(
-        "Error retrieving last skipped date from AsyncStorage:",
-        error
-      );
-    }
-  };
-
+  
   // const handleSkipModal = async () => {
   //   await AsyncStorage.setItem("lastSkipped", new Date().toISOString());
   //   dispatch1({ type: "SKIP_MODAL" });
@@ -438,17 +408,19 @@ const HomeOne = props => {
 
   const handleCloseModal = async () => {
     try {
-      await AsyncStorage.setItem("lastSkipped", new Date().toISOString());
+      await AsyncStorage.setItem('lastSkipped', new Date().toISOString());
       dispatch1({ type: "HIDE_MODAL" });
     } catch (error) {
-      console.error("Error updating last skipped date in AsyncStorage:", error);
+      console.error('Error updating last skipped date in AsyncStorage:', error);
     }
   };
+  
+
   const getMyProfile = async () => {
     if (token != null) {
       await ProfileServices.getMyProfile(token)
         .then(async res => {
-          console.log("UAISUIODUIODUIODOIDU", res);
+          console.log("UAISUIODUIODUIODOIDU", res.data);
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             let data = await res?.data?.data;
@@ -490,9 +462,9 @@ const HomeOne = props => {
   };
 
   const getAllUser = useCallback((limit, offset, pagination) => {
-    // console.log("ENTEREEEEED", status);
     const limitValue = limit; // or a default value if needed
     const offsetValue = offset * limit;
+  
     if (
       status === "ACTIVE" ||
       status === "INCOMPLETE" ||
@@ -507,8 +479,10 @@ const HomeOne = props => {
         .then(async res => {
           handleStatusCode(res);
           console.log("PROFILES RESSSSSS", res.data);
+  
           if (res.status >= 200 && res.status <= 299) {
             let data = await res?.data?.data;
+  
             if (data?.totalProfiles === 0 && data?.noOfProfilesRemaining >= 0) {
               dispatch({
                 type: "AUTH_USER_SCREEN_INDEX",
@@ -520,17 +494,17 @@ const HomeOne = props => {
                 payload: true,
               });
             }
+  
             dispatch1({
               type: "SET_REMAINING_PROFILES",
               payload: data?.noOfProfilesRemaining,
             });
-            // setRemainingProfiles(data?.noOfProfilesRemaining);
+  
             dispatch1({
               type: "SET_TOTAL_PROFILES",
               payload: data?.totalProfiles,
             });
-            // setTotalProfiles(data?.totalProfiles);
-
+  
             if (preferenceFilter) {
               dispatch({
                 type: "SET_PREFERENCE_FILTER",
@@ -540,7 +514,7 @@ const HomeOne = props => {
                 type: "SET_PROFILES_LIST",
                 payload: data?.profiles?.filter(
                   el =>
-                    el.Profile.gender.toLowerCase() !=
+                    el.Profile.gender.toLowerCase() !==
                     userData.Profile?.gender.toLowerCase()
                 ),
               });
@@ -570,7 +544,22 @@ const HomeOne = props => {
           }
         })
         .catch(err => {
-          if (err?.message.includes("Network")) {
+          if (err?.response?.status === 403) {
+            // Handle 403 error - User deleted or access forbidden
+            console.log("User has been deleted or access forbidden:", err);
+  
+            // Clear user state or token
+            dispatch({ type: "AUTH_USER_STATUS", payload: null });
+            dispatch({ type: "AUTH_TOKEN", payload: null });
+  
+            // Redirect the user to the WelcomeScreen or another screen
+            props.navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [{ name: "WelcomeScreen" }],
+              })
+            );
+          } else if (err?.message.includes("Network")) {
             Alerts("error", err.message);
           } else {
             console.log("getAllUser err:", err);
@@ -581,8 +570,11 @@ const HomeOne = props => {
           });
         })
         .finally(() => dispatch1({ type: "SET_SKELETON", payload: false }));
-    } else dispatch1({ type: "SET_SKELETON", payload: false });
-  }, []);
+    } else {
+      dispatch1({ type: "SET_SKELETON", payload: false });
+    }
+  }, [token, status, swipeScreenIndex, preferenceFilter, profilesList, userData, props.navigation]);
+  
 
   // const getAllUser = (limit, offset, pagination) => {
   //   if (
@@ -725,11 +717,28 @@ const HomeOne = props => {
   };
 
   const handleWatchAd = async () => {
-    if (!loaded) {
-      dispatch1({ type: "SET_AD_LOAD", payload: true });
-      admob.load();
+    try {
+      if (!loaded) {
+        dispatch1({ type: "SET_AD_LOAD", payload: true });
+  
+        // Log the start of loading an ad
+        await analytics().logEvent('watch_ad_start', {
+          description: 'User started watching a rewarded ad',
+        });
+  
+        admob.load();
+      }
+    } catch (error) {
+      console.error('Error during ad loading:', error);
+  
+      // Log any errors that occur while loading the ad
+      await analytics().logEvent('watch_ad_failure', {
+        description: 'Failed to load rewarded ad',
+        error: error.message,
+      });
     }
   };
+  
 
   const onViewableItemsChanged = useRef(({ viewableItems }) => {
     dispatch1({ type: "SET_USER_MEDIA_IMAGE", payload: null });
@@ -779,22 +788,46 @@ const HomeOne = props => {
     getAllUser(limit, offset, true);
   };
 
-  const onMicPress = () => {
+  const onMicPress = async () => {
+  try {
+    await analytics().logEvent('mic_button_press', {
+      description: 'User pressed the microphone button',
+    });
+
     dispatch1({ type: "SET_IMAGE_MODAL", payload: true });
-    // setImageModal(true);
     dispatch1({ type: "SET_MODAL_TYPE", payload: "mic" });
-    showFeedbackModal();
-    // setModalType("mic");
-  };
 
-  const onCommentPress = () => {
+    // Show feedback modal if conditions are met
+    // await showFeedbackModal();
+  } catch (error) {
+    console.error('Error logging mic button press:', error);
+    await analytics().logEvent('mic_button_press_failure', {
+      description: 'Failed to log mic button press event',
+      error: error.message,
+    });
+  }
+};
+  
+
+const onCommentPress = async () => {
+  try {
+    await analytics().logEvent('comment_button_press', {
+      description: 'User pressed the comment button',
+    });
+
     dispatch1({ type: "SET_IMAGE_MODAL", payload: true });
-
     dispatch1({ type: "SET_MODAL_TYPE", payload: "comment" });
 
-    showFeedbackModal();
-  };
-
+    // Show feedback modal if conditions are met
+    // await showFeedbackModal();
+  } catch (error) {
+    console.error('Error logging comment button press:', error);
+    await analytics().logEvent('comment_button_press_failure', {
+      description: 'Failed to log comment button press event',
+      error: error.message,
+    });
+  }
+};
   const handleBackButton = () => {
     if (imageModal || action) {
       // setImageModal(false);
@@ -809,42 +842,56 @@ const HomeOne = props => {
     return true;
   };
 
-  const onHeartPress = id => {
-    UserService.likeInteraction(
-      {
-        resourceId:
-          userMediaVideo !== null ? userMediaVideo?.id : userMediaImage?.id,
-        resourceType: "USER_MEDIA",
+  const onHeartPress = async (id) => {
+    try {
+      await analytics().logEvent('heart_button_press', {
+        description: 'User pressed the heart button',
         otherUserId: userId,
-      },
-      token
-    )
-      .then(res => {
-        handleStatusCode(res);
-        if (res.status >= 200 && res.status <= 299) {
-          dispatch1(prevState => {
-            const updatedProfilesList = prevState.profilesList.filter(
-              el => el.id !== id
-            );
-            return {
-              type: "SET_PROFILES_LIST",
-              payload: updatedProfilesList,
-            };
-          });
-
-          Alerts(
-            "success",
-            `You Liked ${userName}'s ${
-              userMediaVideo != null ? "  video" : "picture"
-            } successfully`
-          );
-          showFeedbackModal();
-        }
-      })
-      .catch(error => {
-        console.log("likeInteraction err", error);
+        resourceId: userMediaVideo !== null ? userMediaVideo?.id : userMediaImage?.id,
+        resourceType: "USER_MEDIA",
       });
+  
+      const res = await UserService.likeInteraction(
+        {
+          resourceId: userMediaVideo !== null ? userMediaVideo?.id : userMediaImage?.id,
+          resourceType: "USER_MEDIA",
+          otherUserId: userId,
+        },
+        token
+      );
+  
+      handleStatusCode(res);
+  
+      if (res.status >= 200 && res.status <= 299) {
+        dispatch1(prevState => {
+          const updatedProfilesList = prevState.profilesList.filter(
+            el => el.id !== id
+          );
+          return {
+            type: "SET_PROFILES_LIST",
+            payload: updatedProfilesList,
+          };
+        });
+  
+        Alerts(
+          "success",
+          `You Liked ${userName}'s ${
+            userMediaVideo != null ? "  video" : "picture"
+          } successfully`
+        );
+  
+        // Show feedback modal if conditions are met
+        // await showFeedbackModal();
+      }
+    } catch (error) {
+      console.log("likeInteraction err", error);
+      await analytics().logEvent('heart_button_press_failure', {
+        description: 'Failed to process heart button press',
+        error: error.message,
+      });
+    }
   };
+  
 
   const getMoveIndex = async () => {
     let moveIndex = await AsyncStorage.getItem("moveIndex");
@@ -935,24 +982,27 @@ const HomeOne = props => {
     }, [])
   );
 
-  useFocusEffect(
-    useCallback(async () => {
-      if (preferenceFilter) {
-        dispatch1({ type: "SET_SKELETON", payload: true });
-        console.log("ENTERED U DDD");
-        let offset = 0;
-        getAllUser(limit, offset);
-      }
-      let index = await getMoveIndex();
-      console.log("IS FOCUSES", isFocused, index);
-      setTimeout(() => {
-        if (isFocused && flatListRef.current && index > 0) {
-          flatListRef?.current?.scrollToIndex({
-            index: index,
-            animated: false,
-          });
+   useFocusEffect(
+    useCallback(() => {
+      if (Platform.OS === 'android') {
+        if (preferenceFilter) {
+          dispatch1({ type: "SET_SKELETON", payload: true });
+          console.log("ENTERED U DDD");
+          let offset = 0;
+          getAllUser(limit, offset);
         }
-      }, 200);
+        let index = getMoveIndex();
+        console.log("IS FOCUSES", isFocused, index);
+        setTimeout(() => {
+          if (isFocused && flatListRef.current && index > 0) {
+            flatListRef?.current?.scrollToIndex({
+              index: index,
+              animated: false,
+            });
+          }
+        }, 200);
+      }
+
     }, [isFocused])
   );
 
@@ -1139,10 +1189,12 @@ const HomeOne = props => {
               removeClippedSubviews={false}
               ref={flatListRef}
               onScrollToIndexFailed={info => {
+               if(Platform.OS==='android'){
                 const wait = new Promise(resolve => setTimeout(resolve, 500));
                 wait.then(() => {
                   flatListRef.current?.scrollToIndex({ index: info.index });
                 });
+               }
               }}
               viewabilityConfig={viewConfigRef.current}
               onViewableItemsChanged={onViewableItemsChanged.current}
@@ -1197,7 +1249,7 @@ const HomeOne = props => {
                   dispatch1({ type: "SET_IMAGE_MODAL", payload: value })
                 }
                 modalType={state1.modalType}
-                offset={state1.userDevice.includes("Pro Max") ? 75 : 70}
+                offset={state1.userDevice && state1.userDevice.includes("Pro Max") ? 75 : 70}
               />
             </GestureHandlerRootView>
           ) : null}
@@ -1218,14 +1270,15 @@ const HomeOne = props => {
               }
             />
           ) : null}
-          <FeedbackModal
-            visible={state1.isModalVisible}
-            onClose={handleCloseModal}
-            // onSkip={() => dispatch1({ type: "SKIP_MODAL" })}
-          />
+         {/* <FeedbackModal
+  visible={state1.isModalVisible}
+  onClose={handleCloseModal}
+  // onSkip={() => dispatch1({ type: "SKIP_MODAL" })}
+/> */}
         </SafeAreaView>
       )}
     </>
   );
 };
 export default memo(HomeOne);
+

@@ -46,6 +46,7 @@ import Video from "react-native-video";
 import ActionBottomModal from "../../components/Modal/ActionBottomModal";
 import WaveForm from "react-native-audiowaveform";
 import permisisonsService from "../../services/permissions-service";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 let limit = 50;
 let offset = 0; // offset starts like an array index and 0 will points to first page.
@@ -125,6 +126,7 @@ const ChatScreen = props => {
           : el?.ChatMembers[0]?.memberId,
     };
     socket.emit("message-read", obj, res => {
+      console.log("HElLLO", obj, res);
       console.log("message-read emit: ", res);
     });
   };
@@ -180,6 +182,7 @@ const ChatScreen = props => {
         }));
       }
     });
+
     setLoader(false);
     setTypingStatus(false);
     setAudioUri(null);
@@ -292,6 +295,7 @@ const ChatScreen = props => {
 
   useEffect(() => {
     socket.on("message-receive", res => {
+      console.log("LOGGGG 1");
       console.log("message-receive on", res);
       if (Object.keys(res).length > 0) {
         let obj = {
@@ -300,11 +304,14 @@ const ChatScreen = props => {
           messageSenderId: res.senderId,
         };
 
-        // socket.emit('message-delivered', obj, res => {
-        //   if (res) {
-        //     console.log('message-delivered emit: ', res);
-        //   }
-        // });
+        socket.emit("message-delivered", obj, res => {
+          console.log("LOGGGG 2");
+
+          console.log("MESSAGE DELIVERED", res);
+          if (res) {
+            console.log("message-delivered emit: ", res);
+          }
+        });
 
         // append new msg
         setChatMessages(prevState => ({
@@ -323,15 +330,28 @@ const ChatScreen = props => {
             },
           ],
         }));
+        socket.on("message-read", res => {
+          console.log("LOGGGG 3");
+
+          console.log("ENNENENENENEENEN", res);
+
+          if (Object.keys(res).length > 0) {
+            setMsgRead("SEEN");
+          }
+        });
       }
     });
 
     socket.on("is-online", res => {
+      console.log("LOGGGG 4");
+
       console.log("is-online on: ", res);
       setUserStatus(res.isOnline);
     });
 
     socket.on("go-online-or-offline", res => {
+      console.log("LOGGGG 5");
+
       if (res.isOnline) {
         getAllChatMessages(limit, offset);
       }
@@ -339,6 +359,8 @@ const ChatScreen = props => {
     });
 
     socket.on("message-typing", res => {
+      console.log("LOGGGG 6");
+
       clearTimeout(clientTimer);
       if (Object.keys(res).length > 0) {
         setTypingStatus(true);
@@ -349,36 +371,48 @@ const ChatScreen = props => {
       }
     });
 
-    // if (userStatus) {
-    //   socket.on('message-read', res => {
-    //     if (Object.keys(res).length > 0) {
-    //       setMsgRead('SEEN');
-    //     }
-    //   });
-    // } else {
-    //   socket.on('message-delivered', res => {
-    //     if (Object.keys(res).length > 0) {
-    //       setMsgRead('DELIVERED');
-    //     }
-    //   });
-    // }
+    if (userStatus) {
+      socket.on("message-read", res => {
+        console.log("LOGGGG 7");
 
-    // socket.on('message-delivered', res => {
-    //   if (Object.keys(res).length > 0) {
-    //     console.log('message-delivered on: ', res);
-    //     // setMsgRead('DELIVERED');
-    //     AsyncStorage.setItem('MSG_READ', 'DELIVERED');
-    //   }
-    // });
+        if (Object.keys(res).length > 0) {
+          setMsgRead("SEEN");
+        }
+      });
+    } else {
+      socket.on("message-delivered", res => {
+        console.log("LOGGGG 8");
 
-    // socket.on('message-read', res => {
-    //   console.log('message-read on: ', res);
-    //   if (Object.keys(res).length > 0) {
-    //     setMsgRead('SEEN');
-    //   }
-    // });
+        if (Object.keys(res).length > 0) {
+          setMsgRead("DELIVERED");
+        }
+      });
+    }
+
+    socket.on("message-delivered", res => {
+      console.log("LOGGGG 9");
+
+      console.log("message-deliveredmessage-delivered", res);
+
+      if (Object.keys(res).length > 0) {
+        console.log("message-delivered on: ", res);
+        setMsgRead("DELIVERED");
+        AsyncStorage.setItem("MSG_READ", "DELIVERED");
+      }
+    });
+
+    socket.on("message-read", res => {
+      console.log("LOGGGG 10");
+
+      console.log("message-read on: ", res);
+      if (Object.keys(res).length > 0) {
+        setMsgRead("SEEN");
+      }
+    });
 
     socket.on("message-reaction", res => {
+      console.log("LOGGGG 11");
+
       if (Object.keys(res).length > 0) {
         if (userData?.id != el?.ChatMembers[0]?.memberId) {
           setChatMessages(prevState => ({

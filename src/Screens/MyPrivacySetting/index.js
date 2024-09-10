@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, TouchableOpacity } from "react-native";
+import { Text, View, TouchableOpacity, ScrollView } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useHelper } from "../../hooks/useHelper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styles from "./styles";
 import colors from "../../utility/colors";
-import HeaderContainer from "../../components/containers/headerContainer";
-import PrivacySettingContainer from "../../components/containers/PrivacySettingContainer";
-import BlockedListButton from "../../components/buttons/BlockedListButton";
-import BasicPrivacySetting from "../../components/containers/BasicPrivacySetting";
-import ProfileServices from "../../services/ProfileServices";
 import SettingHeader from "../../components/containers/settingHeader";
-import { ScrollView } from "react-native";
+import BasicPrivacySetting from "../../components/containers/BasicPrivacySetting";
+import PrivacySettingContainer from "../../components/containers/PrivacySettingContainer";
+import analytics from '@react-native-firebase/analytics';
+import ProfileServices from '../../services/ProfileServices';
 
 const MyPrivacySetting = (props) => {
   const dispatch = useDispatch();
@@ -24,7 +22,16 @@ const MyPrivacySetting = (props) => {
   const { handleDisablePremium, handleStatusCode } = useHelper();
   const [premiumPrivacySetting, setPremiumPrivacySetting] = useState(proMember);
 
+  const logAnalyticsEvent = async (eventName, params = {}) => {
+    await analytics().logEvent(eventName, params);
+  };
+
   const onToggleSwitch = (type, val) => {
+    logAnalyticsEvent("privacy_setting_toggled", {
+      setting_type: type,
+      value: val,
+    });
+
     switch (type) {
       case "Discovery Mode":
         dispatch({
@@ -86,13 +93,25 @@ const MyPrivacySetting = (props) => {
         .then((res) => {
           handleStatusCode(res);
           if (res.data.status >= 200 && res.data.status <= 299) {
+            logAnalyticsEvent("user_settings_updated", {
+              success: true,
+            });
           }
         })
-        .catch((err) => console.log("updateUserSettings err", err));
+        .catch((err) => {
+          console.log("updateUserSettings err", err);
+          logAnalyticsEvent("user_settings_update_failed", {
+            error: err.message,
+          });
+        });
     }
   };
 
   const handleUpgrade = () => {
+    logAnalyticsEvent("upgrade_clicked", {
+      current_subscription: proMember,
+    });
+
     if (!premiumPrivacySetting) {
       props.navigation.navigate("Paywall");
     }
@@ -101,16 +120,12 @@ const MyPrivacySetting = (props) => {
   return (
     <SafeAreaView style={{ flex: 1, padding: 20, backgroundColor: "#ffffff" }}>
       <SettingHeader
-        backPress={() => props.navigation.goBack()}
+        backPress={() => {
+          logAnalyticsEvent("back_button_pressed", { screen: "MyPrivacySetting" });
+          props.navigation.goBack();
+        }}
         screenTitle={"My privacy settings"}
       />
-      {/* <HeaderContainer
-        goback={'arrow-back'}
-        backButton
-        Icon
-        name={'setting'}
-        gobackButtonPress={() => props.navigation.goBack()}
-      /> */}
       <ScrollView>
         <Text style={styles.basicPreferenceType}>Basic privacy settings</Text>
         <View style={styles.actionItemsView}>
@@ -118,7 +133,6 @@ const MyPrivacySetting = (props) => {
             toggleSwitch
             onToggleSwitch={onToggleSwitch}
             isOn={settings.discoveryMode}
-            // privacySettingType={'Basic Privacy Setting'}
             toggleViewStyle={{ marginTop: "4%" }}
             contStyle={styles.privacySettingStyle}
             toggleOptionTextStyle={{
@@ -142,13 +156,7 @@ const MyPrivacySetting = (props) => {
             toggleOptionTaglineText={"Show or Hide Age"}
           />
         </View>
-        {/* <View style={{marginTop: '5%'}}>
-          <BlockedListButton
-            onPress={() => props.navigation.navigate('BlockedList')}
-            BlockedListButton
-            title={'View My Blocked List'}
-          />
-        </View> */}
+
         <Text style={styles.basicPreferenceType}>Gold privacy settings</Text>
         <Text
           style={{
@@ -182,25 +190,6 @@ const MyPrivacySetting = (props) => {
               </Text>
             </TouchableOpacity>
           ) : null
-          // <TouchableOpacity
-          //   onPress={handleDisablePremium}
-          //   style={{
-          //     paddingHorizontal: '3%',
-          //     backgroundColor: colors.primaryPink,
-          //     elevation: 3,
-          //     alignItems: 'center',
-          //     justifyContent: 'center',
-          //     paddingVertical: '2%',
-          //     marginVertical: '1%',
-          //     alignSelf: 'center',
-          //     borderRadius: 10,
-          //     width: '100%',
-          //     marginVertical: '3%',
-          //   }}>
-          //   <Text style={{fontSize: 17, color: colors.white}}>
-          //     Disable Premium
-          //   </Text>
-          // </TouchableOpacity>
         }
 
         <View style={[styles.actionItemsView, { marginTop: "3%" }]}>
@@ -262,4 +251,5 @@ const MyPrivacySetting = (props) => {
     </SafeAreaView>
   );
 };
+
 export default MyPrivacySetting;

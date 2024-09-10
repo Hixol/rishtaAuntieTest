@@ -26,6 +26,8 @@ import Video from "react-native-video";
 import Countries from "../../../assets/countryLists/Countries";
 import DeviceInfo from "react-native-device-info";
 import * as Progress from "react-native-progress";
+import analytics from '@react-native-firebase/analytics';
+
 const UploadVideo = ({ navigation, route }) => {
   const edit = route?.params;
 
@@ -255,232 +257,308 @@ const UploadVideo = ({ navigation, route }) => {
   };
 
   const continuePress = async () => {
-    if (edit && videoUri != null) {
-      setLoading(true);
-
-      const formData1 = new URLSearchParams();
-      formData1.append("mediaName", video.name);
-      formData1.append("mediaType", "video/mp4");
-
-      OnBoardingServices.getPresignedUrl(formData1, token)
-        .then(async res => {
-          handleStatusCode(res);
-          console.log("RESPONSE>>>", res);
-          if (res.status >= 200 && res.status <= 299) {
-            const responseData = res.data;
-            const { url, key } = responseData.data;
-            const baseUrl = url.split("?")[0]; // Get the base URL
-            alerts("success", res.data.message);
-
-            const videoFileUri = video.uri;
-            const videoFile = await fetch(videoFileUri);
-            const videoBlob = await videoFile.blob();
-
-            const uploadResponse = await fetch(url, {
-              method: "PUT",
-              headers: {
-                "Content-Type": "video/mp4",
-              },
-              body: videoBlob,
-            });
-
-            if (uploadResponse.ok) {
-              // Video uploaded successfully, now inform the backend API
-              const backendPayload = {
-                videoUrl: baseUrl, // Send the base URL to the backend
-              };
-              // Handle the response of the PUT request here if needed
-              // Once the video is uploaded successfully, notify the backend API
-              OnBoardingServices.uploadVideo(backendPayload, token)
-                .then(res => {
-                  handleStatusCode(res);
-                  if (res.status >= 200 && res.status <= 299) {
-                    let copy = JSON.parse(JSON.stringify(userData));
-                    copy.UserMedia = copy.UserMedia.map(el => {
-                      if (el.type == "video") {
-                        return {
-                          ...el,
-                          url: res.data.data,
-                        };
-                      } else {
-                        return el;
-                      }
-                    });
-
-                    dispatch({
-                      type: "AUTH_USER",
-                      payload: copy,
-                    });
-
-                    dispatch({
-                      type: "SET_VIDEO_FLAG",
-                      payload: true,
-                    });
-                    alerts("success", res.data.message);
-                  }
-                })
-                .catch(e => console.log("uploadVideo err", e))
-                .finally(() => {
-                  setLoading(false);
-                  navigation.goBack();
+    try {
+      // Log the start of the video upload process
+      await analytics().logEvent('start_video_upload', {
+        description: 'User started video upload process',
+        videoName: video?.name || 'unknown',
+      });
+  
+      if (edit && videoUri != null) {
+        setLoading(true);
+  
+        const formData1 = new URLSearchParams();
+        formData1.append("mediaName", video.name);
+        formData1.append("mediaType", "video/mp4");
+  
+        OnBoardingServices.getPresignedUrl(formData1, token)
+          .then(async res => {
+            handleStatusCode(res);
+            if (res.status >= 200 && res.status <= 299) {
+              const responseData = res.data;
+              const { url, key } = responseData.data;
+              const baseUrl = url.split("?")[0]; // Get the base URL
+              alerts("success", res.data.message);
+  
+              const videoFileUri = video.uri;
+              const videoFile = await fetch(videoFileUri);
+              const videoBlob = await videoFile.blob();
+  
+              const uploadResponse = await fetch(url, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "video/mp4",
+                },
+                body: videoBlob,
+              });
+  
+              if (uploadResponse.ok) {
+                // Log the successful video upload
+                await analytics().logEvent('video_upload_success', {
+                  description: 'Video uploaded successfully',
+                  videoName: video?.name || 'unknown',
+                  videoUrl: baseUrl,
                 });
-            }
-          }
-        })
-        .catch(err => {
-          console.error("Error:", err);
-        });
-    } else {
-      if (videoObj !== null || video !== null) {
-        setIsPaused(true);
-        if (coords.city == "" && coords.state == "" && coords.country == "") {
-          alerts(
-            "error",
-            "Please enable location and open google maps to sync location!"
-          );
-          handleLocation();
-        } else {
-          setLoading(true);
-          handleLocation();
-
-          let code = Countries.filter(item => {
-            return item?.en === coords?.country;
-          });
-          code = code[0]?.dialCode;
-          // Step 1: Get pre-signed URL from backend
-          const formData1 = new URLSearchParams();
-          formData1.append("mediaName", video.name);
-          formData1.append("mediaType", "video/mp4");
-
-          OnBoardingServices.getPresignedUrl(formData1, token)
-            .then(async res => {
-              handleStatusCode(res);
-              if (res.status >= 200 && res.status <= 299) {
-                const responseData = res.data;
-                const { url } = responseData.data;
-                const baseUrl = url.split("?")[0]; // Get the base URL
-                console.log("Url Response", baseUrl);
-                alerts("success", res.data.message);
-                // Step 2: Upload video to the signed URL
-                const videoFileUri = video.uri;
-                const videoFile = await fetch(videoFileUri);
-                const videoBlob = await videoFile.blob();
-
-                const uploadResponse = await fetch(url, {
-                  method: "PUT",
-                  headers: {
-                    "Content-Type": "video/mp4",
-                  },
-                  body: videoBlob,
-                });
-
-                if (uploadResponse.ok) {
-                  // Step 3: Inform backend API after successful upload
-                  const backendPayload = {
-                    videoUrl: baseUrl, // Send the base URL to the backend
-                  };
-                  console.log("BackendPayload", backendPayload);
-                  OnBoardingServices.uploadVideo(backendPayload, token)
-                    .then(res => {
-                      handleStatusCode(res);
-                      if (res.status >= 200 && res.status <= 299) {
-                        dispatch({
-                          type: "SET_VIDEO_FLAG",
-                          payload: true,
-                        });
-                        alerts("success", res.data.message);
-
-                        let versionCode = DeviceInfo.getVersion();
-                        let userDevice = DeviceInfo.getModel();
-                        let OSVersion = DeviceInfo.getSystemVersion();
-                        let OSName = android
-                          ? `Android ${OSVersion}`
-                          : `iOS ${OSVersion}`;
-
-                        let formData = new FormData();
-                        formData.append("versionCode", versionCode);
-                        formData.append("userDevice", userDevice);
-                        formData.append("OSVersion", OSVersion);
-                        formData.append("OSName", OSName);
-                        formData.append("firstName", firstName);
-                        formData.append("lastName", lastName);
-                        formData.append(
-                          "dob",
-                          moment(dob).format("YYYY-MM-DD")
-                        );
-                        formData.append("longitude", coords.lat);
-                        formData.append("latitude", coords.lng);
-                        formData.append("city", coords.city);
-                        formData.append("country", coords.country);
-                        formData.append("countryCode", code);
-                        formData.append("address", coords.state);
-                        formData.append("gender", gender);
-                        formData.append("religion", religion?.name);
-                        formData.append("verificationPicture", selfie);
-
-                        profilePictures.map((x, index) => {
-                          if (x?.image) {
-                            formData.append(`profilePic${index + 1}`, {
-                              name: x?.image?.name,
-                              type: x?.image.type,
-                              uri: x?.image?.uri,
-                            });
-                          }
-                        });
-
-                        if (token !== null) {
-                          setLoading(true);
-                          UserService.createNewProfile(formData, token)
-                            .then(res => {
-                              handleStatusCode(res);
-                              if (res.status >= 200 && res.status <= 299) {
-                                clearNewRedux();
-                                Alerts("success", res?.data?.message);
-
-                                navigation.dispatch(
-                                  CommonActions.reset({
-                                    index: 0,
-                                    routes: [{ name: "BottomTab" }],
-                                  })
-                                );
-                              }
-                            })
-                            .catch(e => {
-                              console.log("createNewProfile err", e);
-                              Alerts("error", e?.message.toString());
-                            })
-                            .finally(() => setLoading(false));
+  
+                // Video uploaded successfully, now inform the backend API
+                const backendPayload = {
+                  videoUrl: baseUrl, // Send the base URL to the backend
+                };
+  
+                OnBoardingServices.uploadVideo(backendPayload, token)
+                  .then(res => {
+                    handleStatusCode(res);
+                    if (res.status >= 200 && res.status <= 299) {
+                      let copy = JSON.parse(JSON.stringify(userData));
+                      copy.UserMedia = copy.UserMedia.map(el => {
+                        if (el.type == "video") {
+                          return {
+                            ...el,
+                            url: res.data.data,
+                          };
                         } else {
-                          setLoading(false);
-                          alerts("error", "Please upload video to continue");
+                          return el;
                         }
-                      }
-                    })
-                    .catch(err => {
-                      console.error("Error adding intro video:", err);
-                      alerts("error", "Error adding intro video");
-                    })
-                    .finally(() => setLoading(false));
-                } else {
-                  alerts("error", "Failed to upload video");
-                  setLoading(false);
-                }
+                      });
+  
+                      dispatch({
+                        type: "AUTH_USER",
+                        payload: copy,
+                      });
+  
+                      dispatch({
+                        type: "SET_VIDEO_FLAG",
+                        payload: true,
+                      });
+                      alerts("success", res.data.message);
+                    }
+                  })
+                  .catch(e => {
+                    console.log("uploadVideo err", e);
+                    // Log the error if video upload fails
+                    analytics().logEvent('video_upload_failure', {
+                      description: 'Failed to upload video to backend',
+                      error: e.message,
+                    });
+                  })
+                  .finally(() => {
+                    setLoading(false);
+                    navigation.goBack();
+                  });
               } else {
-                alerts("error", "Failed to get pre-signed URL");
+                // Log the failure if upload to the presigned URL fails
+                await analytics().logEvent('video_upload_failure', {
+                  description: 'Failed to upload video to presigned URL',
+                  error: 'Upload response not OK',
+                });
+                alerts("error", "Failed to upload video");
                 setLoading(false);
               }
-            })
-            .catch(err => {
-              console.error("Error getting pre-signed URL:", err);
-              setLoading(false);
+            } else {
+              // Log the failure if getting the presigned URL fails
+              await analytics().logEvent('video_upload_failure', {
+                description: 'Failed to get presigned URL',
+                error: 'Get presigned URL response not OK',
+              });
               alerts("error", "Failed to get pre-signed URL");
+              setLoading(false);
+            }
+          })
+          .catch(err => {
+            console.error("Error getting pre-signed URL:", err);
+            // Log the error if getting the presigned URL fails
+            analytics().logEvent('video_upload_failure', {
+              description: 'Error getting presigned URL',
+              error: err.message,
             });
-        }
+            setLoading(false);
+            alerts("error", "Failed to get pre-signed URL");
+          });
       } else {
-        setShowAlert(true);
+        if (videoObj !== null || video !== null) {
+          setIsPaused(true);
+          if (coords.city == "" && coords.state == "" && coords.country == "") {
+            alerts(
+              "error",
+              "Please enable location and open google maps to sync location!"
+            );
+            handleLocation();
+          } else {
+            setLoading(true);
+            handleLocation();
+  
+            let code = Countries.filter(item => {
+              return item?.en === coords?.country;
+            });
+            code = code[0]?.dialCode;
+  
+            const formData1 = new URLSearchParams();
+            formData1.append("mediaName", video.name);
+            formData1.append("mediaType", "video/mp4");
+  
+            OnBoardingServices.getPresignedUrl(formData1, token)
+              .then(async res => {
+                handleStatusCode(res);
+                if (res.status >= 200 && res.status <= 299) {
+                  const responseData = res.data;
+                  const { url } = responseData.data;
+                  const baseUrl = url.split("?")[0]; // Get the base URL
+                  alerts("success", res.data.message);
+  
+                  const videoFileUri = video.uri;
+                  const videoFile = await fetch(videoFileUri);
+                  const videoBlob = await videoFile.blob();
+  
+                  const uploadResponse = await fetch(url, {
+                    method: "PUT",
+                    headers: {
+                      "Content-Type": "video/mp4",
+                    },
+                    body: videoBlob,
+                  });
+  
+                  if (uploadResponse.ok) {
+                    // Log the successful video upload
+                    await analytics().logEvent('video_upload_success', {
+                      description: 'Video uploaded successfully',
+                      videoName: video?.name || 'unknown',
+                      videoUrl: baseUrl,
+                    });
+  
+                    const backendPayload = {
+                      videoUrl: baseUrl,
+                    };
+  
+                    OnBoardingServices.uploadVideo(backendPayload, token)
+                      .then(res => {
+                        handleStatusCode(res);
+                        if (res.status >= 200 && res.status <= 299) {
+                          dispatch({
+                            type: "SET_VIDEO_FLAG",
+                            payload: true,
+                          });
+                          alerts("success", res.data.message);
+  
+                          let versionCode = DeviceInfo.getVersion();
+                          let userDevice = DeviceInfo.getModel();
+                          let OSVersion = DeviceInfo.getSystemVersion();
+                          let OSName = android
+                            ? `Android ${OSVersion}`
+                            : `iOS ${OSVersion}`;
+  
+                          let formData = new FormData();
+                          formData.append("versionCode", versionCode);
+                          formData.append("userDevice", userDevice);
+                          formData.append("OSVersion", OSVersion);
+                          formData.append("OSName", OSName);
+                          formData.append("firstName", firstName);
+                          formData.append("lastName", lastName);
+                          formData.append(
+                            "dob",
+                            moment(dob).format("YYYY-MM-DD")
+                          );
+                          formData.append("longitude", coords.lat);
+                          formData.append("latitude", coords.lng);
+                          formData.append("city", coords.city);
+                          formData.append("country", coords.country);
+                          formData.append("countryCode", code);
+                          formData.append("address", coords.state);
+                          formData.append("gender", gender);
+                          formData.append("religion", religion?.name);
+                          formData.append("verificationPicture", selfie);
+  
+                          profilePictures.map((x, index) => {
+                            if (x?.image) {
+                              formData.append(`profilePic${index + 1}`, {
+                                name: x?.image?.name,
+                                type: x?.image.type,
+                                uri: x?.image?.uri,
+                              });
+                            }
+                          });
+  
+                          if (token !== null) {
+                            setLoading(true);
+                            UserService.createNewProfile(formData, token)
+                              .then(res => {
+                                handleStatusCode(res);
+                                if (res.status >= 200 && res.status <= 299) {
+                                  clearNewRedux();
+                                  Alerts("success", res?.data?.message);
+  
+                                  navigation.dispatch(
+                                    CommonActions.reset({
+                                      index: 0,
+                                      routes: [{ name: "BottomTab" }],
+                                    })
+                                  );
+                                }
+                              })
+                              .catch(e => {
+                                console.log("createNewProfile err", e);
+                                Alerts("error", e?.message.toString());
+                              })
+                              .finally(() => setLoading(false));
+                          } else {
+                            setLoading(false);
+                            alerts("error", "Please upload video to continue");
+                          }
+                        }
+                      })
+                      .catch(err => {
+                        console.error("Error adding intro video:", err);
+                        // Log the error if adding intro video fails
+                        analytics().logEvent('video_upload_failure', {
+                          description: 'Error adding intro video',
+                          error: err.message,
+                        });
+                        alerts("error", "Error adding intro video");
+                      })
+                      .finally(() => setLoading(false));
+                  } else {
+                    // Log the failure if upload to the presigned URL fails
+                    await analytics().logEvent('video_upload_failure', {
+                      description: 'Failed to upload video to presigned URL',
+                      error: 'Upload response not OK',
+                    });
+                    alerts("error", "Failed to upload video");
+                    setLoading(false);
+                  }
+                } else {
+                  // Log the failure if getting the presigned URL fails
+                  await analytics().logEvent('video_upload_failure', {
+                    description: 'Failed to get presigned URL',
+                    error: 'Get presigned URL response not OK',
+                  });
+                  alerts("error", "Failed to get pre-signed URL");
+                  setLoading(false);
+                }
+              })
+              .catch(err => {
+                console.error("Error getting pre-signed URL:", err);
+                // Log the error if getting the presigned URL fails
+                analytics().logEvent('video_upload_failure', {
+                  description: 'Error getting presigned URL',
+                  error: err.message,
+                });
+                setLoading(false);
+                alerts("error", "Failed to get pre-signed URL");
+              });
+          }
+        } else {
+          setShowAlert(true);
+        }
       }
+    } catch (error) {
+      console.error("Error during video upload process:", error);
+      // Log any unexpected errors
+      await analytics().logEvent('video_upload_failure', {
+        description: 'Unexpected error during video upload process',
+        error: error.message,
+      });
     }
   };
+  
 
   const handleGalleryMedia = async (state, result) => {
     try {
@@ -771,6 +849,7 @@ const UploadVideo = ({ navigation, route }) => {
                 alignSelf: "center",
                 width: "120%",
                 height: windowHeight * 0.5,
+                bottom:10,
               }}
               // poster={require('../../../assets/images/discovervideo.mp4')}
               source={require("../../../assets/images/discovervideo1.mp4")}
@@ -802,6 +881,8 @@ const UploadVideo = ({ navigation, route }) => {
                 width: "100%",
                 height: "100%",
                 borderRadius: 20,
+                bottom:10,
+
               }}
               poster={video?.uri}
               source={{
@@ -844,6 +925,7 @@ const UploadVideo = ({ navigation, route }) => {
             padding: "5%",
             flexDirection: "row",
             alignItems: "center",
+            bottom:10,
             // borderRadius: 5,
             // alignItems: 'center',
             // justifyContent: 'center',
@@ -888,7 +970,7 @@ const UploadVideo = ({ navigation, route }) => {
       )}
       <View
         style={{
-          top: 55,
+          top: "9%",
         }}
       >
         <BottomButton
@@ -903,33 +985,41 @@ const UploadVideo = ({ navigation, route }) => {
           onPress={() => continuePress()}
         />
       </View>
-      <View
+      {!edit && !videoUri && (
+  <View
+    style={{
+      top: 20,
+    }}
+  >
+    <TouchableOpacity
+      style={{
+        width: "90%",
+        paddingVertical: "5%",
+        borderRadius: 10,
+        backgroundColor: "#FDEDF1",
+        alignItems: "center",
+        borderColor: "#F9B5C6",
+        borderWidth: 1,
+        justifyContent: "center",
+        zIndex: 0.5,
+        margin: 5,
+        alignSelf: "center",
+        top: 5,
+      }}
+      onPress={() => handleSkipNow()}
+    >
+      <Text
         style={{
-          width: "90%",
-          paddingVertical: "5%",
-          borderRadius: 10,
-          backgroundColor: "#FDEDF1",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 1,
-          borderColor: "#F9B5C6",
-          position: "absolute",
-          alignSelf: "center",
-          bottom: 20,
+          fontSize: 15,
+          color: "#EF4770",
+          fontFamily: "Inter-Medium",
         }}
       >
-        <TouchableOpacity onPress={() => handleSkipNow()}>
-          <Text
-            style={{
-              fontSize: 15,
-              color: "#EF4770",
-              fontFamily: "Inter-Medium",
-            }}
-          >
-            Use my picture instead
-          </Text>
-        </TouchableOpacity>
-      </View>
+        Use my picture instead
+      </Text>
+    </TouchableOpacity>
+  </View>
+)}
     </SafeAreaView>
   );
 };

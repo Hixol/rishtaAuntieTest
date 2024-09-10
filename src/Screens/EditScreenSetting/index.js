@@ -25,6 +25,7 @@ import NewOnBoardingDesign from "../../components/NewOnBoardingDesign";
 import OnBoardingSearch from "../../components/OnBoardingSearch";
 import DropDownView from "../../components/Modal/DropDown";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { log } from "@react-native-firebase/crashlytics";
 
 let filtered = [];
 const EditScreenSetting = props => {
@@ -98,6 +99,13 @@ const EditScreenSetting = props => {
     { index: 1, stepLabel: "Somewhat Religious" },
     { index: 2, stepLabel: "Religious" },
     { index: 3, stepLabel: "Strongly Religious" },
+  ]);
+  const [distanceArray, setDistanceArray] = useState([
+    { index: 0, stepLabel: "25" },
+    { index: 1, stepLabel: "50" },
+    { index: 2, stepLabel: "100" },
+    { index: 3, stepLabel: "250" },
+    { index: 4, stepLabel: "500" },
   ]);
   const [prayArray, setPrayArray] = useState([
     { name: `Don't pray` },
@@ -189,6 +197,9 @@ const EditScreenSetting = props => {
   }
 
   let [sliderVal, setSliderVal] = useState([1]);
+  let [distancelVal, setDistanceVal] = useState([0]);
+  let [distancelInd, setDistanceInd] = useState(0);
+
   let [sliderMarriageVal, setSliderMarriageVal] = useState([1]);
 
   const [responseText, setResponseText] = useState(null);
@@ -901,6 +912,7 @@ const EditScreenSetting = props => {
     showSteps,
     showStepLabels,
   }) => {
+    console.log("SRRRR", step);
     return (
       <SliderView
         textWithoutIconView
@@ -954,6 +966,12 @@ const EditScreenSetting = props => {
   const handleSliderValue = (label, val) => {
     setSliderVal(val);
   };
+  const handleDistanceSliderValue = (label, val) => {
+    console.log("CCCCCC", val);
+    setDistanceVal(val);
+  };
+  console.log("DISTANCE VAL", distancelVal);
+  console.log("DISTANCE INNDNDNDNDNDNDN", distancelInd);
   const handleSliderMarriageValue = (label, val) => {
     setSliderMarriageVal(val);
   };
@@ -1207,8 +1225,23 @@ const EditScreenSetting = props => {
     setDistance(value);
   };
   const DistanceSlider = value => {
-    setDistanceSlider(value);
+    const newValue = value[0]; // Extract the value from the slider
+    console.log("Slider Value:", newValue);
+
+    // Ensure it snaps to one of the predefined values: 25, 50, 75, 100
+    const snapPoints = [25, 50, 75, 100];
+
+    // Find the closest snap point to the current value
+    const closestSnap = snapPoints.reduce((prev, curr) =>
+      Math.abs(curr - newValue) < Math.abs(prev - newValue) ? curr : prev
+    );
+
+    console.log("Snapped to:", closestSnap);
+
+    // Set the snapped value to the state
+    setDistanceSlider([closestSnap]);
   };
+
   const HeightSliderValuesChange = values => {
     setHeightSlider(values);
   };
@@ -1219,8 +1252,14 @@ const EditScreenSetting = props => {
 
     setAge(value);
   };
-
+  console.log("DISTANCE VALU", distancelVal);
   const updateProfile = async () => {
+    let findDistanceValue = distanceArray.filter((item, index) => {
+      return item?.index === distancelVal[0];
+    });
+
+    console.log("findDistanceValue", findDistanceValue);
+
     console.log("FO:", selectedFO);
     console.log("Community:", selectedCommunity);
     let foArr = selectedFO.map(el => el.name);
@@ -1406,7 +1445,7 @@ const EditScreenSetting = props => {
           sendType = "distance";
           value =
             distance === "Set Distance"
-              ? distanceSlider.toString()
+              ? findDistanceValue[0]?.stepLabel
               : distance === null
               ? "unlimited"
               : distance.toLowerCase();
@@ -1664,30 +1703,32 @@ const EditScreenSetting = props => {
                       // preferenceIcon={require('../../assets/iconimages/location.png')}
                     /> */}
                     {distance === "Set Distance" ? (
-                      <SliderView
-                        sp={{
+                      <View
+                        style={{
+                          width: "100%",
                           alignItems: "center",
                           justifyContent: "center",
-                          marginTop: "5%",
+                          alignSelf: "center",
                         }}
-                        multiSliderValue={[
-                          /Unlimited|unlimited/.test(
-                            userData?.UserPreference?.distance
-                          ) ||
-                          /Nationwide|nationwide/.test(
-                            userData?.UserPreference?.distance
-                          )
-                            ? 0
-                            : parseInt(userData?.UserPreference?.distance),
-                        ]}
-                        multiSliderValuesChange={DistanceSlider}
-                        min={0}
-                        max={500}
-                        // preferenceName={"Distance"}
-                        customLabel="mi"
-                        enableLabel={true}
-                        step={1}
-                      />
+                      >
+                        <SliderView
+                          textWithoutIconView
+                          // preferenceName={prefName}
+                          multiSliderValue={[distancelVal[0]]}
+                          min={0}
+                          max={4}
+                          step={1}
+                          stepsAs={distanceArray}
+                          showSteps={true}
+                          showStepLabels={true}
+                          enableLabel={true}
+                          customLabel={"mi"}
+                          bg="transparent"
+                          multiSliderValuesChange={(val, index) => {
+                            handleDistanceSliderValue("mi", val);
+                          }}
+                        />
+                      </View>
                     ) : null}
                   </View>
                 </>

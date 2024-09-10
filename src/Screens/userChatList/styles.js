@@ -1,5 +1,5 @@
-import { StyleSheet } from "react-native";
-import colors from "../../utility/colors";
+import {StyleSheet} from 'react-native';
+import colors from '../../utility/colors';
 
 export default StyleSheet.create({
   container: {
@@ -149,16 +149,39 @@ export default StyleSheet.create({
     // marginLeft: 60, // Add margin to separate from the input
     left: 60,
   },
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center", // Center the logo and back button horizontally
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    backgroundColor: colors.white, // Ensure background color consistency
+  },
   backButton: {
     position: "absolute",
     left: 10,
-    // padding: 15,
+    padding: 15,
     zIndex: 1, // Ensure it's above other elements
   },
   backIcon: {
     width: 24,
     height: 20,
-    left: 10,
+    left:10,
+    top:10,
     tintColor: colors.black, // Optional: Set the icon color
+  },
+  logo: {
+    width: 100,
+    height: 40,
+  },
+  chatListContainer: {
+    // top: 50,
+    borderRadius: 16,
+    overflow: "hidden",
+  },
+  logo: {
+    top:'1%',
+    width: 40,
+    height: 40,
   },
 });

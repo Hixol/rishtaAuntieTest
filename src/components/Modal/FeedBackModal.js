@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Linking,
   Alert,
+  Platform,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -47,12 +48,15 @@ const FeedbackModal = ({ visible, onClose }) => {
 
   const handleThumbsUp = () => {
     setSelectedThumb("up");
-    Linking.openURL(
-      "https://play.google.com/store/apps/details?id=YOUR_APP_ID"
-    );
+    if (Platform.OS === "android") {
+      Linking.openURL(
+        "https://play.google.com/store/apps/details?id=YOUR_APP_ID"
+      );
+    } else if (Platform.OS === "ios") {
+      Linking.openURL("https://www.apple.com/app-store/");
+    }
     onClose();
   };
-
   const handleThumbsDown = () => {
     setShowTextInput(true);
     setSelectedThumb("down");

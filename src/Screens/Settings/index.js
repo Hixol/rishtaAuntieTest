@@ -33,6 +33,7 @@ import Loader from "../../components/Loader";
 import SettingButton from "../../components/buttons/SettingButton";
 import BoostUpgradeCard from "../../components/Cards/BoostUpgradeCard";
 import Icons from "../../utility/icons";
+import analytics from "@react-native-firebase/analytics";
 
 let focused = false;
 
@@ -513,7 +514,16 @@ const Settings = props => {
                 )}
               </View>
               <SettingButton
-                onPress={() => props.navigation.navigate("MyInsight")}
+                onPress={async () => {
+                  // Log the button click event in Firebase Analytics
+                  await analytics().logEvent("view_insights_click", {
+                    screen_name: "MySetting",
+                    button_name: "View Insights",
+                  });
+
+                  // Navigate to the MyInsight screen
+                  props.navigation.navigate("MyInsight");
+                }}
                 sbStyles={{
                   backgroundColor: null,
                   borderColor: colors.primaryPink,
@@ -534,10 +544,23 @@ const Settings = props => {
             }}
           >
             <BoostUpgradeCard
-              onPress={() => {
+              onPress={async () => {
                 if (userData?.UserSetting?.noOfSpotlight > 0) {
+                  // Log the "Spotlight Activate Button" event
+                  await analytics().logEvent("spotlight_activate_button", {
+                    screen_name: "MySetting",
+                    action: "Enable Spotlight",
+                    remaining_spotlights: userData?.UserSetting?.noOfSpotlight,
+                  });
+
                   handleEnableSpotlight();
                 } else {
+                  // Log the "Spotlight Purchase" event
+                  await analytics().logEvent("spotlight_purchase", {
+                    screen_name: "MySetting",
+                    action: "Navigate to Paywall for Spotlight",
+                  });
+
                   props.navigation.navigate("PaywallSpots");
                 }
               }}
@@ -549,9 +572,19 @@ const Settings = props => {
               buttonTitle={"Boost"}
               bottomText={"Boost my visibility"}
             />
+
             <BoostUpgradeCard
               proMember={proMember}
-              onPress={() => props.navigation.navigate("Paywall")}
+              onPress={async () => {
+                // Log the "Subscription" event
+                await analytics().logEvent("subscription", {
+                  screen_name: "MySetting",
+                  action: "Navigate to Paywall for Upgrade",
+                  remaining_profiles: `${userData?.Profile?.noOfProfilesRemaining}/${userData?.Profile?.totalNoOfProfiles}`,
+                });
+
+                props.navigation.navigate("Paywall");
+              }}
               typeCount={`${userData?.Profile?.noOfProfilesRemaining}/${userData?.Profile?.totalNoOfProfiles}`}
               type="Profiles left"
               focused={focused}

@@ -6,14 +6,14 @@ import { OnBoardingServices, UserService } from "../../services";
 import { useHelper } from "../../hooks/useHelper";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import { alerts } from "../../utility/regex";
-
+import ProfileServices from "../../services/ProfileServices";
 import styles from "./styles";
 import colors from "../../utility/colors";
-import ProfileServices from "../../services/ProfileServices";
 import PrivacySettingContainer from "../../components/containers/PrivacySettingContainer";
 import BasicPrivacySetting from "../../components/containers/BasicPrivacySetting";
 import Button from "../../components/buttons/Button";
 import SettingHeader from "../../components/containers/settingHeader";
+import analytics from '@react-native-firebase/analytics'; // Import Firebase Analytics
 
 const SearchPreferences = props => {
   const isFocused = useIsFocused();
@@ -189,9 +189,22 @@ const SearchPreferences = props => {
       .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
+          // Analytics logging
+          analytics().logEvent('reset_feature', {
+            screen: 'SearchPreferences',
+            result: 'success'
+          });
         }
       })
-      .catch(err => console.log("applyReset err:", err));
+      .catch(err => {
+        console.log("applyReset err:", err);
+        // Analytics logging
+        analytics().logEvent('reset_feature', {
+          screen: 'SearchPreferences',
+          result: 'error',
+          error: err.message
+        });
+      });
   };
 
   const handleUpgrade = () => {
@@ -201,6 +214,12 @@ const SearchPreferences = props => {
   };
 
   useEffect(() => {
+    // Track screen view
+    analytics().logScreenView({
+      screen_name: 'SearchPreferences',
+      screen_class: 'SearchPreferences',
+    });
+
     OnBoardingServices.profileValues(
       encodeURI(
         JSON.stringify([
@@ -222,7 +241,7 @@ const SearchPreferences = props => {
         }
       })
       .catch(err => console.log("profileValues err", err))
-      .finally(() => {});
+      .finally(() => { });
   }, []);
 
   useFocusEffect(
@@ -248,7 +267,7 @@ const SearchPreferences = props => {
 
   const handleClearPref = type => {
     let body = {};
-    if (type == "basic") {
+    if (type === "basic") {
       body = {
         distance: "unlimited",
         ageFrom: 18,
@@ -297,16 +316,32 @@ const SearchPreferences = props => {
     UserService.searchUserPreference(body, token)
       .then(res => {
         handleStatusCode(res);
-        if (res.data.status == 200 || res.data.status == 201) {
+        if (res.data.status === 200 || res.data.status === 201) {
           alerts("success", res.data.message);
 
           dispatch({
             type: "SET_PREFERENCE_FILTER",
             payload: true,
           });
+
+          // Analytics logging
+          analytics().logEvent('clear_preferences', {
+            screen: 'SearchPreferences',
+            type,
+            result: 'success'
+          });
         }
       })
-      .catch(err => console.log("clearPreference err", err));
+      .catch(err => {
+        console.log("clearPreference err", err);
+        // Analytics logging
+        analytics().logEvent('clear_preferences', {
+          screen: 'SearchPreferences',
+          type,
+          result: 'error',
+          error: err.message
+        });
+      });
   };
 
   return (
@@ -338,25 +373,24 @@ const SearchPreferences = props => {
           <View style={{ marginVertical: "2%" }}>
             {BasicPreferences.map((i, index, array) => {
               return (
-                <View>
+                <View key={i.id}>
                   <BasicPrivacySetting
                     arrowIcononPress={() =>
                       i?.screen
                         ? props.navigation.navigate(i?.screenName, {
-                            preferenceEdit: true,
-                            index: i?.index,
-                            type: i?.type,
-                            placeholder: i?.placeholder,
-                          })
+                          preferenceEdit: true,
+                          index: i?.index,
+                          type: i?.type,
+                          placeholder: i?.placeholder,
+                        })
                         : props.navigation.navigate("EditScreenSetting", {
-                            preferenceEdit: true,
-                            index: i?.index,
-                            type: i?.editType,
-                            placeholder: i?.placeholder,
-                            ask: i?.ask,
-                            // ask: i?.ask,
-                            line: i?.line,
-                          })
+                          preferenceEdit: true,
+                          index: i?.index,
+                          type: i?.editType,
+                          placeholder: i?.placeholder,
+                          ask: i?.ask,
+                          line: i?.line,
+                        })
                     }
                     arrowIcon
                     contStyle={styles.privacySettingStyle}
@@ -379,18 +413,19 @@ const SearchPreferences = props => {
         <View style={styles.preferenceRow}>
           <Text style={styles.basicPreferenceType}>Gold Preferences</Text>
           <Text
-            onPress={() => premiumPrivacySetting && handleClearPref("premium")}
+            onPress={() => premiumPrivacySetting && handleClearPref("premium")} // Ensure handleClearPref is called only if premiumPrivacySetting is true
             style={[
               styles.clearTxt,
               {
-                color: premiumPrivacySetting ? "#D90368" : colors.textGrey,
+                color: premiumPrivacySetting ? "#D90368" : colors.textGrey, // Change color based on premium status
+                opacity: premiumPrivacySetting ? 1 : 0.5, // Dull button when not premium
               },
             ]}
           >
             Clear all
           </Text>
         </View>
-        {premiumPrivacySetting == false ? (
+        {premiumPrivacySetting === false ? (
           <TouchableOpacity
             onPress={handleUpgrade}
             style={styles.enableDisableButton}
@@ -403,7 +438,7 @@ const SearchPreferences = props => {
         <View style={[styles.actionItemsView, { marginBottom: "10%" }]}>
           {PremiumPreferences.map((i, index, array) => {
             return (
-              <View>
+              <View key={i.id}>
                 <PrivacySettingContainer
                   imageRequire={
                     premiumPrivacySetting
@@ -418,16 +453,8 @@ const SearchPreferences = props => {
                         type: i?.editType,
                         placeholder: i?.placeholder,
                         ask: i?.ask,
-                        // ask: i?.ask,
                         line: i?.line,
                       })
-
-                    // props.navigation.navigate('MySearchPreferencesEditScreen', {
-                    //   paramKey: i.type,
-                    //   paramKey2: i.preferenceName,
-                    //   preferences: user.UserPreference,
-                    //   value: user?.UserPreference,
-                    // })
                   }
                   disabled={premiumPrivacySetting ? false : true}
                   isEnabled={premiumPrivacySetting ? true : false}

@@ -19,7 +19,7 @@ const SplashScreen = props => {
   const { token, status, mobileNumber, email, userData } = useSelector(
     store => store.userReducer
   );
-
+  console.log("TOKENNNN", token);
   const {
     handlePlayerId,
     handleLocation,
@@ -33,7 +33,6 @@ const SplashScreen = props => {
   } = useHelper();
 
   useEffect(() => {
-    console.log("tokenSplash", token);
     if (token != null) {
       handleLocation();
       setTimeout(() => {

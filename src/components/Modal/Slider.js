@@ -11,13 +11,6 @@ const SliderView = props => {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(!isEnabled);
 
-  const allowedDistances = [25, 50, 100, 250, 500];
-
-  function snapToAllowedValue(value) {
-    return allowedDistances.reduce((prev, curr) =>
-      Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev
-    );
-  }
   return (
     <View
       style={[
@@ -163,15 +156,7 @@ const SliderView = props => {
               ? windowWidth * 0.93
               : windowWidth * 0.8
           }
-          // onValuesChangeFinish={props.multiSliderValuesChange}
-          onValuesChange={values => {
-            const snappedValue = snapToAllowedValue(values[0]);
-            props.multiSliderValuesChange([snappedValue]);
-          }}
-          onValuesChangeFinish={values => {
-            const snappedValue = snapToAllowedValue(values[0]);
-            props.multiSliderValuesChange([snappedValue]);
-          }}
+          onValuesChangeFinish={props.multiSliderValuesChange}
           min={props.min}
           max={props.max}
           step={props.step}
@@ -192,6 +177,10 @@ const SliderView = props => {
           minMarkerOverlapDistance={10}
           enableLabel={props.enableLabel}
           customLabel={sliderPosition => {
+            console.log(
+              "sliderPositionsliderPosition",
+              sliderPosition?.oneMarkerValue
+            );
             return (
               <>
                 {props.customLabel == "simple" ? (
@@ -342,7 +331,7 @@ const SliderView = props => {
                       position: "absolute",
                       left:
                         sliderPosition.oneMarkerValue === 0
-                          ? sliderPosition.oneMarkerLeftPosition - 15
+                          ? sliderPosition.oneMarkerLeftPosition - 20
                           : sliderPosition.oneMarkerLeftPosition - 40,
                       top: 40,
                     }}
@@ -358,7 +347,18 @@ const SliderView = props => {
                       <Text
                         style={{ color: colors.primaryPink, fontWeight: "600" }}
                       >
-                        {sliderPosition.oneMarkerValue} mi
+                        {sliderPosition.oneMarkerValue === 0
+                          ? "25"
+                          : sliderPosition.oneMarkerValue === 1
+                          ? "50"
+                          : sliderPosition.oneMarkerValue === 2
+                          ? "100"
+                          : sliderPosition.oneMarkerValue === 3
+                          ? "250"
+                          : sliderPosition.oneMarkerValue === 4
+                          ? "500"
+                          : 0}{" "}
+                        mi
                       </Text>
                     )}
                   </View>

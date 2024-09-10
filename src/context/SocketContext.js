@@ -18,7 +18,7 @@ const SocketProvider = ({ children }) => {
         userId: userId ? userId : 1,
       },
     });
-
+    console.log("Socket Connection", socket);
     socketEvents(socket);
 
     setSocket(socket);

@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  Modal,
+} from "react-native";
 
 import styles from "./styles";
 import FastImage from "react-native-fast-image";
 import colors from "../../utility/colors";
 import WaveForm from "react-native-audiowaveform";
 import CircularIcon from "../circularIcons";
+import FeedbackModal from "../Modal/FeedBackModal";
 
 const theirAfterFlip = props => {
   let date_1 = new Date(props.createdAt);
@@ -15,6 +22,7 @@ const theirAfterFlip = props => {
 
   const [loading, setLoading] = useState(false);
   const [showWaves, setShowWaves] = useState(props.showWaves);
+  const [isFeedbackModalVisible, setIsFeedbackModalVisible] = useState(false); // State for feedback modal visibility
 
   useEffect(() => {}, [showWaves]);
 
@@ -25,6 +33,13 @@ const theirAfterFlip = props => {
     }, 10000);
     return () => clearTimeout(timer);
   }, []);
+
+  const handleChatPress = () => {
+    setIsFeedbackModalVisible(true); // Show the feedback modal when chat icon is pressed
+    if (props.circularIconChatPress) {
+      props.circularIconChatPress(); // Call any additional chat press logic
+    }
+  };
 
   return (
     <View style={styles.shadowContainer1} onPress={props.afterFlipPress}>
@@ -199,7 +214,7 @@ const theirAfterFlip = props => {
               />
               <CircularIcon
                 iconChatImage
-                onPress={props.circularIconChatPress}
+                onPress={handleChatPress} // Use the new handler
                 color={colors.white}
                 size={26}
                 circularIconStyle={styles.iconStyle}
@@ -221,7 +236,7 @@ const theirAfterFlip = props => {
               <CircularIcon
                 iconChatImage
                 status={props.status}
-                // onPress={props.circularIconChatPress}
+                onPress={handleChatPress} // Use the new handler
                 color={colors.white}
                 size={26}
                 circularIconStyle={styles.iconStyle}
@@ -268,6 +283,18 @@ const theirAfterFlip = props => {
           />
         </View>
       </TouchableOpacity>
+
+      {/* Feedback Modal */}
+      <Modal
+        transparent={true}
+        visible={isFeedbackModalVisible}
+        onRequestClose={() => setIsFeedbackModalVisible(false)}
+      >
+        <FeedbackModal
+          onClose={() => setIsFeedbackModalVisible(false)}
+          // Pass any additional props your feedback modal might need
+        />
+      </Modal>
     </View>
   );
 };

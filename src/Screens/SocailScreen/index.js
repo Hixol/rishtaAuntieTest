@@ -12,24 +12,25 @@ import {
 import { Amplify, Auth, Hub } from "aws-amplify";
 import { CognitoHostedUIIdentityProvider } from "@aws-amplify/auth";
 import { useSelector, useDispatch } from "react-redux";
-import { android, ios, windowHeight, windowWidth } from "../utility/size";
-import { useHelper } from "../hooks/useHelper";
+import { android, ios, windowHeight, windowWidth } from "../../utility/size";
 import { WebView } from "react-native-webview";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 import FastImage from "react-native-fast-image";
-import colors from "../utility/colors";
 import IntlPhoneInput from "react-native-intl-phone-input";
-import UserService from "../services/UserService";
-import config from "../aws-exports";
-import Loader from "./Loader";
-import Icons from "../utility/icons";
-import Countries from "../assets/countryLists/Countries";
+import config from "../../aws-exports";
+
+import Icons from "../../utility/icons";
 import InAppBrowser from "react-native-inappbrowser-reborn";
 import DeviceInfo from "react-native-device-info";
 import analytics from "@react-native-firebase/analytics";
+import colors from "../../utility/colors";
+import { UserService } from "../../services";
+import Loader from "../../components/Loader";
+import Countries from "../../assets/countryLists/Countries";
+import { useHelper } from "../../hooks/useHelper";
+import { useNavigation } from "@react-navigation/native";
 
-const LoginSignup = props => {
+const SocailScreen = (props) => {
   let webviewRef = useRef(null);
   const dispatch = useDispatch();
   const {
@@ -41,7 +42,7 @@ const LoginSignup = props => {
   } = useHelper();
 
   const { mobileNumber, email, status } = useSelector(
-    store => store.userReducer
+    (store) => store.userReducer
   );
 
   let [fullNumber, setFullNumber] = useState("");
@@ -62,11 +63,11 @@ const LoginSignup = props => {
   const [isVerified, setIsVerified] = useState(false);
   const [url, setUrl] = useState("");
   const signInWithApple = "SignInWithApple";
-
+  const navigation = useNavigation();
   const urlOpener = async (url, redirectUrl) => {
     let identityProvider = url
       ?.split("&")
-      .find(str => str.indexOf("identity_provider") > -1)
+      .find((str) => str.indexOf("identity_provider") > -1)
       .split("=")
       .pop();
 
@@ -132,16 +133,16 @@ const LoginSignup = props => {
 
   const getUser = () => {
     Auth.currentAuthenticatedUser()
-      .then(user => {
+      .then((user) => {
         setCurrentAuthUser(user);
       })
-      .catch(err => console.log("currentAuthenticatedUser err:", err));
+      .catch((err) => console.log("currentAuthenticatedUser err:", err));
   };
 
   useEffect(() => {
     if (mulk == "") handleLocation();
     if (mulk != "") {
-      setCountryCode(Countries.filter(el => el.en == mulk)[0].code);
+      setCountryCode(Countries.filter((el) => el.en == mulk)[0].code);
     }
   }, [mulk]);
 
@@ -200,7 +201,7 @@ const LoginSignup = props => {
     UserService.login({
       phoneNumber: fullNumber,
     })
-      .then(res => {
+      .then((res) => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           Alerts("success", res.data.message);
@@ -216,7 +217,7 @@ const LoginSignup = props => {
           });
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.log("login err", err);
         Alerts("error", err?.message.toString());
       })
@@ -431,6 +432,7 @@ const LoginSignup = props => {
             success: true,
             phoneNumber,
           });
+          Alert.alert("This Account was Deleted");
         } else if (fullNumber != mobileNumber) {
           clearRedux();
           clearNewRedux();
@@ -462,7 +464,7 @@ const LoginSignup = props => {
     });
     if (res === "SUCCESS") {
       UserService.signUpSocial(body)
-        .then(res => {
+        .then((res) => {
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             let data = res?.data?.data;
@@ -488,7 +490,7 @@ const LoginSignup = props => {
             });
           }
         })
-        .catch(err => {
+        .catch((err) => {
           if (err?.message.includes("Network")) {
             Alerts("error", err.message);
           } else {
@@ -512,7 +514,7 @@ const LoginSignup = props => {
     UserService.signUp({
       phoneNumber: fullNumber,
     })
-      .then(res => {
+      .then((res) => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           Alerts("success", res.data.message);
@@ -528,11 +530,25 @@ const LoginSignup = props => {
           });
         }
       })
-      .catch(err => Alerts("error", err?.message.toString()))
+      .catch((err) => Alerts("error", err?.message.toString()))
       .finally(() => setLoading(false));
   };
   const signUp = () => {
-    if (phoneNumber === "") {
+    if (phoneNumber === "" && check === false) {
+      setError("Phone Number is required...!");
+      // Log the error event
+      analytics().logEvent("sign_up_attempt", {
+        success: false,
+        error: "Phone Number is required",
+      });
+    } else if (phoneNumber !== "" && check === false) {
+      setError("Please accept our Terms of Service...!");
+      // Log the error event
+      analytics().logEvent("sign_up_attempt", {
+        success: false,
+        error: "Terms of Service not accepted",
+      });
+    } else if (check === true && phoneNumber === "") {
       setError("Phone Number is required...!");
       // Log the error event
       analytics().logEvent("sign_up_attempt", {
@@ -540,45 +556,59 @@ const LoginSignup = props => {
         error: "Phone Number is required",
       });
     } else {
-      setLoading(true);
-      if (fullNumber === mobileNumber) {
-        handleSignupService();
-      } else {
-        clearRedux();
-        clearNewRedux();
-        handleSignupService();
-      }
+      if (phoneNumber !== "" && check === true) {
+        setLoading(true);
+        if (fullNumber == mobileNumber) {
+          handleSignupService();
+        } else if (fullNumber != mobileNumber) {
+          clearRedux();
+          clearNewRedux();
+          handleSignupService();
+        }
 
-      // Log the sign-up attempt event
-      analytics().logEvent("sign_up_attempt", {
-        success: true,
-        phoneNumber,
-      });
+        // Log the sign-up attempt event
+        analytics().logEvent("sign_up_attempt", {
+          success: true,
+          phoneNumber,
+        });
+      }
     }
   };
 
-  // const handleUrl = (endpoint) =>
-  //   Linking.openURL(`https://rishtaauntie.app/${endpoint}/`);
+  const handleUrl = (endpoint) =>
+    Linking.openURL(`https://rishtaauntie.app/${endpoint}/`);
 
   return loader ? (
     <Loader />
   ) : (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity
-        onPress={() => {
-          if (canGoBack) {
-            props.props.navigation.replace("SignInNew");
-          } else {
-            props.props.navigation.goBack();
-          }
+      <View
+        style={{
+          flexDirection: "row",
         }}
       >
+        <TouchableOpacity
+          onPress={() => {
+            if (canGoBack) {
+              navigation.replace("WelcomeScreen");
+            } else {
+              navigation.goBack();
+            }
+          }}
+        >
+          <FastImage
+            resizeMode="contain"
+            style={{ width: 20, height: 30 }}
+            source={require("../../assets/iconimages/arrow-back.png")}
+          />
+        </TouchableOpacity>
         <FastImage
           resizeMode="contain"
-          style={{ width: 20, height: 30 }}
-          source={require("../assets/iconimages/arrow-back.png")}
+          style={{ width: 50, height: "130%", left: 130 }}
+          source={require("../../assets/iconimages/header-icon.png")}
         />
-      </TouchableOpacity>
+      </View>
+
       <View style={{ marginTop: "8%" }}>
         <Text style={styles.heading}>
           {props.login
@@ -587,12 +617,67 @@ const LoginSignup = props => {
         </Text>
         <Text style={styles.lightText}></Text>
       </View>
-
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* <View style={styles.noAccountView}>
+      {url != "" && identityProvider == signInWithApple && (
+        <WebView
+          ref={webviewRef}
+          style={{ flex: identityProvider == signInWithApple ? 0 : 1 }}
+          source={{ uri: url }}
+          incognito={true}
+          onLoadProgress={() =>
+            Alerts(
+              "info",
+              "Please wait while we are processing your request..."
+            )
+          }
+          cacheEnabled={false}
+          userAgent={
+            android
+              ? "Chrome/18.0.1025.133 Mobile Safari/535.19"
+              : "AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75"
+          }
+          onNavigationStateChange={(navState) => {
+            setCanGoBack(navState.canGoBack);
+          }}
+        />
+      )}
+      {url != "" && identityProvider != signInWithApple ? (
+        <WebView
+          ref={webviewRef}
+          style={{ flexGrow: identityProvider == signInWithApple ? 0 : 1 }}
+          source={{ uri: url }}
+          incognito={true}
+          startInLoadingState={true}
+          renderLoading={() => (
+            <Loader
+              style={{
+                position: "absolute",
+                top: ios ? windowHeight / 2.7 : windowHeight / 2,
+                left: windowWidth / 2.15,
+              }}
+            />
+          )}
+          onLoadProgress={() =>
+            Alerts(
+              "info",
+              "Please wait while we are processing your request..."
+            )
+          }
+          cacheEnabled={false}
+          userAgent={
+            android
+              ? "Chrome/18.0.1025.133 Mobile Safari/535.19"
+              : "AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75"
+          }
+          onNavigationStateChange={(navState) => {
+            setCanGoBack(navState.canGoBack);
+          }}
+        />
+      ) : (
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.noAccountView}>
             <TouchableOpacity
               style={styles.socialButtons}
               onPress={() => socialSignInGoogle()}
@@ -600,7 +685,7 @@ const LoginSignup = props => {
               <FastImage
                 resizeMode="contain"
                 style={{ width: 30, height: 30 }}
-                source={require("../assets/iconimages/Google.png")}
+                source={require("../../assets/iconimages/Google.png")}
               />
               <Text style={styles.socialText}>Google</Text>
             </TouchableOpacity>
@@ -612,73 +697,76 @@ const LoginSignup = props => {
                 <FastImage
                   resizeMode="contain"
                   style={{ width: 30, height: 30 }}
-                  source={require("../assets/iconimages/appleicon.png")}
+                  source={require("../../assets/iconimages/appleicon.png")}
                 />
                 <Text style={styles.socialText}>Apple</Text>
               </TouchableOpacity>
             ) : null}
-          </View> */}
-        <View
-          style={{
-            width: "100%",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-            flexDirection: "row",
-            marginTop: "5%",
-          }}
-        >
-          {/* <View style={styles.divider}></View>
-            <Text style={{ fontFamily: "Inter-Medium", color: "#6B7280" }}>
-              {props.login
-                ? "Or sign in with phone number"
-                : "Or sign up with phone number"}
-            </Text>
-            <View style={styles.divider}></View> */}
-        </View>
-        <View style={{ marginVertical: "5%" }}></View>
-        <IntlPhoneInput
-          onChangeText={onChangeText}
-          containerStyle={{
-            backgroundColor: colors.white,
-            borderColor: colors.primaryPink,
-            borderWidth: 1,
-          }}
-          dialCodeTextStyle={{
-            color: "#111827",
-            left: 5,
-            fontFamily: "Inter-Regular",
-          }}
-          phoneInputStyle={{
-            color: colors.black,
-            left: 5,
-            fontFamily: "Inter-Regular",
-          }}
-          placeholderTextColor={colors.vibeLightGrey}
-          defaultCountry={countryCode}
-          lang="en"
-          modalCountryItemCountryNameStyle={{ color: "black" }}
-          modalCountryItemCountryDialCodeStyle={{
-            color: "black",
-            fontFamily: "Inter-Regular",
-          }}
-          flagStyle={{ fontSize: ios ? 35 : 25, color: "black" }}
-          modalFlagStyle={{ fontSize: ios ? 25 : 20, color: "black" }}
-        />
-        <View style={{ marginTop: "2%", height: 20 }}>
-          <Text
+          </View>
+          <View
             style={{
-              alignSelf: "flex-end",
-              color: "#FF3D00",
-              fontFamily: "Inter-Medium",
+              width: "100%",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+              flexDirection: "row",
+              marginTop: "5%",
             }}
           >
-            {isVerified === false && phoneNumber?.length > 0
-              ? "Enter a correct phone number"
-              : ""}
-          </Text>
-        </View>
-        {/* {props.login ? null : (
+            {/* <View style={styles.divider}></View> */}
+            <View>
+              <Text style={{ fontFamily: "Inter-Medium", color: "#6B7280" }}>
+                {props.login ? "Or sign in with " : "Or sign up with "}
+                <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
+                  <Text style={{ color: "#D90368", top: 4 }}>Phone Number</Text>
+                </TouchableOpacity>
+              </Text>
+            </View>
+            {/* <View style={styles.divider}></View> */}
+          </View>
+          <View style={{ marginVertical: "5%" }}></View>
+          {/* <IntlPhoneInput
+            onChangeText={onChangeText}
+            containerStyle={{
+              backgroundColor: colors.white,
+              borderColor: colors.primaryPink,
+              borderWidth: 1,
+            }}
+            dialCodeTextStyle={{
+              color: "#111827",
+              left: 5,
+              fontFamily: "Inter-Regular",
+            }}
+            phoneInputStyle={{
+              color: colors.black,
+              left: 5,
+              fontFamily: "Inter-Regular",
+            }}
+            placeholderTextColor={colors.vibeLightGrey}
+            defaultCountry={countryCode}
+            lang="en"
+            modalCountryItemCountryNameStyle={{ color: "black" }}
+            modalCountryItemCountryDialCodeStyle={{
+              color: "black",
+              fontFamily: "Inter-Regular",
+            }}
+            flagStyle={{ fontSize: ios ? 35 : 25, color: "black" }}
+            modalFlagStyle={{ fontSize: ios ? 25 : 20, color: "black" }}
+          /> */}
+          {/* <View style={{ marginTop: "2%", height: 20 }}>
+            <Text
+              style={{
+                alignSelf: "flex-end",
+                color: "#FF3D00",
+                fontFamily: "Inter-Medium",
+              }}
+            >
+              {isVerified === false && phoneNumber?.length > 0
+                ? "Enter a correct phone number"
+                : ""}
+            </Text>
+          </View> */}
+          {props.login ? null : (
             <View
               style={[
                 styles.checkBoxView,
@@ -687,10 +775,23 @@ const LoginSignup = props => {
                 },
               ]}
             >
-        
+              {/* <TouchableOpacity
+                onPress={() => setCheck(!check)}
+                style={styles.checkBox}
+              >
+                {check ? (
+                  <Icons.FontAwesome
+                    name="check"
+                    size={20}
+                    color={colors.primaryPink}
+                  />
+                ) : null}
+              </TouchableOpacity> */}
 
               <Text style={[styles.descTxt, styles.descTxt1]}>
-                By signing into Rishta Auntie you agree to the{" "}
+                {props.login
+                  ? "By signing in to Rishta Auntie you agree to the "
+                  : "By signing up to Rishta Auntie you agree to the "}
                 <Text
                   onPress={() => handleUrl("terms-of-use")}
                   style={styles.infoTxt}
@@ -706,31 +807,33 @@ const LoginSignup = props => {
                 </Text>
               </Text>
             </View>
-          )} */}
-
-        <TouchableOpacity
-          disabled={loading || (phoneNumber.length > 0 && isVerified === false)}
-          onPress={() => {
-            props.login ? signIn() : signUp();
-          }}
-          style={[
-            styles.signInButton,
-            { marginTop: props.login ? "20%" : "10%" },
-          ]}
-        >
-          {loading ? (
-            <ActivityIndicator
-              size="small"
-              color={colors.white}
-              style={{ marginRight: 7 }}
-            />
-          ) : (
-            <Text style={styles.signinBtnTxt}>
-              {props.login ? "Sign In" : "Next"}
-            </Text>
           )}
-        </TouchableOpacity>
-        {/* {props.login ? (
+
+          {/* <TouchableOpacity
+            disabled={
+              loading || (phoneNumber.length > 0 && isVerified === false)
+            }
+            onPress={() => {
+              props.login ? signIn() : signUp();
+            }}
+            style={[
+              styles.signInButton,
+              { marginTop: props.login ? "20%" : "10%" },
+            ]}
+          >
+            {loading ? (
+              <ActivityIndicator
+                size="small"
+                color={colors.white}
+                style={{ marginRight: 7 }}
+              />
+            ) : (
+              <Text style={styles.signinBtnTxt}>
+                {props.login ? "Sign In" : "Join for free"}
+              </Text>
+            )}
+          </TouchableOpacity> */}
+          {/* {props.login ? (
             phoneNumber != '' ? null : error != '' ? (
               <Text style={styles.warningText}>{error}</Text>
             ) : null
@@ -742,7 +845,7 @@ const LoginSignup = props => {
             <Text style={styles.warningText}>{error}</Text>
           ) : null} */}
 
-        {/* <View style={{ marginTop: "5%" }}>
+          <View style={{ marginTop: "5%" }}>
             {props.login ? (
               <>
                 <View
@@ -799,23 +902,22 @@ const LoginSignup = props => {
                 <Text style={styles.noAccountTxt}>
                   Already have an account?
                 </Text>
-                <TouchableOpacity
-                  onPress={() => props.props.navigation.navigate("Login")}
-                >
+                <TouchableOpacity onPress={() => navigation.navigate("Login")}>
                   <Text
                     style={{
-                      fontFamily: "Inter-Bold",
+                      fontFamily: "Inter-Medium",
                       color: colors.primaryPink,
                       fontSize: 12,
                     }}
                   >
-                    Sign In
+                    Sign in
                   </Text>
                 </TouchableOpacity>
               </View>
             )}
-          </View> */}
-      </ScrollView>
+          </View>
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 };
@@ -836,13 +938,13 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   noAccountView: {
-    flexDirection: "row",
+    flexDirection: "column",
     alignSelf: "center",
     alignItems: "center",
     marginBottom: "5%",
-    justifyContent: "space-evenly",
-    width: "100%",
+    width: "200%",
   },
+
   createOneText: {
     fontFamily: "Inter-Bold",
     color: colors.primaryBlue,
@@ -948,7 +1050,6 @@ const styles = StyleSheet.create({
   signinBtnTxt: {
     fontFamily: "Inter-Medium",
     fontSize: 17,
-    fontWeight: "bold",
     color: colors.white,
   },
   signInButton: {
@@ -1023,6 +1124,7 @@ const styles = StyleSheet.create({
     color: "#6B7280",
     fontFamily: "Inter-Medium",
   },
+  lineHeight: 20,
   heading: {
     fontFamily: "Inter-Bold",
     fontSize: 25,
@@ -1038,13 +1140,14 @@ const styles = StyleSheet.create({
   },
   socialButtons: {
     width: "45%",
-    paddingVertical: "3%",
+    paddingVertical: "2%",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#F3F4F6",
     flexDirection: "row",
+    marginBottom: 25, // Add margin to create space between buttons
   },
   socialText: {
     fontSize: 18,
@@ -1079,9 +1182,9 @@ const styles = StyleSheet.create({
     fontFamily: "Inter-Medium",
   },
   descTxt1: {
-    marginLeft: "2%",
+    marginLeft: "12%",
     marginTop: "1%",
-    textAlign: "left",
+    textAlign: "center",
   },
   infoTxt: {
     fontFamily: "Inter-Medium",
@@ -1090,4 +1193,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginSignup;
+export default SocailScreen;

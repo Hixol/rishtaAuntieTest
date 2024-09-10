@@ -139,7 +139,7 @@ android {
         applicationId "com.rishtaaunty"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 6
+        versionCode 11
         versionName "0.0.11"
         missingDimensionStrategy 'react-native-camera', 'general'
         missingDimensionStrategy "store", "play"
@@ -181,10 +181,10 @@ android {
         release
         {
             if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
-                storeFile file("keystore.jks")
-                storePassword "rishtaauntie"
-                keyAlias "upload"
-                keyPassword "rishtaauntie"
+                storeFile file("my-upload-key.keystore")
+                storePassword "112233"
+                keyAlias "my-key-alias"
+                keyPassword "112233"
             }
         }
     }

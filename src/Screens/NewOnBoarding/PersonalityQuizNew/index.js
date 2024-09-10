@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import FastImage from "react-native-fast-image";
 import colors from "../../../utility/colors";
+import analytics from "@react-native-firebase/analytics";
 
 const PersonalityQuizNew = ({ navigation }) => {
   return (
@@ -60,9 +61,16 @@ const PersonalityQuizNew = ({ navigation }) => {
         source={require("../../../assets/iconimages/PersonalityBrain.png")}
       />
       <TouchableOpacity
-        onPress={() => navigation.navigate("PersonalityQuiz")}
+        onPress={async () => {
+          // Log the analytics event
+          await analytics().logEvent("personality_quiz_button_pressed", {
+            description: "User pressed Rishta Auntie Personality Quiz button",
+          });
+
+          // Navigate to the PersonalityQuiz screen
+          navigation.navigate("PersonalityQuiz");
+        }}
         style={{
-          //   width: '60%',
           paddingVertical: "5%",
           backgroundColor: colors.primaryPink,
           alignSelf: "center",
@@ -77,14 +85,20 @@ const PersonalityQuizNew = ({ navigation }) => {
           Rishta Auntie Personality Quiz
         </Text>
       </TouchableOpacity>
+
       <TouchableOpacity
-        onPress={() =>
+        onPress={async () => {
+          // Log the analytics event
+          await analytics().logEvent("skip_now_button_pressed", {
+            description: "User pressed Skip for Now button",
+          });
+
+          // Navigate to the Settings screen
           navigation.navigate("BottomTab", {
             screen: "Settings",
-          })
-        }
+          });
+        }}
         style={{
-          //   width: '60%',
           paddingVertical: "3%",
           alignSelf: "center",
           marginTop: "3%",
