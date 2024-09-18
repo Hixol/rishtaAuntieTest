@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ImageBackground,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, TouchableOpacity, ImageBackground, ActivityIndicator } from "react-native";
 import { calculateDateAndTime } from "../../utility/regex";
 
 import styles from "./styles";
@@ -22,15 +16,17 @@ const BeforeFlip = props => {
   Countries.filter(country => {
     if (
       "otherUser" in props.item &&
+      props.item.otherUser.country !== null &&
       country.en == props.item.otherUser.country
     ) {
       flagsLiving = country.code;
-    } else if ("User" in props.item && country.en == props.item.User.country) {
+    } else if ("User" in props.item && props.item.User.country != null && country.en == props.item.User.country) {
       flagsLiving = country.code;
-    } else if ("user" in props.item && country.en == props.item.user.country) {
+    } else if ("user" in props.item && props.item.user.country != null && country.en == props.item.user.country) {
       flagsLiving = country.code;
     } else if (
       "vieweeUser" in props.item &&
+      props.item.vieweeUser.country != null &&
       country.en == props.item.vieweeUser.country
     ) {
       flagsLiving = country.code;
@@ -38,18 +34,8 @@ const BeforeFlip = props => {
   });
 
   return (
-    <TouchableOpacity
-      onPress={props.beforeFlipPress}
-      style={styles.shadowContainer}
-    >
-      {loading && (
-        <ActivityIndicator
-          animating
-          color={colors.primaryPink}
-          size="small"
-          style={styles.indicator}
-        />
-      )}
+    <TouchableOpacity onPress={props.beforeFlipPress} style={styles.shadowContainer}>
+      {loading && <ActivityIndicator animating color={colors.primaryPink} size="small" style={styles.indicator} />}
       <ImageBackground
         onLoadStart={() => setLoading(true)}
         onLoadEnd={() => setLoading(false)}
@@ -57,13 +43,8 @@ const BeforeFlip = props => {
         resizeMode="cover"
         imageStyle={{ borderRadius: 36 }}
         source={
-          props.resourceType === "USER_MEDIA"
-            ? props.Image
-            : props.resourceType
-            ? props.promptImage
-            : props.Image
-        }
-      >
+          props.resourceType === "USER_MEDIA" ? props.Image : props.resourceType ? props.promptImage : props.Image
+        }>
         <View style={styles.overlay} />
 
         <View style={styles.infoContainer}>
@@ -72,19 +53,14 @@ const BeforeFlip = props => {
             {props.age}
           </Text>
           <Text style={styles.locationTxt}>{props.Blocation}</Text>
-          <Text style={styles.daysTxt}>
-            {calculateDateAndTime(props.createdAt)}
-          </Text>
+          <Text style={styles.daysTxt}>{calculateDateAndTime(props.createdAt)}</Text>
           <View style={styles.flagsContainer}>
             <CountryFlag isoCode={flagsLiving} size={18} />
             <CountryFlag isoCode="de" size={18} />
           </View>
         </View>
 
-        <TouchableOpacity
-          onPress={props.onPress1}
-          style={styles.diagonalContainer}
-        >
+        <TouchableOpacity onPress={props.onPress1} style={styles.diagonalContainer}>
           <View style={styles.diagonalInnerContainer}>
             <Text style={styles.viewTxt}>View More</Text>
             <FastImage

@@ -21,23 +21,18 @@ const PrivacySettingContainer = props => {
   return (
     <View>
       {props.privacySettingType ? (
-        <Text style={[styles.privacySettingType, props.contStyle]}>
-          {props.privacySettingType}
-        </Text>
+        <Text style={[styles.privacySettingType, props.contStyle]}>{props.privacySettingType}</Text>
       ) : null}
       {props.arrowIcon ? (
         <TouchableOpacity
           disabled={props.disabled}
           onPress={props.arrowIcononPress}
-          style={[styles.toggleOptionView, props.toggleViewStyle]}
-        >
-          <Text style={[styles.toggleOptionText, props.toggleOptionTextStyle]}>
-            {props.toggleOptionText}
-          </Text>
+          style={[styles.toggleOptionView, props.toggleViewStyle]}>
+          <Text style={[styles.toggleOptionText, props.toggleOptionTextStyle]}>{props.toggleOptionText}</Text>
           {props.arrowIcon ? (
             <View style={styles.arrowIconView}>
               <FastImage
-                tintColor={proMem ? null : colors.softGrey}
+                tintColor={proMem ? colors.mediumGrey : colors.softGrey}
                 resizeMode="contain"
                 style={styles.arrowIconImage}
                 source={props.imageRequire}
@@ -47,9 +42,7 @@ const PrivacySettingContainer = props => {
         </TouchableOpacity>
       ) : (
         <View style={[styles.toggleOptionView, props.toggleViewStyle]}>
-          <Text style={[styles.toggleOptionText, props.toggleOptionTextStyle]}>
-            {props.toggleOptionText}
-          </Text>
+          <Text style={[styles.toggleOptionText, props.toggleOptionTextStyle]}>{props.toggleOptionText}</Text>
           {props.toggleSwitch ? (
             <ToggleSwitch
               disabled={props.disabled}
@@ -65,9 +58,7 @@ const PrivacySettingContainer = props => {
       )}
       {props.toggleOptionTaglineText ? (
         <View style={styles.toggleOptionTaglineView}>
-          <Text style={styles.toggleOptionTaglineText}>
-            {props.toggleOptionTaglineText}
-          </Text>
+          <Text style={styles.toggleOptionTaglineText}>{props.toggleOptionTaglineText}</Text>
         </View>
       ) : null}
     </View>

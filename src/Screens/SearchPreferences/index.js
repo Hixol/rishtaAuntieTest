@@ -13,7 +13,7 @@ import PrivacySettingContainer from "../../components/containers/PrivacySettingC
 import BasicPrivacySetting from "../../components/containers/BasicPrivacySetting";
 import Button from "../../components/buttons/Button";
 import SettingHeader from "../../components/containers/settingHeader";
-import analytics from '@react-native-firebase/analytics'; // Import Firebase Analytics
+import analytics from "@react-native-firebase/analytics"; // Import Firebase Analytics
 
 const SearchPreferences = props => {
   const isFocused = useIsFocused();
@@ -23,9 +23,7 @@ const SearchPreferences = props => {
   const { handleDisablePremium, handleStatusCode } = useHelper();
   const { token, userData } = useSelector(store => store.userReducer);
 
-  const [premiumPrivacySetting, setPremiumPrivacySetting] = useState(
-    userData?.UserSetting?.isSubscribed
-  );
+  const [premiumPrivacySetting, setPremiumPrivacySetting] = useState(userData?.UserSetting?.isSubscribed);
 
   const BasicPreferences = [
     {
@@ -35,7 +33,7 @@ const SearchPreferences = props => {
       value: value?.distance,
       editType: "Distance",
       ask: "Find matches closer or farther away",
-      line: "Set your preferred distance",
+      line: "Set your preferred distance"
     },
     {
       id: 2,
@@ -44,7 +42,7 @@ const SearchPreferences = props => {
       value: [value?.ageFrom, value?.ageTo],
       editType: "Age",
       ask: "Discover matches in your preferred age group",
-      line: "Select desired age range",
+      line: "Select desired age range"
     },
     {
       id: 3,
@@ -56,7 +54,7 @@ const SearchPreferences = props => {
       screen: true,
       placeholder: "Search religions",
       ask: "Find matches with similar religious views",
-      line: "Set your preferred distance",
+      line: "Set your preferred distance"
     },
     {
       id: 4,
@@ -66,8 +64,8 @@ const SearchPreferences = props => {
       editType: "Family Origin",
       placeholder: "Search countries",
       ask: "Embrace a variety of family origins",
-      line: "Explore diverse family origins",
-    },
+      line: "Explore diverse family origins"
+    }
   ];
 
   const PremiumPreferences = [
@@ -78,7 +76,7 @@ const SearchPreferences = props => {
       value: [value?.heightFrom, value?.heightTo],
       editType: "Height",
       ask: "Find matches based on height compatibility",
-      line: "Specify preferred height range",
+      line: "Specify preferred height range"
     },
     {
       id: 2,
@@ -88,7 +86,7 @@ const SearchPreferences = props => {
       editType: "Community",
       placeholder: "Search communities",
       ask: "Find matches from various communities",
-      line: "Embrace diverse communities",
+      line: "Embrace diverse communities"
     },
     {
       id: 3,
@@ -98,7 +96,7 @@ const SearchPreferences = props => {
       editType: "Languages",
       placeholder: "Search languages",
       ask: "Connect with matches who speak your language",
-      line: "Explore multilingual connections",
+      line: "Explore multilingual connections"
     },
     {
       id: 4,
@@ -108,7 +106,7 @@ const SearchPreferences = props => {
       editType: "Denomination",
       placeholder: "Search religious denominations",
       ask: "Find matches with matching faith traditions",
-      line: "Match based on religious denomination",
+      line: "Match based on religious denomination"
     },
     {
       id: 5,
@@ -117,7 +115,7 @@ const SearchPreferences = props => {
       value: value?.theyPray,
       editType: "Pray",
       ask: "Connect with matches who share your spiritual practices",
-      line: "Match your prayer habits",
+      line: "Match your prayer habits"
     },
     {
       id: 6,
@@ -126,7 +124,7 @@ const SearchPreferences = props => {
       value: value?.drinking,
       editType: "Drink",
       ask: "Match with those who share your attitude towards alcohol",
-      line: "Specify drinking preferences",
+      line: "Specify drinking preferences"
     },
     {
       id: 7,
@@ -135,7 +133,7 @@ const SearchPreferences = props => {
       value: value?.smoking,
       editType: "Smoke",
       ask: "Connect with matches who match your smoking habits",
-      line: "Set smoking preferences",
+      line: "Set smoking preferences"
     },
     {
       id: 8,
@@ -144,7 +142,7 @@ const SearchPreferences = props => {
       value: value?.dietChoices,
       editType: "Diet",
       ask: "Connect with matches who share your dietary lifestyle?",
-      line: "Define diet preferences",
+      line: "Define diet preferences"
     },
     {
       id: 9,
@@ -153,7 +151,7 @@ const SearchPreferences = props => {
       value: value?.maritalHistory,
       editType: "Marital History",
       ask: "Connect with matches based on their marital background",
-      line: "Choose marital history preferences",
+      line: "Choose marital history preferences"
     },
     {
       id: 10,
@@ -162,7 +160,7 @@ const SearchPreferences = props => {
       value: value?.hasKids,
       editType: "Have Kids",
       ask: "Match with those who have kids",
-      line: "Preferences regarding children",
+      line: "Preferences regarding children"
     },
     {
       id: 11,
@@ -171,7 +169,7 @@ const SearchPreferences = props => {
       value: value?.wantKids,
       editType: "Want Kids",
       ask: "Connect with those who share your family plans",
-      line: "Desire for future children",
+      line: "Desire for future children"
     },
     {
       id: 12,
@@ -180,8 +178,8 @@ const SearchPreferences = props => {
       value: value?.willingToRelocate,
       editType: "Relocate",
       ask: "Connect with those who are willing to relocate",
-      line: "Openness to relocation",
-    },
+      line: "Openness to relocation"
+    }
   ];
 
   const resetFeature = () => {
@@ -190,18 +188,18 @@ const SearchPreferences = props => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           // Analytics logging
-          analytics().logEvent('reset_feature', {
-            screen: 'SearchPreferences',
-            result: 'success'
+          analytics().logEvent("reset_feature", {
+            screen: "SearchPreferences",
+            result: "success"
           });
         }
       })
       .catch(err => {
         console.log("applyReset err:", err);
         // Analytics logging
-        analytics().logEvent('reset_feature', {
-          screen: 'SearchPreferences',
-          result: 'error',
+        analytics().logEvent("reset_feature", {
+          screen: "SearchPreferences",
+          result: "error",
           error: err.message
         });
       });
@@ -216,32 +214,23 @@ const SearchPreferences = props => {
   useEffect(() => {
     // Track screen view
     analytics().logScreenView({
-      screen_name: 'SearchPreferences',
-      screen_class: 'SearchPreferences',
+      screen_name: "SearchPreferences",
+      screen_class: "SearchPreferences"
     });
 
     OnBoardingServices.profileValues(
-      encodeURI(
-        JSON.stringify([
-          "college",
-          "community",
-          "denomination",
-          "familyOrigin",
-          "language",
-          "occupation",
-        ])
-      )
+      encodeURI(JSON.stringify(["college", "community", "denomination", "familyOrigin", "language", "occupation"]))
     )
       .then(async res => {
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
             type: "allProfileValues",
-            payload: res?.data?.data,
+            payload: res?.data?.data
           });
         }
       })
       .catch(err => console.log("profileValues err", err))
-      .finally(() => { });
+      .finally(() => {});
   }, []);
 
   useFocusEffect(
@@ -255,7 +244,7 @@ const SearchPreferences = props => {
 
             dispatch({
               type: "AUTH_USER",
-              payload: data,
+              payload: data
             });
           }
         });
@@ -286,13 +275,11 @@ const SearchPreferences = props => {
         maritalHistory: userData?.UserPreference?.maritalHistory,
         haveKids: userData?.UserPreference?.haveKids,
         wantKids: userData?.UserPreference?.wantKids,
-        willingToRelocate: userData?.UserPreference?.willingToRelocate,
+        willingToRelocate: userData?.UserPreference?.willingToRelocate
       };
     } else {
       body = {
-        distance: userData?.UserPreference?.distance
-          ? userData?.UserPreference?.distance
-          : "unlimited",
+        distance: userData?.UserPreference?.distance ? userData?.UserPreference?.distance : "unlimited",
         ageFrom: userData?.UserPreference?.ageFrom,
         ageTo: userData?.UserPreference?.ageTo,
         religion: userData?.UserPreference?.religion,
@@ -309,7 +296,7 @@ const SearchPreferences = props => {
         maritalHistory: null,
         haveKids: null,
         wantKids: null,
-        willingToRelocate: null,
+        willingToRelocate: null
       };
     }
 
@@ -321,37 +308,32 @@ const SearchPreferences = props => {
 
           dispatch({
             type: "SET_PREFERENCE_FILTER",
-            payload: true,
+            payload: true
           });
 
           // Analytics logging
-          analytics().logEvent('clear_preferences', {
-            screen: 'SearchPreferences',
+          analytics().logEvent("clear_preferences", {
+            screen: "SearchPreferences",
             type,
-            result: 'success'
+            result: "success"
           });
         }
       })
       .catch(err => {
         console.log("clearPreference err", err);
         // Analytics logging
-        analytics().logEvent('clear_preferences', {
-          screen: 'SearchPreferences',
+        analytics().logEvent("clear_preferences", {
+          screen: "SearchPreferences",
           type,
-          result: 'error',
+          result: "error",
           error: err.message
         });
       });
   };
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: colors.white, padding: 20 }}
-    >
-      <SettingHeader
-        backPress={() => props.navigation.goBack()}
-        screenTitle={"Search preferences"}
-      />
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.white, padding: 20 }}>
+      <SettingHeader backPress={() => props.navigation.goBack()} screenTitle={"Search preferences"} />
       {/* 
       <TouchableOpacity onPress={resetFeature}>
         <Text style={[styles.basicPreferenceType, {marginBottom: '5%'}]}>
@@ -362,10 +344,7 @@ const SearchPreferences = props => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.preferenceRow}>
           <Text style={styles.basicPreferenceType}>Basic Preferences</Text>
-          <Text
-            onPress={() => handleClearPref("basic")}
-            style={styles.clearTxt}
-          >
+          <Text onPress={() => handleClearPref("basic")} style={styles.clearTxt}>
             Clear all
           </Text>
         </View>
@@ -378,33 +357,31 @@ const SearchPreferences = props => {
                     arrowIcononPress={() =>
                       i?.screen
                         ? props.navigation.navigate(i?.screenName, {
-                          preferenceEdit: true,
-                          index: i?.index,
-                          type: i?.type,
-                          placeholder: i?.placeholder,
-                        })
+                            preferenceEdit: true,
+                            index: i?.index,
+                            type: i?.type,
+                            placeholder: i?.placeholder
+                          })
                         : props.navigation.navigate("EditScreenSetting", {
-                          preferenceEdit: true,
-                          index: i?.index,
-                          type: i?.editType,
-                          placeholder: i?.placeholder,
-                          ask: i?.ask,
-                          line: i?.line,
-                        })
+                            preferenceEdit: true,
+                            index: i?.index,
+                            type: i?.editType,
+                            placeholder: i?.placeholder,
+                            ask: i?.ask,
+                            line: i?.line
+                          })
                     }
                     arrowIcon
                     contStyle={styles.privacySettingStyle}
                     toggleOptionTextStyle={{
                       color: "#374151",
                       fontSize: 14,
-                      fontFamily: "Inter-Medium",
+                      fontFamily: "Inter-Medium"
                     }}
                     toggleOptionText={i.preferenceName}
                     toggleViewStyle={{ paddingBottom: "2%" }}
                   />
-                  {index === array?.length - 1 ? null : (
-                    <View style={styles.horizontalLine}></View>
-                  )}
+                  {index === array?.length - 1 ? null : <View style={styles.horizontalLine}></View>}
                 </View>
               );
             })}
@@ -418,21 +395,15 @@ const SearchPreferences = props => {
               styles.clearTxt,
               {
                 color: premiumPrivacySetting ? "#D90368" : colors.textGrey, // Change color based on premium status
-                opacity: premiumPrivacySetting ? 1 : 0.5, // Dull button when not premium
-              },
-            ]}
-          >
+                opacity: premiumPrivacySetting ? 1 : 0.5 // Dull button when not premium
+              }
+            ]}>
             Clear all
           </Text>
         </View>
         {premiumPrivacySetting === false ? (
-          <TouchableOpacity
-            onPress={handleUpgrade}
-            style={styles.enableDisableButton}
-          >
-            <Text style={{ fontSize: 15, color: colors.white }}>
-              Upgrade now to use Gold preferences
-            </Text>
+          <TouchableOpacity onPress={handleUpgrade} style={styles.enableDisableButton}>
+            <Text style={{ fontSize: 15, color: colors.white }}>Upgrade now to use Gold preferences</Text>
           </TouchableOpacity>
         ) : null}
         <View style={[styles.actionItemsView, { marginBottom: "10%" }]}>
@@ -440,38 +411,29 @@ const SearchPreferences = props => {
             return (
               <View key={i.id}>
                 <PrivacySettingContainer
-                  imageRequire={
-                    premiumPrivacySetting
-                      ? require("../../assets/iconimages/settingarrow.png")
-                      : require("../../assets/iconimages/settingarrow.png")
-                  }
-                  arrowIcononPress={
-                    () =>
-                      props.navigation.navigate("EditScreenSetting", {
-                        preferenceEdit: true,
-                        index: i?.index,
-                        type: i?.editType,
-                        placeholder: i?.placeholder,
-                        ask: i?.ask,
-                        line: i?.line,
-                      })
+                  imageRequire={require("../../assets/iconimages/settingarrow.png")}
+                  arrowIcononPress={() =>
+                    props.navigation.navigate("EditScreenSetting", {
+                      preferenceEdit: true,
+                      index: i?.index,
+                      type: i?.editType,
+                      placeholder: i?.placeholder,
+                      ask: i?.ask,
+                      line: i?.line
+                    })
                   }
                   disabled={premiumPrivacySetting ? false : true}
                   isEnabled={premiumPrivacySetting ? true : false}
                   arrowIcon
                   toggleOptionTextStyle={{
-                    color: premiumPrivacySetting
-                      ? "#374151"
-                      : colors.PremiumGrey,
+                    color: premiumPrivacySetting ? "#374151" : colors.PremiumGrey,
                     fontSize: 14,
-                    fontFamily: "Inter-Medium",
+                    fontFamily: "Inter-Medium"
                   }}
                   toggleOptionText={i.preferenceName}
                   toggleViewStyle={{ paddingBottom: "2%" }}
                 />
-                {index === array?.length - 1 ? null : (
-                  <View style={styles.horizontalLine}></View>
-                )}
+                {index === array?.length - 1 ? null : <View style={styles.horizontalLine}></View>}
               </View>
             );
           })}

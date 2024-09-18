@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  ScrollView,
-  SafeAreaView,
-  TouchableOpacity,
-} from "react-native";
+import { Text, View, ScrollView, SafeAreaView, TouchableOpacity } from "react-native";
 import { useSelector } from "react-redux";
 import { windowWidth } from "../../utility/size";
 import { useIsFocused } from "@react-navigation/native";
@@ -33,10 +27,10 @@ const MyProfileDetails = props => {
   let countryCode = null;
 
   Countries.filter(country => {
-    if (country.en == userData?.country) {
+    if (userData?.country != null && country.en == userData?.country) {
       countryFlag = country.code;
     }
-    if (country.en == userData?.Profile?.familyOrigin) {
+    if (userData?.Profile?.familyOrigin != null && country.en == userData?.Profile?.familyOrigin) {
       originFlag = country.code;
     }
     if (
@@ -63,18 +57,8 @@ const MyProfileDetails = props => {
   bioData ? languages.push(bioData?.UserLanguages?.map(x => x.language)) : null;
 
   const Capsule = ({ outlined, title, style, titleStyle }) => (
-    <View
-      style={[
-        styles.capsule,
-        style,
-        outlined ? styles.outlined : styles.filled,
-      ]}
-    >
-      <Text
-        style={[styles.myvibes, titleStyle, !outlined && styles.whiteTitle]}
-      >
-        {title}
-      </Text>
+    <View style={[styles.capsule, style, outlined ? styles.outlined : styles.filled]}>
+      <Text style={[styles.myvibes, titleStyle, !outlined && styles.whiteTitle]}>{title}</Text>
     </View>
   );
 
@@ -115,33 +99,21 @@ const MyProfileDetails = props => {
               {bioData ? bioData.firstName : null}{" "}
             </Text>
             <Text style={styles.nameTxt}>
-              {bioData
-                ? `${bioData?.Profile?.age}, ${bioData?.Profile?.occupation}`
-                : null}
+              {bioData ? `${bioData?.Profile?.age}, ${bioData?.Profile?.occupation}` : null}
             </Text>
           </View>
 
           <View style={styles.flagContainer}>
             <View style={styles.row1}>
-              <CountryFlag
-                isoCode={countryFlag}
-                size={17}
-                style={{ marginRight: 5 }}
-              />
+              <CountryFlag isoCode={countryFlag} size={17} style={{ marginRight: 5 }} />
               <CountryFlag isoCode={originFlag} size={17} />
             </View>
 
             <View style={styles.row2}>
-              <Icons.Ionicons
-                name="location-outline"
-                size={20}
-                color={colors.textGrey1}
-              />
+              <Icons.Ionicons name="location-outline" size={20} color={colors.textGrey1} />
               <Text style={styles.location}>
                 {bioData?.city},{" "}
-                {bioData?.country == "United States"
-                  ? countryCode
-                  : bioData?.country}
+                {bioData?.country == "United States" ? countryCode : bioData?.country}
               </Text>
             </View>
           </View>
@@ -149,9 +121,7 @@ const MyProfileDetails = props => {
 
         <View>
           <View style={styles.analystSection}>
-            <Text style={styles.statementTxt}>
-              {userData?.Profile?.tagline}
-            </Text>
+            <Text style={styles.statementTxt}>{userData?.Profile?.tagline}</Text>
           </View>
 
           <View style={styles.matchingSection}>
@@ -210,17 +180,10 @@ const MyProfileDetails = props => {
           {userData?.ProfilePrompts?.map((item, index) => {
             return (
               <View key={index} style={styles.lookingForSec}>
-                <Text
-                  style={[
-                    styles.poolQuestTxt,
-                    { marginTop: 15, marginLeft: 6 },
-                  ]}
-                >
+                <Text style={[styles.poolQuestTxt, { marginTop: 15, marginLeft: 6 }]}>
                   {item?.Question?.title}
                 </Text>
-                <Text style={[styles.poolAnsTxt, { marginTop: 14 }]}>
-                  {item?.answer}
-                </Text>
+                <Text style={[styles.poolAnsTxt, { marginTop: 14 }]}>{item?.answer}</Text>
               </View>
             );
           })}

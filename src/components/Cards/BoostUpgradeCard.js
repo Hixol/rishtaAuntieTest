@@ -14,26 +14,20 @@ const BoostUpgradeCard = props => {
 
   const dispatch = useDispatch();
   const { userData } = useSelector(store => store.userReducer);
-  const {
-    isSpotTimerFinished,
-    isProfileTimerFinished,
-    navStartTimer,
-    navEndTimer,
-  } = useSelector(store => store.timerReducer);
+  const { isSpotTimerFinished, isProfileTimerFinished, navStartTimer, navEndTimer } = useSelector(
+    store => store.timerReducer
+  );
 
   let secs = 0;
   let startTime = 0;
   let endTime = 0;
   const timerInSeconds =
-    type == "Spotlight:"
-      ? isSpotTimerFinished?.time
-      : isProfileTimerFinished?.time;
+    type == "Spotlight:" ? isSpotTimerFinished?.time : isProfileTimerFinished?.time;
 
   const [seconds, setSeconds] = useState(0);
 
   const timeToShow = timerInSeconds >= 3600 ? ["H", "M", "S"] : ["M", "S"];
-  const timeLabels =
-    timerInSeconds >= 3600 ? { h: "", m: "", s: "" } : { m: "", s: "" };
+  const timeLabels = timerInSeconds >= 3600 ? { h: "", m: "", s: "" } : { m: "", s: "" };
 
   const onFinish = type => {
     if (type == "spot") {
@@ -206,7 +200,7 @@ const BoostUpgradeCard = props => {
       isSpotTimerFinished?.showtimer ? (
         <View style={styles.timeView}>
           <Text style={styles.timeText}>Time left:</Text>
-          <CountDown
+          {/* <CountDown
             until={timerInSeconds}
             size={10}
             onFinish={() => onFinish("spot")}
@@ -215,7 +209,7 @@ const BoostUpgradeCard = props => {
             digitTxtStyle={{ color: colors.primaryPink }}
             timeToShow={timeToShow}
             timeLabels={timeLabels}
-          />
+          /> */}
         </View>
       ) : type == "Profiles left" &&
         props.timer &&
@@ -223,7 +217,7 @@ const BoostUpgradeCard = props => {
         isProfileTimerFinished?.showtimer ? (
         <View style={styles.timeView}>
           <Text style={styles.timeText}>Time left:</Text>
-          <CountDown
+          {/* <CountDown
             until={timerInSeconds}
             size={10}
             onFinish={() => onFinish("profile")}
@@ -232,7 +226,7 @@ const BoostUpgradeCard = props => {
             digitTxtStyle={{ color: colors.primaryPink }}
             timeToShow={timeToShow}
             timeLabels={timeLabels}
-          />
+          /> */}
         </View>
       ) : null}
 
@@ -259,8 +253,7 @@ const BoostUpgradeCard = props => {
       )}
       {proMember && (
         <Text style={styles.bottomText}>
-          You can view unlimited profiles with your Rishta Auntie Gold
-          membership
+          You can view unlimited profiles with your Rishta Auntie Gold membership
         </Text>
       )}
     </View>

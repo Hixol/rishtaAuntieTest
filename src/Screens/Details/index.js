@@ -1,13 +1,5 @@
 import React, { useState, useEffect, memo } from "react";
-import {
-  Text,
-  View,
-  ScrollView,
-  BackHandler,
-  SafeAreaView,
-  TouchableOpacity,
-  Pressable,
-} from "react-native";
+import { Text, View, ScrollView, BackHandler, SafeAreaView, TouchableOpacity, Pressable } from "react-native";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useSelector, useDispatch } from "react-redux";
@@ -39,9 +31,7 @@ const DetailScreen = props => {
   const ref = React.useRef(null);
   const dispatch = useDispatch();
   const { Alerts, handleStatusCode } = useHelper();
-  const { token, userData, status, focusedScreen } = useSelector(
-    store => store.userReducer
-  );
+  const { token, userData, status, focusedScreen } = useSelector(store => store.userReducer);
   const { personalityRes } = useSelector(store => store.profileReducer);
 
   let [userImages, setUserImages] = useState();
@@ -62,7 +52,7 @@ const DetailScreen = props => {
     setAction(false);
     props?.navigation.navigate("ReportAccountScreen", {
       userId: userId,
-      userName: userDetails?.firstName,
+      userName: userDetails?.firstName
     });
   };
 
@@ -114,10 +104,7 @@ const DetailScreen = props => {
   };
 
   useEffect(() => {
-    userDetails === null ||
-    userDetails === undefined ||
-    userDetails === "" ||
-    userDetails.length === 0
+    userDetails === null || userDetails === undefined || userDetails === "" || userDetails.length === 0
       ? null
       : setUserImages(userDetails?.Profile?.profilePics);
   }, []);
@@ -129,7 +116,7 @@ const DetailScreen = props => {
       {
         resourceId: userPhotosId ? userPhotosId[index] : null,
         resourceType: "USER_MEDIA",
-        otherUserId: userId,
+        otherUserId: userId
       },
       token
     )
@@ -138,12 +125,9 @@ const DetailScreen = props => {
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
             type: "SET_DISCOVER_INDEX",
-            payload: userId,
+            payload: userId
           });
-          Alerts(
-            "success",
-            `You liked ${userDetails?.firstName}'s picture successfully`
-          );
+          Alerts("success", `You liked ${userDetails?.firstName}'s picture successfully`);
         }
       })
       .catch(error => console.log("likeImageInteraction err", error));
@@ -154,7 +138,7 @@ const DetailScreen = props => {
       {
         resourceId: item?.id,
         resourceType: "PROFILE_PROMPT",
-        otherUserId: userId,
+        otherUserId: userId
       },
       token
     )
@@ -163,12 +147,9 @@ const DetailScreen = props => {
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
             type: "SET_DISCOVER_INDEX",
-            payload: userId,
+            payload: userId
           });
-          Alerts(
-            "success",
-            `You liked ${userDetails?.firstName}'s profie prompt successfully`
-          );
+          Alerts("success", `You liked ${userDetails?.firstName}'s profie prompt successfully`);
         }
       })
       .catch(error => console.log("likeProfilePrompt err", error));
@@ -182,7 +163,7 @@ const DetailScreen = props => {
     } else if (focusedScreen) {
       dispatch({
         type: "SET_FOCUSED_SCREEN",
-        payload: false,
+        payload: false
       });
       BackHandler.exitApp();
     } else {
@@ -193,31 +174,21 @@ const DetailScreen = props => {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (
-        commentModal == true ||
-        imageModal === true ||
-        promptModal == true ||
-        action
-      ) {
+      if (commentModal == true || imageModal === true || promptModal == true || action) {
         dispatch({
           type: "AUTH_USER_SCREEN_INDEX",
-          payload: false,
+          payload: false
         });
-      } else if (
-        commentModal == false ||
-        imageModal === false ||
-        promptModal === false ||
-        action == false
-      ) {
+      } else if (commentModal == false || imageModal === false || promptModal === false || action == false) {
         dispatch({
           type: "AUTH_USER_SCREEN_INDEX",
-          payload: true,
+          payload: true
         });
       }
 
       dispatch({
         type: "SET_FOCUSED_SCREEN",
-        payload: false,
+        payload: false
       });
 
       return () => {
@@ -227,10 +198,7 @@ const DetailScreen = props => {
   );
 
   useEffect(() => {
-    const add = BackHandler.addEventListener(
-      "hardwareBackPress",
-      handleBackButton
-    );
+    const add = BackHandler.addEventListener("hardwareBackPress", handleBackButton);
     return () => {
       add;
       BackHandler.removeEventListener("hardwareBackPress", handleBackButton);
@@ -246,33 +214,20 @@ const DetailScreen = props => {
   let countryCode = null;
 
   Countries.filter(item => {
-    if (item.en == country) {
+    if (country != null && item.en == country) {
       flagsLiving = item.code;
     }
-    if (item.en == fOrigin) {
+    if (fOrigin != null && item.en == fOrigin) {
       flagsOrigin = item.code;
     }
-    if (
-      country == "United States" &&
-      address?.toLowerCase() == item.name?.toLowerCase()
-    ) {
+    if (country == "United States" && address?.toLowerCase() == item.name?.toLowerCase()) {
       countryCode = item.abbreviation;
     }
   });
 
   const Capsule = ({ outlined, title, style, titleStyle }) => (
-    <View
-      style={[
-        styles.capsule,
-        style,
-        outlined ? styles.outlined : styles.filled,
-      ]}
-    >
-      <Text
-        style={[styles.myvibes, titleStyle, !outlined && styles.whiteTitle]}
-      >
-        {title}
-      </Text>
+    <View style={[styles.capsule, style, outlined ? styles.outlined : styles.filled]}>
+      <Text style={[styles.myvibes, titleStyle, !outlined && styles.whiteTitle]}>{title}</Text>
     </View>
   );
 
@@ -312,9 +267,8 @@ const DetailScreen = props => {
               <View
                 style={{
                   width: "100%",
-                  height: "100%",
-                }}
-              >
+                  height: "100%"
+                }}>
                 {isFocused ? (
                   <ImageCarousel
                     photosLength={userPhotosUrl?.length}
@@ -354,26 +308,15 @@ const DetailScreen = props => {
 
               <View style={styles.imgHeader}>
                 <TouchableOpacity
-                  onPress={() =>
-                    props?.navigation.navigate("SearchPreferences")
-                  }
-                  style={styles.iconImg}
-                >
+                  onPress={() => props?.navigation.navigate("SearchPreferences")}
+                  style={styles.iconImg}>
                   <FastImage
                     style={{ height: "72%", width: "60%" }}
                     source={require("../../assets/iconimages/heart-discover.png")}
                   />
                 </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() =>
-                    isBlocked ? setBlockAlert(true) : setAction(true)
-                  }
-                >
-                  <Icons.MaterialCommunityIcons
-                    name="dots-vertical"
-                    size={34}
-                    color={"white"}
-                  />
+                <TouchableOpacity onPress={() => (isBlocked ? setBlockAlert(true) : setAction(true))}>
+                  <Icons.MaterialCommunityIcons name="dots-vertical" size={34} color={"white"} />
                 </TouchableOpacity>
               </View>
 
@@ -382,33 +325,20 @@ const DetailScreen = props => {
                   {userDetails ? userDetails?.firstName : null}{" "}
                 </Text>
                 <Text style={styles.nameTxt}>
-                  {userDetails
-                    ? `${userDetails?.Profile?.age}, ${userDetails?.Profile?.occupation}`
-                    : null}
+                  {userDetails ? `${userDetails?.Profile?.age}, ${userDetails?.Profile?.occupation}` : null}
                 </Text>
               </View>
 
               <View style={styles.flagContainer}>
                 <View style={styles.row1}>
-                  <CountryFlag
-                    isoCode={`${flagsLiving}`}
-                    size={17}
-                    style={{ marginRight: 5 }}
-                  />
+                  <CountryFlag isoCode={`${flagsLiving}`} size={17} style={{ marginRight: 5 }} />
                   <CountryFlag isoCode={`${flagsOrigin}`} size={17} />
                 </View>
 
                 <View style={styles.row2}>
-                  <Icons.Ionicons
-                    name="location-outline"
-                    size={20}
-                    color={colors.textGrey1}
-                  />
+                  <Icons.Ionicons name="location-outline" size={20} color={colors.textGrey1} />
                   <Text style={styles.location}>
-                    {userDetails?.city},{" "}
-                    {userDetails?.country == "United States"
-                      ? countryCode
-                      : userDetails?.country}
+                    {userDetails?.city}, {userDetails?.country == "United States" ? countryCode : userDetails?.country}
                   </Text>
                 </View>
               </View>
@@ -416,9 +346,7 @@ const DetailScreen = props => {
 
             <View>
               <View style={styles.analystSection}>
-                <Text style={styles.statementTxt}>
-                  {userDetails?.Profile?.tagline}
-                </Text>
+                <Text style={styles.statementTxt}>{userDetails?.Profile?.tagline}</Text>
               </View>
 
               {personalityRes != null &&
@@ -429,10 +357,7 @@ const DetailScreen = props => {
                   <View style={styles.bulbSect}>
                     <View style={styles.meView}>
                       <Text style={styles.meTxt}>Me</Text>
-                      <Capsule
-                        outlined
-                        title={userData?.Profile?.personalityType}
-                      />
+                      <Capsule outlined title={userData?.Profile?.personalityType} />
                     </View>
 
                     <View style={styles.bulbView}>
@@ -465,19 +390,11 @@ const DetailScreen = props => {
                     marginTop: 12,
                     alignItems: "flex-start",
                     justifyContent: "flex-start",
-                    alignSelf: "flex-start",
-                  }}
-                >
+                    alignSelf: "flex-start"
+                  }}>
                   {userDetails != null &&
                     userDetails?.Profile?.vibes?.map((item, index) => {
-                      return (
-                        <Capsule
-                          outlined
-                          title={item}
-                          style={{ margin: 3 }}
-                          titleStyle={{ fontSize: 14 }}
-                        />
-                      );
+                      return <Capsule outlined title={item} style={{ margin: 3 }} titleStyle={{ fontSize: 14 }} />;
                     })}
                 </View>
               </View>
@@ -519,20 +436,18 @@ const DetailScreen = props => {
                         styles.poolQuestTxt,
                         {
                           marginTop: 15,
-                          marginLeft: 6,
-                        },
-                      ]}
-                    >
+                          marginLeft: 6
+                        }
+                      ]}>
                       {item?.Question?.title}
                     </Text>
                     <Text
                       style={[
                         styles.poolAnsTxt,
                         {
-                          marginTop: 14,
-                        },
-                      ]}
-                    >
+                          marginTop: 14
+                        }
+                      ]}>
                       {item?.answer}
                     </Text>
                     <View style={styles.cardFooter}>
@@ -546,8 +461,7 @@ const DetailScreen = props => {
                             setModalType("mic");
                           }
                         }}
-                        style={[styles.actionIcon]}
-                      >
+                        style={[styles.actionIcon]}>
                         <FastImage
                           source={require("../../assets/iconimages/mic.png")}
                           style={{ height: "76%", width: "76%" }}
@@ -563,8 +477,7 @@ const DetailScreen = props => {
                             setModalType("comment");
                           }
                         }}
-                        style={[styles.actionIcon]}
-                      >
+                        style={[styles.actionIcon]}>
                         <FastImage
                           source={require("../../assets/iconimages/chat.png")}
                           style={{ height: "54%", width: "54%" }}
@@ -578,8 +491,7 @@ const DetailScreen = props => {
                             likeProfilePrompt(item);
                           }
                         }}
-                        style={[styles.actionIcon]}
-                      >
+                        style={[styles.actionIcon]}>
                         <FastImage
                           source={require("../../assets/iconimages/heart.png")}
                           style={{ height: "54%", width: "54%" }}
@@ -605,9 +517,8 @@ const DetailScreen = props => {
               zIndex: 1,
               position: "absolute",
               backgroundColor: colors.black,
-              opacity: 0.8,
-            }}
-          ></View>
+              opacity: 0.8
+            }}></View>
           <Pressable
             onPress={() => setOnBoardingCheck(false)}
             style={{
@@ -617,9 +528,8 @@ const DetailScreen = props => {
               height: "100%",
               zIndex: 2,
               alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+              justifyContent: "center"
+            }}>
             <View
               style={{
                 width: "90%",
@@ -627,16 +537,14 @@ const DetailScreen = props => {
                 alignItems: "center",
                 justifyContent: "center",
                 backgroundColor: colors.white,
-                borderRadius: 16,
-              }}
-            >
+                borderRadius: 16
+              }}>
               <Text
                 style={{
                   fontSize: 20,
                   fontFamily: "Inter-Medium",
-                  color: colors.black,
-                }}
-              >
+                  color: colors.black
+                }}>
                 Warning
               </Text>
               <Text
@@ -645,11 +553,9 @@ const DetailScreen = props => {
                   fontFamily: "Inter-Regular",
                   color: "#6B7280",
                   marginTop: "5%",
-                  marginHorizontal: "3%",
-                }}
-              >
-                Please complete your profile to interact with other users, thank
-                you!
+                  marginHorizontal: "3%"
+                }}>
+                Please complete your profile to interact with other users, thank you!
               </Text>
 
               <TouchableOpacity
@@ -661,16 +567,14 @@ const DetailScreen = props => {
                   justifyContent: "center",
                   borderRadius: 5,
                   backgroundColor: colors.primaryPink,
-                  marginTop: "5%",
-                }}
-              >
+                  marginTop: "5%"
+                }}>
                 <Text
                   style={{
                     fontSize: 16,
                     fontFamily: "Inter-Regular",
-                    color: colors.white,
-                  }}
-                >
+                    color: colors.white
+                  }}>
                   Complete Profile
                 </Text>
               </TouchableOpacity>
@@ -685,16 +589,14 @@ const DetailScreen = props => {
                   backgroundColor: colors.white,
                   marginTop: "5%",
                   borderWidth: 1,
-                  borderColor: colors.primaryPink,
-                }}
-              >
+                  borderColor: colors.primaryPink
+                }}>
                 <Text
                   style={{
                     fontSize: 16,
                     fontFamily: "Inter-Regular",
-                    color: colors.primaryPink,
-                  }}
-                >
+                    color: colors.primaryPink
+                  }}>
                   Later
                 </Text>
               </TouchableOpacity>
@@ -710,9 +612,8 @@ const DetailScreen = props => {
             height: imageModal ? windowHeight * 1 : 0,
             bottom: 0,
             position: "absolute",
-            zIndex: 1,
-          }}
-        >
+            zIndex: 1
+          }}>
           <BottomImageInteraction
             userId={userId}
             userName={userDetails?.firstName}
@@ -734,9 +635,8 @@ const DetailScreen = props => {
             height: promptModal ? windowHeight * 1 : 0,
             bottom: 0,
             position: "absolute",
-            zIndex: 1,
-          }}
-        >
+            zIndex: 1
+          }}>
           <BottomPromptInteraction
             userId={userId}
             userName={userDetails?.firstName}
@@ -753,7 +653,7 @@ const DetailScreen = props => {
           discover
           user={{
             userId,
-            userName: userDetails?.firstName,
+            userName: userDetails?.firstName
           }}
           toggle={action}
           setAction={setAction}
