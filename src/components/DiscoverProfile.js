@@ -1,18 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Pressable,
-} from "react-native";
-import {
-  ios,
-  windowHeight,
-  windowWidth,
-  screenHeight,
-  OS_VER,
-} from "../utility/size";
+import { StyleSheet, Text, View, TouchableOpacity, Pressable } from "react-native";
+import { ios, windowHeight, windowWidth, screenHeight, OS_VER } from "../utility/size";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -37,7 +25,7 @@ const DiscoverProfile = ({
   occupation,
   tagline,
   age,
-  isFocused,
+  isFocused
 }) => {
   const insets = useSafeAreaInsets();
 
@@ -65,16 +53,13 @@ const DiscoverProfile = ({
   }, [isFocused]);
 
   Countries.filter(item => {
-    if (item.en == country) {
+    if (country != null && item.en == country) {
       flagsLiving = item.code;
     }
-    if (item.en == fOrigin) {
+    if (fOrigin != null && item.en == fOrigin) {
       flagsOrigin = item.code;
     }
-    if (
-      country == "United States" &&
-      address?.toLowerCase() == item.name?.toLowerCase()
-    ) {
+    if (country == "United States" && address?.toLowerCase() == item.name?.toLowerCase()) {
       countryCode = item.abbreviation;
     }
   });
@@ -92,22 +77,17 @@ const DiscoverProfile = ({
         styles.container,
         {
           height:
-            (windowHeight <= 640 || windowHeight < 790) &&
-            !(windowHeight <= 770)
+            (windowHeight <= 640 || windowHeight < 790) && !(windowHeight <= 770)
               ? adjustHeight
               : (windowHeight < 755 || windowHeight < 880) &&
-                !(
-                  windowHeight <= 770 ||
-                  (windowHeight > 830 && windowHeight < 845)
-                ) &&
+                !(windowHeight <= 770 || (windowHeight > 830 && windowHeight < 845)) &&
                 OS_VER == 13
               ? adjustHeight
               : ios
               ? windowHeight - tabBarHeight - 44 - insets.top
-              : windowHeight - tabBarHeight - 56,
-        },
-      ]}
-    >
+              : windowHeight - tabBarHeight - 56
+        }
+      ]}>
       {video ? (
         <View>
           <View
@@ -115,15 +95,14 @@ const DiscoverProfile = ({
               width: "100%",
               height: "100%",
               zIndex: 1,
-              position: "absolute",
-            }}
-          >
+              position: "absolute"
+            }}>
             <FastImage
               resizeMode="cover"
               style={{
                 width: "100%",
                 height: "100%",
-                overflow: "hidden",
+                overflow: "hidden"
               }}
               source={require("../assets/iconimages/opacity-02.png")}
             />
@@ -136,7 +115,7 @@ const DiscoverProfile = ({
             paused={isPaused}
             style={{
               width: "100%",
-              height: "100%",
+              height: "100%"
             }}
             source={{ uri: video.split("?")[0] }}
           />
@@ -148,31 +127,24 @@ const DiscoverProfile = ({
                 alignItems: "center",
                 justifyContent: "center",
                 position: "absolute",
-                opacity: 0.4,
-              }}
-            >
+                opacity: 0.4
+              }}>
               <FastImage
                 resizeMode="contain"
                 source={require("../assets/iconimages/playIcon.png")}
                 style={{
                   width: 60,
-                  height: 60,
+                  height: 60
                 }}
               />
             </View>
           ) : null}
         </View>
       ) : (
-        <FastImage
-          source={{ uri: image }}
-          style={{ width: "100%", height: "100%" }}
-        />
+        <FastImage source={{ uri: image }} style={{ width: "100%", height: "100%" }} />
       )}
       <View style={styles.imgHeader}>
-        <TouchableOpacity
-          style={styles.iconImg}
-          onPress={() => navigation.navigate("SearchPreferences")}
-        >
+        <TouchableOpacity style={styles.iconImg} onPress={() => navigation.navigate("SearchPreferences")}>
           <FastImage
             style={{ height: "72%", width: "60%" }}
             source={require("../assets/iconimages/heart-discover.png")}
@@ -188,10 +160,9 @@ const DiscoverProfile = ({
           style={[
             styles.analystTxt,
             {
-              width: "80%",
-            },
-          ]}
-        >
+              width: "80%"
+            }
+          ]}>
           {age}, {occupation}
         </Text>
 
@@ -206,15 +177,11 @@ const DiscoverProfile = ({
           <View
             style={{
               width: "10%",
-              height: 20,
+              height: 20
             }}
           />
           <View style={styles.location}>
-            <Icons.Ionicons
-              name="location-outline"
-              size={20}
-              color={colors.textGrey1}
-            />
+            <Icons.Ionicons name="location-outline" size={20} color={colors.textGrey1} />
             <Text style={[styles.name, { width: "60%" }]}>
               {city}, {country == "United States" ? countryCode : country}
             </Text>
@@ -227,7 +194,7 @@ const DiscoverProfile = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: windowWidth,
+    width: windowWidth
   },
   imgHeader: {
     position: "absolute",
@@ -236,7 +203,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
-    zIndex: 3,
+    zIndex: 3
   },
   imgFooter: {
     bottom: 0,
@@ -244,24 +211,24 @@ const styles = StyleSheet.create({
     paddingBottom: "3%",
     paddingHorizontal: "3%",
     zIndex: 3,
-    position: "absolute",
+    position: "absolute"
   },
   occupation: {
     width: "28%",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   flagContainer: {
     flexDirection: "row",
     alignItems: "center",
-    width: "15%",
+    width: "15%"
   },
   name: {
     marginLeft: "2%",
     fontSize: 16,
     color: "white",
     width: "80%",
-    fontFamily: "Inter-Medium",
+    fontFamily: "Inter-Medium"
   },
   nameView: {
     position: "absolute",
@@ -269,18 +236,18 @@ const styles = StyleSheet.create({
     bottom: 40,
     left: 0,
     right: 0,
-    alignItems: "center",
+    alignItems: "center"
   },
   location: {
     flexDirection: "row",
     alignItems: "center",
-    width: "80%",
+    width: "80%"
   },
   lastFooter: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: "2%",
+    marginTop: "2%"
   },
   circularImg: {
     position: "absolute",
@@ -291,7 +258,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.3,
     borderColor: "white",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   textWrap: {
     alignSelf: "flex-end",
@@ -299,31 +266,31 @@ const styles = StyleSheet.create({
     width: windowHeight * 0.12,
     borderRadius: 50,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   nameTxt: {
     color: "white",
     fontSize: 24,
     // alignSelf: "center",
-    fontFamily: "Inter-SemiBold",
+    fontFamily: "Inter-SemiBold"
   },
   statementTxt: {
     color: "white",
     fontSize: 16,
-    fontFamily: "Inter-Regular",
+    fontFamily: "Inter-Regular"
   },
   analystTxt: {
     color: "white",
     fontSize: 16,
     fontFamily: "Inter-Medium",
-    width: "17%",
+    width: "17%"
   },
   iconImg: {
     height: windowHeight * 0.055,
     width: windowHeight * 0.055,
     alignItems: "center",
-    justifyContent: "center",
-  },
+    justifyContent: "center"
+  }
 });
 
 export default DiscoverProfile;
