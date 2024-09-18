@@ -1,12 +1,5 @@
 import React, { useState, useEffect, memo } from "react";
-import {
-  Text,
-  View,
-  Pressable,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
+import { Text, View, Pressable, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FastImage from "react-native-fast-image";
 import CountryFlag from "react-native-country-flag";
@@ -16,13 +9,7 @@ import convertToProxyURL from "react-native-video-cache";
 import colors from "../utility/colors";
 import Icons from "../utility/icons";
 import Countries from "../assets/countryLists/Countries";
-import {
-  ios,
-  OS_VER,
-  windowHeight,
-  windowWidth,
-  screenHeight,
-} from "../utility/size";
+import { ios, OS_VER, windowHeight, windowWidth, screenHeight } from "../utility/size";
 
 const DiscoverImg = ({
   item,
@@ -38,7 +25,7 @@ const DiscoverImg = ({
   onPressVoiceInteraction,
   onPressLikeInteraction,
   onDotsPress,
-  check,
+  check
 }) => {
   const insets = useSafeAreaInsets();
 
@@ -57,34 +44,27 @@ const DiscoverImg = ({
   };
 
   useEffect(() => {
-    console.log(
-      "Effect: check, userId, isFocused, paused, pausedButton changed"
-    );
+    console.log("Effect: check, userId, isFocused, paused, pausedButton changed");
     console.log({ check, userId, isFocused, paused, pausedButton });
 
     if (check) {
       setIsPaused(true);
       setIsPausedButton(false);
     } else {
-      userId === item.id && isFocused === true && paused
-        ? setIsPaused(false)
-        : setIsPaused(true);
+      userId === item.id && isFocused === true && paused ? setIsPaused(false) : setIsPaused(true);
     }
 
     pausedButton === false ? setIsPausedButton(false) : setIsPausedButton(true);
   }, [check, userId, isFocused, paused, pausedButton]);
 
   Countries.filter(country => {
-    if (country.en == item.country) {
+    if (item?.country != null && country.en == item.country) {
       flagsLiving = country.code;
     }
-    if (country.en == item.Profile?.familyOrigin) {
+    if (item.Profile?.familyOrigin != null && country.en == item.Profile?.familyOrigin) {
       flagsOrigin = country.code;
     }
-    if (
-      item.country == "United States" &&
-      item.address?.toLowerCase() == country.name?.toLowerCase()
-    ) {
+    if (item.country == "United States" && item.address?.toLowerCase() == country.name?.toLowerCase()) {
       countryCode = country.abbreviation;
     }
   });
@@ -95,8 +75,7 @@ const DiscoverImg = ({
     adjustHeight = windowHeight - tabBarHeight - 24;
   }
 
-  const videoUrl =
-    video?.length > 0 ? convertToProxyURL(video[0]?.url.split("?")[0]) : null;
+  const videoUrl = video?.length > 0 ? convertToProxyURL(video[0]?.url.split("?")[0]) : null;
 
   return (
     <Pressable
@@ -105,22 +84,17 @@ const DiscoverImg = ({
         styles.container,
         {
           height:
-            (windowHeight <= 640 || windowHeight < 790) &&
-            !(windowHeight <= 770)
+            (windowHeight <= 640 || windowHeight < 790) && !(windowHeight <= 770)
               ? adjustHeight
               : (windowHeight < 755 || windowHeight < 880) &&
-                !(
-                  windowHeight <= 770 ||
-                  (windowHeight > 830 && windowHeight < 845)
-                ) &&
+                !(windowHeight <= 770 || (windowHeight > 830 && windowHeight < 845)) &&
                 OS_VER == 13
               ? adjustHeight
               : ios
               ? windowHeight - tabBarHeight - insets.top
-              : windowHeight - tabBarHeight,
-        },
-      ]}
-    >
+              : windowHeight - tabBarHeight
+        }
+      ]}>
       {videoUrl ? (
         <View>
           {isPreloading && (
@@ -133,7 +107,7 @@ const DiscoverImg = ({
                 position: "absolute",
                 top: "50%",
                 left: "45%",
-                zIndex: 1,
+                zIndex: 1
               }}
             />
           )}
@@ -142,15 +116,14 @@ const DiscoverImg = ({
               width: "100%",
               height: "100%",
               zIndex: 1,
-              position: "absolute",
-            }}
-          >
+              position: "absolute"
+            }}>
             <FastImage
               resizeMode="cover"
               style={{
                 width: "100%",
                 height: "100%",
-                overflow: "hidden",
+                overflow: "hidden"
               }}
               source={require("../assets/iconimages/opacity-02.png")}
             />
@@ -165,10 +138,10 @@ const DiscoverImg = ({
             paused={isPaused}
             style={{
               width: "100%",
-              height: "100%",
+              height: "100%"
             }}
             source={{
-              uri: videoUrl,
+              uri: videoUrl
             }}
             onError={e => console.log("Video error:", e)}
           />
@@ -180,15 +153,14 @@ const DiscoverImg = ({
                 alignItems: "center",
                 justifyContent: "center",
                 position: "absolute",
-                opacity: 0.4,
-              }}
-            >
+                opacity: 0.4
+              }}>
               <FastImage
                 resizeMode="contain"
                 source={require("../assets/iconimages/playIcon.png")}
                 style={{
                   width: 60,
-                  height: 60,
+                  height: 60
                 }}
               />
             </View>
@@ -206,7 +178,7 @@ const DiscoverImg = ({
                 position: "absolute",
                 top: "50%",
                 left: "45%",
-                zIndex: 1,
+                zIndex: 1
               }}
             />
           )}
@@ -215,15 +187,14 @@ const DiscoverImg = ({
               width: "100%",
               height: "100%",
               zIndex: 1,
-              position: "absolute",
-            }}
-          >
+              position: "absolute"
+            }}>
             <FastImage
               resizeMode="cover"
               style={{
                 width: "100%",
                 height: "100%",
-                overflow: "hidden",
+                overflow: "hidden"
               }}
               source={require("../assets/iconimages/opacity-02.png")}
             />
@@ -248,11 +219,7 @@ const DiscoverImg = ({
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={onDotsPress}>
-          <Icons.MaterialCommunityIcons
-            name="dots-vertical"
-            size={34}
-            color={"white"}
-          />
+          <Icons.MaterialCommunityIcons name="dots-vertical" size={34} color={"white"} />
         </TouchableOpacity>
       </View>
 
@@ -260,9 +227,8 @@ const DiscoverImg = ({
         <View
           style={{
             alignItems: "flex-end",
-            bottom: 120,
-          }}
-        >
+            bottom: 120
+          }}>
           <ActionButton
             onPressCommentInteraction={onPressCommentInteraction}
             onPressVoiceInteraction={onPressVoiceInteraction}
@@ -278,10 +244,9 @@ const DiscoverImg = ({
           style={[
             styles.analystTxt,
             {
-              width: "80%",
-            },
-          ]}
-        >
+              width: "80%"
+            }
+          ]}>
           {item.Profile.age}, {item.Profile.occupation}
         </Text>
 
@@ -295,18 +260,12 @@ const DiscoverImg = ({
           <View
             style={{
               width: "10%",
-              height: 20,
-            }}
-          ></View>
+              height: 20
+            }}></View>
           <View style={styles.location}>
-            <Icons.Ionicons
-              name="location-outline"
-              size={20}
-              color={colors.textGrey1}
-            />
+            <Icons.Ionicons name="location-outline" size={20} color={colors.textGrey1} />
             <Text style={[styles.name, { width: "60%" }]}>
-              {item.city},{" "}
-              {item.country == "United States" ? countryCode : item.country}
+              {item.city}, {item.country == "United States" ? countryCode : item.country}
             </Text>
           </View>
         </View>
@@ -317,7 +276,7 @@ const DiscoverImg = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: windowWidth,
+    width: windowWidth
   },
   imgHeader: {
     position: "absolute",
@@ -326,7 +285,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
-    zIndex: 3,
+    zIndex: 3
   },
   imgFooter: {
     bottom: 0,
@@ -334,30 +293,30 @@ const styles = StyleSheet.create({
     paddingBottom: "3%",
     paddingHorizontal: "3%",
     zIndex: 3,
-    position: "absolute",
+    position: "absolute"
   },
   flagContainer: {
     flexDirection: "row",
     alignItems: "center",
-    width: "15%",
+    width: "15%"
   },
   name: {
     marginLeft: "2%",
     fontSize: 16,
     color: "white",
     width: "80%",
-    fontFamily: "Inter-Medium",
+    fontFamily: "Inter-Medium"
   },
   location: {
     flexDirection: "row",
     alignItems: "center",
-    width: "80%",
+    width: "80%"
   },
   lastFooter: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: "2%",
+    marginTop: "2%"
   },
   circularImg: {
     position: "absolute",
@@ -368,7 +327,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.3,
     borderColor: "white",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   textWrap: {
     alignSelf: "flex-end",
@@ -376,31 +335,31 @@ const styles = StyleSheet.create({
     width: windowHeight * 0.12,
     borderRadius: 50,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   nameTxt: {
     color: "white",
     fontSize: 24,
     // alignSelf: 'center',
-    fontFamily: "Inter-SemiBold",
+    fontFamily: "Inter-SemiBold"
   },
   statementTxt: {
     color: "white",
     fontSize: 16,
-    fontFamily: "Inter-Regular",
+    fontFamily: "Inter-Regular"
   },
   analystTxt: {
     color: "white",
     fontSize: 16,
     fontFamily: "Inter-Medium",
-    width: "17%",
+    width: "17%"
   },
   iconImg: {
     height: windowHeight * 0.055,
     width: windowHeight * 0.055,
     alignItems: "center",
-    justifyContent: "center",
-  },
+    justifyContent: "center"
+  }
 });
 
 export default memo(DiscoverImg);

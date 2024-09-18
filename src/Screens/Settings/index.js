@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Linking,
-  Pressable,
+  Pressable
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
@@ -43,9 +43,7 @@ const Settings = props => {
   const {} = useRNIAP();
   const { Alerts, handleStatusCode } = useHelper();
   const { token, userData, status } = useSelector(store => store.userReducer);
-  const { isSpotTimerFinished, isProfileTimerFinished } = useSelector(
-    store => store.timerReducer
-  );
+  const { isSpotTimerFinished, isProfileTimerFinished } = useSelector(store => store.timerReducer);
   const { denomination } = useSelector(store => store.profileReducer);
 
   const proMember = userData?.UserSetting?.isSubscribed;
@@ -59,38 +57,38 @@ const Settings = props => {
       id: 1,
       title: "My Search Preferences",
       screen: "SearchPreferences",
-      icon: require("../../assets/iconimages/setting-logo.png"),
+      icon: require("../../assets/iconimages/setting-logo.png")
     },
     {
       id: 2,
       title: "My Privacy Settings",
       screen: "MyPrivacySetting",
-      icon: require("../../assets/iconimages/setting-lock-closed-outline.png"),
+      icon: require("../../assets/iconimages/setting-lock-closed-outline.png")
     },
     {
       id: 3,
       title: "My Settings",
       screen: "MySetting",
-      icon: require("../../assets/iconimages/setting-profile.png"),
+      icon: require("../../assets/iconimages/setting-profile.png")
     },
     {
       id: 4,
       title: "Contact Rishta Auntie",
       screen: "",
-      icon: require("../../assets/iconimages/setting-headset.png"),
+      icon: require("../../assets/iconimages/setting-headset.png")
     },
     {
       id: 5,
       title: "Safety Tips",
       screen: () => handleUrl("safety-tips"),
-      icon: require("../../assets/iconimages/setting-tick-circle.png"),
+      icon: require("../../assets/iconimages/setting-tick-circle.png")
     },
     {
       id: 6,
       title: `FAQ`,
       screen: () => handleUrl("faq"),
-      icon: require("../../assets/iconimages/setting-document-text.png"),
-    },
+      icon: require("../../assets/iconimages/setting-document-text.png")
+    }
   ];
 
   useFocusEffect(
@@ -111,11 +109,7 @@ const Settings = props => {
                 !isProfileTimerFinished?.showtimer
               ) {
                 let time = moment
-                  .duration(
-                    moment(data.lastLogDailyProfilesLimit?.createdAt).format(
-                      "HH:mm"
-                    )
-                  )
+                  .duration(moment(data.lastLogDailyProfilesLimit?.createdAt).format("HH:mm"))
                   .asSeconds();
 
                 dispatch({
@@ -123,66 +117,45 @@ const Settings = props => {
                   payload: {
                     userId: data.id,
                     showtimer: true,
-                    time: time,
-                  },
+                    time: time
+                  }
                 });
               }
               dispatch({
                 type: "AUTH_USER",
-                payload: data,
+                payload: data
               });
               dispatch({
                 type: "USER_CHUPKE_CHUPKE",
-                payload: data?.UserSetting?.chupkeChupke
-                  ? data?.UserSetting?.chupkeChupke
-                  : false,
+                payload: data?.UserSetting?.chupkeChupke ? data?.UserSetting?.chupkeChupke : false
               });
               dispatch({
                 type: "USER_DISCOVERY_MODE",
-                payload: data?.UserSetting?.discoveryMode
-                  ? data?.UserSetting?.discoveryMode
-                  : false,
+                payload: data?.UserSetting?.discoveryMode ? data?.UserSetting?.discoveryMode : false
               });
               dispatch({
                 type: "USER_HIDE_AGE",
-                payload: data?.UserSetting?.hideAge
-                  ? data?.UserSetting?.hideAge
-                  : false,
+                payload: data?.UserSetting?.hideAge ? data?.UserSetting?.hideAge : false
               });
               dispatch({
                 type: "USER_HIDE_LIVE_STATUS",
-                payload: data?.UserSetting?.hideLiveStatus
-                  ? data?.UserSetting?.hideLiveStatus
-                  : false,
+                payload: data?.UserSetting?.hideLiveStatus ? data?.UserSetting?.hideLiveStatus : false
               });
               dispatch({
                 type: "USER_SHOW_MSG_PREV",
-                payload: data?.UserSetting?.showMessagePreview
-                  ? data?.UserSetting?.showMessagePreview
-                  : false,
+                payload: data?.UserSetting?.showMessagePreview ? data?.UserSetting?.showMessagePreview : false
               });
               dispatch({
                 type: "USER_IS_NOTIFICATION",
-                payload: data?.UserSetting?.isNotificationEnabled
-                  ? data?.UserSetting?.isNotificationEnabled
-                  : false,
+                payload: data?.UserSetting?.isNotificationEnabled ? data?.UserSetting?.isNotificationEnabled : false
               });
               dispatch({
                 type: "USER_IS_DARK_MODE",
-                payload: data?.UserSetting?.isDarkMode
-                  ? data?.UserSetting?.isDarkMode
-                  : false,
+                payload: data?.UserSetting?.isDarkMode ? data?.UserSetting?.isDarkMode : false
               });
 
               OnBoardingServices.profileValues(
-                encodeURI(
-                  JSON.stringify([
-                    "community",
-                    "denomination",
-                    "familyOrigin",
-                    "language",
-                  ])
-                )
+                encodeURI(JSON.stringify(["community", "denomination", "familyOrigin", "language"]))
               )
                 .then(res => {
                   handleStatusCode(res);
@@ -190,7 +163,7 @@ const Settings = props => {
                     let data = res?.data?.data;
                     dispatch({
                       type: "PROFILE_VALUES",
-                      payload: data,
+                      payload: data
                     });
                   }
                 })
@@ -202,9 +175,7 @@ const Settings = props => {
         if (denomination.length > 0) {
           dispatch({
             type: "PROFILE_DEN_VALUES",
-            payload: denomination[userData?.Profile?.religion]?.map(
-              x => x.name
-            ),
+            payload: denomination[userData?.Profile?.religion]?.map(x => x.name)
           });
         }
       } else {
@@ -237,10 +208,7 @@ const Settings = props => {
   };
 
   const handleEnableSpotlight = () => {
-    if (
-      isSpotTimerFinished?.userId == userData.id &&
-      isSpotTimerFinished?.showtimer
-    ) {
+    if (isSpotTimerFinished?.userId == userData.id && isSpotTimerFinished?.showtimer) {
       Alerts("error", "Spotlight is already enabled");
     } else {
       IAPServices.enableSpotlight(token)
@@ -252,12 +220,12 @@ const Settings = props => {
             let copyUser = { ...userData };
             copyUser.UserSetting = {
               ...copyUser.UserSetting,
-              noOfSpotlight: userData?.UserSetting?.noOfSpotlight - 1,
+              noOfSpotlight: userData?.UserSetting?.noOfSpotlight - 1
             };
 
             dispatch({
               type: "AUTH_USER",
-              payload: copyUser,
+              payload: copyUser
             });
 
             handleGetProfile();
@@ -276,20 +244,18 @@ const Settings = props => {
 
           dispatch({
             type: "AUTH_USER",
-            payload: data,
+            payload: data
           });
 
-          let time = moment
-            .duration(moment(data?.spotlightEnabled?.createdAt).format("HH:mm"))
-            .asSeconds();
+          let time = moment.duration(moment(data?.spotlightEnabled?.createdAt).format("HH:mm")).asSeconds();
 
           dispatch({
             type: "SET_SPOT_TIMER",
             payload: {
               userId: userData.id,
               showtimer: true,
-              time: time,
-            },
+              time: time
+            }
           });
         }
       })
@@ -334,9 +300,9 @@ const Settings = props => {
                     el: el,
                     params: {
                       screen: "ChatScreen",
-                      el: el,
-                    },
-                  },
+                      el: el
+                    }
+                  }
                 });
               }
             });
@@ -349,8 +315,7 @@ const Settings = props => {
       .finally(() => setLoading(false));
   };
 
-  const handleUrl = endpoint =>
-    Linking.openURL(`https://rishtaauntie.app/${endpoint}/`);
+  const handleUrl = endpoint => Linking.openURL(`https://rishtaauntie.app/${endpoint}/`);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -412,25 +377,20 @@ const Settings = props => {
               </View>
             </View>
           ) : null} */}
-          {userData?.Profile?.personalityType === null ||
-          status === "INCOMPLETE" ? (
+          {userData?.Profile?.personalityType === null || status === "INCOMPLETE" ? (
             <View style={styles.actionItemsMainView}>
               <View style={styles.actionItemsView}>
                 <Text style={styles.actionItemsText}>Action Items</Text>
                 {status === "INCOMPLETE" ? (
                   <SettingButton
-                    onPress={() =>
-                      props.navigation.navigate("OnBoardingQuestions")
-                    }
+                    onPress={() => props.navigation.navigate("OnBoardingQuestions")}
                     title={"Complete my profile"}
                   />
                 ) : null}
                 {userData.Profile.personalityType == "" ||
                   (userData.Profile.personalityType == null && (
                     <SettingButton
-                      onPress={() =>
-                        props.navigation.navigate("PersonalityQuiz")
-                      }
+                      onPress={() => props.navigation.navigate("PersonalityQuiz")}
                       title={"Take personality quiz to get user insights"}
                     />
                   ))}
@@ -444,28 +404,26 @@ const Settings = props => {
                 style={{
                   flexDirection: "row",
                   alignItems: "flex-start",
-                  justifyContent: "space-between",
-                }}
-              >
+                  justifyContent: "space-between"
+                }}>
                 <View
                   style={{
                     width: 56,
                     height: 56,
                     alignItems: "center",
                     justifyContent: "center",
-                    borderRadius: 56 / 2,
-                  }}
-                >
+                    borderRadius: 56 / 2
+                  }}>
                   {userData?.UserMedia?.length > 0 && (
                     <FastImage
                       resizeMode="cover"
                       style={{
                         width: "100%",
                         height: "100%",
-                        borderRadius: 56 / 2,
+                        borderRadius: 56 / 2
                       }}
                       source={{
-                        uri: userData?.UserMedia[0]?.url,
+                        uri: userData?.UserMedia[0]?.url
                       }}
                     />
                   )}
@@ -478,9 +436,8 @@ const Settings = props => {
                     minWidth: "60%",
                     maxWidth: "70%",
                     textAlign: "center",
-                    color: "#111827",
-                  }}
-                >
+                    color: "#111827"
+                  }}>
                   {userData?.firstName + " " + userData?.lastName}
                 </Text>
 
@@ -492,16 +449,15 @@ const Settings = props => {
                       size={36}
                       color={colors.primaryPink}
                       style={{
-                        width: "10%",
-                        bottom: OS_VER >= 13 ? 5.5 : 2.5,
+                        width: "11%",
+                        bottom: OS_VER >= 13 ? 5.5 : 2.5
                       }}
                     />
                     <TouchableOpacity
                       onPress={() => {
                         props.navigation.navigate("EditProfileScreen");
                       }}
-                      style={{ width: "10%" }}
-                    >
+                      style={{ width: "10%" }}>
                       <FastImage
                         resizeMode="contain"
                         style={{ width: "100%", height: 25 }}
@@ -518,7 +474,7 @@ const Settings = props => {
                   // Log the button click event in Firebase Analytics
                   await analytics().logEvent("view_insights_click", {
                     screen_name: "MySetting",
-                    button_name: "View Insights",
+                    button_name: "View Insights"
                   });
 
                   // Navigate to the MyInsight screen
@@ -527,7 +483,7 @@ const Settings = props => {
                 sbStyles={{
                   backgroundColor: null,
                   borderColor: colors.primaryPink,
-                  borderWidth: 1,
+                  borderWidth: 1
                 }}
                 titleStyles={{ color: "#121826" }}
                 title={"View Insights"}
@@ -540,9 +496,8 @@ const Settings = props => {
               alignItems: "center",
               justifyContent: "space-between",
               paddingHorizontal: 20,
-              marginTop: "2%",
-            }}
-          >
+              marginTop: "2%"
+            }}>
             <BoostUpgradeCard
               onPress={async () => {
                 if (userData?.UserSetting?.noOfSpotlight > 0) {
@@ -550,7 +505,7 @@ const Settings = props => {
                   await analytics().logEvent("spotlight_activate_button", {
                     screen_name: "MySetting",
                     action: "Enable Spotlight",
-                    remaining_spotlights: userData?.UserSetting?.noOfSpotlight,
+                    remaining_spotlights: userData?.UserSetting?.noOfSpotlight
                   });
 
                   handleEnableSpotlight();
@@ -558,7 +513,7 @@ const Settings = props => {
                   // Log the "Spotlight Purchase" event
                   await analytics().logEvent("spotlight_purchase", {
                     screen_name: "MySetting",
-                    action: "Navigate to Paywall for Spotlight",
+                    action: "Navigate to Paywall for Spotlight"
                   });
 
                   props.navigation.navigate("PaywallSpots");
@@ -580,7 +535,7 @@ const Settings = props => {
                 await analytics().logEvent("subscription", {
                   screen_name: "MySetting",
                   action: "Navigate to Paywall for Upgrade",
-                  remaining_profiles: `${userData?.Profile?.noOfProfilesRemaining}/${userData?.Profile?.totalNoOfProfiles}`,
+                  remaining_profiles: `${userData?.Profile?.noOfProfilesRemaining}/${userData?.Profile?.totalNoOfProfiles}`
                 });
 
                 props.navigation.navigate("Paywall");
@@ -668,10 +623,9 @@ const Settings = props => {
             style={[
               styles.actionItemsMainView,
               {
-                marginTop: "2%",
-              },
-            ]}
-          >
+                marginTop: "2%"
+              }
+            ]}>
             <View style={styles.actionItemsView}>
               {settingsArr.map((el, index, array) => (
                 <TouchableOpacity
@@ -679,38 +633,30 @@ const Settings = props => {
                   onPress={() => {
                     if (el.title == "Contact Rishta Auntie") getChatHeads();
                     else if (/Safety Tips|FAQ/.test(el.title)) el.screen();
-                    else if (el.screen != "")
-                      props.navigation.navigate(el.screen);
+                    else if (el.screen != "") props.navigation.navigate(el.screen);
                   }}
                   style={[
                     styles.settingsIconContainer,
                     {
-                      borderBottomWidth: index === array?.length - 1 ? 0 : 1,
-                    },
-                  ]}
-                >
+                      borderBottomWidth: index === array?.length - 1 ? 0 : 1
+                    }
+                  ]}>
                   <View
                     style={[
                       styles.textIcon,
                       {
                         width: "80%",
-                        justifyContent: "flex-start",
-                      },
-                    ]}
-                  >
-                    <FastImage
-                      source={el?.icon}
-                      resizeMode="contain"
-                      style={{ width: 20, height: 20 }}
-                    />
+                        justifyContent: "flex-start"
+                      }
+                    ]}>
+                    <FastImage source={el?.icon} resizeMode="contain" style={{ width: 20, height: 20 }} />
                     <Text
                       style={[
                         styles.settingsIconText,
                         {
-                          marginLeft: 20,
-                        },
-                      ]}
-                    >
+                          marginLeft: 20
+                        }
+                      ]}>
                       {el.title}
                     </Text>
                   </View>
@@ -732,18 +678,16 @@ const Settings = props => {
                 styles.actionItemsView,
                 {
                   backgroundColor: colors.primaryPink,
-                  flexDirection: "row",
-                },
-              ]}
-            >
+                  flexDirection: "row"
+                }
+              ]}>
               <View style={{ width: "60%" }}>
                 <Text
                   style={{
                     fontSize: 16,
                     fontFamily: "Inter-Bold",
-                    color: colors.white,
-                  }}
-                >
+                    color: colors.white
+                  }}>
                   Invite a friend and get 1 month free premium
                 </Text>
                 <SettingButton
@@ -751,7 +695,7 @@ const Settings = props => {
                   sbStyles={{
                     backgroundColor: colors.white,
                     width: "70%",
-                    marginTop: "10%",
+                    marginTop: "10%"
                   }}
                   title={"Invite a friend"}
                 />
@@ -771,9 +715,8 @@ const Settings = props => {
                 fontSize: 20,
                 fontFamily: "Inter-Regular",
                 color: colors.primaryBlue,
-                marginTop: "5%",
-              }}
-            >
+                marginTop: "5%"
+              }}>
               Follow Us!
             </Text>
             <View style={{ width: "50%", marginVertical: "5%" }}>
@@ -788,20 +731,13 @@ const Settings = props => {
               alignSelf: "center",
               justifyContent: "center",
               marginVertical: "5%",
-              width: "80%",
-            }}
-          >
-            <Text
-              onPress={() => handleUrl("terms-of-use")}
-              style={{ color: "#374151", fontSize: 15 }}
-            >
+              width: "80%"
+            }}>
+            <Text onPress={() => handleUrl("terms-of-use")} style={{ color: "#374151", fontSize: 15 }}>
               Terms of Service
             </Text>
             <View style={styles.verticalLine}></View>
-            <Text
-              onPress={() => handleUrl("privacy-policy")}
-              style={{ color: "#374151", fontSize: 15 }}
-            >
+            <Text onPress={() => handleUrl("privacy-policy")} style={{ color: "#374151", fontSize: 15 }}>
               Privacy Policy
             </Text>
             {/* <View style={styles.verticalLine}></View> */}

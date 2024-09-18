@@ -121,9 +121,7 @@ const ChatScreen = props => {
       chatHeadId: el.id,
       senderId: userData?.id,
       recipientId:
-        el.type === "GROUP"
-          ? el.ChatMembers.map(el => el.memberId)
-          : el?.ChatMembers[0]?.memberId,
+        el.type === "GROUP" ? el.ChatMembers.map(el => el.memberId) : el?.ChatMembers[0]?.memberId,
     };
     socket.emit("message-read", obj, res => {
       console.log("HElLLO", obj, res);
@@ -139,9 +137,7 @@ const ChatScreen = props => {
         senderId: userData?.id,
         messageReplyId: replyMsg?.id,
         recipientId:
-          el.type === "GROUP"
-            ? el.ChatMembers.map(el => el.memberId)
-            : el.ChatMembers[0]?.memberId,
+          el.type === "GROUP" ? el.ChatMembers.map(el => el.memberId) : el.ChatMembers[0]?.memberId,
         message: msgType == "TEXT_MESSAGE" ? msg : val,
         type: msgType,
       };
@@ -152,9 +148,7 @@ const ChatScreen = props => {
         chatHeadId: el.id,
         senderId: userData?.id,
         recipientId:
-          el.type === "GROUP"
-            ? el.ChatMembers.map(el => el.memberId)
-            : el.ChatMembers[0]?.memberId,
+          el.type === "GROUP" ? el.ChatMembers.map(el => el.memberId) : el.ChatMembers[0]?.memberId,
         message: msgType == "TEXT_MESSAGE" ? msg : val,
         type: msgType,
       };
@@ -264,8 +258,8 @@ const ChatScreen = props => {
 
     if (el.type === "GROUP") getOpenendTicket();
 
-    if (el.type !== "GROUP")
-      permisisonsService.checkAndRequestDrawOverlaysPermission();
+    // if (el.type !== "GROUP")
+    //   permisisonsService.checkAndRequestDrawOverlaysPermission();
   }, []);
 
   useEffect(() => {
@@ -419,9 +413,7 @@ const ChatScreen = props => {
             ...prevState,
             rows: [
               prevState.rows.map(el =>
-                el.id == res.messageId
-                  ? { ...el, MessageReactions: [{ emoji: res.emoji }] }
-                  : el
+                el.id == res.messageId ? { ...el, MessageReactions: [{ emoji: res.emoji }] } : el
               ),
             ][0],
           }));
@@ -433,20 +425,14 @@ const ChatScreen = props => {
   const emitUserStatus = () => {
     socket.emit("is-online", {
       recipientId:
-        el.type === "GROUP"
-          ? el.ChatMembers.map(el => el.memberId)
-          : el?.ChatMembers[0]?.memberId,
+        el.type === "GROUP" ? el.ChatMembers.map(el => el.memberId) : el?.ChatMembers[0]?.memberId,
     });
   };
 
   const getAllChatMessages = (limit, offset) => {
     if (count !== chatMessages?.count) {
       setLoading(true);
-      ChatServices.chatMessages(
-        el.id,
-        `limit=${limit}&offset=${offset * limit}`,
-        token
-      )
+      ChatServices.chatMessages(el.id, `limit=${limit}&offset=${offset * limit}`, token)
         .then(res => {
           if (res.status >= 200 && res.status <= 299) {
             let data = res.data.data;
@@ -460,10 +446,7 @@ const ChatScreen = props => {
               }));
             }
           } else if (res.status >= 300 && res.status <= 399) {
-            Alerts(
-              "error",
-              "You need to perform further actions to complete the request!"
-            );
+            Alerts("error", "You need to perform further actions to complete the request!");
           } else if (res.status >= 400 && res.status <= 499) {
             if (el.type === "GROUP") {
               setMatchReq(false);
@@ -473,10 +456,7 @@ const ChatScreen = props => {
               Alerts("error", res.data.error.message);
             }
           } else if (res.status >= 500 && res.status <= 599) {
-            Alerts(
-              "error",
-              "Internal server error! Your server is probably down."
-            );
+            Alerts("error", "Internal server error! Your server is probably down.");
           } else {
             Alerts("error", "Something went wrong Please try again later");
           }
@@ -568,13 +548,9 @@ const ChatScreen = props => {
 
   const handleGallery = state => {
     if (ios) {
-      handlePermissions.checkMultiplePermissions(
-        PERMISSIONS.IOS.PHOTO_LIBRARY,
-        "gallery",
-        res => {
-          handleGalleryMedia(state, res);
-        }
-      );
+      handlePermissions.checkMultiplePermissions(PERMISSIONS.IOS.PHOTO_LIBRARY, "gallery", res => {
+        handleGalleryMedia(state, res);
+      });
     } else if (android) {
       if (OS_VER >= 13) {
         handleGalleryMedia(state, "granted");
@@ -627,21 +603,13 @@ const ChatScreen = props => {
 
   const handleCamera = state => {
     if (ios) {
-      handlePermissions.checkMultiplePermissions(
-        PERMISSIONS.IOS.CAMERA,
-        "camera",
-        res => {
-          handleCameraMedia(state, res);
-        }
-      );
+      handlePermissions.checkMultiplePermissions(PERMISSIONS.IOS.CAMERA, "camera", res => {
+        handleCameraMedia(state, res);
+      });
     } else if (android) {
-      handlePermissions.checkMultiplePermissions(
-        PERMISSIONS.ANDROID.CAMERA,
-        "camera",
-        res => {
-          handleCameraMedia(state, res);
-        }
-      );
+      handlePermissions.checkMultiplePermissions(PERMISSIONS.ANDROID.CAMERA, "camera", res => {
+        handleCameraMedia(state, res);
+      });
     }
   };
 
@@ -683,21 +651,13 @@ const ChatScreen = props => {
 
   const handleVideo = state => {
     if (ios) {
-      handlePermissions.checkMultiplePermissions(
-        PERMISSIONS.IOS.CAMERA,
-        "camera",
-        res => {
-          handleVideoMedia(state, res);
-        }
-      );
+      handlePermissions.checkMultiplePermissions(PERMISSIONS.IOS.CAMERA, "camera", res => {
+        handleVideoMedia(state, res);
+      });
     } else if (android) {
-      handlePermissions.checkMultiplePermissions(
-        PERMISSIONS.ANDROID.CAMERA,
-        "camera",
-        res => {
-          handleVideoMedia(state, res);
-        }
-      );
+      handlePermissions.checkMultiplePermissions(PERMISSIONS.ANDROID.CAMERA, "camera", res => {
+        handleVideoMedia(state, res);
+      });
     }
   };
 
@@ -781,9 +741,7 @@ const ChatScreen = props => {
         ...prevState,
         rows: [
           prevState.rows.map(el =>
-            el.id == selectedMsg?.id
-              ? { ...el, MessageReactions: [{ emoji: res.emoji }] }
-              : el
+            el.id == selectedMsg?.id ? { ...el, MessageReactions: [{ emoji: res.emoji }] } : el
           ),
         ][0],
       }));
@@ -798,9 +756,7 @@ const ChatScreen = props => {
     let obj = {
       chatHeadId: el.id,
       recipientId:
-        el.type === "GROUP"
-          ? el.ChatMembers.map(el => el.memberId)
-          : el?.ChatMembers[0]?.memberId,
+        el.type === "GROUP" ? el.ChatMembers.map(el => el.memberId) : el?.ChatMembers[0]?.memberId,
       typing: true,
     };
 
@@ -932,9 +888,7 @@ const ChatScreen = props => {
           <Text style={[styles.promptsText, { textAlign: "left" }]}>
             "{chatMessages?.firstInteraction?.resource.Question.title}"
           </Text>
-          <Text
-            style={[styles.promptsText, { textAlign: "right", marginTop: 10 }]}
-          >
+          <Text style={[styles.promptsText, { textAlign: "right", marginTop: 10 }]}>
             {chatMessages?.firstInteraction?.resource.answer}
           </Text>
         </View>
@@ -980,9 +934,9 @@ const ChatScreen = props => {
           ) : null}
         </View>
       ) : null}
-      {/LIKE/.test(
-        chatMessages?.firstInteraction?.type
-      ) ? null : /VOICE_NOTE/.test(chatMessages?.firstInteraction?.type) ? (
+      {/LIKE/.test(chatMessages?.firstInteraction?.type) ? null : /VOICE_NOTE/.test(
+          chatMessages?.firstInteraction?.type
+        ) ? (
         <>
           <Divider width={3} color={colors.white} style={styles.divider} />
           <View style={styles.waveContainer}>
@@ -1020,9 +974,7 @@ const ChatScreen = props => {
       ) : (
         <>
           <Divider width={3} color={colors.white} style={styles.divider} />
-          <Text style={styles.comment}>
-            {chatMessages?.firstInteraction?.comment}
-          </Text>
+          <Text style={styles.comment}>{chatMessages?.firstInteraction?.comment}</Text>
         </>
       )}
     </View>
@@ -1047,11 +999,7 @@ const ChatScreen = props => {
         ref={flatRef}
         contentContainerStyle={{ paddingHorizontal: "3%" }}
         showsVerticalScrollIndicator={false}
-        data={
-          matchReq
-            ? noMatchMessages
-            : chatMessages?.rows?.sort((a, b) => b.id - a.id)
-        }
+        data={matchReq ? noMatchMessages : chatMessages?.rows?.sort((a, b) => b.id - a.id)}
         keyExtractor={item => item.id.toString()}
         onEndReached={loadMoreData}
         renderItem={matchReq ? renderMatchItem : renderItem}
@@ -1078,11 +1026,7 @@ const ChatScreen = props => {
               )
         }
         type={el.type === "GROUP" && "GROUP"}
-        name={
-          el.type === "GROUP"
-            ? "Rishta Auntie Support"
-            : el?.ChatMembers[0]?.User?.firstName
-        }
+        name={el.type === "GROUP" ? "Rishta Auntie Support" : el?.ChatMembers[0]?.User?.firstName}
         image={el?.ChatMembers[0]?.User?.UserMedia[0]?.url}
         status={typingStatus ? "typing..." : userStatus ? "online" : ""}
         selected={selectedMsg}
@@ -1164,9 +1108,7 @@ const ChatScreen = props => {
                     {replyMsg?.msgPosition == "right" ? (
                       <Text style={styles.replyYou}>You</Text>
                     ) : (
-                      <Text style={styles.replyYou}>
-                        {el?.ChatMembers[0]?.User?.firstName}
-                      </Text>
+                      <Text style={styles.replyYou}>{el?.ChatMembers[0]?.User?.firstName}</Text>
                     )}
                     {checkExtension(replyMsg?.message) == "Photo" ? (
                       <TextWithIcon icon="photo" text="Photo" />
@@ -1203,10 +1145,7 @@ const ChatScreen = props => {
                     <View style={styles.audioContainer}>
                       <TouchableOpacity
                         onPress={onStopRecord}
-                        style={[
-                          styles.deletePauseContainer,
-                          { marginRight: 5 },
-                        ]}
+                        style={[styles.deletePauseContainer, { marginRight: 5 }]}
                       >
                         <FastImage
                           style={{

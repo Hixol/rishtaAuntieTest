@@ -1,13 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  SafeAreaView,
-  Text,
-  View,
-  TouchableOpacity,
-  ScrollView,
-  BackHandler,
-  ActivityIndicator,
-} from "react-native";
+import { SafeAreaView, Text, View, TouchableOpacity, ScrollView, BackHandler, ActivityIndicator } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { useSelector, useDispatch } from "react-redux";
 import { windowHeight, windowWidth } from "../../utility/size";
@@ -30,16 +22,12 @@ import Icons from "../../utility/icons";
 import ActionBottomModal from "../../components/Modal/ActionBottomModal";
 
 const UserDetailScreen = props => {
-  const userId =
-    props?.props?.route?.params?.el.ChatMembers[0].User.id ||
-    props?.route?.params?.userId;
+  const userId = props?.props?.route?.params?.el.ChatMembers[0].User.id || props?.route?.params?.userId;
 
   const ref = useRef(null);
   const dispatch = useDispatch();
   const { Alerts, handleStatusCode, navigation } = useHelper();
-  const { token, userData, focusedScreen } = useSelector(
-    store => store.userReducer
-  );
+  const { token, userData, focusedScreen } = useSelector(store => store.userReducer);
   const { personalityRes } = useSelector(store => store.profileReducer);
 
   const unmatch = props?.route?.params?.unmatch || null;
@@ -61,7 +49,7 @@ const UserDetailScreen = props => {
     setAction(false);
     props.navigation.navigate("ReportAccountScreen", {
       userId: userId,
-      userName: allDetails?.firstName,
+      userName: allDetails?.firstName
     });
   };
 
@@ -101,10 +89,7 @@ const UserDetailScreen = props => {
   });
 
   useEffect(() => {
-    allDetails === null ||
-    allDetails === undefined ||
-    allDetails === "" ||
-    allDetails.length === 0
+    allDetails === null || allDetails === undefined || allDetails === "" || allDetails.length === 0
       ? null
       : setUserImages(allDetails?.Profile?.profilePics);
   }, []);
@@ -129,17 +114,14 @@ const UserDetailScreen = props => {
       {
         resourceId: userPhotosId ? userPhotosId[index] : null,
         resourceType: "USER_MEDIA",
-        otherUserId: userId,
+        otherUserId: userId
       },
       token
     )
       .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
-          Alerts(
-            "success",
-            `You liked ${allDetails?.firstName}'s picture successfully`
-          );
+          Alerts("success", `You liked ${allDetails?.firstName}'s picture successfully`);
         }
       })
       .catch(error => console.log("likeImageInteraction err", error));
@@ -150,17 +132,14 @@ const UserDetailScreen = props => {
       {
         resourceId: item?.id,
         resourceType: "PROFILE_PROMPT",
-        otherUserId: userId,
+        otherUserId: userId
       },
       token
     )
       .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
-          Alerts(
-            "success",
-            `You liked ${allDetails?.firstName}'s profie prompt successfully`
-          );
+          Alerts("success", `You liked ${allDetails?.firstName}'s profie prompt successfully`);
         }
       })
       .catch(error => console.log("likeProfilePrompt err", error));
@@ -171,19 +150,14 @@ const UserDetailScreen = props => {
       {
         dispatch({
           type: "AUTH_USER_SCREEN_INDEX",
-          payload: false,
+          payload: false
         });
       }
-    } else if (
-      commentModal == false ||
-      imageModal == false ||
-      promptModal == false ||
-      action == false
-    ) {
+    } else if (commentModal == false || imageModal == false || promptModal == false || action == false) {
       {
         dispatch({
           type: "AUTH_USER_SCREEN_INDEX",
-          payload: true,
+          payload: true
         });
       }
     }
@@ -198,16 +172,13 @@ const UserDetailScreen = props => {
   let countryCode = null;
 
   Countries.filter(item => {
-    if (item.en == country) {
+    if (country != null && item.en == country) {
       flagsLiving = item.code;
     }
-    if (item.en == fOrigin) {
+    if (fOrigin != null && item.en == fOrigin) {
       flagsOrigin = item.code;
     }
-    if (
-      country == "United States" &&
-      address?.toLowerCase() == item.name?.toLowerCase()
-    ) {
+    if (country == "United States" && address?.toLowerCase() == item.name?.toLowerCase()) {
       countryCode = item.abbreviation;
     }
   });
@@ -244,18 +215,8 @@ const UserDetailScreen = props => {
   }, [handleBackButton]);
 
   const Capsule = ({ outlined, title, style, titleStyle }) => (
-    <View
-      style={[
-        styles.capsule,
-        style,
-        outlined ? styles.outlined : styles.filled,
-      ]}
-    >
-      <Text
-        style={[styles.myvibes, titleStyle, !outlined && styles.whiteTitle]}
-      >
-        {title}
-      </Text>
+    <View style={[styles.capsule, style, outlined ? styles.outlined : styles.filled]}>
+      <Text style={[styles.myvibes, titleStyle, !outlined && styles.whiteTitle]}>{title}</Text>
     </View>
   );
 
@@ -263,9 +224,7 @@ const UserDetailScreen = props => {
     <>
       <>
         {loading ? (
-          <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          >
+          <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
             <ActivityIndicator size={"large"} color={colors.primaryPink} />
           </View>
         ) : (
@@ -308,9 +267,8 @@ const UserDetailScreen = props => {
                     <View
                       style={{
                         width: "100%",
-                        height: "100%",
-                      }}
-                    >
+                        height: "100%"
+                      }}>
                       {isFocused ? (
                         <ImageCarousel
                           photosLength={userPhotosUrl?.length}
@@ -335,25 +293,14 @@ const UserDetailScreen = props => {
                     </View>
 
                     <View style={styles.imgHeader}>
-                      <TouchableOpacity
-                        onPress={() => navigation.navigate("SearchPreferences")}
-                        style={styles.iconImg}
-                      >
+                      <TouchableOpacity onPress={() => navigation.navigate("SearchPreferences")} style={styles.iconImg}>
                         <FastImage
                           style={{ height: "72%", width: "60%" }}
                           source={require("../../assets/iconimages/heart-discover.png")}
                         />
                       </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() =>
-                          isBlocked ? setBlockAlert(true) : setAction(true)
-                        }
-                      >
-                        <Icons.MaterialCommunityIcons
-                          name="dots-vertical"
-                          size={34}
-                          color={"white"}
-                        />
+                      <TouchableOpacity onPress={() => (isBlocked ? setBlockAlert(true) : setAction(true))}>
+                        <Icons.MaterialCommunityIcons name="dots-vertical" size={34} color={"white"} />
                       </TouchableOpacity>
                     </View>
 
@@ -362,33 +309,21 @@ const UserDetailScreen = props => {
                         {allDetails ? allDetails?.firstName : null}{" "}
                       </Text>
                       <Text style={styles.nameTxt}>
-                        {allDetails
-                          ? `${allDetails?.Profile?.age}, ${allDetails?.Profile?.occupation}`
-                          : null}
+                        {allDetails ? `${allDetails?.Profile?.age}, ${allDetails?.Profile?.occupation}` : null}
                       </Text>
                     </View>
 
                     <View style={styles.flagContainer}>
                       <View style={styles.row1}>
-                        <CountryFlag
-                          isoCode={`${flagsLiving}`}
-                          size={17}
-                          style={{ marginRight: 5 }}
-                        />
+                        <CountryFlag isoCode={`${flagsLiving}`} size={17} style={{ marginRight: 5 }} />
                         <CountryFlag isoCode={`${flagsOrigin}`} size={17} />
                       </View>
 
                       <View style={styles.row2}>
-                        <Icons.Ionicons
-                          name="location-outline"
-                          size={20}
-                          color={colors.textGrey1}
-                        />
+                        <Icons.Ionicons name="location-outline" size={20} color={colors.textGrey1} />
                         <Text style={styles.location}>
                           {allDetails?.city},{" "}
-                          {allDetails?.country == "United States"
-                            ? countryCode
-                            : allDetails?.country}
+                          {allDetails?.country == "United States" ? countryCode : allDetails?.country}
                         </Text>
                       </View>
                     </View>
@@ -396,25 +331,18 @@ const UserDetailScreen = props => {
 
                   <View>
                     <View style={styles.analystSection}>
-                      <Text style={styles.tagTxt}>
-                        {allDetails?.Profile?.tagline}
-                      </Text>
+                      <Text style={styles.tagTxt}>{allDetails?.Profile?.tagline}</Text>
                     </View>
 
                     {personalityRes != null &&
                     userData?.Profile?.personalityType != null &&
                     allDetails?.Profile?.personalityType != null ? (
                       <View style={styles.matchingSection}>
-                        <Text style={styles.lookingForTxt}>
-                          Personality Insights
-                        </Text>
+                        <Text style={styles.lookingForTxt}>Personality Insights</Text>
                         <View style={styles.bulbSect}>
                           <View style={styles.meView}>
                             <Text style={styles.meTxt}>Me:</Text>
-                            <Capsule
-                              outlined
-                              title={userData?.Profile?.personalityType}
-                            />
+                            <Capsule outlined title={userData?.Profile?.personalityType} />
                           </View>
 
                           <View style={styles.bulbView}>
@@ -429,16 +357,12 @@ const UserDetailScreen = props => {
                             <Text numberOfLines={1} style={styles.meTxt}>
                               {allDetails ? allDetails?.firstName : null}
                             </Text>
-                            <Capsule
-                              title={allDetails?.Profile?.personalityType}
-                            />
+                            <Capsule title={allDetails?.Profile?.personalityType} />
                           </View>
                         </View>
 
                         <View style={styles.lookingForFooter}>
-                          <Text style={styles.matchingDesc}>
-                            {personalityRes}
-                          </Text>
+                          <Text style={styles.matchingDesc}>{personalityRes}</Text>
                         </View>
                       </View>
                     ) : null}
@@ -448,9 +372,8 @@ const UserDetailScreen = props => {
                         style={{
                           flexDirection: "row",
                           flexWrap: "wrap",
-                          marginTop: "1%",
-                        }}
-                      >
+                          marginTop: "1%"
+                        }}>
                         {allDetails != null &&
                           allDetails?.Profile?.vibes?.map((item, index) => {
                             return (
@@ -467,19 +390,15 @@ const UserDetailScreen = props => {
                     </View>
                   </View>
 
-                  <View
-                    style={{ width: windowWidth * 0.92, alignSelf: "center" }}
-                  >
+                  <View style={{ width: windowWidth * 0.92, alignSelf: "center" }}>
                     <CardCarousel user={allDetails} />
                   </View>
                   <View style={{ height: 20, width: "100%" }}></View>
                   <View>
-                    {allDetails?.ProfilePrompts?.map(item => {
+                    {allDetails?.ProfilePrompts?.map((item, ind) => {
                       return (
-                        <View style={styles.lookingForSec}>
-                          <Text style={styles.poolQuestTxt}>
-                            {item?.Question?.title}
-                          </Text>
+                        <View key={ind} style={styles.lookingForSec}>
+                          <Text style={styles.poolQuestTxt}>{item?.Question?.title}</Text>
                           <Text style={styles.poolAnsTxt}>{item?.answer}</Text>
                         </View>
                       );
@@ -498,9 +417,8 @@ const UserDetailScreen = props => {
                   height: imageModal ? windowHeight * 1 : 0,
                   bottom: 0,
                   position: "absolute",
-                  zIndex: 1,
-                }}
-              >
+                  zIndex: 1
+                }}>
                 <BottomImageInteraction
                   userId={userId}
                   userName={allDetails?.firstName}
@@ -522,9 +440,8 @@ const UserDetailScreen = props => {
                   height: promptModal ? windowHeight * 1 : 0,
                   bottom: 0,
                   position: "absolute",
-                  zIndex: 1,
-                }}
-              >
+                  zIndex: 1
+                }}>
                 <BottomPromptInteraction
                   userId={userId}
                   userName={allDetails?.firstName}
@@ -540,7 +457,7 @@ const UserDetailScreen = props => {
               <ActionBottomModal
                 user={{
                   userId,
-                  userName: allDetails?.firstName,
+                  userName: allDetails?.firstName
                 }}
                 toggle={action}
                 setAction={setAction}
