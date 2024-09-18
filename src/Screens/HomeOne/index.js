@@ -1,11 +1,4 @@
-import React, {
-  useRef,
-  useState,
-  useEffect,
-  memo,
-  useCallback,
-  useReducer,
-} from "react";
+import React, { useRef, useState, useEffect, memo, useCallback, useReducer } from "react";
 import {
   SafeAreaView,
   FlatList,
@@ -18,7 +11,7 @@ import {
   Pressable,
   Dimensions,
   Platform,
-  Alert,
+  Alert
 } from "react-native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { UserService } from "../../services";
@@ -28,11 +21,7 @@ import { android, ios, userDevice, windowHeight } from "../../utility/size";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useHelper } from "../../hooks/useHelper";
 import { Button } from "react-native-elements";
-import {
-  TestIds,
-  RewardedAd,
-  RewardedAdEventType,
-} from "react-native-google-mobile-ads";
+import { TestIds, RewardedAd, RewardedAdEventType } from "react-native-google-mobile-ads";
 
 import styles from "./styles";
 import DiscoverImg from "../../components/DiscoverImg";
@@ -52,7 +41,7 @@ import FastImage from "react-native-fast-image";
 import OutOfProfilesDay from "../../components/OutOfProfilesDay";
 import UploadSelfie from "../NewOnBoarding/UploadImages.js/UploadSelfie";
 // import FeedbackModal from "../../components/Modal/FeedBackModal";
-import analytics from '@react-native-firebase/analytics'
+import analytics from "@react-native-firebase/analytics";
 let limit = 15;
 let offset = 0;
 // let profileIds = [];
@@ -64,7 +53,7 @@ const adUnitId = __DEV__
   : "ca-app-pub-8950919464657693/2927384385";
 
 const admob = RewardedAd.createForAdRequest(adUnitId, {
-  requestNonPersonalizedAdsOnly: true,
+  requestNonPersonalizedAdsOnly: true
 });
 
 const initialState = {
@@ -85,7 +74,7 @@ const initialState = {
   index: undefined,
   check: false,
   loaded: false,
-  adLoad: false,
+  adLoad: false
   // isModalVisible: false,
 };
 
@@ -164,7 +153,7 @@ const HomeOne = props => {
     index,
     check,
     loaded,
-    adLoad,
+    adLoad
   } = state1;
 
   const tabBarHeight = useBottomTabBarHeight();
@@ -176,8 +165,8 @@ const HomeOne = props => {
     <View style={styles.outContainer}>
       <Text style={styles.title}>Expand your horizons!</Text>
       <Text style={styles.description}>
-        Oops! It looks like there aren't any users matching your current
-        preferences. Let's tailor your experience to find your perfect match.
+        Oops! It looks like there aren't any users matching your current preferences. Let's tailor your experience to
+        find your perfect match.
       </Text>
       <Button
         onPress={() => props.navigation.navigate("SearchPreferences")}
@@ -199,8 +188,7 @@ const HomeOne = props => {
     <View style={styles.outContainer}>
       <Text style={styles.title}>Failed verification</Text>
       <Text style={styles.description}>
-        Sorry, we were unable to verify your profile. Please delete your profile
-        and make a new one again.
+        Sorry, we were unable to verify your profile. Please delete your profile and make a new one again.
       </Text>
     </View>
   );
@@ -208,7 +196,7 @@ const HomeOne = props => {
   const loginInChat = (token, login) => {
     const userCredentials = {
       login: login,
-      password: "12345678",
+      password: "12345678"
     };
     ConnectyCube.createSession(userCredentials)
       .then(session => {
@@ -216,11 +204,11 @@ const HomeOne = props => {
         ConnectyCube.chat
           .connect({
             userId: session.id,
-            password: session.token,
+            password: session.token
           })
           .then(() => {
             CallService.init();
-            pushNotificationService.init();
+            // pushNotificationService.init();
           })
           .catch(err => console.log("error: ", err));
       })
@@ -258,10 +246,10 @@ const HomeOne = props => {
           const CREDENTIALS = {
             appId: data?.appid,
             authKey: data?.authKey,
-            authSecret: data?.authSec,
+            authSecret: data?.authSec
           };
           const CONFIG = {
-            debug: { mode: 0 },
+            debug: { mode: 0 }
           };
           // ConnectyCube.init(CREDENTIALS, CONFIG);
           ConnectyCube.createSession()
@@ -278,14 +266,14 @@ const HomeOne = props => {
     const userProfile = {
       password: "12345678",
       phone: login,
-      login: login,
+      login: login
     };
     ConnectyCube.createSession()
       .then(session => {
         ConnectyCube.users.signup({ ...userProfile, ...session }).then(res => {
           let userLoginCredentials = {
             login: login,
-            password: "12345678",
+            password: "12345678"
           };
           ConnectyCube.createSession(userLoginCredentials).then(session => {
             ConnectyCube.login(userLoginCredentials)
@@ -295,11 +283,11 @@ const HomeOne = props => {
                 ConnectyCube.chat
                   .connect({
                     userId: session.id,
-                    password: session.token,
+                    password: session.token
                   })
                   .then(() => {
                     CallService.init();
-                    pushNotificationService.init();
+                    // pushNotificationService.init();
                   })
                   .catch(err => console.log("cc chat err:", err));
               })
@@ -317,7 +305,7 @@ const HomeOne = props => {
         if (res.status >= 200 && res.status <= 299) {
           dispatch({
             type: "PERSONALITY_RES",
-            payload: res.data.data,
+            payload: res.data.data
           });
         }
       })
@@ -345,7 +333,7 @@ const HomeOne = props => {
     discoverUserIndex,
     preferenceFilter,
     userData,
-    profileIndex,
+    profileIndex
   } = useSelector(store => store.userReducer);
   const { religion, vibes } = useSelector(store => store.NewOnBoardingReducer);
 
@@ -367,7 +355,7 @@ const HomeOne = props => {
   const handleReportAlert = state => {
     props.navigation.navigate("ReportAccountScreen", {
       userId: userId,
-      userName: userName,
+      userName: userName
     });
   };
 
@@ -390,9 +378,9 @@ const HomeOne = props => {
   //   try {
   //     const lastSkippedDate = await AsyncStorage.getItem('lastSkipped');
   //     const shouldShowModal =
-  //       !lastSkippedDate || 
+  //       !lastSkippedDate ||
   //       new Date() - new Date(lastSkippedDate) >= 7 * 24 * 60 * 60 * 1000;
-  
+
   //     if (shouldShowModal) {
   //       dispatch1({ type: "SHOW_MODAL" });
   //     }
@@ -400,7 +388,7 @@ const HomeOne = props => {
   //     console.error('Error retrieving last skipped date from AsyncStorage:', error);
   //   }
   // };
-  
+
   // const handleSkipModal = async () => {
   //   await AsyncStorage.setItem("lastSkipped", new Date().toISOString());
   //   dispatch1({ type: "SKIP_MODAL" });
@@ -408,45 +396,43 @@ const HomeOne = props => {
 
   const handleCloseModal = async () => {
     try {
-      await AsyncStorage.setItem('lastSkipped', new Date().toISOString());
+      await AsyncStorage.setItem("lastSkipped", new Date().toISOString());
       dispatch1({ type: "HIDE_MODAL" });
     } catch (error) {
-      console.error('Error updating last skipped date in AsyncStorage:', error);
+      console.error("Error updating last skipped date in AsyncStorage:", error);
     }
   };
-  
 
   const getMyProfile = async () => {
     if (token != null) {
       await ProfileServices.getMyProfile(token)
         .then(async res => {
-          console.log("UAISUIODUIODUIODOIDU", res.data);
           handleStatusCode(res);
           if (res.status >= 200 && res.status <= 299) {
             let data = await res?.data?.data;
             dispatch({
               type: "religion",
-              payload: data?.Profile?.religion,
+              payload: data?.Profile?.religion
             });
             await dispatch1({
               type: "SET_REVERIFY",
-              payload: data?.needToReverify,
+              payload: data?.needToReverify
             });
             // setReverify(data?.needToReverify);
 
             dispatch({
               type: "AUTH_USER_STATUS",
-              payload: data?.status,
+              payload: data?.status
             });
 
             dispatch({
               type: "AUTH_USER",
-              payload: data,
+              payload: data
             });
             if (userData?.Profile?.vibes) {
               dispatch({
                 type: "vibes",
-                payload: userData?.Profile?.vibes,
+                payload: userData?.Profile?.vibes
               });
             }
           }
@@ -461,120 +447,113 @@ const HomeOne = props => {
     }
   };
 
-  const getAllUser = useCallback((limit, offset, pagination) => {
-    const limitValue = limit; // or a default value if needed
-    const offsetValue = offset * limit;
-  
-    if (
-      status === "ACTIVE" ||
-      status === "INCOMPLETE" ||
-      status === "INACTIVE" ||
-      status === "COMPLETED" ||
-      status === null
-    ) {
-      UserService.getAllUser(token, {
-        limit: limitValue,
-        offset: offsetValue,
-      })
-        .then(async res => {
-          handleStatusCode(res);
-          console.log("PROFILES RESSSSSS", res.data);
-  
-          if (res.status >= 200 && res.status <= 299) {
-            let data = await res?.data?.data;
-  
-            if (data?.totalProfiles === 0 && data?.noOfProfilesRemaining >= 0) {
-              dispatch({
-                type: "AUTH_USER_SCREEN_INDEX",
-                payload: false,
+  const getAllUser = useCallback(
+    (limit, offset, pagination) => {
+      const limitValue = limit; // or a default value if needed
+      const offsetValue = offset * limit;
+
+      if (
+        status === "ACTIVE" ||
+        status === "INCOMPLETE" ||
+        status === "INACTIVE" ||
+        status === "COMPLETED" ||
+        status === null
+      ) {
+        UserService.getAllUser(token, {
+          limit: limitValue,
+          offset: offsetValue
+        })
+          .then(async res => {
+            handleStatusCode(res);
+            console.log("PROFILES RESSSSSS", res.data);
+
+            if (res.status >= 200 && res.status <= 299) {
+              let data = await res?.data?.data;
+
+              if (data?.totalProfiles === 0 && data?.noOfProfilesRemaining >= 0) {
+                dispatch({
+                  type: "AUTH_USER_SCREEN_INDEX",
+                  payload: false
+                });
+              } else if (!swipeScreenIndex) {
+                dispatch({
+                  type: "AUTH_USER_SCREEN_INDEX",
+                  payload: true
+                });
+              }
+
+              dispatch1({ type: "SET_REMAINING_PROFILES", payload: data?.noOfProfilesRemaining });
+
+              dispatch1({
+                type: "SET_TOTAL_PROFILES",
+                payload: data?.totalProfiles
               });
-            } else if (!swipeScreenIndex) {
-              dispatch({
-                type: "AUTH_USER_SCREEN_INDEX",
-                payload: true,
-              });
+
+              if (preferenceFilter) {
+                dispatch({
+                  type: "SET_PREFERENCE_FILTER",
+                  payload: false
+                });
+                dispatch1({
+                  type: "SET_PROFILES_LIST",
+                  payload: data?.profiles?.filter(
+                    el => el.Profile.gender.toLowerCase() !== userData.Profile?.gender.toLowerCase()
+                  )
+                });
+              } else if (!preferenceFilter && pagination) {
+                const updatedProfiles = [
+                  ...profilesList,
+                  ...data?.profiles.filter(
+                    el => el?.Profile?.gender.toLowerCase() !== userData?.Profile?.gender.toLowerCase()
+                  )
+                ];
+                dispatch1({
+                  type: "SET_PROFILES_LIST",
+                  payload: updatedProfiles
+                });
+              } else {
+                await dispatch1({
+                  type: "SET_PROFILES_LIST",
+                  payload: data?.profiles.filter(
+                    el => el.Profile.gender.toLowerCase() !== userData.Profile?.gender.toLowerCase()
+                  )
+                });
+              }
             }
-  
-            dispatch1({
-              type: "SET_REMAINING_PROFILES",
-              payload: data?.noOfProfilesRemaining,
-            });
-  
-            dispatch1({
-              type: "SET_TOTAL_PROFILES",
-              payload: data?.totalProfiles,
-            });
-  
-            if (preferenceFilter) {
-              dispatch({
-                type: "SET_PREFERENCE_FILTER",
-                payload: false,
-              });
-              dispatch1({
-                type: "SET_PROFILES_LIST",
-                payload: data?.profiles?.filter(
-                  el =>
-                    el.Profile.gender.toLowerCase() !==
-                    userData.Profile?.gender.toLowerCase()
-                ),
-              });
-            } else if (!preferenceFilter && pagination) {
-              const updatedProfiles = [
-                ...profilesList,
-                ...data?.profiles.filter(
-                  el =>
-                    el?.Profile?.gender.toLowerCase() !==
-                    userData?.Profile?.gender.toLowerCase()
-                ),
-              ];
-              dispatch1({
-                type: "SET_PROFILES_LIST",
-                payload: updatedProfiles,
-              });
+          })
+          .catch(err => {
+            if (err?.response?.status === 403) {
+              // Handle 403 error - User deleted or access forbidden
+              console.log("User has been deleted or access forbidden:", err);
+
+              // Clear user state or token
+              dispatch({ type: "AUTH_USER_STATUS", payload: null });
+              dispatch({ type: "AUTH_TOKEN", payload: null });
+
+              // Redirect the user to the WelcomeScreen or another screen
+              props.navigation.dispatch(
+                CommonActions.reset({
+                  index: 0,
+                  routes: [{ name: "WelcomeScreen" }]
+                })
+              );
+            } else if (err?.message.includes("Network")) {
+              Alerts("error", err.message);
             } else {
-              await dispatch1({
-                type: "SET_PROFILES_LIST",
-                payload: data?.profiles.filter(
-                  el =>
-                    el.Profile.gender.toLowerCase() !==
-                    userData.Profile?.gender.toLowerCase()
-                ),
-              });
+              console.log("getAllUser err:", err);
             }
-          }
-        })
-        .catch(err => {
-          if (err?.response?.status === 403) {
-            // Handle 403 error - User deleted or access forbidden
-            console.log("User has been deleted or access forbidden:", err);
-  
-            // Clear user state or token
-            dispatch({ type: "AUTH_USER_STATUS", payload: null });
-            dispatch({ type: "AUTH_TOKEN", payload: null });
-  
-            // Redirect the user to the WelcomeScreen or another screen
-            props.navigation.dispatch(
-              CommonActions.reset({
-                index: 0,
-                routes: [{ name: "WelcomeScreen" }],
-              })
-            );
-          } else if (err?.message.includes("Network")) {
-            Alerts("error", err.message);
-          } else {
-            console.log("getAllUser err:", err);
-          }
-          dispatch({
-            type: "AUTH_USER_SCREEN_INDEX",
-            payload: false,
-          });
-        })
-        .finally(() => dispatch1({ type: "SET_SKELETON", payload: false }));
-    } else {
-      dispatch1({ type: "SET_SKELETON", payload: false });
-    }
-  }, [token, status, swipeScreenIndex, preferenceFilter, profilesList, userData, props.navigation]);
-  
+            dispatch({
+              type: "AUTH_USER_SCREEN_INDEX",
+              payload: false
+            });
+          })
+          .finally(() => dispatch1({ type: "SET_SKELETON", payload: false }));
+      } else {
+        dispatch1({ type: "SET_SKELETON", payload: false });
+      }
+    },
+    [token, status, swipeScreenIndex, preferenceFilter, profilesList, userData, props.navigation]
+  );
 
   // const getAllUser = (limit, offset, pagination) => {
   //   if (
@@ -707,7 +686,7 @@ const HomeOne = props => {
 
           dispatch({
             type: "AUTH_USER",
-            payload: copy,
+            payload: copy
           });
 
           Alerts("success", res.data.message);
@@ -720,25 +699,24 @@ const HomeOne = props => {
     try {
       if (!loaded) {
         dispatch1({ type: "SET_AD_LOAD", payload: true });
-  
+
         // Log the start of loading an ad
-        await analytics().logEvent('watch_ad_start', {
-          description: 'User started watching a rewarded ad',
+        await analytics().logEvent("watch_ad_start", {
+          description: "User started watching a rewarded ad"
         });
-  
+
         admob.load();
       }
     } catch (error) {
-      console.error('Error during ad loading:', error);
-  
+      console.error("Error during ad loading:", error);
+
       // Log any errors that occur while loading the ad
-      await analytics().logEvent('watch_ad_failure', {
-        description: 'Failed to load rewarded ad',
-        error: error.message,
+      await analytics().logEvent("watch_ad_failure", {
+        description: "Failed to load rewarded ad",
+        error: error.message
       });
     }
   };
-  
 
   const onViewableItemsChanged = useRef(({ viewableItems }) => {
     dispatch1({ type: "SET_USER_MEDIA_IMAGE", payload: null });
@@ -746,10 +724,7 @@ const HomeOne = props => {
     // setUserMediaVideo(null);
     console.log("Viewable", viewableItems);
     for (var i = 0; i < viewableItems?.length; i++) {
-      AsyncStorage.setItem(
-        "moveIndex",
-        JSON.stringify(viewableItems[0]?.index)
-      );
+      AsyncStorage.setItem("moveIndex", JSON.stringify(viewableItems[0]?.index));
       viewableItems[i]?.item?.UserMedia?.map(item => {
         if (item?.type == "video" && item?.sequence == null) {
           dispatch1({ type: "SET_USER_MEDIA_VIDEO", payload: item });
@@ -766,7 +741,7 @@ const HomeOne = props => {
       dispatch1({ type: "SET_USER_ID", payload: viewableItems[i].item?.id });
       dispatch1({
         type: "SET_USER_NAME",
-        payload: viewableItems[i].item?.firstName,
+        payload: viewableItems[i].item?.firstName
       });
       // setUserId(viewableItems[i].item?.id);
       // setUserName(viewableItems[i].item?.firstName);
@@ -777,7 +752,7 @@ const HomeOne = props => {
       props.navigation.navigate("Discover", {
         enableees: swipeIndex,
         userId: viewableItems[i].item?.id,
-        userDetails: viewableItems[i].item,
+        userDetails: viewableItems[i].item
       });
     }
   });
@@ -789,45 +764,44 @@ const HomeOne = props => {
   };
 
   const onMicPress = async () => {
-  try {
-    await analytics().logEvent('mic_button_press', {
-      description: 'User pressed the microphone button',
-    });
+    try {
+      await analytics().logEvent("mic_button_press", {
+        description: "User pressed the microphone button"
+      });
 
-    dispatch1({ type: "SET_IMAGE_MODAL", payload: true });
-    dispatch1({ type: "SET_MODAL_TYPE", payload: "mic" });
+      dispatch1({ type: "SET_IMAGE_MODAL", payload: true });
+      dispatch1({ type: "SET_MODAL_TYPE", payload: "mic" });
 
-    // Show feedback modal if conditions are met
-    // await showFeedbackModal();
-  } catch (error) {
-    console.error('Error logging mic button press:', error);
-    await analytics().logEvent('mic_button_press_failure', {
-      description: 'Failed to log mic button press event',
-      error: error.message,
-    });
-  }
-};
-  
+      // Show feedback modal if conditions are met
+      // await showFeedbackModal();
+    } catch (error) {
+      console.error("Error logging mic button press:", error);
+      await analytics().logEvent("mic_button_press_failure", {
+        description: "Failed to log mic button press event",
+        error: error.message
+      });
+    }
+  };
 
-const onCommentPress = async () => {
-  try {
-    await analytics().logEvent('comment_button_press', {
-      description: 'User pressed the comment button',
-    });
+  const onCommentPress = async () => {
+    try {
+      await analytics().logEvent("comment_button_press", {
+        description: "User pressed the comment button"
+      });
 
-    dispatch1({ type: "SET_IMAGE_MODAL", payload: true });
-    dispatch1({ type: "SET_MODAL_TYPE", payload: "comment" });
+      dispatch1({ type: "SET_IMAGE_MODAL", payload: true });
+      dispatch1({ type: "SET_MODAL_TYPE", payload: "comment" });
 
-    // Show feedback modal if conditions are met
-    // await showFeedbackModal();
-  } catch (error) {
-    console.error('Error logging comment button press:', error);
-    await analytics().logEvent('comment_button_press_failure', {
-      description: 'Failed to log comment button press event',
-      error: error.message,
-    });
-  }
-};
+      // Show feedback modal if conditions are met
+      // await showFeedbackModal();
+    } catch (error) {
+      console.error("Error logging comment button press:", error);
+      await analytics().logEvent("comment_button_press_failure", {
+        description: "Failed to log comment button press event",
+        error: error.message
+      });
+    }
+  };
   const handleBackButton = () => {
     if (imageModal || action) {
       // setImageModal(false);
@@ -842,56 +816,48 @@ const onCommentPress = async () => {
     return true;
   };
 
-  const onHeartPress = async (id) => {
+  const onHeartPress = async id => {
     try {
-      await analytics().logEvent('heart_button_press', {
-        description: 'User pressed the heart button',
+      await analytics().logEvent("heart_button_press", {
+        description: "User pressed the heart button",
         otherUserId: userId,
         resourceId: userMediaVideo !== null ? userMediaVideo?.id : userMediaImage?.id,
-        resourceType: "USER_MEDIA",
+        resourceType: "USER_MEDIA"
       });
-  
+
       const res = await UserService.likeInteraction(
         {
           resourceId: userMediaVideo !== null ? userMediaVideo?.id : userMediaImage?.id,
           resourceType: "USER_MEDIA",
-          otherUserId: userId,
+          otherUserId: userId
         },
         token
       );
-  
+
       handleStatusCode(res);
-  
+
       if (res.status >= 200 && res.status <= 299) {
         dispatch1(prevState => {
-          const updatedProfilesList = prevState.profilesList.filter(
-            el => el.id !== id
-          );
+          const updatedProfilesList = prevState.profilesList.filter(el => el.id !== id);
           return {
             type: "SET_PROFILES_LIST",
-            payload: updatedProfilesList,
+            payload: updatedProfilesList
           };
         });
-  
-        Alerts(
-          "success",
-          `You Liked ${userName}'s ${
-            userMediaVideo != null ? "  video" : "picture"
-          } successfully`
-        );
-  
+
+        Alerts("success", `You Liked ${userName}'s ${userMediaVideo != null ? "  video" : "picture"} successfully`);
+
         // Show feedback modal if conditions are met
         // await showFeedbackModal();
       }
     } catch (error) {
       console.log("likeInteraction err", error);
-      await analytics().logEvent('heart_button_press_failure', {
-        description: 'Failed to process heart button press',
-        error: error.message,
+      await analytics().logEvent("heart_button_press_failure", {
+        description: "Failed to process heart button press",
+        error: error.message
       });
     }
   };
-  
 
   const getMoveIndex = async () => {
     let moveIndex = await AsyncStorage.getItem("moveIndex");
@@ -904,7 +870,6 @@ const onCommentPress = async () => {
       let offset = 0;
       getAllUser(limit, offset);
     } else {
-      console.log("ENTERED");
       getAllUser(limit, offset);
     }
 
@@ -954,56 +919,47 @@ const onCommentPress = async () => {
         connectyCubeInitialization(token, email);
       }
 
-      const unsubscribeLoaded = admob.addAdEventListener(
-        RewardedAdEventType.LOADED,
-        () => {
-          dispatch1({ type: "SET_LOADED", payload: true });
-          dispatch1({ type: "SET_AD_LOAD", payload: false });
+      const unsubscribeLoaded = admob.addAdEventListener(RewardedAdEventType.LOADED, () => {
+        dispatch1({ type: "SET_LOADED", payload: true });
+        dispatch1({ type: "SET_AD_LOAD", payload: false });
 
-          if (admob.loaded) {
-            admob.show();
-          }
-
-          unsubscribeLoaded();
+        if (admob.loaded) {
+          admob.show();
         }
-      );
 
-      const unsubscribeEarned = admob.addAdEventListener(
-        RewardedAdEventType.EARNED_REWARD,
-        reward => {
-          dispatch1({ type: "SET_LOADED", payload: false });
-          dispatch1({ type: "SET_AD_LOAD", payload: false });
-          console.log("User earned reward of ", reward);
-          handleGetReward();
-          unsubscribeEarned();
-        }
-      );
+        unsubscribeLoaded();
+      });
+
+      const unsubscribeEarned = admob.addAdEventListener(RewardedAdEventType.EARNED_REWARD, reward => {
+        dispatch1({ type: "SET_LOADED", payload: false });
+        dispatch1({ type: "SET_AD_LOAD", payload: false });
+        console.log("User earned reward of ", reward);
+        handleGetReward();
+        unsubscribeEarned();
+      });
       // getMoveIndex()
     }, [])
   );
 
-   useFocusEffect(
+  useFocusEffect(
     useCallback(() => {
-      if (Platform.OS === 'android') {
-        if (preferenceFilter) {
-          dispatch1({ type: "SET_SKELETON", payload: true });
-          console.log("ENTERED U DDD");
-          let offset = 0;
-          getAllUser(limit, offset);
-        }
-        let index = getMoveIndex();
-        console.log("IS FOCUSES", isFocused, index);
-        setTimeout(() => {
-          if (isFocused && flatListRef.current && index > 0) {
-            flatListRef?.current?.scrollToIndex({
-              index: index,
-              animated: false,
-            });
-          }
-        }, 200);
+      if (preferenceFilter) {
+        dispatch1({ type: "SET_SKELETON", payload: true });
+        console.log("ENTERED U DDD");
+        let offset = 0;
+        getAllUser(limit, offset);
       }
+      let index = getMoveIndex();
 
-    }, [isFocused])
+      setTimeout(() => {
+        if (isFocused && flatListRef.current && index > 0) {
+          flatListRef?.current?.scrollToIndex({
+            index: index,
+            animated: false
+          });
+        }
+      }, 200);
+    }, [isFocused, preferenceFilter])
   );
 
   const renderItem = useCallback(({ item }) => {
@@ -1011,7 +967,6 @@ const onCommentPress = async () => {
       .filter(media => media.type != "video")
       .sort((a, b) => a.sequence - b.sequence)[0].url;
 
-    // console.log("sortedImage", sortedImage);
     return (
       <>
         <DiscoverImg
@@ -1057,9 +1012,8 @@ const onCommentPress = async () => {
                 zIndex: 1,
                 position: "absolute",
                 backgroundColor: colors.black,
-                opacity: 0.8,
-              }}
-            ></View>
+                opacity: 0.8
+              }}></View>
             <Pressable
               onPress={() => dispatch1({ type: "SET_CHECK", payload: false })}
               style={{
@@ -1069,9 +1023,8 @@ const onCommentPress = async () => {
                 height: "100%",
                 zIndex: 2,
                 alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
+                justifyContent: "center"
+              }}>
               <View
                 style={{
                   width: "90%",
@@ -1079,16 +1032,14 @@ const onCommentPress = async () => {
                   alignItems: "center",
                   justifyContent: "center",
                   backgroundColor: colors.white,
-                  borderRadius: 16,
-                }}
-              >
+                  borderRadius: 16
+                }}>
                 <Text
                   style={{
                     fontSize: 20,
                     fontFamily: "Inter-Medium",
-                    color: colors.black,
-                  }}
-                >
+                    color: colors.black
+                  }}>
                   Warning
                 </Text>
                 <Text
@@ -1097,11 +1048,9 @@ const onCommentPress = async () => {
                     fontFamily: "Inter-Regular",
                     color: "#6B7280",
                     marginTop: "5%",
-                    marginHorizontal: "3%",
-                  }}
-                >
-                  Please complete your profile to interact with other users,
-                  thank you!
+                    marginHorizontal: "3%"
+                  }}>
+                  Please complete your profile to interact with other users, thank you!
                 </Text>
 
                 <TouchableOpacity
@@ -1116,16 +1065,14 @@ const onCommentPress = async () => {
                     justifyContent: "center",
                     borderRadius: 5,
                     backgroundColor: colors.primaryPink,
-                    marginTop: "5%",
-                  }}
-                >
+                    marginTop: "5%"
+                  }}>
                   <Text
                     style={{
                       fontSize: 16,
                       fontFamily: "Inter-Regular",
-                      color: colors.white,
-                    }}
-                  >
+                      color: colors.white
+                    }}>
                     Complete Profile
                   </Text>
                 </TouchableOpacity>
@@ -1142,16 +1089,14 @@ const onCommentPress = async () => {
                     backgroundColor: colors.white,
                     marginTop: "5%",
                     borderWidth: 1,
-                    borderColor: colors.primaryPink,
-                  }}
-                >
+                    borderColor: colors.primaryPink
+                  }}>
                   <Text
                     style={{
                       fontSize: 16,
                       fontFamily: "Inter-Regular",
-                      color: colors.primaryPink,
-                    }}
-                  >
+                      color: colors.primaryPink
+                    }}>
                     Later
                   </Text>
                 </TouchableOpacity>
@@ -1167,8 +1112,7 @@ const onCommentPress = async () => {
     <>
       {state1.skeleton ? (
         <DiscoverSkeleton tabBarHeight={tabBarHeight} />
-      ) : state1.userData?.Profile?.noOfProfilesRemaining === 0 &&
-        state1.userData?.Profile?.totalNoOfProfiles > 0 ? (
+      ) : state1?.remainingProfiles === 0 && state1?.totalProfiles > 0 ? (
         renderOutProfiles()
       ) : (
         <SafeAreaView style={styles.container}>
@@ -1176,12 +1120,8 @@ const onCommentPress = async () => {
             <UploadSelfie reverify />
           ) : state1.status === "FAILED" ? (
             renderFailed()
-          ) : state1.userData?.Profile?.noOfProfilesRemaining === 0 ? (
-            <OutOfProfilesDay
-              adLoad={state1.adLoad}
-              adPress={handleWatchAd}
-              navigation={props.navigation}
-            />
+          ) : state1?.remainingProfiles === 0 ? (
+            <OutOfProfilesDay adLoad={state1.adLoad} adPress={handleWatchAd} navigation={props.navigation} />
           ) : state1.profilesList.length > 0 ? (
             <FlatList
               scrollEnabled={true}
@@ -1189,12 +1129,12 @@ const onCommentPress = async () => {
               removeClippedSubviews={false}
               ref={flatListRef}
               onScrollToIndexFailed={info => {
-               if(Platform.OS==='android'){
-                const wait = new Promise(resolve => setTimeout(resolve, 500));
-                wait.then(() => {
-                  flatListRef.current?.scrollToIndex({ index: info.index });
-                });
-               }
+                if (Platform.OS === "android") {
+                  const wait = new Promise(resolve => setTimeout(resolve, 500));
+                  wait.then(() => {
+                    flatListRef.current?.scrollToIndex({ index: info.index });
+                  });
+                }
               }}
               viewabilityConfig={viewConfigRef.current}
               onViewableItemsChanged={onViewableItemsChanged.current}
@@ -1218,36 +1158,21 @@ const onCommentPress = async () => {
                 height: state1.imageModal ? windowHeight * 1 : 0,
                 bottom: 0,
                 position: "absolute",
-                zIndex: 1,
-              }}
-            >
+                zIndex: 1
+              }}>
               <BottomImageInteraction
-                setUserProfilesData={data =>
-                  dispatch1({ type: "SET_PROFILES_LIST", payload: data })
-                }
+                setUserProfilesData={data => dispatch1({ type: "SET_PROFILES_LIST", payload: data })}
                 userProfilesData={state1.profilesList}
                 listRef={flatListRef}
                 index={state1.index}
                 userId={state1.userId}
                 userName={state1.userName}
-                userPhotosId={
-                  state1.userMediaVideo != null
-                    ? state1.userMediaVideo?.id
-                    : state1.userMediaImage?.id
-                }
+                userPhotosId={state1.userMediaVideo != null ? state1.userMediaVideo?.id : state1.userMediaImage?.id}
                 userMediaVideo={state1.userMediaVideo}
-                onDismiss={() =>
-                  dispatch1({ type: "SET_IMAGE_MODAL", payload: false })
-                }
-                fastImage={
-                  state1.userMediaImage != null
-                    ? state1.userMediaImage?.url
-                    : null
-                }
+                onDismiss={() => dispatch1({ type: "SET_IMAGE_MODAL", payload: false })}
+                fastImage={state1.userMediaImage != null ? state1.userMediaImage?.url : null}
                 toggle={state1.imageModal}
-                setToggle={value =>
-                  dispatch1({ type: "SET_IMAGE_MODAL", payload: value })
-                }
+                setToggle={value => dispatch1({ type: "SET_IMAGE_MODAL", payload: value })}
                 modalType={state1.modalType}
                 offset={state1.userDevice && state1.userDevice.includes("Pro Max") ? 75 : 70}
               />
@@ -1258,19 +1183,15 @@ const onCommentPress = async () => {
               discover
               user={{
                 userId: state1.userId,
-                userName: state1.userName,
+                userName: state1.userName
               }}
               showToast
               toggle={state1.action}
-              setAction={value =>
-                dispatch1({ type: "SET_ACTION", payload: value })
-              }
-              onDismiss={() =>
-                dispatch1({ type: "SET_ACTION", payload: false })
-              }
+              setAction={value => dispatch1({ type: "SET_ACTION", payload: value })}
+              onDismiss={() => dispatch1({ type: "SET_ACTION", payload: false })}
             />
           ) : null}
-         {/* <FeedbackModal
+          {/* <FeedbackModal
   visible={state1.isModalVisible}
   onClose={handleCloseModal}
   // onSkip={() => dispatch1({ type: "SKIP_MODAL" })}
@@ -1281,4 +1202,3 @@ const onCommentPress = async () => {
   );
 };
 export default memo(HomeOne);
-

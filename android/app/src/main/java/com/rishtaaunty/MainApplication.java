@@ -17,7 +17,7 @@ import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.dooboolab.audiorecorderplayer.RNAudioRecorderPlayerPackage;
-import com.wix.reactnativenotifications.RNNotificationsPackage;
+// import com.wix.reactnativenotifications.RNNotificationsPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 

@@ -29,7 +29,7 @@ Sentry.init({
   // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
   // We recommend adjusting this value in production.
   tracesSampleRate: 1.0,
-  ignoreErrors: ["Non-Error exception captured"],
+  ignoreErrors: ["Non-Error exception captured"]
 });
 
 const { store } = configureStore();
@@ -50,10 +50,10 @@ const createConnectyCubeSession = () => {
   const CREDENTIALS = {
     appId: 6703,
     authKey: "7eQODLX7ZG2eSxZ",
-    authSecret: "RLAjfBYRt9gSFfs",
+    authSecret: "RLAjfBYRt9gSFfs"
   };
   const CONFIG = {
-    debug: { mode: 0 },
+    debug: { mode: 0 }
   };
 
   ConnectyCube.init(CREDENTIALS, CONFIG);
@@ -101,7 +101,7 @@ const App = () => {
     if (previousRouteName !== currentRouteName) {
       await firebase.analytics().logScreenView({
         screen_name: currentRouteName,
-        screen_class: currentRouteName,
+        screen_class: currentRouteName
       });
       routeNameRef.current = currentRouteName;
     }
@@ -159,7 +159,7 @@ const App = () => {
       if (name == "moves") {
         setTimeout(() => {
           navigationRef.current.navigate("BottomTab", {
-            screen: "Interactions",
+            screen: "Interactions"
           });
         }, 2700);
       } else if (name == "chat") {
@@ -169,9 +169,9 @@ const App = () => {
             params: {
               screen: "UserChatListScreen",
               params: {
-                chatHeadId: param.chatHeadId,
-              },
-            },
+                chatHeadId: param.chatHeadId
+              }
+            }
           });
         }, 2700);
       }
