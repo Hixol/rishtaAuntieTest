@@ -8,7 +8,7 @@ import { alerts, handlePermissions } from "../utility/regex";
 import { PERMISSIONS } from "react-native-permissions";
 import { UserService } from "../services";
 
-import { OneSignal } from "react-native-onesignal";
+import OneSignal from "react-native-onesignal";
 import NotificationServices from "../services/NotificationServices";
 import Geolocation from "react-native-geolocation-service";
 import axios from "axios";
@@ -46,10 +46,7 @@ export const useHelper = props => {
   const handleKeyboardEvents = offset => {
     Keyboard.addListener("keyboardWillShow", e => {
       if (ios) {
-        if (
-          (userDevice.includes("X") || userDevice.includes("x")) &&
-          !userDevice.includes("Pro")
-        ) {
+        if ((userDevice.includes("X") || userDevice.includes("x")) && !userDevice.includes("Pro")) {
           setKeyboardOffset(e.endCoordinates.height - 35);
         } else {
           setKeyboardOffset(e.endCoordinates.height - offset);
@@ -65,10 +62,7 @@ export const useHelper = props => {
   const handleKeyboardSpace = offset => {
     Keyboard.addListener("keyboardWillShow", e => {
       if (ios) {
-        if (
-          (userDevice.includes("X") || userDevice.includes("x")) &&
-          !userDevice.includes("Pro")
-        ) {
+        if ((userDevice.includes("X") || userDevice.includes("x")) && !userDevice.includes("Pro")) {
           setKeyboardSpace(e.endCoordinates.height);
         } else {
           setKeyboardSpace(e.endCoordinates.height - offset);
@@ -120,10 +114,7 @@ export const useHelper = props => {
 
   const handleStatusCode = res => {
     if (res.status >= 300 && res.status <= 399) {
-      Alerts(
-        "error",
-        "You need to perform further actions to complete the request!"
-      );
+      Alerts("error", "You need to perform further actions to complete the request!");
     } else if (res.status >= 400 && res.status <= 499) {
       Alerts("error", res.data?.error?.message);
     } else if (res.status >= 500 && res.status <= 599) {
@@ -134,31 +125,33 @@ export const useHelper = props => {
   };
 
   const handlePlayerId = (token, ccuid) => {
-    // OneSignal.getDeviceState()
-    //   .then(res => {
-    //     if (res.userId.length > 0) {
-    //       const body = {
-    //         deviceToken: res.userId,
-    //         ccuid: `${ccuid}`,
-    //       };
+    OneSignal.getDeviceState()
+      .then(res => {
+        if (res.userId) {
+          console.log("userId", res.userId);
 
-    //       NotificationServices.deviceToken(body, token)
-    //         .then(res => {})
-    //         .catch(err => console.log("deviceToken err:", err));
-    //     }
-    //   })
-    //   .catch(err => console.log("getDeviceState err:", err));
+          const body = {
+            deviceToken: res.userId,
+            ccuid: `${ccuid}`,
+          };
 
-    let userId = OneSignal.User.pushSubscription.getPushSubscriptionId();
+          NotificationServices.deviceToken(body, token)
+            .then(res => {})
+            .catch(err => console.log("deviceToken err:", err));
+        }
+      })
+      .catch(err => console.log("getDeviceState err:", err));
 
-    const body = {
-      deviceToken: userId,
-      ccuid: `${ccuid}`,
-    };
+    // let userId = OneSignal.User.pushSubscription.getPushSubscriptionId();
 
-    NotificationServices.deviceToken(body, token)
-      .then(res => {})
-      .catch(err => console.log("deviceToken err:", err));
+    // const body = {
+    //   deviceToken: userId,
+    //   ccuid: `${ccuid}`,
+    // };
+
+    // NotificationServices.deviceToken(body, token)
+    //   .then(res => {})
+    //   .catch(err => console.log("deviceToken err:", err));
   };
 
   const dispatchAndNavigate = (status, route, data) => {
@@ -226,10 +219,7 @@ export const useHelper = props => {
               city = data[i].address_components[j].long_name;
               setCity(data[i].address_components[j].long_name);
             }
-            if (
-              data[i].address_components[j].types[0] ==
-              "administrative_area_level_1"
-            ) {
+            if (data[i].address_components[j].types[0] == "administrative_area_level_1") {
               state = data[i].address_components[j].long_name;
               setState(data[i].address_components[j].long_name);
             }
@@ -250,14 +240,7 @@ export const useHelper = props => {
           }
         }
 
-        if (
-          lat != "" &&
-          lng != "" &&
-          city != "" &&
-          state != "" &&
-          address != "" &&
-          country != ""
-        ) {
+        if (lat != "" && lng != "" && city != "" && state != "" && address != "" && country != "") {
           dispatch({
             type: "UPDATE_COORDS",
             payload: {
@@ -294,10 +277,7 @@ export const useHelper = props => {
           } else if (err.code == 2) {
             Alerts("error", "Location provider is not available");
           } else if (err.code == 4) {
-            Alerts(
-              "error",
-              "Google play service is not installed or has an older version"
-            );
+            Alerts("error", "Google play service is not installed or has an older version");
           } else {
             Alerts("error", err?.message);
           }

@@ -1,9 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { LogBox } from "react-native";
-import {
-  NavigationContainer,
-  createNavigationContainerRef,
-} from "@react-navigation/native";
+import { NavigationContainer, createNavigationContainerRef } from "@react-navigation/native";
 import { enableFreeze, enableScreens } from "react-native-screens";
 import * as Sentry from "@sentry/react-native";
 import { withIAPContext } from "react-native-iap";
@@ -13,14 +10,14 @@ import MobileAds from "react-native-google-mobile-ads";
 import SocketProvider from "./src/context/SocketContext";
 import StackNavigations from "./src/Navigations/StackNavigation";
 import configureStore from "./src/store";
-import { OneSignal } from "react-native-onesignal";
+import OneSignal from "react-native-onesignal";
 import ConnectyCube from "react-native-connectycube";
 import CallService from "./src/services/call-service";
 import pushNotificationService from "./src/services/PushNotificationService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import messaging from "@react-native-firebase/messaging";
 import Toast from "react-native-toast-message";
 import { firebase } from "@react-native-firebase/analytics";
+import { notificationListener, requestUserPermission } from "./src/utility/firebaseUtils";
 
 enableFreeze();
 enableScreens();
@@ -37,7 +34,7 @@ Sentry.init({
 
 const { store } = configureStore();
 CallService.getStore(store);
-pushNotificationService.getStore(store);
+// pushNotificationService.getStore(store);
 
 const checkToken = async () => {
   let login = await AsyncStorage.getItem("login");
@@ -56,7 +53,7 @@ const createConnectyCubeSession = () => {
     authSecret: "RLAjfBYRt9gSFfs",
   };
   const CONFIG = {
-    debug: { mode: 1 },
+    debug: { mode: 0 },
   };
 
   ConnectyCube.init(CREDENTIALS, CONFIG);
@@ -84,21 +81,6 @@ const createConnectyCubeSession = () => {
   //   .catch(err => console.log("createSession err:", err));
 };
 
-const requestUserPermission = async () => {
-  await messaging().requestPermission();
-  await messaging().getToken();
-};
-
-const notificationListener = async () => {
-  messaging().onNotificationOpenedApp(() => {});
-
-  messaging().onMessage(async () => {});
-
-  messaging()
-    .getInitialNotification()
-    .then(() => {});
-};
-
 const App = () => {
   const navigationRef = useRef(createNavigationContainerRef());
   const routeNameRef = useRef();
@@ -124,38 +106,65 @@ const App = () => {
       routeNameRef.current = currentRouteName;
     }
   };
+  // // OneSignal Initialization
+  // OneSignal.initialize("04e507aa-792a-45f8-9d6d-55859c8dbd92");
+
+  // // requestPermission will show the native iOS or Android notification permission prompt.
+  // // We recommend removing the following code and instead using an In-App Message to prompt for notification permission
+  // OneSignal?.Notifications?.requestPermission(true);
+
+  // // Method for listening for notification clicks
+  // OneSignal?.Notifications?.addEventListener("click", event => {
+  //   console.log("OneSignal: notification clicked:", event);
+  //   if (mobileNumber || email) {
+  //     if (event.notification.body.includes("received")) {
+  //       navigate("moves");
+  //     } else if (
+  //       event.notification.additionalData.hasOwnProperty("chatRecord")
+  //     ) {
+  //       navigate("chat", event.notification.additionalData.chatRecord);
+  //     }
+  //   }
+  // });
+
   // OneSignal Initialization
-  OneSignal.initialize("04e507aa-792a-45f8-9d6d-55859c8dbd92");
+  OneSignal.setAppId("04e507aa-792a-45f8-9d6d-55859c8dbd92");
 
-  // requestPermission will show the native iOS or Android notification permission prompt.
-  // We recommend removing the following code and instead using an In-App Message to prompt for notification permission
-  OneSignal?.Notifications?.requestPermission(true);
+  //Prompt for push on iOS and android
+  OneSignal.promptForPushNotificationsWithUserResponse();
 
-  // Method for listening for notification clicks
-  OneSignal?.Notifications?.addEventListener("click", event => {
-    console.log("OneSignal: notification clicked:", event);
+  //Method for handling notifications received while app in foreground
+  OneSignal.setNotificationWillShowInForegroundHandler(notificationReceivedEvent => {
+    let notification = notificationReceivedEvent.getNotification();
+
+    // Complete with null means don't show a notification.
+    notificationReceivedEvent.complete(notification);
+  });
+
+  //Method for handling notifications opened
+  OneSignal.setNotificationOpenedHandler(notification => {
+    console.log("OneSignal: notification opened:", notification);
+
     if (mobileNumber || email) {
-      if (event.notification.body.includes("received")) {
+      if (notification.notification.body.includes("received")) {
         navigate("moves");
-      } else if (
-        event.notification.additionalData.hasOwnProperty("chatRecord")
-      ) {
-        navigate("chat", event.notification.additionalData.chatRecord);
+      } else if (notification.notification.additionalData.hasOwnProperty("chatRecord")) {
+        navigate("chat", notification.notification.additionalData?.chatRecord);
       }
     }
   });
 
   const navigate = (name, param = null) => {
-    if (navigationRef.isReady()) {
+    if (navigationRef.current?.isReady()) {
       if (name == "moves") {
         setTimeout(() => {
-          navigationRef.navigate("BottomTab", {
+          navigationRef.current.navigate("BottomTab", {
             screen: "Interactions",
           });
         }, 2700);
       } else if (name == "chat") {
         setTimeout(() => {
-          navigationRef.navigate("BottomTab", {
+          navigationRef.current.navigate("BottomTab", {
             screen: "UserChatList",
             params: {
               screen: "UserChatListScreen",
