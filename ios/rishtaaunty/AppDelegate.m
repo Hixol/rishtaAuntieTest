@@ -4,8 +4,8 @@
 #import <React/RCTDevLoadingView.h>
 #endif
 
-#import "RNNotifications.h"
-#import "RNEventEmitter.h"
+// #import "RNNotifications.h"
+// #import "RNEventEmitter.h"
 
 #import "RNCallKeep.h"
 
@@ -67,13 +67,13 @@ static void InitializeFlipper(UIApplication *application) {
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
 
-  [RNNotifications startMonitorNotifications];
-  [RNNotifications startMonitorPushKitNotifications];
+  // [RNNotifications startMonitorNotifications];
+  // [RNNotifications startMonitorPushKitNotifications];
 
-  [[NSNotificationCenter defaultCenter] addObserver:self
-    selector:@selector(handlePushKitNotificationReceived:)
-      name:RNPushKitNotificationReceived
-    object:nil];
+  // [[NSNotificationCenter defaultCenter] addObserver:self
+  //   selector:@selector(handlePushKitNotificationReceived:)
+  //     name:RNPushKitNotificationReceived
+  //   object:nil];
 
   // cleanup
   [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"voipIncomingCallSessions"];
@@ -89,17 +89,17 @@ static void InitializeFlipper(UIApplication *application) {
   #endif
 }
 
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-  [RNNotifications didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
-}
+// - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+//   [RNNotifications didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+// }
 
-- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
-  [RNNotifications didFailToRegisterForRemoteNotificationsWithError:error];
-}
+// - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+//   [RNNotifications didFailToRegisterForRemoteNotificationsWithError:error];
+// }
 
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
-  [RNNotifications didReceiveBackgroundNotification:userInfo withCompletionHandler:completionHandler];
-}
+// - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+//   [RNNotifications didReceiveBackgroundNotification:userInfo withCompletionHandler:completionHandler];
+// }
 
 - (void)handlePushKitNotificationReceived:(NSNotification *)notification {
   UIApplicationState state = [[UIApplication sharedApplication] applicationState];

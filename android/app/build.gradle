@@ -234,7 +234,7 @@ dependencies {
     // implementation 'com.google.android.exoplayer:exoplayer:2.18.1'
     // implementation 'com.google.android.exoplayer:extension-okhttp:2.18.1'
     // implementation 'com.danikula:videocache:2.7.2'
-    implementation project(':react-native-notifications')
+    // implementation project(':react-native-notifications')
     implementation 'com.google.android.gms:play-services-maps:+'
     implementation 'com.google.android.gms:play-services-location:18.0.0'
     implementation 'com.google.firebase:firebase-core:21.1.1'

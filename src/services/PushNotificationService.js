@@ -2,7 +2,7 @@ import { Platform } from "react-native";
 import { android, ios } from "../utility/size";
 import { setCallSession } from "../store/actions";
 import { getUniqueId } from "react-native-device-info";
-import { Notifications } from "react-native-notifications";
+// import { Notifications } from "react-native-notifications";
 
 import invokeApp from "react-native-invoke-app";
 import ConnectyCube from "react-native-connectycube";
@@ -20,80 +20,69 @@ class PushNotificationsService {
   }
 
   init() {
-    if (ios) {
-      Notifications.ios.checkPermissions().then(currentPermissions => {});
-    }
-
-    Notifications.getInitialNotification()
-      .then(notification => {})
-      .catch(err => console.error("getInitialNotifiation() failed", err));
-
-    Notifications.events().registerRemoteNotificationsRegistered(event => {
-      this.subscribeToPushNotifications(event.deviceToken);
-    });
-
-    Notifications.events().registerRemoteNotificationsRegistrationFailed(
-      event => {}
-    );
-
-    // VoIP
-    if (ios) {
-      Notifications.ios.events().registerPushKitRegistered(event => {
-        this.subscribeToVOIPPushNotifications(event.pushKitToken);
-      });
-    }
-
-    Notifications.events().registerNotificationReceivedForeground(
-      (notification, completion) => {
-        completion({ alert: false, sound: false, badge: false });
-      }
-    );
-
-    Notifications.events().registerNotificationReceivedBackground(
-      async (notification, completion) => {
-        if (android) {
-          if (await PermissionsService.isDrawOverlaysPermisisonGranted()) {
-            invokeApp();
-
-            const dummyCallSession = {
-              initiatorID: notification.initiatorId,
-              opponentsIDs: notification.opponentsIds.split(","),
-              ID: notification.uuid,
-            };
-            store.dispatch(setCallSession(dummyCallSession, true, true));
-          } else {
-            PushNotificationsService.displayNotification(notification.payload);
-          }
-        }
-
-        completion({ alert: true, sound: true, badge: false });
-      }
-    );
-
-    Notifications.events().registerNotificationOpened(
-      async (notification, completion) => {
-        completion();
-      }
-    );
-
-    Notifications.registerRemoteNotifications();
-
-    if (ios) {
-      Notifications.ios.registerPushKit();
-    }
+    // if (ios) {
+    //   Notifications.ios.checkPermissions().then(currentPermissions => {});
+    // }
+    // Notifications.getInitialNotification()
+    //   .then(notification => {})
+    //   .catch(err => console.error("getInitialNotifiation() failed", err));
+    // Notifications.events().registerRemoteNotificationsRegistered(event => {
+    //   this.subscribeToPushNotifications(event.deviceToken);
+    // });
+    // Notifications.events().registerRemoteNotificationsRegistrationFailed(
+    //   event => {}
+    // );
+    // // VoIP
+    // if (ios) {
+    //   Notifications.ios.events().registerPushKitRegistered(event => {
+    //     this.subscribeToVOIPPushNotifications(event.pushKitToken);
+    //   });
+    // }
+    // Notifications.events().registerNotificationReceivedForeground(
+    //   (notification, completion) => {
+    //     completion({ alert: false, sound: false, badge: false });
+    //   }
+    // );
+    // Notifications.events().registerNotificationReceivedBackground(
+    //   async (notification, completion) => {
+    //     if (android) {
+    //       if (await PermissionsService.isDrawOverlaysPermisisonGranted()) {
+    //         invokeApp();
+    //         const dummyCallSession = {
+    //           initiatorID: notification.initiatorId,
+    //           opponentsIDs: notification.opponentsIds.split(","),
+    //           ID: notification.uuid,
+    //         };
+    //         store.dispatch(setCallSession(dummyCallSession, true, true));
+    //       } else {
+    //         PushNotificationsService.displayNotification(notification.payload);
+    //       }
+    //     }
+    //     completion({ alert: true, sound: true, badge: false });
+    //   }
+    // );
+    // Notifications.events().registerNotificationOpened(
+    //   async (notification, completion) => {
+    //     completion();
+    //   }
+    // );
+    // Notifications.registerRemoteNotifications();
+    // if (ios) {
+    //   Notifications.ios.registerPushKit();
+    // }
   }
 
   static displayNotification(payload) {
     const extra = { dialog_id: payload.dialog_id, isLocal: true };
 
-    const localNotification = Notifications.postLocalNotification({
-      body: payload.message,
-      title: "New message",
-      silent: false,
-      category: "SOME_CATEGORY",
-      userInfo: extra,
-      extra,
-    });
+    // const localNotification = Notifications.postLocalNotification({
+    //   body: payload.message,
+    //   title: "New message",
+    //   silent: false,
+    //   category: "SOME_CATEGORY",
+    //   userInfo: extra,
+    //   extra,
+    // });
   }
 
   _registerBackgroundTasks() {
@@ -162,10 +151,7 @@ class PushNotificationsService {
       .create(params)
       .then(result => {})
       .catch(error => {
-        console.warn(
-          "[PushNotificationsService][subscribeToVOIPPushNotifications] Error",
-          error
-        );
+        console.warn("[PushNotificationsService][subscribeToVOIPPushNotifications] Error", error);
       });
   }
 
@@ -193,10 +179,7 @@ class PushNotificationsService {
         }
       })
       .catch(error => {
-        console.warn(
-          "[PushNotificationsService][deleteSubscription] Error2",
-          error
-        );
+        console.warn("[PushNotificationsService][deleteSubscription] Error2", error);
       });
   }
 
