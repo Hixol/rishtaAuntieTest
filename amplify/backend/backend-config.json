@@ -1,35 +1,117 @@
 {
   "auth": {
-    "rishtaauntie98bef4e5": {
-      "service": "Cognito",
-      "providerPlugin": "awscloudformation",
-      "dependsOn": [],
+    "rishtaauntie721f4051": {
       "customAuth": false,
-      "frontendAuthConfig": {
-        "socialProviders": [
-          "FACEBOOK",
-          "GOOGLE",
-          "APPLE"
-        ],
-        "usernameAttributes": [
-          "EMAIL",
-          "PHONE_NUMBER"
-        ],
-        "signupAttributes": [
-          "EMAIL"
-        ],
-        "passwordProtectionSettings": {
-          "passwordPolicyMinLength": 8,
-          "passwordPolicyCharacters": []
-        },
-        "mfaConfiguration": "OFF",
-        "mfaTypes": [
-          "SMS"
-        ],
-        "verificationMechanisms": [
-          "EMAIL"
-        ]
-      }
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito",
+      "serviceType": "imported"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_auth_rishtaauntie721f4051_allowUnauthenticatedIdentities": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "rishtaauntie721f4051"
+        }
+      ]
+    },
+    "AMPLIFY_auth_rishtaauntie721f4051_authRoleArn": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "rishtaauntie721f4051"
+        }
+      ]
+    },
+    "AMPLIFY_auth_rishtaauntie721f4051_authRoleName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "rishtaauntie721f4051"
+        }
+      ]
+    },
+    "AMPLIFY_auth_rishtaauntie721f4051_facebookAppId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "rishtaauntie721f4051"
+        }
+      ]
+    },
+    "AMPLIFY_auth_rishtaauntie721f4051_googleClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "rishtaauntie721f4051"
+        }
+      ]
+    },
+    "AMPLIFY_auth_rishtaauntie721f4051_identityPoolId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "rishtaauntie721f4051"
+        }
+      ]
+    },
+    "AMPLIFY_auth_rishtaauntie721f4051_identityPoolName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "rishtaauntie721f4051"
+        }
+      ]
+    },
+    "AMPLIFY_auth_rishtaauntie721f4051_nativeClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "rishtaauntie721f4051"
+        }
+      ]
+    },
+    "AMPLIFY_auth_rishtaauntie721f4051_unauthRoleArn": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "rishtaauntie721f4051"
+        }
+      ]
+    },
+    "AMPLIFY_auth_rishtaauntie721f4051_unauthRoleName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "rishtaauntie721f4051"
+        }
+      ]
+    },
+    "AMPLIFY_auth_rishtaauntie721f4051_userPoolId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "rishtaauntie721f4051"
+        }
+      ]
+    },
+    "AMPLIFY_auth_rishtaauntie721f4051_userPoolName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "rishtaauntie721f4051"
+        }
+      ]
+    },
+    "AMPLIFY_auth_rishtaauntie721f4051_webClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "rishtaauntie721f4051"
+        }
+      ]
     }
   }
 }

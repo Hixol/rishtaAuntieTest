@@ -1,19 +1,33 @@
 {
-  "dev": {
+  "amplifydev": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-rishtaauntie-dev-115633-authRole",
-      "UnauthRoleArn": "arn:aws:iam::822901275559:role/amplify-rishtaauntie-dev-115633-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::822901275559:role/amplify-rishtaauntie-dev-115633-authRole",
+      "AuthRoleName": "amplify-rishtaauntie-amplifydev-38f3c-authRole",
+      "UnauthRoleArn": "arn:aws:iam::822901275559:role/amplify-rishtaauntie-amplifydev-38f3c-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::822901275559:role/amplify-rishtaauntie-amplifydev-38f3c-authRole",
       "Region": "us-east-2",
-      "DeploymentBucketName": "amplify-rishtaauntie-dev-115633-deployment",
-      "UnauthRoleName": "amplify-rishtaauntie-dev-115633-unauthRole",
-      "StackName": "amplify-rishtaauntie-dev-115633",
-      "StackId": "arn:aws:cloudformation:us-east-2:822901275559:stack/amplify-rishtaauntie-dev-115633/07c8a5f0-408d-11ed-b5b1-066ccfcbbce6",
+      "DeploymentBucketName": "amplify-rishtaauntie-amplifydev-38f3c-deployment",
+      "UnauthRoleName": "amplify-rishtaauntie-amplifydev-38f3c-unauthRole",
+      "StackName": "amplify-rishtaauntie-amplifydev-38f3c",
+      "StackId": "arn:aws:cloudformation:us-east-2:822901275559:stack/amplify-rishtaauntie-amplifydev-38f3c/1f708be0-769c-11ef-aa66-06db1b978f8b",
       "AmplifyAppId": "di0ulv7uktqd0"
     },
     "categories": {
       "auth": {
-        "rishtaauntie98bef4e5": {}
+        "rishtaauntie721f4051": {
+          "userPoolId": "us-east-2_buLAJyTs3",
+          "userPoolName": "users_ra_2.0_dev",
+          "webClientId": "63258ddc5h2p76328ljg5lebq9",
+          "nativeClientId": "2duhvtboj4donnkhc58mfrlodf",
+          "identityPoolId": "us-east-2:ae85c97d-ed50-44da-8834-2f3b457bf8e9",
+          "identityPoolName": "users_ra_2.0_dev",
+          "allowUnauthenticatedIdentities": false,
+          "authRoleArn": "arn:aws:iam::822901275559:role/Cognito_users_ra_20_devAuth_Role",
+          "authRoleName": "Cognito_users_ra_20_devAuth_Role",
+          "unauthRoleArn": "arn:aws:iam::822901275559:role/Cognito_users_ra_20_devUnauth_Role",
+          "unauthRoleName": "Cognito_users_ra_20_devUnauth_Role",
+          "googleClientId": "540417694386-javdr9epuk5j3egkd2pqmqve21sr48mn.apps.googleusercontent.com",
+          "facebookAppId": "387591458903341"
+        }
       }
     }
   }
