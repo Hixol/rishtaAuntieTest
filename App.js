@@ -24,13 +24,15 @@ enableScreens();
 
 LogBox.ignoreAllLogs();
 
-Sentry.init({
-  dsn: "https://a3d1de0d9f9b4f028cf02bfe934bc868@o4504494817345536.ingest.sentry.io/4504497048322048",
-  // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-  // We recommend adjusting this value in production.
-  tracesSampleRate: 1.0,
-  ignoreErrors: ["Non-Error exception captured"]
-});
+// Sentry.init({
+//   maxBreadcrumbs: 1,
+//   dsn: "https://a3d1de0d9f9b4f028cf02bfe934bc868@o4504494817345536.ingest.sentry.io/4504497048322048",
+//   // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+//   // We recommend adjusting this value in production.
+//   tracesSampleRate: 1.0,
+//   ignoreErrors: ["Non-Error exception captured"],
+//   debug: true
+// });
 
 const { store } = configureStore();
 CallService.getStore(store);
