@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
 import { CommonActions } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
@@ -26,7 +20,7 @@ import Video from "react-native-video";
 import Countries from "../../../assets/countryLists/Countries";
 import DeviceInfo from "react-native-device-info";
 import * as Progress from "react-native-progress";
-import analytics from '@react-native-firebase/analytics';
+import analytics from "@react-native-firebase/analytics";
 
 const UploadVideo = ({ navigation, route }) => {
   const edit = route?.params;
@@ -35,16 +29,9 @@ const UploadVideo = ({ navigation, route }) => {
   const { handleLocation, Alerts, handleStatusCode } = useHelper();
   const { coords } = useSelector(store => store.chatReducer);
   const { userData, token } = useSelector(store => store.userReducer);
-  const {
-    firstName,
-    lastName,
-    dob,
-    gender,
-    selfie,
-    video,
-    religion,
-    profilePictures,
-  } = useSelector(store => store.NewOnBoardingReducer);
+  const { firstName, lastName, dob, gender, selfie, video, religion, profilePictures } = useSelector(
+    store => store.NewOnBoardingReducer
+  );
 
   const [videoUri, setVideoUri] = useState(null);
   const [mediaOptions, setMediaOptions] = useState(false);
@@ -62,7 +49,7 @@ const UploadVideo = ({ navigation, route }) => {
         return item?.type === "video";
       });
       setVideoUri({
-        uri: find[0]?.url?.split("?")[0],
+        uri: find[0]?.url?.split("?")[0]
       });
       console.log("URLLL", find);
     } else {
@@ -70,17 +57,17 @@ const UploadVideo = ({ navigation, route }) => {
       console.log("VideoObj", videoObj);
       dispatch({
         type: "routeName",
-        payload: route?.name,
+        payload: route?.name
       });
       if (video === null) {
         setVideoUri(null);
       } else if (video !== null) {
         setVideoUri({
-          uri: video?.uri,
+          uri: video?.uri
         });
       } else {
         setVideoUri({
-          uri: videoObj?.uri,
+          uri: videoObj?.uri
         });
       }
     }
@@ -102,22 +89,14 @@ const UploadVideo = ({ navigation, route }) => {
       if (result == "granted") {
         const options = {
           mediaType: "video",
-          videoQuality: "high",
+          videoQuality: "high"
         };
 
         await launchCamera(options, res => {
           if (res.errorCode == "others") {
-            alerts(
-              "error",
-              res.errorMessage
-                ? res.errorMessage
-                : "Camera support is not available on your device."
-            );
+            alerts("error", res.errorMessage ? res.errorMessage : "Camera support is not available on your device.");
           } else if (res.didCancel === true) {
-          } else if (
-            res?.assets[0]?.height == 0 ||
-            res?.assets[0]?.width == 0
-          ) {
+          } else if (res?.assets[0]?.height == 0 || res?.assets[0]?.width == 0) {
             alerts("error", "Please select jpeg/png format images.");
           } else {
             setMediaOptions(state);
@@ -128,16 +107,16 @@ const UploadVideo = ({ navigation, route }) => {
               obj = {
                 name: res?.assets[0]?.fileName,
                 type: res?.assets[0]?.type,
-                uri: res?.assets[0]?.uri,
+                uri: res?.assets[0]?.uri
               };
               dispatch({
                 type: "video",
-                payload: obj,
+                payload: obj
               });
               setVideoObj(obj);
 
               setVideoUri({
-                uri: res?.assets[0]?.uri,
+                uri: res?.assets[0]?.uri
               });
             } else {
               alerts("error", "Please upload video of 100mb or less");
@@ -156,31 +135,20 @@ const UploadVideo = ({ navigation, route }) => {
 
   const handleCamera = state => {
     if (ios) {
-      handlePermissions.checkMultiplePermissions(
-        PERMISSIONS.IOS.CAMERA,
-        "camera",
-        res => {
-          handleCameraMedia(state, res);
-        }
-      );
+      handlePermissions.checkMultiplePermissions(PERMISSIONS.IOS.CAMERA, "camera", res => {
+        handleCameraMedia(state, res);
+      });
     } else if (android) {
-      handlePermissions.checkMultiplePermissions(
-        PERMISSIONS.ANDROID.CAMERA,
-        "camera",
-        res => {
-          handleCameraMedia(state, res);
-        }
-      );
+      handlePermissions.checkMultiplePermissions(PERMISSIONS.ANDROID.CAMERA, "camera", res => {
+        handleCameraMedia(state, res);
+      });
     }
   };
 
   const handleSkipNow = async () => {
     setLoading(true);
     if (coords.city == "" && coords.state == "" && coords.country == "") {
-      alerts(
-        "error",
-        "Please enable location and open google maps to sync location!"
-      );
+      alerts("error", "Please enable location and open google maps to sync location!");
       handleLocation();
       setLoading(false);
     } else {
@@ -220,7 +188,7 @@ const UploadVideo = ({ navigation, route }) => {
           formData.append(`profilePic${index + 1}`, {
             name: x?.image?.name,
             type: x?.image.type,
-            uri: x?.image?.uri,
+            uri: x?.image?.uri
           });
         }
       });
@@ -239,7 +207,7 @@ const UploadVideo = ({ navigation, route }) => {
               navigation.dispatch(
                 CommonActions.reset({
                   index: 0,
-                  routes: [{ name: "BottomTab" }],
+                  routes: [{ name: "BottomTab" }]
                 })
               );
             }
@@ -259,18 +227,18 @@ const UploadVideo = ({ navigation, route }) => {
   const continuePress = async () => {
     try {
       // Log the start of the video upload process
-      await analytics().logEvent('start_video_upload', {
-        description: 'User started video upload process',
-        videoName: video?.name || 'unknown',
+      await analytics().logEvent("start_video_upload", {
+        description: "User started video upload process",
+        videoName: video?.name || "unknown"
       });
-  
+
       if (edit && videoUri != null) {
         setLoading(true);
-  
+
         const formData1 = new URLSearchParams();
         formData1.append("mediaName", video.name);
         formData1.append("mediaType", "video/mp4");
-  
+
         OnBoardingServices.getPresignedUrl(formData1, token)
           .then(async res => {
             handleStatusCode(res);
@@ -279,32 +247,32 @@ const UploadVideo = ({ navigation, route }) => {
               const { url, key } = responseData.data;
               const baseUrl = url.split("?")[0]; // Get the base URL
               alerts("success", res.data.message);
-  
+
               const videoFileUri = video.uri;
               const videoFile = await fetch(videoFileUri);
               const videoBlob = await videoFile.blob();
-  
+
               const uploadResponse = await fetch(url, {
                 method: "PUT",
                 headers: {
-                  "Content-Type": "video/mp4",
+                  "Content-Type": "video/mp4"
                 },
-                body: videoBlob,
+                body: videoBlob
               });
-  
+
               if (uploadResponse.ok) {
                 // Log the successful video upload
-                await analytics().logEvent('video_upload_success', {
-                  description: 'Video uploaded successfully',
-                  videoName: video?.name || 'unknown',
-                  videoUrl: baseUrl,
+                await analytics().logEvent("video_upload_success", {
+                  description: "Video uploaded successfully",
+                  videoName: video?.name || "unknown",
+                  videoUrl: baseUrl
                 });
-  
+
                 // Video uploaded successfully, now inform the backend API
                 const backendPayload = {
-                  videoUrl: baseUrl, // Send the base URL to the backend
+                  videoUrl: baseUrl // Send the base URL to the backend
                 };
-  
+
                 OnBoardingServices.uploadVideo(backendPayload, token)
                   .then(res => {
                     handleStatusCode(res);
@@ -314,21 +282,21 @@ const UploadVideo = ({ navigation, route }) => {
                         if (el.type == "video") {
                           return {
                             ...el,
-                            url: res.data.data,
+                            url: res.data.data
                           };
                         } else {
                           return el;
                         }
                       });
-  
+
                       dispatch({
                         type: "AUTH_USER",
-                        payload: copy,
+                        payload: copy
                       });
-  
+
                       dispatch({
                         type: "SET_VIDEO_FLAG",
-                        payload: true,
+                        payload: true
                       });
                       alerts("success", res.data.message);
                     }
@@ -336,9 +304,9 @@ const UploadVideo = ({ navigation, route }) => {
                   .catch(e => {
                     console.log("uploadVideo err", e);
                     // Log the error if video upload fails
-                    analytics().logEvent('video_upload_failure', {
-                      description: 'Failed to upload video to backend',
-                      error: e.message,
+                    analytics().logEvent("video_upload_failure", {
+                      description: "Failed to upload video to backend",
+                      error: e.message
                     });
                   })
                   .finally(() => {
@@ -347,18 +315,18 @@ const UploadVideo = ({ navigation, route }) => {
                   });
               } else {
                 // Log the failure if upload to the presigned URL fails
-                await analytics().logEvent('video_upload_failure', {
-                  description: 'Failed to upload video to presigned URL',
-                  error: 'Upload response not OK',
+                await analytics().logEvent("video_upload_failure", {
+                  description: "Failed to upload video to presigned URL",
+                  error: "Upload response not OK"
                 });
                 alerts("error", "Failed to upload video");
                 setLoading(false);
               }
             } else {
               // Log the failure if getting the presigned URL fails
-              await analytics().logEvent('video_upload_failure', {
-                description: 'Failed to get presigned URL',
-                error: 'Get presigned URL response not OK',
+              await analytics().logEvent("video_upload_failure", {
+                description: "Failed to get presigned URL",
+                error: "Get presigned URL response not OK"
               });
               alerts("error", "Failed to get pre-signed URL");
               setLoading(false);
@@ -367,9 +335,9 @@ const UploadVideo = ({ navigation, route }) => {
           .catch(err => {
             console.error("Error getting pre-signed URL:", err);
             // Log the error if getting the presigned URL fails
-            analytics().logEvent('video_upload_failure', {
-              description: 'Error getting presigned URL',
-              error: err.message,
+            analytics().logEvent("video_upload_failure", {
+              description: "Error getting presigned URL",
+              error: err.message
             });
             setLoading(false);
             alerts("error", "Failed to get pre-signed URL");
@@ -378,24 +346,21 @@ const UploadVideo = ({ navigation, route }) => {
         if (videoObj !== null || video !== null) {
           setIsPaused(true);
           if (coords.city == "" && coords.state == "" && coords.country == "") {
-            alerts(
-              "error",
-              "Please enable location and open google maps to sync location!"
-            );
+            alerts("error", "Please enable location and open google maps to sync location!");
             handleLocation();
           } else {
             setLoading(true);
             handleLocation();
-  
+
             let code = Countries.filter(item => {
               return item?.en === coords?.country;
             });
             code = code[0]?.dialCode;
-  
+
             const formData1 = new URLSearchParams();
             formData1.append("mediaName", video.name);
             formData1.append("mediaType", "video/mp4");
-  
+
             OnBoardingServices.getPresignedUrl(formData1, token)
               .then(async res => {
                 handleStatusCode(res);
@@ -404,48 +369,46 @@ const UploadVideo = ({ navigation, route }) => {
                   const { url } = responseData.data;
                   const baseUrl = url.split("?")[0]; // Get the base URL
                   alerts("success", res.data.message);
-  
+
                   const videoFileUri = video.uri;
                   const videoFile = await fetch(videoFileUri);
                   const videoBlob = await videoFile.blob();
-  
+
                   const uploadResponse = await fetch(url, {
                     method: "PUT",
                     headers: {
-                      "Content-Type": "video/mp4",
+                      "Content-Type": "video/mp4"
                     },
-                    body: videoBlob,
+                    body: videoBlob
                   });
-  
+
                   if (uploadResponse.ok) {
                     // Log the successful video upload
-                    await analytics().logEvent('video_upload_success', {
-                      description: 'Video uploaded successfully',
-                      videoName: video?.name || 'unknown',
-                      videoUrl: baseUrl,
+                    await analytics().logEvent("video_upload_success", {
+                      description: "Video uploaded successfully",
+                      videoName: video?.name || "unknown",
+                      videoUrl: baseUrl
                     });
-  
+
                     const backendPayload = {
-                      videoUrl: baseUrl,
+                      videoUrl: baseUrl
                     };
-  
+
                     OnBoardingServices.uploadVideo(backendPayload, token)
                       .then(res => {
                         handleStatusCode(res);
                         if (res.status >= 200 && res.status <= 299) {
                           dispatch({
                             type: "SET_VIDEO_FLAG",
-                            payload: true,
+                            payload: true
                           });
                           alerts("success", res.data.message);
-  
+
                           let versionCode = DeviceInfo.getVersion();
                           let userDevice = DeviceInfo.getModel();
                           let OSVersion = DeviceInfo.getSystemVersion();
-                          let OSName = android
-                            ? `Android ${OSVersion}`
-                            : `iOS ${OSVersion}`;
-  
+                          let OSName = android ? `Android ${OSVersion}` : `iOS ${OSVersion}`;
+
                           let formData = new FormData();
                           formData.append("versionCode", versionCode);
                           formData.append("userDevice", userDevice);
@@ -453,10 +416,7 @@ const UploadVideo = ({ navigation, route }) => {
                           formData.append("OSName", OSName);
                           formData.append("firstName", firstName);
                           formData.append("lastName", lastName);
-                          formData.append(
-                            "dob",
-                            moment(dob).format("YYYY-MM-DD")
-                          );
+                          formData.append("dob", moment(dob).format("YYYY-MM-DD"));
                           formData.append("longitude", coords.lat);
                           formData.append("latitude", coords.lng);
                           formData.append("city", coords.city);
@@ -466,17 +426,17 @@ const UploadVideo = ({ navigation, route }) => {
                           formData.append("gender", gender);
                           formData.append("religion", religion?.name);
                           formData.append("verificationPicture", selfie);
-  
+
                           profilePictures.map((x, index) => {
                             if (x?.image) {
                               formData.append(`profilePic${index + 1}`, {
                                 name: x?.image?.name,
                                 type: x?.image.type,
-                                uri: x?.image?.uri,
+                                uri: x?.image?.uri
                               });
                             }
                           });
-  
+
                           if (token !== null) {
                             setLoading(true);
                             UserService.createNewProfile(formData, token)
@@ -485,11 +445,11 @@ const UploadVideo = ({ navigation, route }) => {
                                 if (res.status >= 200 && res.status <= 299) {
                                   clearNewRedux();
                                   Alerts("success", res?.data?.message);
-  
+
                                   navigation.dispatch(
                                     CommonActions.reset({
                                       index: 0,
-                                      routes: [{ name: "BottomTab" }],
+                                      routes: [{ name: "BottomTab" }]
                                     })
                                   );
                                 }
@@ -508,27 +468,27 @@ const UploadVideo = ({ navigation, route }) => {
                       .catch(err => {
                         console.error("Error adding intro video:", err);
                         // Log the error if adding intro video fails
-                        analytics().logEvent('video_upload_failure', {
-                          description: 'Error adding intro video',
-                          error: err.message,
+                        analytics().logEvent("video_upload_failure", {
+                          description: "Error adding intro video",
+                          error: err.message
                         });
                         alerts("error", "Error adding intro video");
                       })
                       .finally(() => setLoading(false));
                   } else {
                     // Log the failure if upload to the presigned URL fails
-                    await analytics().logEvent('video_upload_failure', {
-                      description: 'Failed to upload video to presigned URL',
-                      error: 'Upload response not OK',
+                    await analytics().logEvent("video_upload_failure", {
+                      description: "Failed to upload video to presigned URL",
+                      error: "Upload response not OK"
                     });
                     alerts("error", "Failed to upload video");
                     setLoading(false);
                   }
                 } else {
                   // Log the failure if getting the presigned URL fails
-                  await analytics().logEvent('video_upload_failure', {
-                    description: 'Failed to get presigned URL',
-                    error: 'Get presigned URL response not OK',
+                  await analytics().logEvent("video_upload_failure", {
+                    description: "Failed to get presigned URL",
+                    error: "Get presigned URL response not OK"
                   });
                   alerts("error", "Failed to get pre-signed URL");
                   setLoading(false);
@@ -537,9 +497,9 @@ const UploadVideo = ({ navigation, route }) => {
               .catch(err => {
                 console.error("Error getting pre-signed URL:", err);
                 // Log the error if getting the presigned URL fails
-                analytics().logEvent('video_upload_failure', {
-                  description: 'Error getting presigned URL',
-                  error: err.message,
+                analytics().logEvent("video_upload_failure", {
+                  description: "Error getting presigned URL",
+                  error: err.message
                 });
                 setLoading(false);
                 alerts("error", "Failed to get pre-signed URL");
@@ -552,54 +512,45 @@ const UploadVideo = ({ navigation, route }) => {
     } catch (error) {
       console.error("Error during video upload process:", error);
       // Log any unexpected errors
-      await analytics().logEvent('video_upload_failure', {
-        description: 'Unexpected error during video upload process',
-        error: error.message,
+      await analytics().logEvent("video_upload_failure", {
+        description: "Unexpected error during video upload process",
+        error: error.message
       });
     }
   };
-  
 
   const handleGalleryMedia = async (state, result) => {
     try {
       if (result === "granted") {
-        await launchImageLibrary(
-          { mediaType: "video", videoQuality: "low", quality: 0.4 },
-          res => {
-            if (res.errorCode === "others") {
-              alerts(
-                "error",
-                res.errorMessage
-                  ? res.errorMessage
-                  : "Camera support is not available on your device."
-              );
-            } else if (!res.didCancel) {
-              if (res.assets[0].height === 0 || res.assets[0].width === 0) {
-                alerts("error", "Please select jpeg/png format images.");
+        await launchImageLibrary({ mediaType: "video", videoQuality: "low", quality: 0.4 }, res => {
+          if (res.errorCode === "others") {
+            alerts("error", res.errorMessage ? res.errorMessage : "Camera support is not available on your device.");
+          } else if (!res.didCancel) {
+            if (res.assets[0].height === 0 || res.assets[0].width === 0) {
+              alerts("error", "Please select jpeg/png format images.");
+            } else {
+              setMediaOptions(state);
+              const videoSize = res.assets[0].fileSize / 1000000;
+              if (videoSize <= 100) {
+                const obj = {
+                  name: res.assets[0].fileName,
+                  type: res.assets[0].type,
+                  uri: res.assets[0].uri
+                };
+                dispatch({
+                  type: "video",
+                  payload: obj
+                });
+                setVideoObj(obj);
+                setVideoUri({
+                  uri: res.assets[0].uri
+                });
               } else {
-                setMediaOptions(state);
-                const videoSize = res.assets[0].fileSize / 1000000;
-                if (videoSize <= 100) {
-                  const obj = {
-                    name: res.assets[0].fileName,
-                    type: res.assets[0].type,
-                    uri: res.assets[0].uri,
-                  };
-                  dispatch({
-                    type: "video",
-                    payload: obj,
-                  });
-                  setVideoObj(obj);
-                  setVideoUri({
-                    uri: res.assets[0].uri,
-                  });
-                } else {
-                  alerts("error", "Please upload video of 100mb or less");
-                }
+                alerts("error", "Please upload video of 100mb or less");
               }
             }
           }
-        ).finally(() => {
+        }).finally(() => {
           setShowAlert(false);
         });
       }
@@ -610,24 +561,16 @@ const UploadVideo = ({ navigation, route }) => {
 
   const handleGallery = state => {
     if (ios) {
-      handlePermissions.checkMultiplePermissions(
-        PERMISSIONS.IOS.PHOTO_LIBRARY,
-        "gallery",
-        res => {
-          handleGalleryMedia(state, res);
-        }
-      );
+      handlePermissions.checkMultiplePermissions(PERMISSIONS.IOS.PHOTO_LIBRARY, "gallery", res => {
+        handleGalleryMedia(state, res);
+      });
     } else if (android) {
       if (OS_VER >= 13) {
         handleGalleryMedia(state, "granted");
       } else {
-        handlePermissions.checkMultiplePermissions(
-          PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
-          "gallery",
-          res => {
-            handleGalleryMedia(state, res);
-          }
-        );
+        handlePermissions.checkMultiplePermissions(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE, "gallery", res => {
+          handleGalleryMedia(state, res);
+        });
       }
     }
   };
@@ -638,7 +581,7 @@ const UploadVideo = ({ navigation, route }) => {
   const handleRemoveImage = () => {
     dispatch({
       type: "video",
-      payload: null,
+      payload: null
     });
     setVideoObj(null);
     setVideoUri(null);
@@ -654,98 +597,95 @@ const UploadVideo = ({ navigation, route }) => {
   const clearNewRedux = (flag = false) => {
     dispatch({
       type: "firstName",
-      payload: "",
+      payload: ""
     });
     dispatch({
       type: "lastName",
-      payload: "",
+      payload: ""
     });
     dispatch({
       type: "dob",
-      payload: null,
+      payload: null
     });
     dispatch({
       type: "gender",
-      payload: "",
+      payload: ""
     });
     dispatch({
       type: "selfie",
-      payload: null,
+      payload: null
     });
     dispatch({
       type: "picture",
-      payload: null,
+      payload: null
     });
     dispatch({
       type: "video",
-      payload: null,
+      payload: null
     });
 
     dispatch({
       type: "profilePictures",
-      payload: [],
+      payload: []
     });
   };
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, padding: 20, backgroundColor: colors.white }}
-    >
-      <ActionCard
-        videoUpload
-        handleCloseAlert={() => setShowAlert(false)}
-        isImageAct={true}
-        heading={"Choose an Action"}
-        handleGallery={handleGallery}
-        handleCamera={handleCamera}
-        handleAlert={handleAlert}
-        handleRemoveImage={handleRemoveImage}
-        // handleSkipNow={handleSkipNow}
-        // showSkipButton={true} // Add this line
-        alert={showAlert}
-      />
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <FastImage
-          resizeMode="contain"
-          style={{ width: 20, height: 30 }}
-          source={require("../../../assets/iconimages/arrow-back.png")}
+    <SafeAreaView style={{ flex: 1, padding: 20, backgroundColor: colors.white }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
+        <ActionCard
+          videoUpload
+          handleCloseAlert={() => setShowAlert(false)}
+          isImageAct={true}
+          heading={"Choose an Action"}
+          handleGallery={handleGallery}
+          handleCamera={handleCamera}
+          handleAlert={handleAlert}
+          handleRemoveImage={handleRemoveImage}
+          // handleSkipNow={handleSkipNow}
+          // showSkipButton={true} // Add this line
+          alert={showAlert}
         />
-      </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <FastImage
+            resizeMode="contain"
+            style={{ width: 20, height: 30 }}
+            source={require("../../../assets/iconimages/arrow-back.png")}
+          />
+        </TouchableOpacity>
 
-      <View style={{ marginTop: "8%" }}>
-        <Text style={styles.heading}>
-          {video === null && videoUri === null
-            ? "Let your video do the talking"
-            : "Video reveal"}
-        </Text>
-        <Text style={styles.lightText}>
-          {video === null && videoUri === null
-            ? "Your chance to shine in seconds, with likes, comments, and voice notes."
-            : "Watch yourself shine."}
-        </Text>
-        <View style={{ width: "100%", marginVertical: "5%" }}></View>
-        {video === null && videoUri === null ? (
-          // <TouchableOpacity
-          //   onPress={() => setShowAlert(true)}
-          //   style={{
-          //     width: '100%',
-          //     backgroundColor: '#D9036814',
-          //     height: height * 0.2,
-          //     borderRadius: 5,
-          //     borderWidth: 1,
-          //     borderColor: colors.primaryPink,
-          //     borderStyle: 'dashed',
-          //     alignItems: 'center',
-          //     justifyContent: 'center',
-          //   }}>
-          //   <FastImage
-          //     resizeMode="contain"
-          //     style={{width: 30, height: 30}}
-          //     source={require('../../../assets/iconimages/add-circle.png')}
-          //   />
-          // </TouchableOpacity>
-          <>
-            {/* <AutoScroll style={{width: width * 1.2}} duration={5000}>
+        <View style={{ marginTop: "8%" }}>
+          <Text style={styles.heading}>
+            {video === null && videoUri === null ? "Let your video do the talking" : "Video reveal"}
+          </Text>
+          <Text style={styles.lightText}>
+            {video === null && videoUri === null
+              ? "Your chance to shine in seconds, with likes, comments, and voice notes."
+              : "Watch yourself shine."}
+          </Text>
+          <View style={{ width: "100%", marginVertical: "5%" }}></View>
+          {video === null && videoUri === null ? (
+            // <TouchableOpacity
+            //   onPress={() => setShowAlert(true)}
+            //   style={{
+            //     width: '100%',
+            //     backgroundColor: '#D9036814',
+            //     height: height * 0.2,
+            //     borderRadius: 5,
+            //     borderWidth: 1,
+            //     borderColor: colors.primaryPink,
+            //     borderStyle: 'dashed',
+            //     alignItems: 'center',
+            //     justifyContent: 'center',
+            //   }}>
+            //   <FastImage
+            //     resizeMode="contain"
+            //     style={{width: 30, height: 30}}
+            //     source={require('../../../assets/iconimages/add-circle.png')}
+            //   />
+            // </TouchableOpacity>
+            <>
+              {/* <AutoScroll style={{width: width * 1.2}} duration={5000}>
               <View
                 style={{
                   flexDirection: 'row',
@@ -837,189 +777,166 @@ const UploadVideo = ({ navigation, route }) => {
               </View>
             </AutoScroll> */}
 
-            <Video
-              // onLoadStart={() => setIsPreloading(true)}
-              resizeMode={"cover"}
-              repeat={true}
-              // onReadyForDisplay={() => setIsPreloading(false)}
-              // playInBackground={false}
-              // playWhenInactive={false}
-              paused={showAlert}
-              style={{
-                alignSelf: "center",
-                width: "120%",
-                height: windowHeight * 0.5,
-                bottom:10,
+              <Video
+                // onLoadStart={() => setIsPreloading(true)}
+                resizeMode={"cover"}
+                repeat={true}
+                // onReadyForDisplay={() => setIsPreloading(false)}
+                // playInBackground={false}
+                // playWhenInactive={false}
+                paused={showAlert}
+                style={{
+                  alignSelf: "center",
+                  width: "120%",
+                  height: windowHeight * 0.5,
+                  bottom: 10
+                }}
+                // poster={require('../../../assets/images/discovervideo.mp4')}
+                source={require("../../../assets/images/discovervideo1.mp4")}
+              />
+            </>
+          ) : (
+            <TouchableOpacity
+              onPress={() => {
+                setIsPaused(!isPaused);
+                setIsPausedButton(true);
               }}
-              // poster={require('../../../assets/images/discovervideo.mp4')}
-              source={require("../../../assets/images/discovervideo1.mp4")}
-            />
-          </>
-        ) : (
-          <TouchableOpacity
-            onPress={() => {
-              setIsPaused(!isPaused);
-              setIsPausedButton(true);
-            }}
-            style={{
-              width: "100%",
-              height: windowHeight * 0.5,
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: 20,
-            }}
-          >
-            <Video
-              onLoadStart={() => setIsPreloading(true)}
-              resizeMode={"cover"}
-              repeat={true}
-              onReadyForDisplay={() => setIsPreloading(false)}
-              playInBackground={false}
-              playWhenInactive={false}
-              paused={isPaused}
               style={{
                 width: "100%",
-                height: "100%",
-                borderRadius: 20,
-                bottom:10,
-
-              }}
-              poster={video?.uri}
-              source={{
-                uri: videoUri !== null ? videoUri?.uri : video?.uri,
-              }}
-            />
-            {isPaused === false && isPausedButton === false ? null : (
-              <View
+                height: windowHeight * 0.5,
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: 20
+              }}>
+              <Video
+                onLoadStart={() => setIsPreloading(true)}
+                resizeMode={"cover"}
+                repeat={true}
+                onReadyForDisplay={() => setIsPreloading(false)}
+                playInBackground={false}
+                playWhenInactive={false}
+                paused={isPaused}
                 style={{
                   width: "100%",
-                  alignSelf: "center",
-                  height: 10,
-                  zIndex: 1,
-                  position: "absolute",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  height: "100%",
+                  borderRadius: 20,
+                  bottom: 10
                 }}
-              >
-                <FastImage
-                  resizeMode="contain"
-                  style={{ width: 60, height: 60 }}
-                  source={
-                    isPausedButton === true && isPaused == false
-                      ? require("../../../assets/iconimages/pause.png")
-                      : isPausedButton == true && isPaused == true
-                      ? require("../../../assets/iconimages/play.png")
-                      : isPausedButton == false && isPaused == true
-                      ? require("../../../assets/iconimages/play.png")
-                      : null
-                  }
-                />
-              </View>
+                poster={video?.uri}
+                source={{
+                  uri: videoUri !== null ? videoUri?.uri : video?.uri
+                }}
+              />
+              {isPaused === false && isPausedButton === false ? null : (
+                <View
+                  style={{
+                    width: "100%",
+                    alignSelf: "center",
+                    height: 10,
+                    zIndex: 1,
+                    position: "absolute",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}>
+                  <FastImage
+                    resizeMode="contain"
+                    style={{ width: 60, height: 60 }}
+                    source={
+                      isPausedButton === true && isPaused == false
+                        ? require("../../../assets/iconimages/pause.png")
+                        : isPausedButton == true && isPaused == true
+                        ? require("../../../assets/iconimages/play.png")
+                        : isPausedButton == false && isPaused == true
+                        ? require("../../../assets/iconimages/play.png")
+                        : null
+                    }
+                  />
+                </View>
+              )}
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity
+            onPress={() => setShowAlert(true)}
+            style={{
+              width: "80%",
+              padding: "5%",
+              flexDirection: "row",
+              alignItems: "center",
+              bottom: 10
+              // borderRadius: 5,
+              // alignItems: 'center',
+              // justifyContent: 'center',
+              // alignSelf: 'flex-end',
+              // backgroundColor: colors.primaryBlue,
+              // marginVertical: '5%',
+            }}>
+            <Text
+              style={{
+                fontSize: 15,
+                color: "#6B7280",
+                fontFamily: "Inter-Medium"
+              }}>
+              {videoUri === null ? null : "Change Video"}
+            </Text>
+            {videoUri === null ? null : (
+              <FastImage
+                style={{ width: 15, height: 15, marginLeft: "3%" }}
+                resizeMode="contain"
+                source={require("../../../assets/iconimages/editt.png")}
+              />
             )}
           </TouchableOpacity>
-        )}
-        <TouchableOpacity
-          onPress={() => setShowAlert(true)}
-          style={{
-            width: "80%",
-            padding: "5%",
-            flexDirection: "row",
-            alignItems: "center",
-            bottom:10,
-            // borderRadius: 5,
-            // alignItems: 'center',
-            // justifyContent: 'center',
-            // alignSelf: 'flex-end',
-            // backgroundColor: colors.primaryBlue,
-            // marginVertical: '5%',
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 15,
-              color: "#6B7280",
-              fontFamily: "Inter-Medium",
-            }}
-          >
-            {videoUri === null ? null : "Change Video"}
-          </Text>
-          {videoUri === null ? null : (
-            <FastImage
-              style={{ width: 15, height: 15, marginLeft: "3%" }}
-              resizeMode="contain"
-              source={require("../../../assets/iconimages/editt.png")}
-            />
-          )}
-        </TouchableOpacity>
-      </View>
-      {loading && (
-        <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#D90368" />
-          <Text style={styles.uploadingText}>Uploading...</Text>
-          <View style={styles.progressBar}>
-            <Progress.Bar
-              progress={progress}
-              width={200}
-              height={300}
-              color="#D90368"
-              borderWidth={0}
-              animated={true}
-            />
-          </View>
         </View>
-      )}
-      <View
-        style={{
-          top: "9%",
-        }}
-      >
-        <BottomButton
-          loading={loading}
-          text={
-            edit && videoUri
-              ? "Update"
-              : videoObj || video
-              ? "View profiles now"
-              : "Upload your discover video"
-          }
-          onPress={() => continuePress()}
-        />
-      </View>
-      {!edit && !videoUri && (
-  <View
-    style={{
-      top: 20,
-    }}
-  >
-    <TouchableOpacity
-      style={{
-        width: "90%",
-        paddingVertical: "5%",
-        borderRadius: 10,
-        backgroundColor: "#FDEDF1",
-        alignItems: "center",
-        borderColor: "#F9B5C6",
-        borderWidth: 1,
-        justifyContent: "center",
-        zIndex: 0.5,
-        margin: 5,
-        alignSelf: "center",
-        top: 5,
-      }}
-      onPress={() => handleSkipNow()}
-    >
-      <Text
-        style={{
-          fontSize: 15,
-          color: "#EF4770",
-          fontFamily: "Inter-Medium",
-        }}
-      >
-        Use my picture instead
-      </Text>
-    </TouchableOpacity>
-  </View>
-)}
+        {loading && (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color="#D90368" />
+            <Text style={styles.uploadingText}>Uploading...</Text>
+            <View style={styles.progressBar}>
+              <Progress.Bar
+                progress={progress}
+                width={200}
+                height={300}
+                color="#D90368"
+                borderWidth={0}
+                animated={true}
+              />
+            </View>
+          </View>
+        )}
+        <View style={{ marginTop: "12%" }}>
+          <BottomButton
+            loading={loading}
+            text={edit && videoUri ? "Update" : videoObj || video ? "View profiles now" : "Upload your discover video"}
+            onPress={() => continuePress()}
+          />
+        </View>
+        {!edit && !videoUri && (
+          <TouchableOpacity
+            style={{
+              width: "90%",
+              paddingVertical: "5%",
+              borderRadius: 10,
+              backgroundColor: "#FDEDF1",
+              alignItems: "center",
+              borderColor: "#F9B5C6",
+              borderWidth: 1,
+              justifyContent: "center",
+              zIndex: 0.5,
+              margin: 5,
+              alignSelf: "center"
+            }}
+            onPress={() => handleSkipNow()}>
+            <Text
+              style={{
+                fontSize: 15,
+                color: "#EF4770",
+                fontFamily: "Inter-Medium"
+              }}>
+              Use my picture instead
+            </Text>
+          </TouchableOpacity>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -1030,7 +947,7 @@ const styles = StyleSheet.create({
     fontFamily: "Inter-Regular",
     fontSize: 15,
     marginTop: "3%",
-    color: colors.textGrey,
+    color: colors.textGrey
   },
   loaderContainer: {
     flex: 1,
@@ -1041,13 +958,13 @@ const styles = StyleSheet.create({
     left: 0,
     bottom: 0,
     top: 0,
-    right: 0,
+    right: 0
   },
   uploadingText: {
     marginTop: 10,
     color: "#ffffff",
     fontSize: 25,
-    fontWeight: "500",
+    fontWeight: "500"
   },
   progressBar: {
     marginTop: 20,
@@ -1055,8 +972,8 @@ const styles = StyleSheet.create({
     height: 10,
     backgroundColor: "#ffff",
     borderRadius: 15,
-    overflow: "hidden",
-  },
+    overflow: "hidden"
+  }
 });
 
 export default UploadVideo;
