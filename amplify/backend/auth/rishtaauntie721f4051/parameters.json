@@ -1,0 +1,25 @@
+{
+  "authSelections": "identityPoolAndUserPool",
+  "resourceName": "rishtaauntie721f4051",
+  "serviceType": "imported",
+  "region": "us-east-2",
+  "usernameAttributes": [
+    "email",
+    "phone_number"
+  ],
+  "authProvidersUserPool": [
+    "Facebook",
+    "Google",
+    "SignInWithApple"
+  ],
+  "requiredAttributes": [],
+  "passwordPolicyMinLength": 6,
+  "passwordPolicyCharacters": [],
+  "mfaConfiguration": "OPTIONAL",
+  "autoVerifiedAttributes": [
+    "phone_number"
+  ],
+  "mfaTypes": [
+    "SMS Text Message"
+  ]
+}
