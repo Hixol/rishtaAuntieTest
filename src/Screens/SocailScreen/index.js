@@ -1,14 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  ActivityIndicator,
-  Linking,
-  Alert,
-} from "react-native";
+import { Text, View, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Linking, Alert } from "react-native";
 import { Amplify, Auth, Hub } from "aws-amplify";
 import { CognitoHostedUIIdentityProvider } from "@aws-amplify/auth";
 import { useSelector, useDispatch } from "react-redux";
@@ -18,6 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import FastImage from "react-native-fast-image";
 import IntlPhoneInput from "react-native-intl-phone-input";
 import config from "../../aws-exports";
+import crashlytics from "@react-native-firebase/crashlytics";
 
 import Icons from "../../utility/icons";
 import InAppBrowser from "react-native-inappbrowser-reborn";
@@ -30,20 +22,12 @@ import Countries from "../../assets/countryLists/Countries";
 import { useHelper } from "../../hooks/useHelper";
 import { useNavigation } from "@react-navigation/native";
 
-const SocailScreen = (props) => {
+const SocailScreen = props => {
   let webviewRef = useRef(null);
   const dispatch = useDispatch();
-  const {
-    Alerts,
-    handleStatusCode,
-    dispatchAndNavigate,
-    mulk,
-    handleLocation,
-  } = useHelper();
+  const { Alerts, handleStatusCode, dispatchAndNavigate, mulk, handleLocation } = useHelper();
 
-  const { mobileNumber, email, status } = useSelector(
-    (store) => store.userReducer
-  );
+  const { mobileNumber, email, status } = useSelector(store => store.userReducer);
 
   let [fullNumber, setFullNumber] = useState("");
   let [loading, setLoading] = useState(false);
@@ -52,7 +36,6 @@ const SocailScreen = (props) => {
 
   const [check, setCheck] = useState(false);
   const [user, setUser] = useState(null);
-  const [countryCode, setCountryCode] = useState("US");
   const [currentAuthUser, setCurrentAuthUser] = useState(null);
   const [canGoBack, setCanGoBack] = useState(false);
   const [provider, setProvider] = useState("");
@@ -64,37 +47,44 @@ const SocailScreen = (props) => {
   const [url, setUrl] = useState("");
   const signInWithApple = "SignInWithApple";
   const navigation = useNavigation();
+
   const urlOpener = async (url, redirectUrl) => {
-    let identityProvider = url
-      ?.split("&")
-      .find((str) => str.indexOf("identity_provider") > -1)
-      .split("=")
-      .pop();
+    try {
+      let identityProvider = url
+        ?.split("&")
+        ?.find(str => str?.indexOf("identity_provider") > -1)
+        ?.split("=")
+        ?.pop();
 
-    let OSVersion = DeviceInfo.getSystemVersion();
+      let OSVersion = DeviceInfo.getSystemVersion();
+      OSVersion = parseFloat(OSVersion).toFixed(1);
 
-    if (
-      identityProvider == "Google" ||
-      (ios && /13.3|16.4|17.3/.test(OSVersion))
-    ) {
-      await InAppBrowser.isAvailable();
+      if (
+        identityProvider == "Google" ||
+        (ios && (OSVersion == "13.3" || OSVersion == "16.4" || OSVersion == "17.3"))
+      ) {
+        await InAppBrowser.isAvailable();
 
-      const res = await InAppBrowser.openAuth(url, redirectUrl, {
-        dismissButtonStyle: "cancel",
-        showTitle: false,
-        enableUrlBarHiding: true,
-        enableDefaultShare: false,
-      });
+        const res = await InAppBrowser.openAuth(url, redirectUrl, {
+          dismissButtonStyle: "cancel",
+          showTitle: false,
+          enableUrlBarHiding: true,
+          enableDefaultShare: false
+        });
 
-      if (res.type == "cancel") {
+        if (res.type == "cancel") {
+          setLoader(false);
+        } else if (res.type == "success" && res.url) {
+          Linking.openURL(res.url);
+        }
+      } else {
+        setIdentityProvider(identityProvider);
+        setUrl(url);
         setLoader(false);
-      } else if (res.type == "success" && res.url) {
-        Linking.openURL(res.url);
       }
-    } else {
-      setIdentityProvider(identityProvider);
-      setUrl(url);
-      setLoader(false);
+    } catch (err) {
+      crashlytics().recordError(err, "urlOpener err");
+      console.log("[IAB] err", err);
     }
   };
 
@@ -102,16 +92,11 @@ const SocailScreen = (props) => {
     ...config,
     oauth: {
       ...config.oauth,
-      urlOpener,
-    },
+      urlOpener
+    }
   });
 
-  const onChangeText = ({
-    dialCode,
-    unmaskedPhoneNumber,
-    phoneNumber,
-    isVerified,
-  }) => {
+  const onChangeText = ({ dialCode, unmaskedPhoneNumber, phoneNumber, isVerified }) => {
     setError("");
     setDialCode(dialCode.replace(/ /g, ""));
     setUnmaskedPhoneNumber(unmaskedPhoneNumber);
@@ -125,7 +110,7 @@ const SocailScreen = (props) => {
       dialCode,
       unmaskedPhoneNumber,
       phoneNumber: phoneNumber.replace(/[^0-9]/g, ""),
-      isVerified,
+      isVerified
     });
   };
 
@@ -133,17 +118,14 @@ const SocailScreen = (props) => {
 
   const getUser = () => {
     Auth.currentAuthenticatedUser()
-      .then((user) => {
+      .then(user => {
         setCurrentAuthUser(user);
       })
-      .catch((err) => console.log("currentAuthenticatedUser err:", err));
+      .catch(err => console.log("currentAuthenticatedUser err:", err));
   };
 
   useEffect(() => {
     if (mulk == "") handleLocation();
-    if (mulk != "") {
-      setCountryCode(Countries.filter((el) => el.en == mulk)[0].code);
-    }
   }, [mulk]);
 
   useEffect(() => {
@@ -165,59 +147,45 @@ const SocailScreen = (props) => {
     return () => unsubscribe();
   }, []);
 
-  const socialSignInGoogle = async () => {
+  const socialfederatedSignIn = async type => {
     setLoader(true);
-    await Auth.federatedSignIn({
-      provider: CognitoHostedUIIdentityProvider.Google,
-    });
-    setProvider("google");
+    setProvider(type);
+    analytics().logEvent("social_sign_in", { provider: type });
 
-    // Track Google sign-in in Firebase Analytics
-    analytics().logEvent("social_sign_in", {
-      provider: "google",
-    });
-  };
-
-  const socialSignInFaceBook = () => {
-    setLoader(true);
-    Auth.federatedSignIn({
-      provider: CognitoHostedUIIdentityProvider.Facebook,
-    });
-    setProvider("facebook");
-  };
-
-  const socialSignInApple = () => {
-    setLoader(true);
-    Auth.federatedSignIn({ provider: CognitoHostedUIIdentityProvider.Apple });
-    setProvider("apple");
-
-    // Track Apple sign-in in Firebase Analytics
-    analytics().logEvent("social_sign_in", {
-      provider: "apple",
-    });
+    switch (type) {
+      case "apple":
+        await Auth.federatedSignIn({ provider: CognitoHostedUIIdentityProvider.Apple });
+        break;
+      case "facebook":
+        await Auth.federatedSignIn({ provider: CognitoHostedUIIdentityProvider.Facebook });
+        break;
+      case "google":
+        await Auth.federatedSignIn({ provider: CognitoHostedUIIdentityProvider.Google });
+        break;
+    }
   };
 
   const handleLoginService = () => {
     UserService.login({
-      phoneNumber: fullNumber,
+      phoneNumber: fullNumber
     })
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           Alerts("success", res.data.message);
           props.props.navigation.navigate("OtpScreen", {
             phoneNum: fullNumber,
-            otp: res.data.data.otp,
+            otp: res.data.data.otp
           });
 
           // Log the sign-in event
           analytics().logEvent("sign_in", {
             method: "phone",
-            phoneNumber: fullNumber,
+            phoneNumber: fullNumber
           });
         }
       })
-      .catch((err) => {
+      .catch(err => {
         console.log("login err", err);
         Alerts("error", err?.message.toString());
       })
@@ -226,46 +194,46 @@ const SocailScreen = (props) => {
 
   const clearRedux = (flag = false) => {
     dispatch({
-      type: "EMPTY_CHAT",
+      type: "EMPTY_CHAT"
     });
     dispatch({
       type: "INDEX",
-      payload: 0,
+      payload: 0
     });
     dispatch({
       type: "PROMPTS_INDEX",
-      payload: 0,
+      payload: 0
     });
     dispatch({
       type: "PROMPTS_POOL",
-      payload: [],
+      payload: []
     });
     dispatch({
       type: "SET_SPOT_TIMER",
       payload: {
         userId: null,
         showtimer: false,
-        time: 0,
-      },
+        time: 0
+      }
     });
     dispatch({
       type: "SET_PROFILE_TIMER",
       payload: {
         userId: null,
         showtimer: false,
-        time: 0,
-      },
+        time: 0
+      }
     });
 
     if (flag) {
       dispatch({
         type: "USER_EMAIL",
-        payload: currentAuthUser?.attributes?.email,
+        payload: currentAuthUser?.attributes?.email
       });
     } else {
       dispatch({
         type: "USER_MOBILE_NO",
-        payload: fullNumber,
+        payload: fullNumber
       });
     }
   };
@@ -273,143 +241,143 @@ const SocailScreen = (props) => {
   const clearNewRedux = (flag = false) => {
     dispatch({
       type: "firstName",
-      payload: "",
+      payload: ""
     });
     dispatch({
       type: "lastName",
-      payload: "",
+      payload: ""
     });
     dispatch({
       type: "dob",
-      payload: null,
+      payload: null
     });
     dispatch({
       type: "gender",
-      payload: "",
+      payload: ""
     });
     dispatch({
       type: "selfie",
-      payload: null,
+      payload: null
     });
     dispatch({
       type: "picture",
-      payload: null,
+      payload: null
     });
     dispatch({
       type: "video",
-      payload: null,
+      payload: null
     });
     dispatch({
       type: "religion",
-      payload: null,
+      payload: null
     });
     dispatch({
       type: "profilePictures",
-      payload: [],
+      payload: []
     });
     dispatch({
       type: "vibes",
-      payload: [],
+      payload: []
     });
     dispatch({
       type: "promptsPool",
-      payload: [],
+      payload: []
     });
     dispatch({
       type: "height",
-      payload: "",
+      payload: ""
     });
     dispatch({
       type: "familyOrigin",
-      payload: [],
+      payload: []
     });
     dispatch({
       type: "community",
-      payload: [],
+      payload: []
     });
     dispatch({
       type: "language",
-      payload: [],
+      payload: []
     });
 
     dispatch({
       type: "educationLevel",
-      payload: "",
+      payload: ""
     });
     dispatch({
       type: "occupation1",
-      payload: "",
+      payload: ""
     });
     dispatch({
       type: "denomination",
-      payload: "",
+      payload: ""
     });
     dispatch({
       type: "practicingLevel",
-      payload: "",
+      payload: ""
     });
     dispatch({
       type: "drink",
-      payload: "",
+      payload: ""
     });
     dispatch({
       type: "smoke",
-      payload: [],
+      payload: []
     });
     dispatch({
       type: "pray",
-      payload: "",
+      payload: ""
     });
     dispatch({
       type: "dietChoices",
-      payload: [],
+      payload: []
     });
     dispatch({
       type: "maritalHistory",
-      payload: "",
+      payload: ""
     });
     dispatch({
       type: "marriageTimeline",
-      payload: "",
+      payload: ""
     });
     dispatch({
       type: "haveKids",
-      payload: false,
+      payload: false
     });
     dispatch({
       type: "wantKids",
-      payload: false,
+      payload: false
     });
     dispatch({
       type: "relocate",
-      payload: false,
+      payload: false
     });
     dispatch({
       type: "AUTH_TOKEN",
-      payload: null,
+      payload: null
     });
     dispatch({
       type: "AUTH_USER_STATUS",
-      payload: null,
+      payload: null
     });
     dispatch({
       type: "tagline1",
-      payload: "",
+      payload: ""
     });
     dispatch({
       type: "wholeArray",
-      payload: [],
+      payload: []
     });
 
     if (flag) {
       dispatch({
         type: "USER_EMAIL",
-        payload: currentAuthUser?.attributes?.email,
+        payload: currentAuthUser?.attributes?.email
       });
     } else {
       dispatch({
         type: "USER_MOBILE_NO",
-        payload: fullNumber,
+        payload: fullNumber
       });
     }
   };
@@ -420,7 +388,7 @@ const SocailScreen = (props) => {
       // Log the error event
       analytics().logEvent("sign_in_attempt", {
         success: false,
-        error: "Phone Number is required",
+        error: "Phone Number is required"
       });
     } else {
       setLoading(true);
@@ -430,7 +398,7 @@ const SocailScreen = (props) => {
           // Log the sign-in attempt event
           analytics().logEvent("sign_in_attempt", {
             success: true,
-            phoneNumber,
+            phoneNumber
           });
           Alert.alert("This Account was Deleted");
         } else if (fullNumber != mobileNumber) {
@@ -440,71 +408,77 @@ const SocailScreen = (props) => {
           // Log the sign-in attempt event
           analytics().logEvent("sign_in_attempt", {
             success: true,
-            phoneNumber,
+            phoneNumber
           });
         }
       } else {
         // Log the error event
         analytics().logEvent("sign_in_attempt", {
           success: false,
-          error: "Full number is empty",
+          error: "Full number is empty"
         });
       }
     }
   };
 
   const socialSignUp = async () => {
-    const body = {
-      username: currentAuthUser?.username,
-      email: currentAuthUser?.attributes?.email,
-      platform: provider,
-    };
-    const res = await Auth.updateUserAttributes(currentAuthUser, {
-      "custom:platform": provider,
-    });
-    if (res === "SUCCESS") {
-      UserService.signUpSocial(body)
-        .then((res) => {
-          handleStatusCode(res);
-          if (res.status >= 200 && res.status <= 299) {
-            let data = res?.data?.data;
-            Alerts("success", res?.data?.message);
+    try {
+      const body = {
+        username: currentAuthUser?.username,
+        email: currentAuthUser?.attributes?.email,
+        platform: provider
+      };
+      const res = await Auth.updateUserAttributes(currentAuthUser, {
+        "custom:platform": provider
+      });
+      if (res === "SUCCESS") {
+        UserService.signUpSocial(body)
+          .then(res => {
+            handleStatusCode(res);
+            if (res.status >= 200 && res.status <= 299) {
+              let data = res?.data?.data;
+              Alerts("success", res?.data?.message);
 
-            if (Object.keys(data).length > 0) {
-              if (data.status === "INACTIVE" || data?.status === undefined) {
-                if (currentAuthUser?.attributes?.email === email) {
-                  dispatchAndNavigate(data.status, "FullNameScreen", data);
+              if (Object.keys(data).length > 0) {
+                if (data.status === "INACTIVE" || data?.status === undefined) {
+                  if (currentAuthUser?.attributes?.email === email) {
+                    dispatchAndNavigate(data.status, "FullNameScreen", data);
+                  } else {
+                    clearRedux(true);
+                    clearNewRedux(true);
+                    dispatchAndNavigate(data.status, "FullNameScreen", data);
+                  }
                 } else {
-                  clearRedux(true);
-                  clearNewRedux(true);
-                  dispatchAndNavigate(data.status, "FullNameScreen", data);
+                  dispatchAndNavigate(data.status, "BottomTab", data);
                 }
-              } else {
-                dispatchAndNavigate(data.status, "BottomTab", data);
               }
-            }
 
-            dispatch({
-              type: "USER_EMAIL",
-              payload: currentAuthUser?.attributes?.email,
-            });
-          }
-        })
-        .catch((err) => {
-          if (err?.message.includes("Network")) {
-            Alerts("error", err.message);
-          } else {
-            console.log("socialSignUp err:", err);
-          }
-        })
-        .finally(() => setLoader(false));
-    } else {
-      setLoader(false);
-      Alerts("error", "Something went wrong Please try again later");
+              dispatch({
+                type: "USER_EMAIL",
+                payload: currentAuthUser?.attributes?.email
+              });
+            }
+          })
+          .catch(err => {
+            if (err?.message.includes("Network")) {
+              Alerts("error", err.message);
+            } else {
+              console.log("socialSignUp err:", err);
+            }
+          })
+          .finally(() => setLoader(false));
+      } else {
+        setLoader(false);
+        Alerts("error", "Something went wrong Please try again later");
+      }
+    } catch (err) {
+      crashlytics().recordError(err, "SignUp err");
     }
   };
 
   useEffect(() => {
+    console.log("currentAuthUser", currentAuthUser);
+
     if (currentAuthUser?.username && provider != "") {
       socialSignUp();
     }
@@ -512,25 +486,25 @@ const SocailScreen = (props) => {
 
   const handleSignupService = () => {
     UserService.signUp({
-      phoneNumber: fullNumber,
+      phoneNumber: fullNumber
     })
-      .then((res) => {
+      .then(res => {
         handleStatusCode(res);
         if (res.status >= 200 && res.status <= 299) {
           Alerts("success", res.data.message);
           props.props.navigation.navigate("OtpScreen", {
             phoneNum: fullNumber,
-            otp: res.data.data.otp,
+            otp: res.data.data.otp
           });
 
           // Log the sign-up event
           analytics().logEvent("sign_up", {
             method: "phone",
-            phoneNumber: fullNumber,
+            phoneNumber: fullNumber
           });
         }
       })
-      .catch((err) => Alerts("error", err?.message.toString()))
+      .catch(err => Alerts("error", err?.message.toString()))
       .finally(() => setLoading(false));
   };
   const signUp = () => {
@@ -539,21 +513,21 @@ const SocailScreen = (props) => {
       // Log the error event
       analytics().logEvent("sign_up_attempt", {
         success: false,
-        error: "Phone Number is required",
+        error: "Phone Number is required"
       });
     } else if (phoneNumber !== "" && check === false) {
       setError("Please accept our Terms of Service...!");
       // Log the error event
       analytics().logEvent("sign_up_attempt", {
         success: false,
-        error: "Terms of Service not accepted",
+        error: "Terms of Service not accepted"
       });
     } else if (check === true && phoneNumber === "") {
       setError("Phone Number is required...!");
       // Log the error event
       analytics().logEvent("sign_up_attempt", {
         success: false,
-        error: "Phone Number is required",
+        error: "Phone Number is required"
       });
     } else {
       if (phoneNumber !== "" && check === true) {
@@ -569,14 +543,13 @@ const SocailScreen = (props) => {
         // Log the sign-up attempt event
         analytics().logEvent("sign_up_attempt", {
           success: true,
-          phoneNumber,
+          phoneNumber
         });
       }
     }
   };
 
-  const handleUrl = (endpoint) =>
-    Linking.openURL(`https://rishtaauntie.app/${endpoint}/`);
+  const handleUrl = endpoint => Linking.openURL(`https://rishtaauntie.app/${endpoint}/`);
 
   return loader ? (
     <Loader />
@@ -584,9 +557,8 @@ const SocailScreen = (props) => {
     <SafeAreaView style={styles.container}>
       <View
         style={{
-          flexDirection: "row",
-        }}
-      >
+          flexDirection: "row"
+        }}>
         <TouchableOpacity
           onPress={() => {
             if (canGoBack) {
@@ -594,8 +566,7 @@ const SocailScreen = (props) => {
             } else {
               navigation.goBack();
             }
-          }}
-        >
+          }}>
           <FastImage
             resizeMode="contain"
             style={{ width: 20, height: 30 }}
@@ -611,9 +582,7 @@ const SocailScreen = (props) => {
 
       <View style={{ marginTop: "8%" }}>
         <Text style={styles.heading}>
-          {props.login
-            ? "Welcome back to Rishta Auntie"
-            : "Get started with Rishta Auntie"}
+          {props.login ? "Welcome back to Rishta Auntie" : "Get started with Rishta Auntie"}
         </Text>
         <Text style={styles.lightText}></Text>
       </View>
@@ -623,19 +592,14 @@ const SocailScreen = (props) => {
           style={{ flex: identityProvider == signInWithApple ? 0 : 1 }}
           source={{ uri: url }}
           incognito={true}
-          onLoadProgress={() =>
-            Alerts(
-              "info",
-              "Please wait while we are processing your request..."
-            )
-          }
+          onLoadProgress={() => Alerts("info", "Please wait while we are processing your request...")}
           cacheEnabled={false}
           userAgent={
             android
               ? "Chrome/18.0.1025.133 Mobile Safari/535.19"
               : "AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75"
           }
-          onNavigationStateChange={(navState) => {
+          onNavigationStateChange={navState => {
             setCanGoBack(navState.canGoBack);
           }}
         />
@@ -652,36 +616,25 @@ const SocailScreen = (props) => {
               style={{
                 position: "absolute",
                 top: ios ? windowHeight / 2.7 : windowHeight / 2,
-                left: windowWidth / 2.15,
+                left: windowWidth / 2.15
               }}
             />
           )}
-          onLoadProgress={() =>
-            Alerts(
-              "info",
-              "Please wait while we are processing your request..."
-            )
-          }
+          onLoadProgress={() => Alerts("info", "Please wait while we are processing your request...")}
           cacheEnabled={false}
           userAgent={
             android
               ? "Chrome/18.0.1025.133 Mobile Safari/535.19"
               : "AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75"
           }
-          onNavigationStateChange={(navState) => {
+          onNavigationStateChange={navState => {
             setCanGoBack(navState.canGoBack);
           }}
         />
       ) : (
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
+        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
           <View style={styles.noAccountView}>
-            <TouchableOpacity
-              style={styles.socialButtons}
-              onPress={() => socialSignInGoogle()}
-            >
+            <TouchableOpacity style={styles.socialButtons} onPress={() => socialfederatedSignIn("google")}>
               <FastImage
                 resizeMode="contain"
                 style={{ width: 30, height: 30 }}
@@ -690,10 +643,7 @@ const SocailScreen = (props) => {
               <Text style={styles.socialText}>Google</Text>
             </TouchableOpacity>
             {ios ? (
-              <TouchableOpacity
-                style={styles.socialButtons}
-                onPress={() => socialSignInApple()}
-              >
+              <TouchableOpacity style={styles.socialButtons} onPress={() => socialfederatedSignIn("apple")}>
                 <FastImage
                   resizeMode="contain"
                   style={{ width: 30, height: 30 }}
@@ -710,9 +660,8 @@ const SocailScreen = (props) => {
               justifyContent: "center",
               width: "100%",
               flexDirection: "row",
-              marginTop: "5%",
-            }}
-          >
+              marginTop: "5%"
+            }}>
             {/* <View style={styles.divider}></View> */}
             <View>
               <Text style={{ fontFamily: "Inter-Medium", color: "#6B7280" }}>
@@ -771,10 +720,9 @@ const SocailScreen = (props) => {
               style={[
                 styles.checkBoxView,
                 {
-                  marginVertical: "2%",
-                },
-              ]}
-            >
+                  marginVertical: "2%"
+                }
+              ]}>
               {/* <TouchableOpacity
                 onPress={() => setCheck(!check)}
                 style={styles.checkBox}
@@ -792,17 +740,11 @@ const SocailScreen = (props) => {
                 {props.login
                   ? "By signing in to Rishta Auntie you agree to the "
                   : "By signing up to Rishta Auntie you agree to the "}
-                <Text
-                  onPress={() => handleUrl("terms-of-use")}
-                  style={styles.infoTxt}
-                >
+                <Text onPress={() => handleUrl("terms-of-use")} style={styles.infoTxt}>
                   Terms of Service
                 </Text>{" "}
                 and{" "}
-                <Text
-                  onPress={() => handleUrl("privacy-policy")}
-                  style={styles.infoTxt}
-                >
+                <Text onPress={() => handleUrl("privacy-policy")} style={styles.infoTxt}>
                   Privacy Policy
                 </Text>
               </Text>
@@ -852,40 +794,28 @@ const SocailScreen = (props) => {
                   style={[
                     styles.noAccountCreateOne,
                     {
-                      marginVertical: "10%",
-                    },
-                  ]}
-                >
-                  <Text style={styles.noAccountTxt}>
-                    Don’t have an account?
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => props.props.navigation.navigate("SignUp")}
-                  >
+                      marginVertical: "10%"
+                    }
+                  ]}>
+                  <Text style={styles.noAccountTxt}>Don’t have an account?</Text>
+                  <TouchableOpacity onPress={() => props.props.navigation.navigate("SignUp")}>
                     <Text
                       style={{
                         fontFamily: "Inter-Medium",
                         color: colors.primaryPink,
-                        fontSize: 12,
-                      }}
-                    >
+                        fontSize: 12
+                      }}>
                       Get started
                     </Text>
                   </TouchableOpacity>
                 </View>
                 <Text style={[styles.descTxt, { marginVertical: "10%" }]}>
                   By signing into Rishta Auntie you agree to the{" "}
-                  <Text
-                    onPress={() => handleUrl("terms-of-use")}
-                    style={styles.infoTxt}
-                  >
+                  <Text onPress={() => handleUrl("terms-of-use")} style={styles.infoTxt}>
                     Terms of Service
                   </Text>{" "}
                   and{" "}
-                  <Text
-                    onPress={() => handleUrl("privacy-policy")}
-                    style={styles.infoTxt}
-                  >
+                  <Text onPress={() => handleUrl("privacy-policy")} style={styles.infoTxt}>
                     Privacy Policy
                   </Text>
                 </Text>
@@ -895,21 +825,17 @@ const SocailScreen = (props) => {
                 style={[
                   styles.noAccountCreateOne,
                   {
-                    marginVertical: "10%",
-                  },
-                ]}
-              >
-                <Text style={styles.noAccountTxt}>
-                  Already have an account?
-                </Text>
+                    marginVertical: "10%"
+                  }
+                ]}>
+                <Text style={styles.noAccountTxt}>Already have an account?</Text>
                 <TouchableOpacity onPress={() => navigation.navigate("Login")}>
                   <Text
                     style={{
                       fontFamily: "Inter-Medium",
                       color: colors.primaryPink,
-                      fontSize: 12,
-                    }}
-                  >
+                      fontSize: 12
+                    }}>
                     Sign in
                   </Text>
                 </TouchableOpacity>
@@ -926,7 +852,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
-    padding: 25,
+    padding: 25
   },
   signUpHeading: { color: "#161616", marginTop: "5%", fontSize: 35 },
   logo: { width: "100%", height: "100%" },
@@ -935,30 +861,30 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 100 / 2,
     marginTop: "10%",
-    alignSelf: "center",
+    alignSelf: "center"
   },
   noAccountView: {
     flexDirection: "column",
     alignSelf: "center",
     alignItems: "center",
     marginBottom: "5%",
-    width: "200%",
+    width: "200%"
   },
 
   createOneText: {
     fontFamily: "Inter-Bold",
-    color: colors.primaryBlue,
+    color: colors.primaryBlue
   },
   countryCode: {
     fontSize: 15,
     marginHorizontal: "1%",
-    color: colors.black,
+    color: colors.black
   },
   signInCreate: {
     marginBottom: "3%",
     fontFamily: "Inter-Bold",
     fontSize: 24,
-    color: colors.primaryBlue,
+    color: colors.primaryBlue
   },
   countryPicker: {
     width: 50,
@@ -966,7 +892,7 @@ const styles = StyleSheet.create({
     marginTop: 0,
     justifyContent: "center",
     alignItems: "flex-end",
-    marginBottom: 0,
+    marginBottom: 0
   },
   dropDownIcon: { width: "13%", alignItems: "flex-end", right: 20 },
   phoneNumber: { width: "60%", color: colors.black },
@@ -978,7 +904,7 @@ const styles = StyleSheet.create({
     marginTop: "50%",
     marginBottom: "10%",
     borderTopLeftRadius: 100,
-    alignItems: "center",
+    alignItems: "center"
   },
   firstNameContainer: {
     width: "80%",
@@ -987,14 +913,14 @@ const styles = StyleSheet.create({
     marginTop: "10%",
     paddingVertical: "1%",
     borderRadius: 10,
-    elevation: 1,
+    elevation: 1
   },
   aggrementText: {
     marginLeft: "5%",
     fontSize: 11,
     fontFamily: "Inter-Medium",
     width: "80%",
-    color: colors.darkBlue,
+    color: colors.darkBlue
   },
   warningText: { color: "red", top: "6%", fontWeight: "700" },
   firstNameText: { fontSize: 17, color: "#232323", fontFamily: "Inter-Bold" },
@@ -1003,7 +929,7 @@ const styles = StyleSheet.create({
     width: "100%",
     borderWidth: 0.4,
     borderColor: "black",
-    marginTop: "-3%",
+    marginTop: "-3%"
   },
   signUpInButton: {
     width: "70%",
@@ -1013,7 +939,7 @@ const styles = StyleSheet.create({
     paddingVertical: "3%",
     borderRadius: 10,
     borderTopEndRadius: 0,
-    marginTop: "10%",
+    marginTop: "10%"
   },
   topContainer: {
     width: "100%",
@@ -1021,13 +947,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#161616",
     zIndex: 0,
     position: "absolute",
-    alignItems: "center",
+    alignItems: "center"
   },
   noAccountCreateOne: {
     flexDirection: "row",
     alignSelf: "center",
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "center"
     // marginBottom: '5%',
   },
   signUpText: { color: "white", fontSize: 20 },
@@ -1035,7 +961,7 @@ const styles = StyleSheet.create({
     width: "30%",
     height: windowHeight * 0.12,
     alignSelf: "center",
-    marginVertical: "10%",
+    marginVertical: "10%"
   },
   signinBox: {
     paddingVertical: "4%",
@@ -1045,12 +971,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 10,
     justifyContent: "center",
-    paddingHorizontal: "5%",
+    paddingHorizontal: "5%"
   },
   signinBtnTxt: {
     fontFamily: "Inter-Medium",
     fontSize: 17,
-    color: colors.white,
+    color: colors.white
   },
   signInButton: {
     width: "100%",
@@ -1059,20 +985,20 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primaryPink,
     alignItems: "center",
     justifyContent: "center",
-    alignSelf: "center",
+    alignSelf: "center"
   },
   orSignin: {
     alignSelf: "center",
     fontSize: 22,
     fontFamily: "Inter-Bold",
     marginVertical: "5%",
-    color: colors.primaryBlue,
+    color: colors.primaryBlue
   },
   socialView: {
     width: "90%",
     alignSelf: "center",
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "space-around"
   },
   statementTxt: {
     fontFamily: "Inter-Regular",
@@ -1082,7 +1008,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginVertical: "10%",
     lineHeight: 14,
-    color: colors.mediumGrey,
+    color: colors.mediumGrey
   },
   phoneNum: {
     width: "100%",
@@ -1093,19 +1019,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: "3%",
-    paddingVertical: ios ? "2.7%" : undefined,
+    paddingVertical: ios ? "2.7%" : undefined
   },
   phoneInner: {
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   },
   checkBoxView: {
     flexDirection: "row",
     alignItems: "center",
     alignSelf: "flex-start",
-    marginVertical: "7%",
+    marginVertical: "7%"
   },
   checkBox: {
     height: windowHeight * 0.03,
@@ -1116,13 +1042,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.primaryPink,
     backgroundColor: colors.greyWhite,
-    borderRadius: 5,
+    borderRadius: 5
   },
   noAccountTxt: {
     fontSize: 12,
     marginRight: "2%",
     color: "#6B7280",
-    fontFamily: "Inter-Medium",
+    fontFamily: "Inter-Medium"
   },
   lineHeight: 20,
   heading: {
@@ -1130,13 +1056,13 @@ const styles = StyleSheet.create({
     fontSize: 25,
     color: colors.black,
     width: "70%",
-    lineHeight: 30,
+    lineHeight: 30
   },
   lightText: {
     fontFamily: "Inter-Light",
     fontSize: 15,
     marginTop: "3%",
-    color: colors.textGrey,
+    color: colors.textGrey
   },
   socialButtons: {
     width: "45%",
@@ -1147,18 +1073,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#F3F4F6",
     flexDirection: "row",
-    marginBottom: 25, // Add margin to create space between buttons
+    marginBottom: 25 // Add margin to create space between buttons
   },
   socialText: {
     fontSize: 18,
     fontFamily: "Inter-Bold",
     marginLeft: "3%",
-    color: colors.black,
+    color: colors.black
   },
   divider: {
     width: "20%",
     borderWidth: 1,
-    borderColor: "#F3F4F6",
+    borderColor: "#F3F4F6"
   },
   buttonView: {
     width: "90%",
@@ -1170,7 +1096,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
     position: "absolute",
     bottom: 40,
-    alignSelf: "center",
+    alignSelf: "center"
   },
   descTxt: {
     fontSize: 12,
@@ -1179,18 +1105,18 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     color: "#6B7280",
     textAlign: "center",
-    fontFamily: "Inter-Medium",
+    fontFamily: "Inter-Medium"
   },
   descTxt1: {
     marginLeft: "12%",
     marginTop: "1%",
-    textAlign: "center",
+    textAlign: "center"
   },
   infoTxt: {
     fontFamily: "Inter-Medium",
     color: colors.blackBlue,
-    fontSize: 12,
-  },
+    fontSize: 12
+  }
 });
 
 export default SocailScreen;

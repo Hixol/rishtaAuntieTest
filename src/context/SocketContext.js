@@ -11,22 +11,22 @@ const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const socket = io.connect("https://api.rishtaauntie.link", {
-      reconnection: true,
-      reconnectionDelay: 5000,
-      query: {
-        userId: userId ? userId : 1,
-      },
-    });
-    console.log("Socket Connection", socket);
-    socketEvents(socket);
+    if (userId) {
+      const socket = io.connect("https://api.rishtaauntie.link", {
+        reconnection: true,
+        reconnectionDelay: 5000,
+        query: {
+          userId: userId ? userId : 1
+        }
+      });
+      console.log("Socket Connection", socket);
+      socketEvents(socket);
 
-    setSocket(socket);
+      setSocket(socket);
+    }
   }, [userId]);
 
-  return (
-    <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
-  );
+  return <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>;
 };
 
 export default SocketProvider;
